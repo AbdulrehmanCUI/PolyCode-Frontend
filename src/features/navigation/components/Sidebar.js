@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, memo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getTree, getLanguages } from "../../docs/services/api";
 import { formatName } from "../../../shared/utils/format";
 
+// ── Icons (defined once, memoized automatically as module-level constants) ───
 const FolderIcon = ({ color = "currentColor" }) => (
   <svg
     width="18"
@@ -14,7 +15,7 @@ const FolderIcon = ({ color = "currentColor" }) => (
     strokeLinecap="round"
     strokeLinejoin="round"
   >
-    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
   </svg>
 );
 
@@ -29,8 +30,8 @@ const FileIcon = ({ color = "currentColor" }) => (
     strokeLinecap="round"
     strokeLinejoin="round"
   >
-    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-    <polyline points="13 2 13 9 20 9"></polyline>
+    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+    <polyline points="13 2 13 9 20 9" />
   </svg>
 );
 
@@ -45,11 +46,11 @@ const DocIcon = ({ color = "currentColor" }) => (
     strokeLinecap="round"
     strokeLinejoin="round"
   >
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-    <polyline points="14 2 14 8 20 8"></polyline>
-    <line x1="16" y1="13" x2="8" y2="13"></line>
-    <line x1="16" y1="17" x2="8" y2="17"></line>
-    <polyline points="10 9 9 9 8 9"></polyline>
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="16" y1="13" x2="8" y2="13" />
+    <line x1="16" y1="17" x2="8" y2="17" />
+    <polyline points="10 9 9 9 8 9" />
   </svg>
 );
 
@@ -76,6 +77,103 @@ const languageLogos = {
   "c#": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg",
 };
 
+// ── Pure function – no state, safe to call outside render ────────────────────
+function getFileIcon(ext) {
+  const e = ext.toLowerCase();
+  const logoMap = {
+    ".py": "python",
+    ".go": "go",
+    ".js": "javascript",
+    ".jsx": "javascript",
+    ".java": "java",
+    ".rs": "rust",
+    ".cpp": "cpp",
+    ".c++": "cpp",
+    ".c": "c",
+    ".php": "php",
+    ".rb": "ruby",
+    ".sql": "sql",
+    ".cs": "csharp",
+  };
+  const logoKey = logoMap[e];
+  if (logoKey)
+    return (
+      <img src={languageLogos[logoKey]} alt="" className="tree-logo-icon" />
+    );
+  if (e === ".md")
+    return (
+      <span className="tree-icon">
+        <DocIcon color="var(--cyan)" />
+      </span>
+    );
+  if (e === ".html") return <span className="tree-icon">🌐</span>;
+  if (e === ".css") return <span className="tree-icon">🎨</span>;
+  return (
+    <span className="tree-icon">
+      <FileIcon color="var(--txt-3)" />
+    </span>
+  );
+}
+
+// ── Tree node – memoized so re-renders only happen when props change ──────────
+const SidebarTreeNode = memo(function SidebarTreeNode({
+  node,
+  depth = 0,
+  selectedLanguage,
+  onItemClick,
+  activePath,
+}) {
+  const [expanded, setExpanded] = useState(depth === 0);
+
+  if (node.type === "folder") {
+    const hasChildren = node.children && node.children.length > 0;
+    return (
+      <div className="tree-folder">
+        <button
+          className="tree-folder-btn"
+          style={{ paddingLeft: `${16 + depth * 14}px` }}
+          onClick={() => setExpanded((e) => !e)}
+        >
+          <span className="tree-caret">{expanded ? "▾" : "▸"}</span>
+          <span className="tree-icon">
+            <FolderIcon color="var(--violet)" />
+          </span>
+          <span className="tree-label">{formatName(node.name)}</span>
+        </button>
+        {expanded && hasChildren && (
+          <div className="tree-children">
+            {node.children.map((child, i) => (
+              <SidebarTreeNode
+                key={i}
+                node={child}
+                depth={depth + 1}
+                selectedLanguage={selectedLanguage}
+                onItemClick={onItemClick}
+                activePath={activePath}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const to = `/doc/${node.path}${selectedLanguage ? `?language=${selectedLanguage}` : ""}`;
+  const active = activePath === `/doc/${node.path}`;
+
+  return (
+    <Link
+      to={to}
+      className={`tree-file ${active ? "active" : ""}`}
+      style={{ paddingLeft: `${16 + depth * 14}px` }}
+      onClick={onItemClick}
+    >
+      {getFileIcon(node.ext)}
+      <span className="tree-label">{formatName(node.name)}</span>
+    </Link>
+  );
+});
+
 export default function Sidebar({
   isOpen,
   onClose,
@@ -91,148 +189,36 @@ export default function Sidebar({
   useEffect(() => {
     const params = selectedLanguage ? { language: selectedLanguage } : {};
 
-    // Initialize with empty arrays to prevent runtime errors
-    setTree([]);
-    setLanguages([]);
-
     getTree(params)
       .then((r) => {
-        if (r.data && Array.isArray(r.data.tree)) {
-          setTree(r.data.tree);
-        } else if (r.data && Array.isArray(r.data)) {
-          setTree(r.data);
-        }
+        if (r.data && Array.isArray(r.data.tree)) setTree(r.data.tree);
+        else if (r.data && Array.isArray(r.data)) setTree(r.data);
       })
-      .catch((error) => {
-        console.error("Error fetching tree:", error);
-        setTree([]);
-      });
+      .catch(() => setTree([]));
 
-    // FIX: The API returns { languages: [...] }, not a plain array.
-    // Was checking Array.isArray(r.data) which would always be false
-    // since r.data is { languages: [...] }. Now correctly reads r.data.languages.
     getLanguages()
       .then((r) => {
-        if (r.data && Array.isArray(r.data.languages)) {
+        if (r.data && Array.isArray(r.data.languages))
           setLanguages(r.data.languages);
-        } else if (r.data && Array.isArray(r.data)) {
-          // Fallback: if API ever returns a plain array
-          setLanguages(r.data);
-        } else {
-          setLanguages([]);
-        }
+        else if (r.data && Array.isArray(r.data)) setLanguages(r.data);
       })
-      .catch((error) => {
-        console.error("Error fetching languages:", error);
-        setLanguages([]);
-      });
+      .catch(() => setLanguages([]));
   }, [selectedLanguage]);
 
-  const isActive = (p) => location.pathname === p;
+  const handleItemClick = useCallback(() => onClose(), [onClose]);
 
-  // ── Auto-close on file click (works on all screen sizes) ──
-  const handleItemClick = () => {
-    onClose();
-  };
-
-  const handleSelectLanguage = (lang) => {
-    setShowLangMenu(false);
-    onLanguageSelect(lang);
-    navigate("/hub");
-    onClose(); // close after language switch too
-  };
+  const handleSelectLanguage = useCallback(
+    (lang) => {
+      setShowLangMenu(false);
+      onLanguageSelect(lang);
+      navigate("/hub");
+      onClose();
+    },
+    [onLanguageSelect, navigate, onClose],
+  );
 
   const currentLogo = languageLogos[selectedLanguage?.toLowerCase()];
-
-  const getFileIcon = (ext, fileName) => {
-    const e = ext.toLowerCase();
-    if (e === ".py")
-      return (
-        <img src={languageLogos.python} alt="" className="tree-logo-icon" />
-      );
-    if (e === ".go")
-      return <img src={languageLogos.go} alt="" className="tree-logo-icon" />;
-    if (e === ".js" || e === ".jsx")
-      return (
-        <img src={languageLogos.javascript} alt="" className="tree-logo-icon" />
-      );
-    if (e === ".java")
-      return <img src={languageLogos.java} alt="" className="tree-logo-icon" />;
-    if (e === ".rs")
-      return <img src={languageLogos.rust} alt="" className="tree-logo-icon" />;
-    if (e === ".cpp" || e === ".c++")
-      return <img src={languageLogos.cpp} alt="" className="tree-logo-icon" />;
-    if (e === ".c")
-      return <img src={languageLogos.c} alt="" className="tree-logo-icon" />;
-    if (e === ".php")
-      return <img src={languageLogos.php} alt="" className="tree-logo-icon" />;
-    if (e === ".rb")
-      return <img src={languageLogos.ruby} alt="" className="tree-logo-icon" />;
-    if (e === ".sql")
-      return <img src={languageLogos.sql} alt="" className="tree-logo-icon" />;
-    if (e === ".cs")
-      return (
-        <img src={languageLogos.csharp} alt="" className="tree-logo-icon" />
-      );
-    if (e === ".md")
-      return (
-        <span className="tree-icon">
-          <DocIcon color="var(--cyan)" />
-        </span>
-      );
-    if (e === ".html") return <span className="tree-icon">🌐</span>;
-    if (e === ".css") return <span className="tree-icon">🎨</span>;
-    return (
-      <span className="tree-icon">
-        <FileIcon color="var(--txt-3)" />
-      </span>
-    );
-  };
-
-  const SidebarTreeNode = ({ node, depth = 0 }) => {
-    const [expanded, setExpanded] = useState(depth === 0);
-
-    if (node.type === "folder") {
-      const hasChildren = node.children && node.children.length > 0;
-      return (
-        <div className="tree-folder">
-          <button
-            className="tree-folder-btn"
-            style={{ paddingLeft: `${16 + depth * 14}px` }}
-            onClick={() => setExpanded((e) => !e)}
-          >
-            <span className="tree-caret">{expanded ? "▾" : "▸"}</span>
-            <span className="tree-icon">
-              <FolderIcon color="var(--violet)" />
-            </span>
-            <span className="tree-label">{formatName(node.name)}</span>
-          </button>
-          {expanded && hasChildren && (
-            <div className="tree-children">
-              {node.children.map((child, i) => (
-                <SidebarTreeNode key={i} node={child} depth={depth + 1} />
-              ))}
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    const to = `/doc/${node.path}${selectedLanguage ? `?language=${selectedLanguage}` : ""}`;
-    const active = location.pathname === `/doc/${node.path}`;
-
-    return (
-      <Link
-        to={to}
-        className={`tree-file ${active ? "active" : ""}`}
-        style={{ paddingLeft: `${16 + depth * 14}px` }}
-        onClick={handleItemClick} // ← closes sidebar on any file click
-      >
-        {getFileIcon(node.ext, node.name)}
-        <span className="tree-label">{formatName(node.name)}</span>
-      </Link>
-    );
-  };
+  const isActive = (p) => location.pathname === p;
 
   return (
     <aside className={`sidebar ${isOpen ? "open" : ""}`}>
@@ -252,8 +238,8 @@ export default function Sidebar({
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       </button>
 
@@ -263,7 +249,7 @@ export default function Sidebar({
         <div className="sidebar-language-box">
           <button
             className="language-display-btn"
-            onClick={() => setShowLangMenu(!showLangMenu)}
+            onClick={() => setShowLangMenu((v) => !v)}
           >
             <div className="current-lang-info">
               {currentLogo && (
@@ -323,7 +309,6 @@ export default function Sidebar({
           <span className="icon">⌕</span>
           <span className="sidebar-text">Search</span>
         </Link>
-        {/* Playground shortcut inside sidebar */}
         <Link
           to="/playground"
           className={`sidebar-item ${isActive("/playground") ? "active" : ""}`}
@@ -340,16 +325,21 @@ export default function Sidebar({
       <div className="sidebar-section">
         <div className="sidebar-section-title">Files</div>
         <div className="sidebar-tree">
-          {Array.isArray(tree) ? (
-            tree.length === 0 ? (
-              <div className="tree-empty">No files found</div>
-            ) : (
-              tree.map((node, i) => (
-                <SidebarTreeNode key={i} node={node} depth={0} />
-              ))
-            )
+          {!Array.isArray(tree) || tree.length === 0 ? (
+            <div className="tree-empty">
+              {tree === null ? "Loading files…" : "No files found"}
+            </div>
           ) : (
-            <div className="tree-empty">Loading files...</div>
+            tree.map((node, i) => (
+              <SidebarTreeNode
+                key={i}
+                node={node}
+                depth={0}
+                selectedLanguage={selectedLanguage}
+                onItemClick={handleItemClick}
+                activePath={location.pathname}
+              />
+            ))
           )}
         </div>
       </div>

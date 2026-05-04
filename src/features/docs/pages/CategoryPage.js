@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getDocuments } from "../services/api";
 import DocCard from "../components/DocCard";
 import { formatCategory } from "../../../shared/utils/categories";
+import { SkeletonGrid } from "../../../shared/components/SkeletonLoader";
+
+const LIMIT = 24;
 
 export default function CategoryPage({ selectedLanguage }) {
   const paramsUrl = useParams();
@@ -11,26 +14,33 @@ export default function CategoryPage({ selectedLanguage }) {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const LIMIT = 24;
 
-  useEffect(() => {
+  const load = useCallback(() => {
     setLoading(true);
-    const params = selectedLanguage
-      ? {
-          language: selectedLanguage,
-          category,
-          page,
-          limit: LIMIT,
-          ungrouped: true,
-        }
-      : { category, page, limit: LIMIT, ungrouped: true };
+    const params = {
+      ...(selectedLanguage ? { language: selectedLanguage } : {}),
+      category,
+      page,
+      limit: LIMIT,
+      ungrouped: true,
+    };
     getDocuments(params)
       .then((r) => {
         setDocs(r.data.documents);
         setTotal(r.data.total);
       })
+      .catch((err) => console.error("CategoryPage error:", err))
       .finally(() => setLoading(false));
   }, [category, page, selectedLanguage]);
+
+  // Reset page to 1 when category or language changes
+  useEffect(() => {
+    setPage(1);
+  }, [category, selectedLanguage]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   return (
     <div>
@@ -58,16 +68,15 @@ export default function CategoryPage({ selectedLanguage }) {
           className="page-subtitle"
           style={{ fontSize: "0.9rem", color: "var(--txt-2)" }}
         >
-          {total} technical archives in this domain
+          {total > 0 ? `${total} technical archives in this domain` : "\u00A0"}
         </p>
       </div>
 
       <hr className="divider" />
 
       {loading ? (
-        <div className="loading">
-          <div className="spinner" />
-        </div>
+        // ── Skeleton grid instead of a bare spinner ──
+        <SkeletonGrid count={LIMIT} type="doc" />
       ) : (
         <>
           <div className="grid grid-bento">

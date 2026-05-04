@@ -1,12 +1,31 @@
-import React, { useState, useCallback, useRef } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import React, { useState, useCallback, useRef, lazy, Suspense } from "react";
 import {
   executeCode,
   resolveEngine,
 } from "../../playground/services/BrowserExecutor";
 import "../../playground/components/IDE.css";
+
+// ── Lazy-load the heavy syntax-highlighter library ──
+// This keeps it out of the initial bundle; it's downloaded only when a
+// CodeBlock actually mounts (i.e. when a document page is opened).
+const SyntaxHighlighter = lazy(() =>
+  import("react-syntax-highlighter").then((m) => ({ default: m.Prism })),
+);
+
+// Theme objects are also loaded lazily alongside the highlighter
+let _themes = null;
+async function loadThemes() {
+  if (_themes) return _themes;
+  const [darkMod, lightMod] = await Promise.all([
+    import("react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus"),
+    import("react-syntax-highlighter/dist/esm/styles/prism/one-light"),
+  ]);
+  _themes = { dark: darkMod.default, light: lightMod.default };
+  return _themes;
+}
+
+// Eagerly kick off theme load so it's ready by the time the highlighter renders
+loadThemes();
 
 const makeSyntaxStyle = (baseStyle) => ({
   ...baseStyle,
@@ -24,6 +43,60 @@ const makeSyntaxStyle = (baseStyle) => ({
   },
 });
 
+// Thin skeleton shown while SyntaxHighlighter chunk loads
+function CodeSkeleton({ code }) {
+  return (
+    <pre
+      style={{
+        padding: "20px",
+        fontSize: "0.845rem",
+        lineHeight: "1.75",
+        background: "transparent",
+        margin: 0,
+        whiteSpace: "pre-wrap",
+        opacity: 0.5,
+      }}
+    >
+      {code}
+    </pre>
+  );
+}
+
+function HighlighterWithTheme({ language, code, isLightTheme }) {
+  const [themes, setThemes] = useState(_themes);
+
+  React.useEffect(() => {
+    if (!themes) {
+      loadThemes().then(setThemes);
+    }
+  }, [themes]);
+
+  if (!themes) return <CodeSkeleton code={code} />;
+
+  const baseStyle = isLightTheme ? themes.light : themes.dark;
+  const syntaxStyle = makeSyntaxStyle(baseStyle);
+
+  return (
+    <SyntaxHighlighter
+      language={language}
+      style={syntaxStyle}
+      showLineNumbers
+      lineNumberStyle={{
+        color: isLightTheme
+          ? "rgba(71, 85, 105, 0.65)"
+          : "rgba(255,255,255,0.12)",
+        fontSize: "0.7rem",
+        minWidth: "2.5em",
+        paddingRight: "1em",
+        userSelect: "none",
+      }}
+      wrapLongLines={false}
+    >
+      {code}
+    </SyntaxHighlighter>
+  );
+}
+
 export default function CodeBlock({
   code: initialCode,
   language = "python",
@@ -34,14 +107,13 @@ export default function CodeBlock({
   const [editMode, setEditMode] = useState(false);
   const [copied, setCopied] = useState(false);
   const [running, setRunning] = useState(false);
-  const [output, setOutput] = useState(null); // null = hidden
+  const [output, setOutput] = useState(null);
   const [previewHTML, setPreview] = useState(null);
   const textareaRef = useRef(null);
 
   const langInfo = resolveEngine(language);
   const hasOutput = output !== null || previewHTML !== null;
   const isLightTheme = theme === "light";
-  const syntaxStyle = makeSyntaxStyle(isLightTheme ? oneLight : vscDarkPlus);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code).then(() => {
@@ -62,7 +134,6 @@ export default function CodeBlock({
   };
 
   const handleKeyDown = (e) => {
-    // Tab key inserts spaces instead of switching focus
     if (e.key === "Tab") {
       e.preventDefault();
       const ta = e.target;
@@ -74,7 +145,6 @@ export default function CodeBlock({
         ta.selectionStart = ta.selectionEnd = start + 2;
       }, 0);
     }
-    // Ctrl+Enter to run
     if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
       e.preventDefault();
       handleRun();
@@ -132,7 +202,6 @@ export default function CodeBlock({
           {langInfo.icon} {filename || displayLang}
         </span>
         <div className="ide-actions">
-          {/* Edit toggle */}
           <button
             className={`ide-btn ${editMode ? "active" : ""}`}
             onClick={toggleEdit}
@@ -141,7 +210,6 @@ export default function CodeBlock({
             {editMode ? "👁 View" : "✏ Edit"}
           </button>
 
-          {/* Reset (only when edited) */}
           {code !== initialCode && (
             <button
               className="ide-btn"
@@ -152,7 +220,6 @@ export default function CodeBlock({
             </button>
           )}
 
-          {/* Run button */}
           <button
             className={`ide-btn run-btn ${running ? "running" : ""}`}
             onClick={handleRun}
@@ -171,7 +238,6 @@ export default function CodeBlock({
             </span>
           )}
 
-          {/* Copy */}
           <button
             className={`copy-trigger ${copied ? "active" : ""}`}
             onClick={handleCopy}
@@ -183,9 +249,8 @@ export default function CodeBlock({
         </div>
       </div>
 
-      {/* ── Split layout: code LEFT, output RIGHT ── */}
+      {/* ── Split layout ── */}
       <div className="ide-split-layout">
-        {/* Code panel */}
         <div className="ide-code-panel">
           {editMode ? (
             <div className="ide-editor-wrapper">
@@ -202,27 +267,17 @@ export default function CodeBlock({
               />
             </div>
           ) : (
-            <SyntaxHighlighter
-              language={langInfo.mono || language}
-              style={syntaxStyle}
-              showLineNumbers
-              lineNumberStyle={{
-                color: isLightTheme
-                  ? "rgba(71, 85, 105, 0.65)"
-                  : "rgba(255,255,255,0.12)",
-                fontSize: "0.7rem",
-                minWidth: "2.5em",
-                paddingRight: "1em",
-                userSelect: "none",
-              }}
-              wrapLongLines={false}
-            >
-              {code}
-            </SyntaxHighlighter>
+            // Suspense boundary so the highlighter chunk loads without blocking
+            <Suspense fallback={<CodeSkeleton code={code} />}>
+              <HighlighterWithTheme
+                language={langInfo.mono || language}
+                code={code}
+                isLightTheme={isLightTheme}
+              />
+            </Suspense>
           )}
         </div>
 
-        {/* Output panel — RIGHT side, visible only when there's output */}
         {hasOutput && (
           <div className="ide-output-panel">
             <div className="ide-output-header">
@@ -252,7 +307,6 @@ export default function CodeBlock({
         )}
       </div>
 
-      {/* Edit hint */}
       {editMode && (
         <div className="ide-edit-hint">
           Tab = indent &nbsp;·&nbsp; Ctrl+Enter = run

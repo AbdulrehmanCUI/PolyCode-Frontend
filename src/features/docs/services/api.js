@@ -2,13 +2,11 @@ import axios from "axios";
 
 const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
-// Simple in-memory cache with TTL
+// ── In-memory cache with TTL ──────────────────────────────────────────────────
 const cache = new Map();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes (was 5)
 
-const getCacheKey = (url, params) => {
-  return `${url}?${JSON.stringify(params || {})}`;
-};
+const getCacheKey = (url, params) => `${url}?${JSON.stringify(params || {})}`;
 
 const getFromCache = (key) => {
   const cached = cache.get(key);
@@ -20,54 +18,44 @@ const getFromCache = (key) => {
 };
 
 const setCache = (key, data) => {
-  cache.set(key, {
-    data,
-    timestamp: Date.now(),
-  });
+  cache.set(key, { data, timestamp: Date.now() });
 };
 
-// Clear cache periodically
+// ── In-flight request deduplication ──────────────────────────────────────────
+// If the same GET is fired twice before the first resolves, both callers
+// share one network request instead of making two.
+const inFlight = new Map();
+
+// Periodic cache cleanup
 setInterval(() => {
   const now = Date.now();
   for (const [key, value] of cache.entries()) {
-    if (now - value.timestamp >= CACHE_TTL) {
-      cache.delete(key);
-    }
+    if (now - value.timestamp >= CACHE_TTL) cache.delete(key);
   }
 }, CACHE_TTL);
 
 const api = axios.create({
   baseURL: API_BASE,
-  timeout: 10000, // 10 second timeout
-  headers: {
-    "Content-Type": "application/json",
-  },
+  timeout: 10000,
+  headers: { "Content-Type": "application/json" },
 });
 
-// Request interceptor for caching
+// Log slow requests in dev
 api.interceptors.request.use((config) => {
-  // Add request timestamp for debugging
-  config.metadata = { startTime: new Date() };
+  config.metadata = { startTime: Date.now() };
   return config;
 });
 
-// Response interceptor for caching and performance tracking
 api.interceptors.response.use(
   (response) => {
-    const endTime = new Date();
-    const duration = endTime - response.config.metadata.startTime;
-
-    // Log slow requests
+    const duration = Date.now() - response.config.metadata.startTime;
     if (duration > 2000) {
-      console.warn(`Slow API call: ${response.config.url} took ${duration}ms`);
+      console.warn(`Slow API: ${response.config.url} took ${duration}ms`);
     }
-
-    // Cache GET requests
     if (response.config.method === "get") {
-      const cacheKey = getCacheKey(response.config.url, response.config.params);
-      setCache(cacheKey, response.data);
+      const key = getCacheKey(response.config.url, response.config.params);
+      setCache(key, response.data);
     }
-
     return response;
   },
   (error) => {
@@ -76,134 +64,54 @@ api.interceptors.response.use(
   },
 );
 
-// Enhanced API functions with caching
-export const getDocuments = async (params) => {
-  const cacheKey = getCacheKey("/documents", params);
-  const cached = getFromCache(cacheKey);
+// ── Deduplicated GET helper ───────────────────────────────────────────────────
+async function dedupGet(url, params) {
+  const key = getCacheKey(url, params);
 
-  if (cached) {
-    return { data: cached };
-  }
+  // 1. Return from cache immediately if available
+  const cached = getFromCache(key);
+  if (cached) return { data: cached };
 
-  try {
-    const response = await api.get("/documents", { params });
-    return response;
-  } catch (error) {
-    console.error("Error fetching documents:", error);
-    throw error;
-  }
-};
+  // 2. Return existing in-flight promise if one is running
+  if (inFlight.has(key)) return inFlight.get(key);
 
-export const getDocument = async (id, language) => {
+  // 3. Fire a new request and register it
+  const promise = api
+    .get(url, { params })
+    .then((r) => {
+      inFlight.delete(key);
+      return r;
+    })
+    .catch((err) => {
+      inFlight.delete(key);
+      throw err;
+    });
+
+  inFlight.set(key, promise);
+  return promise;
+}
+
+// ── Public API functions ──────────────────────────────────────────────────────
+export const getDocuments = (params) => dedupGet("/documents", params);
+
+export const getDocument = (id, language) => {
   const params = language ? { language } : {};
-  const cacheKey = getCacheKey(`/documents/${id}`, params);
-  const cached = getFromCache(cacheKey);
-
-  if (cached) {
-    return { data: cached };
-  }
-
-  try {
-    const response = await api.get(`/documents/${id}`, { params });
-    return response;
-  } catch (error) {
-    console.error("Error fetching document:", error);
-    throw error;
-  }
+  return dedupGet(`/documents/${id}`, params);
 };
 
-export const getCategories = async (params) => {
-  const cacheKey = getCacheKey("/documents/categories", params);
-  const cached = getFromCache(cacheKey);
+export const getCategories = (params) =>
+  dedupGet("/documents/categories", params);
 
-  if (cached) {
-    return { data: cached };
-  }
+export const getStats = (params) => dedupGet("/documents/stats", params);
 
-  try {
-    const response = await api.get("/documents/categories", { params });
-    return response;
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    throw error;
-  }
-};
+export const getTree = (params) => dedupGet("/documents/tree", params);
 
-export const getStats = async (params) => {
-  const cacheKey = getCacheKey("/documents/stats", params);
-  const cached = getFromCache(cacheKey);
-
-  if (cached) {
-    return { data: cached };
-  }
-
-  try {
-    const response = await api.get("/documents/stats", { params });
-    return response;
-  } catch (error) {
-    console.error("Error fetching stats:", error);
-    throw error;
-  }
-};
-
-export const getTree = async (params) => {
-  const cacheKey = getCacheKey("/documents/tree", params);
-  const cached = getFromCache(cacheKey);
-
-  if (cached) {
-    return { data: cached };
-  }
-
-  try {
-    const response = await api.get("/documents/tree", { params });
-    return response;
-  } catch (error) {
-    console.error("Error fetching tree:", error);
-    throw error;
-  }
-};
-
-/**
- * Get available languages from backend.
- * The API returns { languages: string[] }.
- * This function returns the full axios response, so callers use r.data.languages.
- */
-export const getLanguages = async () => {
-  const cacheKey = getCacheKey("/documents/languages");
-  const cached = getFromCache(cacheKey);
-
-  if (cached) {
-    // FIX: Return cached data wrapped in the same shape as an axios response
-    // so callers always get r.data (which is the full { languages: [...] } object)
-    return { data: cached };
-  }
-
-  try {
-    const response = await api.get("/documents/languages");
-    return response;
-  } catch (error) {
-    console.error("Error fetching languages:", error);
-    throw error;
-  }
-};
+export const getLanguages = () => dedupGet("/documents/languages", undefined);
 
 export const runPythonCode = async (code, stdin = "") => {
-  try {
-    const response = await api.post("/documents/run-python", { code, stdin });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.post("/documents/run-python", { code, stdin });
+  return response.data;
 };
 
-// Utility function to clear cache
-export const clearCache = () => {
-  cache.clear();
-};
-
-// Utility function to get cache size
-export const getCacheSize = () => {
-  return cache.size;
-};
-
-export default api;
+export const clearCache = () => cache.clear();
+export const getCacheSize = () => cache.size;

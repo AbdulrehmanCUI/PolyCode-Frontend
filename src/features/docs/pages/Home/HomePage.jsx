@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { getDocuments, getStats, getCategories } from "../../services/api";
 import LazyDocCard from "../../components/LazyDocCard";
@@ -7,55 +7,47 @@ import {
   formatCategory,
 } from "../../../../shared/utils/categories";
 import { PageSkeleton } from "../../../../shared/components/SkeletonLoader";
-import LoadingPage from "./LoadingPage";
 
 export default function HomePage({ selectedLanguage }) {
   const [categories, setCategories] = useState([]);
   const [recent, setRecent] = useState([]);
   const [pyFiles, setPyFiles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [initialLoad, setInitialLoad] = useState(true);
 
-  useEffect(() => {
+  const loadData = useCallback(() => {
+    setLoading(true);
+
+    // Reduced from limit:100 to limit:20 — only show what fits on screen
     const params = selectedLanguage
-      ? { language: selectedLanguage, limit: 100, ungrouped: true }
-      : { limit: 100, ungrouped: true };
+      ? { language: selectedLanguage, limit: 20, ungrouped: true }
+      : { limit: 20, ungrouped: true };
     const metaParams = selectedLanguage ? { language: selectedLanguage } : {};
 
+    // Stats & categories first (fast, small), then documents (heavier)
+    Promise.all([getStats(metaParams), getCategories(metaParams)])
+      .then(([, c]) => {
+        setCategories(c.data);
+      })
+      .catch((err) => console.error("Error loading meta:", err));
+
     Promise.all([
-      getStats(metaParams),
-      getCategories(metaParams),
       getDocuments({ ...params, fileType: "md" }),
       getDocuments({ ...params, fileType: "py" }),
     ])
-      .then(([s, c, r, p]) => {
-        setCategories(c.data);
+      .then(([r, p]) => {
         setRecent(r.data.documents);
         setPyFiles(p.data.documents);
-
-        // Add a small delay for better UX
-        setTimeout(() => {
-          setLoading(false);
-          setInitialLoad(false);
-        }, 300);
       })
-      .catch((error) => {
-        console.error("Error loading home page data:", error);
-        setLoading(false);
-        setInitialLoad(false);
-      });
+      .catch((err) => console.error("Error loading documents:", err))
+      .finally(() => setLoading(false));
   }, [selectedLanguage]);
 
-  if (initialLoad) {
-    return <PageSkeleton />;
-  }
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
-  if (loading && !initialLoad) {
-    return (
-      <>
-        <LoadingPage selectedLanguage={selectedLanguage} />
-      </>
-    );
+  if (loading) {
+    return <PageSkeleton />;
   }
 
   return (
@@ -90,7 +82,7 @@ export default function HomePage({ selectedLanguage }) {
       <section style={{ marginBottom: "80px" }}>
         <div className="section-header" style={{ marginBottom: "32px" }}>
           <span className="section-title">Latest Archives</span>
-          <span className="section-label">Documentation & Scripts</span>
+          <span className="section-label">Documentation &amp; Scripts</span>
         </div>
 
         <div className="grid grid-bento">
