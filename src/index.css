@@ -62,10 +62,19 @@ textarea {
   color: #f0f0ff;
 }
 
+:root[data-theme="light"] ::selection {
+  background: rgba(4, 120, 87, 0.2);
+  color: #0f172a;
+}
+
 /* Focus outline (accessibility) */
 :focus-visible {
   outline: 2px solid #b8ff00;
   outline-offset: 2px;
+}
+
+:root[data-theme="light"] :focus-visible {
+  outline-color: #047857;
 }
 
 /* Thin scrollbar */
@@ -298,6 +307,28 @@ textarea {
 
 .navbar-signup-btn:hover {
   opacity: 0.85;
+}
+
+:root[data-theme="light"] .navbar-signup-btn {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+:root[data-theme="light"] .navbar-signup-btn:hover {
+  background: #1e293b;
+  opacity: 1;
+}
+
+:root[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.18);
+}
+
+:root[data-theme="light"] ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+:root[data-theme="light"] * {
+  scrollbar-color: rgba(15, 23, 42, 0.18) #f1f5f9;
 }
 
 /* User avatar button */
