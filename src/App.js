@@ -14,6 +14,7 @@ import { AuthProvider } from "./features/auth/context/AuthContext";
 import "./App.css";
 import "./styles/theme-light.css";
 import "./styles/stack-picker-dark.css";
+import "./styles/responsive.css";
 
 const LanguageSelectPage = lazy(
   () => import("./features/language/pages/LanguageSelectPage"),
@@ -47,6 +48,17 @@ function MainApp({
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const toggleSidebar = () => setIsSidebarOpen((o) => !o);
   const closeSidebar = () => setIsSidebarOpen(false);
+
+  React.useEffect(() => {
+    const mq = window.matchMedia("(max-width: 900px)");
+    const lock = isSidebarOpen && mq.matches;
+    document.body.classList.toggle("sidebar-open", lock);
+    document.body.style.overflow = lock ? "hidden" : "";
+    return () => {
+      document.body.classList.remove("sidebar-open");
+      document.body.style.overflow = "";
+    };
+  }, [isSidebarOpen]);
 
   return (
     <>
