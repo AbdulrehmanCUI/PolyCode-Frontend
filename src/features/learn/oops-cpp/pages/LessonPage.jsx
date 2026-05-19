@@ -1,17 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ALL_LESSONS } from "../data/oopsCurriculum";
 import ConceptCard from "../components/ConceptCard";
 import CodeChallenge from "../components/CodeChallenge";
 import OopsSidebar from "../components/OopsSidebar";
+import useOopsProgress from "../hooks/useOopsProgress";
 
 export default function LessonPage() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState("theory"); // "theory" | "challenge"
-  const [progress, setProgress] = useState(() =>
-    JSON.parse(localStorage.getItem("oops_progress") || "{}"),
-  );
+  const {
+    user,
+    syncState,
+    completedMap: progress,
+    savedCodeMap,
+    notesMap,
+    bookmarks,
+    completeLesson,
+    rememberLesson,
+    saveCode,
+    saveNote,
+    toggleBookmark,
+    addTime,
+  } = useOopsProgress();
+  const [noteDraft, setNoteDraft] = useState("");
+  const codeSaveTimer = useRef(null);
 
   const lesson = ALL_LESSONS.find((l) => l.id === lessonId);
   const lessonIdx = ALL_LESSONS.findIndex((l) => l.id === lessonId);
@@ -21,6 +35,27 @@ export default function LessonPage() {
   useEffect(() => {
     setTab("theory");
   }, [lessonId]);
+
+  useEffect(() => {
+    if (lessonId) rememberLesson(lessonId);
+  }, [lessonId, rememberLesson]);
+
+  useEffect(() => {
+    setNoteDraft(notesMap[lessonId] || "");
+  }, [lessonId, notesMap]);
+
+  useEffect(() => {
+    if (!lessonId) return undefined;
+    const id = setInterval(() => addTime(1), 60000);
+    return () => clearInterval(id);
+  }, [addTime, lessonId]);
+
+  useEffect(
+    () => () => {
+      window.clearTimeout(codeSaveTimer.current);
+    },
+    [],
+  );
 
   if (!lesson) {
     return (
@@ -34,14 +69,21 @@ export default function LessonPage() {
   }
 
   const isCompleted = !!progress[lessonId];
+  const isBookmarked = bookmarks.includes(lessonId);
 
-  function handleChallengeComplete() {
-    const newProgress = {
-      ...progress,
-      [lessonId]: { xp: lesson.xp, at: Date.now() },
-    };
-    setProgress(newProgress);
-    localStorage.setItem("oops_progress", JSON.stringify(newProgress));
+  async function handleChallengeComplete() {
+    await completeLesson(lesson);
+  }
+
+  function handleSaveNote() {
+    saveNote(lessonId, noteDraft);
+  }
+
+  function handleCodeChange(code) {
+    window.clearTimeout(codeSaveTimer.current);
+    codeSaveTimer.current = window.setTimeout(() => {
+      saveCode(lessonId, code).catch(() => {});
+    }, 700);
   }
 
   return (
@@ -69,6 +111,27 @@ export default function LessonPage() {
           {isCompleted && (
             <span className="oops-completed-badge">✓ Completed</span>
           )}
+          <button
+            type="button"
+            className={`oops-bookmark-btn ${isBookmarked ? "active" : ""}`}
+            onClick={() => toggleBookmark(lessonId)}
+            title={isBookmarked ? "Remove bookmark" : "Bookmark lesson"}
+          >
+            {isBookmarked ? "★" : "☆"}
+          </button>
+        </div>
+
+        <div className="oops-lesson-status-strip">
+          <span>{user ? `Signed in as ${user.username}` : "Guest mode"}</span>
+          <span>
+            {syncState === "synced"
+              ? "Progress saved to MongoDB"
+              : syncState === "syncing"
+                ? "Syncing progress..."
+                : user
+                  ? "Progress sync pending"
+                  : "Progress saved locally"}
+          </span>
         </div>
 
         {/* Tab switcher — FCC style */}
@@ -99,6 +162,20 @@ export default function LessonPage() {
                   accentColor={lesson.chapterColor}
                 />
               ))}
+              <div className="oops-notes-panel">
+                <div>
+                  <span className="oops-interactive-label">Lesson Notes</span>
+                  <h3>Capture your mental model</h3>
+                </div>
+                <textarea
+                  value={noteDraft}
+                  onChange={(e) => setNoteDraft(e.target.value)}
+                  placeholder="Write a short note, gotcha, or example you want to remember..."
+                />
+                <button type="button" onClick={handleSaveNote}>
+                  Save Note
+                </button>
+              </div>
               <div className="oops-theory-footer">
                 <button
                   className="oops-cta-btn"
@@ -114,6 +191,8 @@ export default function LessonPage() {
               accentColor={lesson.chapterColor}
               isCompleted={isCompleted}
               onComplete={handleChallengeComplete}
+              initialCode={savedCodeMap[lessonId]}
+              onCodeChange={handleCodeChange}
             />
           )}
         </div>

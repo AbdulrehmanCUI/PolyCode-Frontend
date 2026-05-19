@@ -3562,6 +3562,237 @@ int main() {
           ],
         },
       },
+      {
+        id: "design-4",
+        title: "Const-Correct Class APIs",
+        xp: 30,
+        theory: [
+          {
+            type: "text",
+            content:
+              "**Const-correctness** tells C++ which methods promise not to mutate object state. It makes APIs safer and lets objects work through `const` references.",
+          },
+          {
+            type: "stepthrough",
+            title: "Read-only object contract",
+            steps: [
+              {
+                label: "Pass by const reference",
+                code: "void printProfile(const Profile& profile)",
+                desc: "The function avoids a copy and promises not to modify the object.",
+              },
+              {
+                label: "Mark getters const",
+                code: "string getUsername() const { return username; }",
+                desc: "Only `const` member functions can be called through a `const Profile&`.",
+              },
+              {
+                label: "Keep mutation explicit",
+                code: "void addReputation(int points) { reputation += points; }",
+                desc: "Methods that change state should not be marked `const`; mutation becomes visible in the API.",
+              },
+            ],
+          },
+          {
+            type: "quiz",
+            question:
+              "Why should a getter like `getBalance()` usually be marked `const`?",
+            options: [
+              "It makes the return value global",
+              "It allows the getter to mutate private data",
+              "It promises the getter will not change the object",
+              "It removes the need for private fields",
+            ],
+            answer: 2,
+            explanation:
+              "A `const` member function promises not to modify observable object state, so it can be used safely through const references.",
+          },
+        ],
+        challenge: {
+          title: "Create a Const-Correct Profile",
+          description:
+            "Create a `Profile` class with private `username` and `reputation`. Add const getters `getUsername()` and `getReputation()`, plus `addReputation(int points)`. Write `printProfile(const Profile& p)` that prints both values.",
+          starterCode: `#include <iostream>
+using namespace std;
+
+// TODO: const-correct Profile class and printProfile()
+
+
+int main() {
+    Profile profile("senodroom", 10);
+    profile.addReputation(5);
+    printProfile(profile);
+    return 0;
+}`,
+          solutionCode: `#include <iostream>
+using namespace std;
+
+class Profile {
+private:
+    string username;
+    int reputation;
+
+public:
+    Profile(string u, int r) : username(u), reputation(r) {}
+    string getUsername() const { return username; }
+    int getReputation() const { return reputation; }
+    void addReputation(int points) { reputation += points; }
+};
+
+void printProfile(const Profile& p) {
+    cout << p.getUsername() << ": " << p.getReputation() << endl;
+}
+
+int main() {
+    Profile profile("senodroom", 10);
+    profile.addReputation(5);
+    printProfile(profile);
+    return 0;
+}`,
+          tests: [
+            {
+              id: 1,
+              label: "Profile keeps username and reputation private",
+              keywords: ["class Profile", "private:", "string username", "int reputation"],
+            },
+            {
+              id: 2,
+              label: "Getters are marked const",
+              keywords: ["getUsername() const", "getReputation() const"],
+            },
+            {
+              id: 3,
+              label: "printProfile accepts const Profile&",
+              keywords: ["printProfile(const Profile&"],
+            },
+            {
+              id: 4,
+              label: "addReputation mutates reputation intentionally",
+              keywords: ["addReputation", "reputation +="],
+            },
+          ],
+        },
+      },
+      {
+        id: "design-5",
+        title: "Object Slicing & Polymorphic References",
+        xp: 35,
+        theory: [
+          {
+            type: "text",
+            content:
+              "**Object slicing** happens when a derived object is copied into a base object by value. The derived part gets sliced away, so polymorphic behavior can disappear.",
+          },
+          {
+            type: "diagram",
+            title: "Slicing vs References",
+            nodes: [
+              {
+                id: "bad",
+                label: "Bad: pass by value",
+                color: "#ff6b6b",
+                items: ["`void draw(Shape s)`", "Copies only the Shape portion", "Derived data is lost"],
+              },
+              {
+                id: "good-ref",
+                label: "Good: reference",
+                color: "#14b8a6",
+                items: ["`void draw(const Shape& s)`", "No copy", "Virtual dispatch keeps working"],
+              },
+              {
+                id: "good-ptr",
+                label: "Good: smart pointer",
+                color: "#00d4ff",
+                items: ["`unique_ptr<Shape>`", "Owns polymorphic objects safely", "Needs virtual destructor"],
+              },
+            ],
+          },
+          {
+            type: "quiz",
+            question:
+              "Which function signature avoids object slicing for polymorphic objects?",
+            options: [
+              "`void render(Shape shape)`",
+              "`void render(const Shape& shape)`",
+              "`void render(int shape)`",
+              "`void render(Shape shape = Circle())`",
+            ],
+            answer: 1,
+            explanation:
+              "Passing by reference avoids copying the derived object into a base object, preserving runtime polymorphism.",
+          },
+        ],
+        challenge: {
+          title: "Render Without Slicing",
+          description:
+            "Create an abstract `Widget` with virtual `draw() const` and virtual destructor. Implement `Button` and `Slider`. Create `render(const Widget& widget)` and call it for both objects.",
+          starterCode: `#include <iostream>
+using namespace std;
+
+// TODO: Widget, Button, Slider, render(const Widget&)
+
+
+int main() {
+    Button button;
+    Slider slider;
+    render(button);
+    render(slider);
+    return 0;
+}`,
+          solutionCode: `#include <iostream>
+using namespace std;
+
+class Widget {
+public:
+    virtual void draw() const = 0;
+    virtual ~Widget() = default;
+};
+
+class Button : public Widget {
+public:
+    void draw() const override { cout << "Drawing button" << endl; }
+};
+
+class Slider : public Widget {
+public:
+    void draw() const override { cout << "Drawing slider" << endl; }
+};
+
+void render(const Widget& widget) {
+    widget.draw();
+}
+
+int main() {
+    Button button;
+    Slider slider;
+    render(button);
+    render(slider);
+    return 0;
+}`,
+          tests: [
+            {
+              id: 1,
+              label: "Widget is abstract and has a virtual destructor",
+              keywords: ["class Widget", "virtual void draw() const = 0", "virtual ~Widget()"],
+            },
+            {
+              id: 2,
+              label: "Button and Slider override draw() const",
+              keywords: ["class Button", "class Slider", "override"],
+            },
+            {
+              id: 3,
+              label: "render() accepts const Widget&",
+              keywords: ["render(const Widget&"],
+            },
+            {
+              id: 4,
+              label: "Main renders both concrete widgets",
+              keywords: ["render(button)", "render(slider)"],
+            },
+          ],
+        },
+      },
     ],
   },
 

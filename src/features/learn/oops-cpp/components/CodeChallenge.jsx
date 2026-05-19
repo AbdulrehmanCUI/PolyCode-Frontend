@@ -1,15 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function CodeChallenge({
   challenge,
   accentColor,
   isCompleted,
   onComplete,
+  initialCode,
+  onCodeChange,
 }) {
-  const [code, setCode] = useState(challenge.starterCode);
+  const [code, setCode] = useState(initialCode || challenge.starterCode);
   const [results, setResults] = useState(null); // null | { passed, tests }
   const [showSolution, setShowSolution] = useState(false);
   const [running, setRunning] = useState(false);
+
+  useEffect(() => {
+    setCode(initialCode || challenge.starterCode);
+    setResults(null);
+    setShowSolution(false);
+  }, [challenge, initialCode]);
 
   // Simulated test runner — checks code string heuristically
   // In production: hook into your backend compiler (BrowserExecutor / Piston API)
@@ -30,7 +38,11 @@ export default function CodeChallenge({
 
       const allPassed = testResults.every((t) => t.passed);
       setResults({ passed: allPassed, tests: testResults });
-      if (allPassed && !isCompleted) onComplete();
+      if (allPassed && !isCompleted) {
+        Promise.resolve(onComplete()).catch((error) => {
+          console.error("Unable to save lesson progress:", error);
+        });
+      }
       setRunning(false);
     }, 800);
   }
@@ -72,6 +84,7 @@ export default function CodeChallenge({
 
   function resetCode() {
     setCode(challenge.starterCode);
+    onCodeChange?.(challenge.starterCode);
     setResults(null);
     setShowSolution(false);
   }
@@ -140,7 +153,10 @@ export default function CodeChallenge({
           className="oops-editor"
           value={showSolution ? challenge.solutionCode : code}
           onChange={(e) => {
-            if (!showSolution) setCode(e.target.value);
+            if (!showSolution) {
+              setCode(e.target.value);
+              onCodeChange?.(e.target.value);
+            }
           }}
           readOnly={showSolution}
           spellCheck={false}
