@@ -22,6 +22,9 @@ function InlineText({ text }) {
 
 export default function ConceptCard({ block, accentColor }) {
   const [copied, setCopied] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [activeStep, setActiveStep] = useState(0);
+  const [activeNode, setActiveNode] = useState(0);
 
   function copyCode(text) {
     navigator.clipboard.writeText(text).then(() => {
@@ -107,6 +110,147 @@ export default function ConceptCard({ block, accentColor }) {
             ))}
           </tbody>
         </table>
+      </div>
+    );
+  }
+
+  // ── Interactive diagram block ───────────────────────────
+  if (block.type === "diagram") {
+    const currentNode = block.nodes[activeNode] || block.nodes[0];
+
+    return (
+      <div className="oops-diagram-card">
+        <div className="oops-interactive-head">
+          <span className="oops-interactive-label">Interactive Diagram</span>
+          <h3>{block.title}</h3>
+        </div>
+        <div className="oops-diagram-grid">
+          <div className="oops-diagram-node-list">
+            {block.nodes.map((node, index) => (
+              <button
+                key={node.id}
+                className={`oops-diagram-node ${index === activeNode ? "active" : ""}`}
+                style={{ "--node-color": node.color || accentColor }}
+                onClick={() => setActiveNode(index)}
+              >
+                <span className="oops-diagram-node-dot" />
+                <span>{node.label}</span>
+                {node.parent && <small>extends {node.parent}</small>}
+              </button>
+            ))}
+          </div>
+          <div
+            className="oops-diagram-detail"
+            style={{ "--node-color": currentNode.color || accentColor }}
+          >
+            <div className="oops-diagram-detail-title">
+              {currentNode.label}
+            </div>
+            <ul>
+              {currentNode.items.map((item) => (
+                <li key={item}>
+                  <InlineText text={item} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Stepthrough block ───────────────────────────────────
+  if (block.type === "stepthrough") {
+    const step = block.steps[activeStep] || block.steps[0];
+
+    return (
+      <div className="oops-step-card">
+        <div className="oops-interactive-head">
+          <span className="oops-interactive-label">Step Through</span>
+          <h3>{block.title}</h3>
+        </div>
+        <div className="oops-step-tabs">
+          {block.steps.map((s, index) => (
+            <button
+              key={s.label}
+              className={`oops-step-tab ${index === activeStep ? "active" : ""}`}
+              onClick={() => setActiveStep(index)}
+            >
+              <span>{index + 1}</span>
+              {s.label}
+            </button>
+          ))}
+        </div>
+        <div className="oops-step-detail">
+          <pre>
+            <code>{step.code}</code>
+          </pre>
+          <p>
+            <InlineText text={step.desc} />
+          </p>
+        </div>
+        <div className="oops-step-actions">
+          <button
+            type="button"
+            onClick={() => setActiveStep(Math.max(0, activeStep - 1))}
+            disabled={activeStep === 0}
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setActiveStep(Math.min(block.steps.length - 1, activeStep + 1))
+            }
+            disabled={activeStep === block.steps.length - 1}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Quiz block ──────────────────────────────────────────
+  if (block.type === "quiz") {
+    const answered = selectedQuiz !== null;
+    const correct = selectedQuiz === block.answer;
+
+    return (
+      <div
+        className={`oops-quiz-card ${answered ? (correct ? "correct" : "incorrect") : ""}`}
+      >
+        <div className="oops-interactive-head">
+          <span className="oops-interactive-label">Quick Check</span>
+          <h3>
+            <InlineText text={block.question} />
+          </h3>
+        </div>
+        <div className="oops-quiz-options">
+          {block.options.map((option, index) => {
+            const isSelected = selectedQuiz === index;
+            const isAnswer = block.answer === index;
+            return (
+              <button
+                key={option}
+                type="button"
+                className={`oops-quiz-option ${
+                  answered && isAnswer ? "answer" : ""
+                } ${isSelected ? "selected" : ""}`}
+                onClick={() => setSelectedQuiz(index)}
+              >
+                <span>{String.fromCharCode(65 + index)}</span>
+                <InlineText text={option} />
+              </button>
+            );
+          })}
+        </div>
+        {answered && (
+          <div className="oops-quiz-feedback">
+            <strong>{correct ? "Correct." : "Not quite."}</strong>{" "}
+            <InlineText text={block.explanation} />
+          </div>
+        )}
       </div>
     );
   }

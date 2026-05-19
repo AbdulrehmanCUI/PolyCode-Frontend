@@ -36,6 +36,10 @@ export default function CodeChallenge({
   }
 
   function extractKeywords(sol, testId) {
+    const explicit = challenge.tests.find((test) => test.id === testId)
+      ?.keywords;
+    if (explicit) return explicit;
+
     // Per-test keyword extraction from solution code
     // Maps test index → structural signals to look for in user code
     const lines = sol.split("\n").filter(Boolean);

@@ -83,7 +83,7 @@ export default function OopsHub() {
                     <li
                       key={l.id}
                       className={`oops-lesson-item ${isDone ? "done" : ""}`}
-                      onClick={() => navigate(`/learn/oops-cpp/${l.id}`)}
+                      onClick={() => navigate(`/learn/oops-cpp/lesson/${l.id}`)}
                     >
                       <span className="oops-lesson-status">
                         {isDone ? "✓" : "○"}
@@ -99,7 +99,7 @@ export default function OopsHub() {
                 className="oops-chapter-cta"
                 onClick={() =>
                   navigate(
-                    `/learn/oops-cpp/${firstUnfinished ? firstUnfinished.id : ch.lessons[0].id}`,
+                    `/learn/oops-cpp/lesson/${firstUnfinished ? firstUnfinished.id : ch.lessons[0].id}`,
                   )
                 }
               >

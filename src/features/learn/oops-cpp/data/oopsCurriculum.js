@@ -3048,7 +3048,525 @@ int main() {
   },
 
   // ═══════════════════════════════════════
-  //  CHAPTER 7 — OOP Capstone Projects
+  //  CHAPTER 7 — OOP Design Lab
+  // ═══════════════════════════════════════
+  {
+    id: "design-lab",
+    title: "OOP Design Lab",
+    icon: "🧩",
+    color: "#14b8a6",
+    lessons: [
+      {
+        id: "design-1",
+        title: "Composition over Inheritance",
+        xp: 30,
+        theory: [
+          {
+            type: "text",
+            content:
+              "**Composition** means building a class from smaller objects it owns or uses. In C++, this often produces simpler designs than deep inheritance trees.",
+          },
+          {
+            type: "diagram",
+            title: "Has-a vs Is-a",
+            nodes: [
+              {
+                id: "inheritance",
+                label: "Inheritance: is-a",
+                color: "#ff6b6b",
+                items: [
+                  "`SportsCar` is a `Car`",
+                  "Good when substitution is true",
+                  "Uses `class SportsCar : public Car`",
+                ],
+              },
+              {
+                id: "composition",
+                label: "Composition: has-a",
+                color: "#14b8a6",
+                items: [
+                  "`Car` has an `Engine`",
+                  "Good for replaceable parts",
+                  "Uses member objects",
+                ],
+              },
+              {
+                id: "delegation",
+                label: "Delegation",
+                color: "#f59e0b",
+                items: [
+                  "`Car::start()` calls `engine.start()`",
+                  "Keeps responsibilities small",
+                  "Avoids fragile base classes",
+                ],
+              },
+            ],
+          },
+          {
+            type: "stepthrough",
+            title: "Choosing the Relationship",
+            steps: [
+              {
+                label: "Ask is-a",
+                code: "class Rectangle : public Shape { ... };",
+                desc: "Use inheritance only when a derived object can be safely used anywhere the base object is expected.",
+              },
+              {
+                label: "Ask has-a",
+                code: "class Car {\n    Engine engine;\n};",
+                desc: "Use composition when one object is made of another object or delegates work to it.",
+              },
+              {
+                label: "Delegate behavior",
+                code: "void Car::start() {\n    engine.ignite();\n}",
+                desc: "The outer class exposes a clear public interface while the inner object handles the detail.",
+              },
+            ],
+          },
+          {
+            type: "code",
+            lang: "cpp",
+            label: "Car composed with Engine",
+            content: `class Engine {
+public:
+    void ignite() {
+        cout << "Engine ignition" << endl;
+    }
+};
+
+class Car {
+private:
+    Engine engine;
+
+public:
+    void start() {
+        engine.ignite();
+        cout << "Car ready" << endl;
+    }
+};`,
+          },
+          {
+            type: "quiz",
+            question:
+              "Which design best models a `Laptop` that uses a replaceable `Battery`?",
+            options: [
+              "`class Laptop : public Battery`",
+              "`class Battery : public Laptop`",
+              "`class Laptop { Battery battery; }`",
+              "A global Battery variable",
+            ],
+            answer: 2,
+            explanation:
+              "A laptop has a battery. Composition models that relationship without pretending the laptop is a battery.",
+          },
+        ],
+        challenge: {
+          title: "Compose a Notification Service",
+          description:
+            "Create an `EmailSender` class with `send(string message)`. Create a `NotificationService` class that has an `EmailSender` member and a `notify(string user, string message)` method. `notify()` should print the user and delegate the message to `EmailSender::send()`.",
+          starterCode: `#include <iostream>
+using namespace std;
+
+// TODO: EmailSender and NotificationService using composition
+
+
+int main() {
+    NotificationService service;
+    service.notify("Alice", "Your build passed");
+    return 0;
+}`,
+          solutionCode: `#include <iostream>
+using namespace std;
+
+class EmailSender {
+public:
+    void send(string message) {
+        cout << "Email: " << message << endl;
+    }
+};
+
+class NotificationService {
+private:
+    EmailSender sender;
+
+public:
+    void notify(string user, string message) {
+        cout << "Notify " << user << endl;
+        sender.send(message);
+    }
+};
+
+int main() {
+    NotificationService service;
+    service.notify("Alice", "Your build passed");
+    return 0;
+}`,
+          tests: [
+            {
+              id: 1,
+              label: "EmailSender class exists",
+              keywords: ["class EmailSender"],
+            },
+            {
+              id: 2,
+              label: "NotificationService has an EmailSender member",
+              keywords: ["class NotificationService", "EmailSender"],
+            },
+            {
+              id: 3,
+              label: "notify() delegates to sender.send(message)",
+              keywords: ["notify", ".send(message)"],
+              hint: "Call the composed object's send method inside notify().",
+            },
+            {
+              id: 4,
+              label: "Output includes the user and email message",
+              keywords: ["Alice", "Your build passed", "cout"],
+            },
+          ],
+        },
+      },
+      {
+        id: "design-2",
+        title: "Interfaces & Dependency Inversion",
+        xp: 35,
+        theory: [
+          {
+            type: "text",
+            content:
+              "C++ does not have an `interface` keyword, but an abstract class with only pure virtual functions works as an interface. This lets high-level classes depend on behavior, not concrete details.",
+          },
+          {
+            type: "diagram",
+            title: "Depend on an Interface",
+            nodes: [
+              {
+                id: "checkout",
+                label: "Checkout",
+                color: "#14b8a6",
+                items: [
+                  "High-level workflow",
+                  "Uses `IPaymentProcessor&`",
+                  "Does not care which payment provider runs",
+                ],
+              },
+              {
+                id: "interface",
+                label: "IPaymentProcessor",
+                color: "#00d4ff",
+                items: [
+                  "`virtual pay(double) = 0`",
+                  "Stable contract",
+                  "Enables mocks and plugins",
+                ],
+              },
+              {
+                id: "stripe",
+                label: "CardProcessor",
+                color: "#a855f7",
+                items: ["Concrete implementation", "Overrides `pay()`"],
+                parent: "interface",
+              },
+              {
+                id: "cash",
+                label: "WalletProcessor",
+                color: "#f59e0b",
+                items: ["Another implementation", "Same interface"],
+                parent: "interface",
+              },
+            ],
+          },
+          {
+            type: "code",
+            lang: "cpp",
+            label: "Interface-driven design",
+            content: `class IPaymentProcessor {
+public:
+    virtual void pay(double amount) = 0;
+    virtual ~IPaymentProcessor() = default;
+};
+
+class Checkout {
+    IPaymentProcessor& processor;
+public:
+    Checkout(IPaymentProcessor& p) : processor(p) {}
+    void complete(double total) {
+        processor.pay(total);
+    }
+};`,
+          },
+          {
+            type: "quiz",
+            question:
+              "Why should `Checkout` store an `IPaymentProcessor&` instead of a `CardProcessor` directly?",
+            options: [
+              "It makes the program slower on purpose",
+              "It allows Checkout to work with any compatible payment processor",
+              "It removes the need for virtual functions",
+              "It makes the interface private",
+            ],
+            answer: 1,
+            explanation:
+              "The checkout workflow becomes reusable with cards, wallets, test doubles, or future processors as long as they implement the same interface.",
+          },
+        ],
+        challenge: {
+          title: "Switchable Report Exporters",
+          description:
+            "Create an interface `IExporter` with pure virtual `exportReport(string title)`. Implement `PdfExporter` and `CsvExporter`. Create `ReportService` that receives an `IExporter&` in its constructor and calls it from `publish()`.",
+          starterCode: `#include <iostream>
+using namespace std;
+
+// TODO: IExporter, PdfExporter, CsvExporter, ReportService
+
+
+int main() {
+    PdfExporter pdf;
+    CsvExporter csv;
+
+    ReportService pdfReports(pdf);
+    ReportService csvReports(csv);
+
+    pdfReports.publish("Revenue");
+    csvReports.publish("Inventory");
+    return 0;
+}`,
+          solutionCode: `#include <iostream>
+using namespace std;
+
+class IExporter {
+public:
+    virtual void exportReport(string title) = 0;
+    virtual ~IExporter() = default;
+};
+
+class PdfExporter : public IExporter {
+public:
+    void exportReport(string title) override {
+        cout << "PDF: " << title << endl;
+    }
+};
+
+class CsvExporter : public IExporter {
+public:
+    void exportReport(string title) override {
+        cout << "CSV: " << title << endl;
+    }
+};
+
+class ReportService {
+    IExporter& exporter;
+public:
+    ReportService(IExporter& e) : exporter(e) {}
+    void publish(string title) {
+        exporter.exportReport(title);
+    }
+};
+
+int main() {
+    PdfExporter pdf;
+    CsvExporter csv;
+
+    ReportService pdfReports(pdf);
+    ReportService csvReports(csv);
+
+    pdfReports.publish("Revenue");
+    csvReports.publish("Inventory");
+    return 0;
+}`,
+          tests: [
+            {
+              id: 1,
+              label: "IExporter is an abstract interface",
+              keywords: ["class IExporter", "virtual void exportReport", "= 0"],
+            },
+            {
+              id: 2,
+              label: "PdfExporter and CsvExporter override exportReport()",
+              keywords: ["class PdfExporter", "class CsvExporter", "override"],
+            },
+            {
+              id: 3,
+              label: "ReportService depends on IExporter&",
+              keywords: ["IExporter& exporter", "ReportService(IExporter&"],
+            },
+            {
+              id: 4,
+              label: "publish() delegates to exporter.exportReport(title)",
+              keywords: ["publish", "exporter.exportReport(title)"],
+            },
+          ],
+        },
+      },
+      {
+        id: "design-3",
+        title: "From UML to C++ Classes",
+        xp: 35,
+        theory: [
+          {
+            type: "text",
+            content:
+              "UML class diagrams are a planning tool. They help you decide class names, data ownership, public methods, and relationships before writing code.",
+          },
+          {
+            type: "diagram",
+            title: "Library Checkout Model",
+            nodes: [
+              {
+                id: "book",
+                label: "Book",
+                color: "#00d4ff",
+                items: [
+                  "- title: string",
+                  "- checkedOut: bool",
+                  "+ checkout()",
+                  "+ returnBook()",
+                ],
+              },
+              {
+                id: "member",
+                label: "Member",
+                color: "#14b8a6",
+                items: ["- name: string", "+ borrow(Book&)", "+ returnItem(Book&)"],
+              },
+              {
+                id: "library",
+                label: "Library",
+                color: "#f59e0b",
+                items: [
+                  "- books: vector<Book>",
+                  "+ addBook(Book)",
+                  "+ listAvailable()",
+                ],
+              },
+            ],
+          },
+          {
+            type: "stepthrough",
+            title: "Translate UML Symbols",
+            steps: [
+              {
+                label: "Private fields",
+                code: "- title: string\n- checkedOut: bool",
+                desc: "A minus sign maps to `private` member variables in the C++ class.",
+              },
+              {
+                label: "Public methods",
+                code: "+ checkout()\n+ returnBook()",
+                desc: "A plus sign maps to `public` member functions that form the class interface.",
+              },
+              {
+                label: "References",
+                code: "void borrow(Book& book);",
+                desc: "When one object acts on another without owning it, pass a reference instead of copying.",
+              },
+            ],
+          },
+          {
+            type: "quiz",
+            question:
+              "In UML, which C++ construct is usually represented by `- balance: double`?",
+            options: [
+              "A public method named balance",
+              "A private double member named balance",
+              "A global variable",
+              "A constructor parameter only",
+            ],
+            answer: 1,
+            explanation:
+              "`-` means private visibility, `balance` is the member name, and `double` is the type.",
+          },
+        ],
+        challenge: {
+          title: "Code the Library Model",
+          description:
+            "Create a `Book` class with private `title` and `checkedOut`. Add `checkout()`, `returnBook()`, `isAvailable()`, and `getTitle()`. Create a `Member` class with `borrow(Book&)` and `returnItem(Book&)`. In main, let Sam borrow and return a book.",
+          starterCode: `#include <iostream>
+using namespace std;
+
+// TODO: Book and Member classes from the UML model
+
+
+int main() {
+    Book book("Clean Code");
+    Member sam("Sam");
+    sam.borrow(book);
+    sam.returnItem(book);
+    return 0;
+}`,
+          solutionCode: `#include <iostream>
+using namespace std;
+
+class Book {
+private:
+    string title;
+    bool checkedOut;
+
+public:
+    Book(string t) : title(t), checkedOut(false) {}
+
+    void checkout() { checkedOut = true; }
+    void returnBook() { checkedOut = false; }
+    bool isAvailable() const { return !checkedOut; }
+    string getTitle() const { return title; }
+};
+
+class Member {
+private:
+    string name;
+
+public:
+    Member(string n) : name(n) {}
+
+    void borrow(Book& book) {
+        if (book.isAvailable()) {
+            book.checkout();
+            cout << name << " borrowed " << book.getTitle() << endl;
+        }
+    }
+
+    void returnItem(Book& book) {
+        book.returnBook();
+        cout << name << " returned " << book.getTitle() << endl;
+    }
+};
+
+int main() {
+    Book book("Clean Code");
+    Member sam("Sam");
+    sam.borrow(book);
+    sam.returnItem(book);
+    return 0;
+}`,
+          tests: [
+            {
+              id: 1,
+              label: "Book encapsulates title and checkedOut",
+              keywords: ["class Book", "private:", "string title", "bool checkedOut"],
+            },
+            {
+              id: 2,
+              label: "Book exposes checkout, returnBook, isAvailable, getTitle",
+              keywords: ["checkout()", "returnBook()", "isAvailable()", "getTitle()"],
+            },
+            {
+              id: 3,
+              label: "Member borrows and returns by Book& reference",
+              keywords: ["borrow(Book&", "returnItem(Book&"],
+            },
+            {
+              id: 4,
+              label: "Main demonstrates borrow and return",
+              keywords: ["Sam", "Clean Code", "sam.borrow(book)", "sam.returnItem(book)"],
+            },
+          ],
+        },
+      },
+    ],
+  },
+
+  // ═══════════════════════════════════════
+  //  CHAPTER 8 — OOP Capstone Projects
   // ═══════════════════════════════════════
   {
     id: "capstone",

@@ -3987,6 +3987,12 @@ body {
   padding: 40px 24px 80px;
 }
 
+.main-content.learn-content {
+  margin-left: 0;
+  width: 100%;
+  max-width: none;
+}
+
 .oops-hero {
   margin-bottom: 48px;
   padding: 40px;
@@ -4474,6 +4480,284 @@ body {
 
 .oops-table tr:hover td {
   background: var(--glass, rgba(255, 255, 255, 0.02));
+}
+
+/* Interactive theory blocks */
+.oops-interactive-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.oops-interactive-head h3 {
+  margin: 0;
+  color: var(--txt-0, #f0f0ff);
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.oops-interactive-label {
+  width: fit-content;
+  color: var(--acid, #b8ff00);
+  background: rgba(184, 255, 0, 0.09);
+  border: 1px solid rgba(184, 255, 0, 0.18);
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.oops-diagram-card,
+.oops-step-card,
+.oops-quiz-card {
+  margin: 0 0 20px;
+  padding: 16px;
+  background: var(--ink-2, #0d1117);
+  border: 1px solid var(--border, #1e2433);
+  border-radius: 10px;
+}
+
+.oops-diagram-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.9fr) 1.1fr;
+  gap: 14px;
+}
+
+.oops-diagram-node-list,
+.oops-quiz-options,
+.oops-step-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.oops-diagram-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--border, #1e2433);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--txt-1, #c0c8e0);
+  font: inherit;
+  font-size: 0.82rem;
+  text-align: left;
+  padding: 9px 10px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    color 0.15s;
+}
+
+.oops-diagram-node:hover,
+.oops-diagram-node.active {
+  border-color: var(--node-color, var(--acid, #b8ff00));
+  background: color-mix(
+    in srgb,
+    var(--node-color, var(--acid, #b8ff00)) 12%,
+    transparent
+  );
+  color: var(--txt-0, #f0f0ff);
+}
+
+.oops-diagram-node small {
+  margin-left: auto;
+  color: var(--txt-3, #3a4260);
+  font-size: 0.65rem;
+}
+
+.oops-diagram-node-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--node-color, var(--acid, #b8ff00));
+  flex-shrink: 0;
+}
+
+.oops-diagram-detail {
+  min-height: 180px;
+  border: 1px solid color-mix(in srgb, var(--node-color) 45%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--node-color) 9%, transparent);
+  padding: 16px;
+}
+
+.oops-diagram-detail-title {
+  color: var(--node-color, var(--acid, #b8ff00));
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.oops-diagram-detail ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--txt-1, #c0c8e0);
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+.oops-step-tab {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid var(--border, #1e2433);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--txt-2, #6e7891);
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.oops-step-tab span {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--border, #1e2433);
+  color: var(--txt-1, #c0c8e0);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.oops-step-tab.active {
+  color: var(--txt-0, #f0f0ff);
+  border-color: var(--acid, #b8ff00);
+  background: rgba(184, 255, 0, 0.06);
+}
+
+.oops-step-tab.active span {
+  background: var(--acid, #b8ff00);
+  color: var(--ink, #03050a);
+}
+
+.oops-step-detail {
+  margin-top: 12px;
+  border: 1px solid var(--border, #1e2433);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.oops-step-detail pre {
+  margin: 0;
+  padding: 14px;
+  background: var(--ink, #03050a);
+  color: var(--txt-1, #c0c8e0);
+  overflow-x: auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+}
+
+.oops-step-detail p {
+  margin: 0;
+  padding: 12px 14px;
+  color: var(--txt-1, #c0c8e0);
+  font-size: 0.86rem;
+  line-height: 1.65;
+}
+
+.oops-step-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.oops-step-actions button,
+.oops-quiz-option {
+  border: 1px solid var(--border, #1e2433);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--txt-1, #c0c8e0);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.oops-step-actions button {
+  padding: 7px 12px;
+  font-size: 0.78rem;
+}
+
+.oops-step-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.oops-quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 10px;
+  text-align: left;
+  font-size: 0.86rem;
+}
+
+.oops-quiz-option span:first-child {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--border, #1e2433);
+  color: var(--txt-2, #6e7891);
+  font-size: 0.7rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.oops-quiz-option:hover,
+.oops-quiz-option.selected {
+  border-color: var(--border-2, #2e3a55);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.oops-quiz-option.answer {
+  border-color: var(--acid, #b8ff00);
+  background: rgba(184, 255, 0, 0.07);
+}
+
+.oops-quiz-option.answer span:first-child {
+  background: var(--acid, #b8ff00);
+  color: var(--ink, #03050a);
+}
+
+.oops-quiz-card.incorrect .oops-quiz-option.selected:not(.answer) {
+  border-color: var(--red, #ff4d6d);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.oops-quiz-feedback {
+  margin-top: 12px;
+  color: var(--txt-1, #c0c8e0);
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--acid, #b8ff00);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.oops-quiz-card.incorrect .oops-quiz-feedback {
+  border-left-color: var(--red, #ff4d6d);
+}
+
+@media (max-width: 720px) {
+  .oops-diagram-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .oops-theory-footer {

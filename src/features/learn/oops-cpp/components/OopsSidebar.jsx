@@ -69,7 +69,9 @@ export default function OopsSidebar({ currentLessonId, progress }) {
                           <button
                             className={`oops-sidebar-lesson-btn ${isDone ? "done" : ""} ${isCurrent ? "current" : ""}`}
                             style={{ "--ch-color": ch.color }}
-                            onClick={() => navigate(`/learn/oops-cpp/${l.id}`)}
+                            onClick={() =>
+                              navigate(`/learn/oops-cpp/lesson/${l.id}`)
+                            }
                           >
                             <span className="oops-sb-check">
                               {isDone ? "✓" : "○"}

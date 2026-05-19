@@ -123,7 +123,7 @@ export default function LessonPage() {
           {prev ? (
             <button
               className="oops-nav-btn"
-              onClick={() => navigate(`/learn/oops-cpp/${prev.id}`)}
+              onClick={() => navigate(`/learn/oops-cpp/lesson/${prev.id}`)}
             >
               ← {prev.title}
             </button>
@@ -133,7 +133,7 @@ export default function LessonPage() {
           {next ? (
             <button
               className="oops-nav-btn oops-nav-next"
-              onClick={() => navigate(`/learn/oops-cpp/${next.id}`)}
+              onClick={() => navigate(`/learn/oops-cpp/lesson/${next.id}`)}
             >
               {next.title} →
             </button>

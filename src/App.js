@@ -122,19 +122,25 @@ function MainApp({
                 path="/daily-challenge"
                 element={<DailyChallenge theme={theme} />}
               />
-
-              {/* ── Learn: OOP C++ ── */}
-              <Route path="/learn/oops-cpp" element={<OopsHub />} />
-              <Route
-                path="/learn/oops-cpp/lesson/:lessonId"
-                element={<LessonPage />}
-              />
-
               <Route path="*" element={<Navigate to="/hub" replace />} />
             </Routes>
           </Suspense>
         </main>
       </div>
+    </>
+  );
+}
+
+function LearnShell({ theme, onToggleTheme, onGoToStackPicker, children }) {
+  return (
+    <>
+      <Navbar
+        toggleSidebar={() => {}}
+        theme={theme}
+        onToggleTheme={onToggleTheme}
+        onGoToStackPicker={onGoToStackPicker}
+      />
+      <main className="main-content learn-content">{children}</main>
     </>
   );
 }
@@ -236,6 +242,48 @@ function AppRoutes() {
                 continueLanguage={selectedLanguage}
               />
             </StackPickerShell>
+          }
+        />
+        <Route
+          path="/learn/oops-cpp"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onToggleTheme={toggleTheme}
+                onGoToStackPicker={goToStackPicker}
+              >
+                <OopsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/oops-cpp/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onToggleTheme={toggleTheme}
+                onGoToStackPicker={goToStackPicker}
+              >
+                <LessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/oops-cpp/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onToggleTheme={toggleTheme}
+                onGoToStackPicker={goToStackPicker}
+              >
+                <LessonPage />
+              </LearnShell>
+            </ThemedShell>
           }
         />
         <Route
