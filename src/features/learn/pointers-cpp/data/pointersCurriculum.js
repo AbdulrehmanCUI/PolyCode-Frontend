@@ -567,7 +567,11 @@ int main() {
           tests: [
             { id: 1, label: "memory header is included", keywords: ["#include <memory>"] },
             { id: 2, label: "make_unique creates the int", keywords: ["make_unique<int>", "77"] },
-            { id: 3, label: "Pointer-like dereference is used", keywords: ["*value"] },
+            {
+              id: 3,
+              label: "Pointer-like dereference is used",
+              keywords: [{ pattern: "\\*\\s*[A-Za-z_]\\w*" }],
+            },
             { id: 4, label: "Value is printed", keywords: ["cout"] },
           ],
         },

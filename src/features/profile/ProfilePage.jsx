@@ -9,6 +9,90 @@ import {
 } from "../learn/pointers-cpp/data/pointersCurriculum";
 import usePointersProgress from "../learn/pointers-cpp/hooks/usePointersProgress";
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+const ACTIVITY_DAYS = 112;
+
+function toDateKey(value) {
+  const date = value ? new Date(value) : null;
+  if (!date || Number.isNaN(date.getTime())) return null;
+  return date.toISOString().slice(0, 10);
+}
+
+function buildActivityDays(...progressMaps) {
+  const counts = new Map();
+
+  progressMaps.forEach((progress) => {
+    Object.values(progress).forEach((item) => {
+      const key = toDateKey(item?.at || item?.completedAt || item);
+      if (!key) return;
+      counts.set(key, (counts.get(key) || 0) + 1);
+    });
+  });
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const start = new Date(today.getTime() - (ACTIVITY_DAYS - 1) * DAY_MS);
+
+  return Array.from({ length: ACTIVITY_DAYS }, (_, index) => {
+    const date = new Date(start.getTime() + index * DAY_MS);
+    const key = date.toISOString().slice(0, 10);
+    const count = counts.get(key) || 0;
+    return {
+      key,
+      count,
+      label: date.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+      }),
+    };
+  });
+}
+
+function levelForCount(count) {
+  if (count >= 4) return 4;
+  if (count >= 3) return 3;
+  if (count >= 2) return 2;
+  if (count >= 1) return 1;
+  return 0;
+}
+
+function ActivityGraph({ days }) {
+  const activeDays = days.filter((day) => day.count > 0).length;
+  const totalCompletions = days.reduce((sum, day) => sum + day.count, 0);
+
+  return (
+    <section className="profile-activity-card">
+      <div className="profile-activity-head">
+        <div>
+          <span>Progress Graph</span>
+          <h2>Learning activity</h2>
+        </div>
+        <strong>{totalCompletions} completions</strong>
+      </div>
+      <div className="profile-activity-grid" aria-label="Learning activity graph">
+        {days.map((day) => (
+          <span
+            key={day.key}
+            className="profile-activity-cell"
+            data-level={levelForCount(day.count)}
+            title={`${day.label}: ${day.count} lesson${day.count === 1 ? "" : "s"}`}
+          />
+        ))}
+      </div>
+      <div className="profile-activity-footer">
+        <span>{activeDays} active days in the last {ACTIVITY_DAYS} days</span>
+        <div className="profile-activity-legend" aria-hidden="true">
+          <span>Less</span>
+          {[0, 1, 2, 3, 4].map((level) => (
+            <i key={level} data-level={level} />
+          ))}
+          <span>More</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function TrackProgressCard({
   title,
   subtitle,
@@ -87,6 +171,7 @@ export default function ProfilePage() {
     Object.keys(pointers.completedMap).length;
   const totalLessons = ALL_LESSONS.length + POINTER_LESSONS.length;
   const totalPct = Math.round((totalCompleted / totalLessons) * 100) || 0;
+  const activityDays = buildActivityDays(oops.completedMap, pointers.completedMap);
 
   return (
     <main className="profile-page">
@@ -123,6 +208,8 @@ export default function ProfilePage() {
           <strong>{oops.remoteProgress?.currentStreak || 0} days</strong>
         </div>
       </section>
+
+      <ActivityGraph days={activityDays} />
 
       <div className="profile-track-grid">
         <TrackProgressCard

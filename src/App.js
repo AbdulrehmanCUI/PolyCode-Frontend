@@ -11,6 +11,7 @@ import Navbar from "./features/navigation/components/Navbar";
 import Sidebar from "./features/navigation/components/Sidebar";
 import { PlaygroundProvider } from "./features/playground/context/PlaygroundContext";
 import { AuthProvider } from "./features/auth/context/AuthContext";
+import SelectionPins from "./shared/components/SelectionPins";
 import "./App.css";
 import "./styles/theme-light.css";
 import "./styles/stack-picker-dark.css";
@@ -390,6 +391,7 @@ function App() {
     <AuthProvider>
       <PlaygroundProvider>
         <Router>
+          <SelectionPins />
           <AppRoutes />
         </Router>
       </PlaygroundProvider>

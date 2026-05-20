@@ -6127,6 +6127,19 @@ body {
   overflow: hidden;
 }
 
+.oops-editor .monaco-editor .oops-fixed-selection-inline {
+  color: #f8fbff !important;
+  background: rgba(14, 165, 233, 0.38);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 1px rgba(125, 211, 252, 0.3),
+    0 0 12px rgba(14, 165, 233, 0.16);
+}
+
+.oops-editor .monaco-editor .oops-fixed-selection-range {
+  background: rgba(14, 165, 233, 0.16);
+}
+
 .oops-run-bar {
   display: flex;
   align-items: center;

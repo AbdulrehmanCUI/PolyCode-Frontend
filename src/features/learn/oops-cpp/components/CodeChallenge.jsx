@@ -20,6 +20,11 @@ export default function CodeChallenge({
   const [showSolution, setShowSolution] = useState(false);
   const [running, setRunning] = useState(false);
   const activeChallengeId = useRef(challenge.id);
+  const runTestsRef = useRef(null);
+  const editorRef = useRef(null);
+  const monacoRef = useRef(null);
+  const fixedSelectionDecorationRef = useRef([]);
+  const fixedSelectionRangeRef = useRef(null);
 
   useEffect(() => {
     const challengeChanged = activeChallengeId.current !== challenge.id;
@@ -30,6 +35,7 @@ export default function CodeChallenge({
       setResults(null);
       setOutput(null);
       setShowSolution(false);
+      clearFixedSelection();
       return;
     }
 
@@ -43,6 +49,8 @@ export default function CodeChallenge({
   // Simulated test runner — checks code string heuristically
   // In production: hook into your backend compiler (BrowserExecutor / Piston API)
   function runTests() {
+    if (running || showSolution) return;
+
     setRunning(true);
     setResults(null);
     setOutput({
@@ -87,6 +95,83 @@ export default function CodeChallenge({
       }
       setRunning(false);
     }, 800);
+  }
+
+  useEffect(() => {
+    runTestsRef.current = runTests;
+  });
+
+  function handleEditorMount(editor, monaco) {
+    editorRef.current = editor;
+    monacoRef.current = monaco;
+
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+      runTestsRef.current?.();
+    });
+
+    editor.onContextMenu((event) => {
+      const position = event.target.position;
+      if (!position) return;
+
+      const fixedRange = fixedSelectionRangeRef.current;
+      if (fixedRange && rangeContainsPosition(fixedRange, position)) {
+        event.event.preventDefault();
+        event.event.stopPropagation();
+        clearFixedSelection();
+        editor.setSelection(
+          new monaco.Selection(
+            fixedRange.startLineNumber,
+            fixedRange.startColumn,
+            fixedRange.startLineNumber,
+            fixedRange.startColumn,
+          ),
+        );
+        return;
+      }
+
+      const selection = editor.getSelection();
+      if (!selection || selection.isEmpty() || !rangeContainsPosition(selection, position)) {
+        return;
+      }
+
+      event.event.preventDefault();
+      event.event.stopPropagation();
+      fixedSelectionRangeRef.current = selection;
+      fixedSelectionDecorationRef.current = editor.deltaDecorations(
+        fixedSelectionDecorationRef.current,
+        [
+          {
+            range: selection,
+            options: {
+              className: "oops-fixed-selection-range",
+              inlineClassName: "oops-fixed-selection-inline",
+              stickiness:
+                monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
+            },
+          },
+        ],
+      );
+    });
+  }
+
+  function clearFixedSelection() {
+    if (!editorRef.current) {
+      fixedSelectionDecorationRef.current = [];
+      fixedSelectionRangeRef.current = null;
+      return;
+    }
+
+    fixedSelectionDecorationRef.current = editorRef.current.deltaDecorations(
+      fixedSelectionDecorationRef.current,
+      [],
+    );
+    fixedSelectionRangeRef.current = null;
+  }
+
+  function rangeContainsPosition(range, position) {
+    const monaco = monacoRef.current;
+    if (!monaco || !range || !position) return false;
+    return monaco.Range.containsPosition(range, position);
   }
 
   function extractKeywords(sol, testId) {
@@ -293,6 +378,8 @@ export default function CodeChallenge({
       /\b(?:int|double|float|char|bool|string)\s*\*\s*([A-Za-z_]\w*)\s*=\s*(nullptr|&\s*[A-Za-z_]\w*|[A-Za-z_]\w*)/g;
     const newPointerDeclarations =
       /\b(?:int|double|float|char|bool|string)\s*\*\s*([A-Za-z_]\w*)\s*=\s*new\s+(?:int|double|float|char|bool|string)\s*\(([^)]*)\)/g;
+    const smartPointerDeclarations =
+      /\b(?:auto|(?:std::)?(?:unique_ptr|shared_ptr)\s*<\s*(?:int|double|float|char|bool|string)\s*>)\s+([A-Za-z_]\w*)\s*=\s*(?:std::)?make_(?:unique|shared)\s*<\s*(?:int|double|float|char|bool|string)\s*>\s*\(([^)]*)\)/g;
     const pointerAssignments =
       /(^|[^\w*])([A-Za-z_]\w*)\s*=\s*&\s*([A-Za-z_]\w*)/gm;
     const memberAssignments =
@@ -324,6 +411,11 @@ export default function CodeChallenge({
     for (const match of source.matchAll(newPointerDeclarations)) {
       const pointerName = match[1];
       values.set(pointerName, "heap allocation");
+      values.set(`*${pointerName}`, cleanLiteral(match[2]));
+    }
+    for (const match of source.matchAll(smartPointerDeclarations)) {
+      const pointerName = match[1];
+      values.set(pointerName, "smart pointer");
       values.set(`*${pointerName}`, cleanLiteral(match[2]));
     }
     for (const match of source.matchAll(pointerAssignments)) {
@@ -482,6 +574,7 @@ export default function CodeChallenge({
             language="cpp"
             value={showSolution ? challenge.solutionCode : code}
             beforeMount={definePolycodeMonacoTheme}
+            onMount={handleEditorMount}
             theme={POLYCODE_VSCODE_THEME}
             onChange={(value) => {
               if (!showSolution) {
