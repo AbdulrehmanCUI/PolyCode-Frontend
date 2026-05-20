@@ -346,6 +346,16 @@ export default function CodeChallenge({
           baseValues.set(key, value);
           baseValues.set(`${objectName}.${key}`, value);
         });
+        methods.forEach((methodBody, methodName) => {
+          const returnMatch = methodBody.match(/return\s+([^;]+);/);
+          if (!returnMatch) return;
+
+          const resolved = evaluateExpression(returnMatch[1], memberValues);
+          if (resolved !== "") {
+            baseValues.set(`${methodName}()`, resolved);
+            baseValues.set(`${objectName}.${methodName}()`, resolved);
+          }
+        });
 
         const callRegex = new RegExp(
           `\\b${objectName}\\.([A-Za-z_]\\w*)\\s*\\(\\s*\\)\\s*;`,
@@ -492,6 +502,30 @@ export default function CodeChallenge({
 
     runBlock(body, values);
     return output;
+  }
+
+  function evaluateExpression(expression, values) {
+    const normalized = expression
+      .replace(/\bM_PI\b|\bPI\b/g, "3.14159")
+      .replace(/\b([A-Za-z_]\w*)\b/g, (match) => {
+        if (values.has(match)) return values.get(match);
+        return match;
+      });
+
+    if (!/^[\d+\-*/().\s]+$/.test(normalized)) return "";
+
+    const productParts = normalized.split("*").map((part) => part.trim());
+    if (productParts.length < 2) return "";
+
+    const result = productParts.reduce((product, part) => {
+      const value = Number(part.replace(/[()]/g, ""));
+      return Number.isFinite(value) ? product * value : NaN;
+    }, 1);
+
+    if (!Number.isFinite(result)) return "";
+    return Number.isInteger(result)
+      ? String(result)
+      : String(Number(result.toFixed(2)));
   }
 
   function collectFunctionOutput(source, baseValues, mainSource) {
