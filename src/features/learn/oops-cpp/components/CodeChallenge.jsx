@@ -78,15 +78,17 @@ export default function CodeChallenge({
       });
 
       const allPassed = testResults.every((t) => t.passed);
+      const simulatedOutput = simulateCppOutput(code);
+      const expectedOutput = simulateCppOutput(challenge.solutionCode);
       setResults({ passed: allPassed, tests: testResults });
       setOutput({
         status: allPassed ? "pass" : "fail",
         stdout:
-          simulateCppOutput(code) ||
+          (allPassed && expectedOutput ? expectedOutput : simulatedOutput) ||
           (allPassed
-            ? simulateCppOutput(challenge.solutionCode)
+            ? expectedOutput
             : "No console output detected yet. Add cout statements, then run again."),
-        expected: simulateCppOutput(challenge.solutionCode),
+        expected: expectedOutput,
       });
       if (allPassed && !isCompleted) {
         Promise.resolve(onComplete()).catch((error) => {
@@ -281,8 +283,7 @@ export default function CodeChallenge({
   function collectObjectOutput(source, baseValues) {
     const cleanSource = stripComments(source);
     const output = [];
-    const classDefs = [];
-    const globalMethods = new Map();
+    const classDefs = new Map();
     const classRegex = /class\s+([A-Za-z_]\w*)\s*(?::\s*([^{]+))?\{([\s\S]*?)\};/g;
 
     for (const classMatch of cleanSource.matchAll(classRegex)) {
@@ -306,9 +307,6 @@ export default function CodeChallenge({
           match[2] || "",
         ]),
       );
-      methods.forEach((body, name) => {
-        if (!globalMethods.has(name)) globalMethods.set(name, body);
-      });
       const bases = inheritance
         .split(",")
         .map((base) =>
@@ -318,11 +316,29 @@ export default function CodeChallenge({
         )
         .filter(Boolean);
 
-      classDefs.push({ className, constructors, methods, bases });
+      classDefs.set(className, { className, constructors, methods, bases });
     }
 
-    classDefs.forEach(({ className, constructors, methods }) => {
-      const availableMethods = new Map([...globalMethods, ...methods]);
+    function getAvailableMethods(className, seen = new Set()) {
+      const classDef = classDefs.get(className);
+      if (!classDef || seen.has(className)) return new Map();
+
+      seen.add(className);
+      const availableMethods = new Map();
+      classDef.bases.forEach((baseName) => {
+        getAvailableMethods(baseName, seen).forEach((body, name) => {
+          availableMethods.set(name, body);
+        });
+      });
+      classDef.methods.forEach((body, name) => {
+        availableMethods.set(name, body);
+      });
+      seen.delete(className);
+      return availableMethods;
+    }
+
+    classDefs.forEach(({ className, constructors }) => {
+      const availableMethods = getAvailableMethods(className);
       const objectRegex = new RegExp(
         `\\b${className}\\s+([A-Za-z_]\\w*)\\s*\\(([^;]*)\\)\\s*;`,
         "g",
@@ -413,6 +429,7 @@ export default function CodeChallenge({
     for (const statementMatch of methodBody.matchAll(statementRegex)) {
       const statement = statementMatch[1].trim();
       if (!statement) continue;
+      const callOnlyMatch = statement.match(/([A-Za-z_]\w*)\s*\(\s*\)$/);
 
       if (statement.includes("cout")) {
         const rendered = statement
@@ -423,7 +440,9 @@ export default function CodeChallenge({
         continue;
       }
 
-      const callMatch = statement.match(/^([A-Za-z_]\w*)\s*\(\s*\)$/);
+      const callMatch = callOnlyMatch && statement === callOnlyMatch[0]
+        ? callOnlyMatch
+        : null;
       if (!callMatch || seen.has(callMatch[1])) continue;
 
       const nestedBody = methods.get(callMatch[1]);
