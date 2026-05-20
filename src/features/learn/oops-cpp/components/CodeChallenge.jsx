@@ -58,7 +58,13 @@ export default function CodeChallenge({
           challenge.solutionCode,
           test.id,
         );
-        const passed = solutionKeywords.every((kw) => code.includes(kw));
+        const passed = solutionKeywords.every((kw) =>
+          typeof kw === "string"
+            ? code.includes(kw)
+            : kw?.pattern
+              ? new RegExp(kw.pattern, kw.flags || "").test(code)
+              : true,
+        );
         return { ...test, passed };
       });
 
@@ -279,6 +285,10 @@ export default function CodeChallenge({
     const values = new Map();
     const declarations =
       /\b(?:string|int|double|float|char|bool|auto)\s+([A-Za-z_]\w*)\s*=\s*("[^"]*"|'[^']*'|[-+]?\d+(?:\.\d+)?|true|false)/g;
+    const pointerDeclarations =
+      /\b(?:int|double|float|char|bool|string)\s*\*\s*([A-Za-z_]\w*)\s*=\s*(nullptr|&\s*[A-Za-z_]\w*)/g;
+    const pointerAssignments =
+      /(^|[^\w*])([A-Za-z_]\w*)\s*=\s*&\s*([A-Za-z_]\w*)/gm;
     const memberAssignments =
       /\b([A-Za-z_]\w*)\.([A-Za-z_]\w*)\s*=\s*("[^"]*"|'[^']*'|[-+]?\d+(?:\.\d+)?|true|false)/g;
     const assignments =
@@ -286,6 +296,22 @@ export default function CodeChallenge({
 
     for (const match of source.matchAll(declarations)) {
       values.set(match[1], cleanLiteral(match[2]));
+    }
+    for (const match of source.matchAll(pointerDeclarations)) {
+      const pointerName = match[1];
+      const target = match[2].replace(/&\s*/, "").trim();
+      values.set(pointerName, match[2].trim());
+      if (target !== "nullptr" && values.has(target)) {
+        values.set(`*${pointerName}`, values.get(target));
+      }
+    }
+    for (const match of source.matchAll(pointerAssignments)) {
+      const pointerName = match[2];
+      const target = match[3];
+      values.set(pointerName, `&${target}`);
+      if (values.has(target)) {
+        values.set(`*${pointerName}`, values.get(target));
+      }
     }
     for (const match of source.matchAll(memberAssignments)) {
       values.set(`${match[1]}.${match[2]}`, cleanLiteral(match[3]));

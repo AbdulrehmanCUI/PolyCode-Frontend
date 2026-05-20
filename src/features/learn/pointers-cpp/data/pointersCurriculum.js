@@ -203,7 +203,11 @@ int main() {
           tests: [
             { id: 1, label: "p starts as nullptr", keywords: ["nullptr"] },
             { id: 2, label: "Code checks p before use", keywords: ["if", "p"] },
-            { id: 3, label: "p points to level", keywords: ["&level"] },
+            {
+              id: 3,
+              label: "p points to level",
+              keywords: [{ pattern: "(^|[^*\\w])p\\s*=\\s*&\\s*level" }],
+            },
             { id: 4, label: "Dereferenced output is printed", keywords: ["cout", "*p"] },
           ],
         },
