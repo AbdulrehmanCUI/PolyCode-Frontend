@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ALL_LESSONS } from "../data/oopsCurriculum";
 import ConceptCard from "../components/ConceptCard";
@@ -10,10 +10,64 @@ function plainLessonText(text = "") {
   return text.replace(/\*\*/g, "").replace(/`/g, "");
 }
 
+function getLessonPlainBlocks(lesson) {
+  return lesson.theory
+    .filter((block) => block.type === "text" || block.type === "callout")
+    .map((block) => plainLessonText(block.content));
+}
+
+function getReadableSummary(lesson) {
+  const blocks = getLessonPlainBlocks(lesson);
+  const intro = blocks[0] || `${lesson.title} is an important OOP idea in C++.`;
+  const analogy = blocks[1] || lesson.challenge.description;
+
+  return {
+    plain: intro,
+    why: `${lesson.title} helps you write code that is easier to change, test, and reuse as your program grows.`,
+    analogy,
+  };
+}
+
+function getKeyTerms(lesson) {
+  const terms = new Set();
+  const source = `${lesson.title} ${getLessonPlainBlocks(lesson).join(" ")} ${
+    lesson.challenge.description
+  }`;
+
+  [
+    "class",
+    "object",
+    "private",
+    "public",
+    "constructor",
+    "inheritance",
+    "encapsulation",
+    "polymorphism",
+    "abstraction",
+    "virtual",
+    "override",
+    "pointer",
+    "reference",
+  ].forEach((term) => {
+    if (source.toLowerCase().includes(term)) terms.add(term);
+  });
+
+  if (terms.size < 3) {
+    lesson.title
+      .split(/\s+/)
+      .filter((word) => word.length > 3)
+      .forEach((word) => terms.add(word.toLowerCase()));
+  }
+
+  return [...terms].slice(0, 6);
+}
+
 export default function LessonPage() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState("theory"); // "theory" | "challenge"
+  const [focusMode, setFocusMode] = useState(false);
+  const [confidence, setConfidence] = useState("");
   const {
     user,
     syncState,
@@ -44,6 +98,11 @@ export default function LessonPage() {
     "Read the smallest code example before the full explanation.",
     "Change one line in the challenge and run the tests to see the effect.",
   ];
+  const lessonSummary = useMemo(
+    () => (lesson ? getReadableSummary(lesson) : null),
+    [lesson],
+  );
+  const keyTerms = useMemo(() => (lesson ? getKeyTerms(lesson) : []), [lesson]);
 
   useEffect(() => {
     setTab("theory");
@@ -56,6 +115,10 @@ export default function LessonPage() {
   useEffect(() => {
     setNoteDraft(notesMap[lessonId] || "");
   }, [lessonId, notesMap]);
+
+  useEffect(() => {
+    setConfidence(localStorage.getItem(`oops_confidence_${lessonId}`) || "");
+  }, [lessonId]);
 
   useEffect(() => {
     if (!lessonId) return undefined;
@@ -99,8 +162,13 @@ export default function LessonPage() {
     }, 700);
   }
 
+  function handleConfidenceChange(value) {
+    setConfidence(value);
+    localStorage.setItem(`oops_confidence_${lessonId}`, value);
+  }
+
   return (
-    <div className="oops-lesson-page">
+    <div className={`oops-lesson-page ${focusMode ? "oops-focus-mode" : ""}`}>
       {/* Sidebar */}
       <OopsSidebar currentLessonId={lessonId} progress={progress} />
 
@@ -131,6 +199,13 @@ export default function LessonPage() {
             title={isBookmarked ? "Remove bookmark" : "Bookmark lesson"}
           >
             {isBookmarked ? "★" : "☆"}
+          </button>
+          <button
+            type="button"
+            className={`oops-focus-btn ${focusMode ? "active" : ""}`}
+            onClick={() => setFocusMode((value) => !value)}
+          >
+            {focusMode ? "Exit Focus" : "Focus"}
           </button>
         </div>
 
@@ -167,7 +242,31 @@ export default function LessonPage() {
         <div className="oops-lesson-content">
           {tab === "theory" ? (
             <div className="oops-theory-pane">
-              <h2 className="oops-lesson-heading">{lesson.title}</h2>
+              <div className="oops-lesson-title-row">
+                <div>
+                  <span className="oops-interactive-label">Plain English</span>
+                  <h2 className="oops-lesson-heading">{lesson.title}</h2>
+                </div>
+                <div className="oops-term-cloud" aria-label="Key terms">
+                  {keyTerms.map((term) => (
+                    <span key={term}>{term}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="oops-easy-summary">
+                <div>
+                  <span className="oops-summary-kicker">What it means</span>
+                  <p>{lessonSummary.plain}</p>
+                </div>
+                <div>
+                  <span className="oops-summary-kicker">Why it matters</span>
+                  <p>{lessonSummary.why}</p>
+                </div>
+                <div>
+                  <span className="oops-summary-kicker">Mental model</span>
+                  <p>{lessonSummary.analogy}</p>
+                </div>
+              </div>
               <div className="oops-learning-brief">
                 <div className="oops-brief-card">
                   <span className="oops-interactive-label">Start Here</span>
@@ -251,6 +350,28 @@ export default function LessonPage() {
                 <button type="button" onClick={handleSaveNote}>
                   Save Note
                 </button>
+              </div>
+              <div className="oops-confidence-panel">
+                <div>
+                  <span className="oops-interactive-label">Confidence Check</span>
+                  <h3>How well did this click?</h3>
+                </div>
+                <div className="oops-confidence-options">
+                  {[
+                    ["review", "Need review"],
+                    ["almost", "Almost there"],
+                    ["ready", "Ready to code"],
+                  ].map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      className={confidence === value ? "active" : ""}
+                      onClick={() => handleConfidenceChange(value)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="oops-theory-footer">
                 <button
