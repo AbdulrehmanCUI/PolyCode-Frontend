@@ -76,11 +76,10 @@ export const languageCourses = {
       title: "NumPy · py",
       tag: "Data Course",
       icon: Grid3x3,
-      logo: "/numpy-logo.svg",
       description:
         "ndarray basics, shape, dtype, vector math, and hands-on Python challenges with NumPy.",
       href: "/learn/numpy-py",
-      accent: "#4d77cf",
+      accent: "#4dabdc",
     },
   ],
 };

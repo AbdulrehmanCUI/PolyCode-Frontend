@@ -146,25 +146,11 @@ export default function LanguageLandingPage({ selectedLanguage, onLanguageSelect
               <Link
                 key={course.title}
                 to={course.href}
-                className={`language-course-card ${
-                  course.logo ? "language-course-card-logo" : ""
-                }`}
+                className="language-course-card"
                 style={{ "--course-accent": course.accent || meta.color }}
               >
-                <div
-                  className={`language-course-icon ${
-                    course.logo ? "language-course-icon-logo" : ""
-                  }`}
-                >
-                  {course.logo ? (
-                    <img
-                      src={course.logo}
-                      alt=""
-                      className="language-course-logo"
-                    />
-                  ) : (
-                    <Icon size={22} />
-                  )}
+                <div className="language-course-icon">
+                  <Icon size={22} />
                 </div>
                 <span>{course.tag}</span>
                 <h3>{course.title}</h3>

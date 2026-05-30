@@ -6,7 +6,6 @@ import {
   NUMPY_TOTAL_XP,
 } from "../data/numpyCurriculum";
 import useNumpyProgress from "../hooks/useNumpyProgress";
-import NumpyLogo from "../components/NumpyLogo";
 
 const BASE_PATH = "/learn/numpy-py";
 
@@ -72,12 +71,11 @@ export default function NumpyHub() {
         >
           ← Python courses
         </Link>
-        <div className="numpy-hero-brand">
-          <NumpyLogo size="hero" />
-        </div>
         <div className="oops-hero-badge">PYTHON DATA TRACK</div>
-        <h1 className="oops-hero-title numpy-hero-kicker">
-          <span className="oops-hero-accent">Arrays, shape &amp; vector math</span>
+        <h1 className="oops-hero-title">
+          NumPy
+          <br />
+          <span className="oops-hero-accent">for Python</span>
         </h1>
         <p className="oops-hero-sub">
           Learn ndarray basics, shape, dtype, and vector math with short lessons,

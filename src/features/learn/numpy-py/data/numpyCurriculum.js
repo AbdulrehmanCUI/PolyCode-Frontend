@@ -397,32 +397,114 @@ print(result.shape)`,
           {
             type: "text",
             content:
-              "This lesson will show how to build arrays with `np.array()`. Full lesson content is coming soon.",
+              "The most common way to make a NumPy array is **`np.array()`**. Pass it a Python list (or lists inside lists) and NumPy turns it into a fast **ndarray** — ready for math.",
+            code: {
+              lang: "python",
+              label: "Turn a list into a 1D array",
+              content: `import numpy as np
+
+scores = [88, 92, 75, 100]
+arr = np.array(scores)
+print(arr)          # [ 88  92  75 100]
+print(type(arr))    # <class 'numpy.ndarray'>`,
+            },
+          },
+          {
+            type: "text",
+            content:
+              "Nest lists to build a **2D table** — like rows of students and columns of subjects. NumPy stores it as one array with shape `(rows, columns)`.",
+            code: {
+              lang: "python",
+              label: "Build a 2×3 grade table",
+              content: `import numpy as np
+
+grades = np.array([[78, 85, 90],
+                   [92, 88, 95]])
+print(grades)
+print(grades.shape)   # (2, 3) = 2 rows, 3 columns`,
+            },
+          },
+          {
+            type: "diagram",
+            title: "Ways to fill np.array()",
+            nodes: [
+              {
+                id: "1d",
+                label: "1D array",
+                color: "#6366f1",
+                items: ["One flat list", "Like a single row of numbers", "shape (5,) for 5 items"],
+              },
+              {
+                id: "2d",
+                label: "2D array",
+                color: "#4f46e5",
+                items: ["List of lists", "Rows and columns", "shape (2, 3) for 2×3 table"],
+              },
+            ],
+          },
+          {
+            type: "text",
+            content:
+              "You can also tell NumPy the **dtype** when you create the array — for example `float64` for decimals or `int32` for smaller whole numbers. If you skip it, NumPy picks a sensible default.",
+            code: {
+              lang: "python",
+              label: "Create floats from whole numbers",
+              content: `import numpy as np
+
+prices = np.array([10, 20, 30], dtype=float)
+print(prices)       # [10. 20. 30.]
+print(prices.dtype) # float64`,
+            },
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              "Always start with `import numpy as np`. Then `np.array(your_list)` is the go-to when you already have data in Python lists.",
+          },
+          {
+            type: "quiz",
+            question: "What does `np.array([[1, 2], [3, 4]]).shape` return?",
+            options: ["(4,)", "(2, 2)", "(2,)", "4"],
+            answer: 1,
+            explanation: "Two rows and two columns → shape `(2, 2)`.",
           },
         ],
         challenge: {
-          title: "Coming Soon",
+          title: "Build a 1D Array",
           description:
-            "This challenge will be added when the lesson content is ready.",
-          starterCode: `# Lesson content coming soon
+            "Import NumPy as `np`, create `arr = np.array([5, 10, 15, 20])`, and print `arr` and `arr.shape`.",
+          starterCode: `import numpy as np
+
+# Create arr and print arr and arr.shape
 
 `,
           solutionCode: `import numpy as np
 
-arr = np.array([1, 2, 3])
-print(arr)`,
+arr = np.array([5, 10, 15, 20])
+print(arr)
+print(arr.shape)`,
           tests: [
             {
               id: 1,
               label: "Uses np.array",
-              hint: "np.array([1, 2, 3])",
+              hint: "np.array([5, 10, 15, 20])",
               keywords: [{ pattern: "np\\.array\\s*\\(" }],
             },
             {
               id: 2,
               label: "Prints the array",
               hint: "print(arr)",
-              keywords: [{ pattern: "print\\s*\\(" }],
+              keywords: [{ pattern: "print\\s*\\(\\s*arr\\s*\\)" }],
+            },
+            {
+              id: 3,
+              label: "Prints shape",
+              hint: "print(arr.shape)",
+              keywords: [
+                { pattern: "arr\\.shape" },
+                { pattern: "print\\s*\\(" },
+              ],
             },
           ],
         },
@@ -435,32 +517,69 @@ print(arr)`,
           {
             type: "text",
             content:
-              "Need evenly spaced numbers? **`np.arange(start, stop, step)`** is like a timeline with fixed steps — but **stop is exclusive** (like Python ranges). **`np.linspace(start, stop, num)`** picks exactly `num` points **including both endpoints**.",
+              "**`np.arange(start, stop, step)`** builds numbers with a fixed **step**, like counting by twos. Important: **stop is excluded** — just like Python's `range()`.",
+            code: {
+              lang: "python",
+              label: "Count 0, 2, 4, 6, 8 (10 is left out)",
+              content: `import numpy as np
+
+steps = np.arange(0, 10, 2)
+print(steps)   # [0 2 4 6 8]`,
+            },
           },
           {
-            type: "code",
-            lang: "python",
-            label: "arange — step-based",
-            content: `import numpy as np
+            type: "text",
+            content:
+              "**`np.linspace(start, stop, num)`** picks exactly **`num`** evenly spaced values **including both endpoints**. Great when you need a smooth line for a chart, not a fixed step size.",
+            code: {
+              lang: "python",
+              label: "Five values from 0.0 to 1.0 inclusive",
+              content: `import numpy as np
 
-# 0, 2, 4, 6, 8  (10 is excluded)
-print(np.arange(0, 10, 2))`,
-          },
-          {
-            type: "code",
-            lang: "python",
-            label: "linspace — count-based",
-            content: `import numpy as np
-
-# 5 evenly spaced values from 0.0 to 1.0 inclusive
-print(np.linspace(0, 1, 5))
+points = np.linspace(0, 1, 5)
+print(points)
 # [0.   0.25 0.5  0.75 1.  ]`,
+            },
+          },
+          {
+            type: "diagram",
+            title: "arange vs linspace",
+            nodes: [
+              {
+                id: "arange",
+                label: "np.arange",
+                color: "#6366f1",
+                items: ["You choose the step", "Stop value excluded", "Like range() but returns an array"],
+              },
+              {
+                id: "linspace",
+                label: "np.linspace",
+                color: "#4f46e5",
+                items: ["You choose how many points", "Both ends included", "Even spacing for plots"],
+              },
+            ],
+          },
+          {
+            type: "text",
+            content:
+              "Quick pick: use **arange** when you know the gap between numbers (every 5 minutes, every 2 points). Use **linspace** when you know how many points you want between two values.",
+            code: {
+              lang: "python",
+              label: "Same idea, two tools",
+              content: `import numpy as np
+
+# 6 ticks from 0 to 10 (step = 2, stop excluded)
+print(np.arange(0, 12, 2))
+
+# 6 evenly spaced values from 0 to 10 inclusive
+print(np.linspace(0, 10, 6))`,
+            },
           },
           {
             type: "callout",
             variant: "info",
             content:
-              "Use **arange** when you know the step size. Use **linspace** when you know how many points you want — great for plotting smooth curves.",
+              "A common mistake: expecting `arange(0, 10, 2)` to include 10. It won't — use `linspace(0, 10, 6)` if you need 10 as the last value.",
           },
           {
             type: "quiz",
@@ -506,36 +625,78 @@ print(arr)`,
           {
             type: "text",
             content:
-              "Starting a blank **spreadsheet**? Factory functions fill arrays for you: **`zeros`** (all 0s), **`ones`** (all 1s), and **`eye`** (identity matrix — 1s on the diagonal, 0s elsewhere).",
-          },
-          {
-            type: "code",
-            lang: "python",
-            label: "Blank grids",
-            content: `import numpy as np
+              "Sometimes you start with a **blank grid** instead of your own data. **`np.zeros(shape)`** fills an array with **0.0**, and **`np.ones(shape)`** fills it with **1.0**. Pass a single number for 1D or a tuple like `(2, 3)` for a table.",
+            code: {
+              lang: "python",
+              label: "Blank grid and a row of ones",
+              content: `import numpy as np
 
 z = np.zeros((2, 3))   # 2×3 grid of zeros
 o = np.ones(4)         # four ones in a row
 print(z.shape)         # (2, 3)
 print(o)               # [1. 1. 1. 1.]`,
+            },
           },
           {
-            type: "code",
-            lang: "python",
-            label: "Identity matrix",
-            content: `import numpy as np
+            type: "text",
+            content:
+              "**`np.eye(n)`** builds an **identity matrix** — 1s on the diagonal, 0s everywhere else. In math it's the \"do nothing\" multiplier: any matrix × identity = same matrix.",
+            code: {
+              lang: "python",
+              label: "3×3 identity matrix",
+              content: `import numpy as np
 
 i = np.eye(3)
 print(i)
 # [[1. 0. 0.]
 #  [0. 1. 0.]
 #  [0. 0. 1.]]`,
+            },
+          },
+          {
+            type: "diagram",
+            title: "Factory functions",
+            nodes: [
+              {
+                id: "zeros",
+                label: "np.zeros",
+                color: "#6366f1",
+                items: ["Start empty / reset", "Good for placeholders", "Defaults to float 0.0"],
+              },
+              {
+                id: "ones",
+                label: "np.ones",
+                color: "#8b5cf6",
+                items: ["Fill with 1s", "Scale or initialize weights", "Same shape rules as zeros"],
+              },
+              {
+                id: "eye",
+                label: "np.eye",
+                color: "#4f46e5",
+                items: ["Square matrix", "1s on diagonal", "Used in linear algebra"],
+              },
+            ],
+          },
+          {
+            type: "text",
+            content:
+              "Need every cell the **same custom value**? Use **`np.full(shape, value)`** — like `np.full((2, 2), 7)` for a 2×2 grid of sevens.",
+            code: {
+              lang: "python",
+              label: "Fill with any number",
+              content: `import numpy as np
+
+board = np.full((2, 2), 7)
+print(board)
+# [[7 7]
+#  [7 7]]`,
+            },
           },
           {
             type: "callout",
             variant: "tip",
             content:
-              "Identity matrices are the 'do nothing' of linear algebra — multiply any matrix by `I` and you get the same matrix back.",
+              "Use **zeros** to pre-allocate space you'll fill in a loop, **ones** when you need a neutral starting value, and **eye** when linear algebra shows up later.",
           },
           {
             type: "quiz",
