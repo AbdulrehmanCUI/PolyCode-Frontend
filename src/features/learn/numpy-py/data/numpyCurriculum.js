@@ -750,29 +750,58 @@ print(arr)`,
           {
             type: "text",
             content:
-              "Sometimes you start with a **blank grid** instead of your own data. **`np.zeros(shape)`** fills an array with **0.0**, and **`np.ones(shape)`** fills it with **1.0**. Pass a single number for 1D or a tuple like `(2, 3)` for a table.",
+              "So far you used **`np.array()`** when you already had numbers, and **`arange` / `linspace`** when you wanted a pattern. But sometimes you do **not** have real data yet — you only know the **size** of a table. That is when **`zeros`**, **`ones`**, and **`eye`** help: they **build the shape for you** and fill it with a simple value.",
             code: {
               lang: "python",
-              label: "Blank grid and a row of ones",
+              label: "Typing every zero by hand gets old fast",
               content: `import numpy as np
 
-z = np.zeros((2, 3))   # 2×3 grid of zeros
-o = np.ones(4)         # four ones in a row
-print(z.shape)         # (2, 3)
-print(o)               # [1. 1. 1. 1.]`,
+# 7 days of scores — all empty (0) for now
+week = np.array([0, 0, 0, 0, 0, 0, 0])   # fine for 7 numbers...
+
+# But 100 or 1000 zeros? Use np.zeros instead — one line!`,
             },
           },
           {
             type: "text",
             content:
-              "**`np.eye(n)`** builds an **identity matrix** — 1s on the diagonal, 0s everywhere else. In math it's the \"do nothing\" multiplier: any matrix × identity = same matrix.",
+              "**Why `np.zeros`?** Think of a **blank spreadsheet** — you want the rows and columns ready, then you fill in scores later. **`np.zeros(shape)`** makes that empty grid in one line. Every cell starts at **0**.",
             code: {
               lang: "python",
-              label: "3×3 identity matrix",
+              label: "A 2×3 blank table (six zeros)",
               content: `import numpy as np
 
-i = np.eye(3)
-print(i)
+scores = np.zeros((2, 3))   # 2 rows, 3 columns — all 0.0
+print(scores)
+print(scores.shape)   # (2, 3)`,
+            },
+          },
+          {
+            type: "text",
+            content:
+              "**Why `np.ones`?** Sometimes you need a starting value of **1** everywhere — like \"each item counts as 1 at first\" or you will multiply later. **`np.ones(shape)`** is the same idea as zeros, but every cell is **1.0**.",
+            code: {
+              lang: "python",
+              label: "Four slots that each start at 1",
+              content: `import numpy as np
+
+slots = np.ones(4)
+print(slots)   # [1. 1. 1. 1.]
+
+# Later you might do: slots * 10  → [10. 10. 10. 10.]`,
+            },
+          },
+          {
+            type: "text",
+            content:
+              "**Why `np.eye`?** **`np.eye(n)`** creates a **square** array with **1s on the diagonal** and **0s everywhere else**. It is called an **identity matrix** and is mainly used in advanced mathematics, machine learning, and matrix operations. In simple terms: multiplying by it is like multiplying a number by **1** — the matrix stays the same.",
+            code: {
+              lang: "python",
+              label: "3×3 identity — 1s on the diagonal, 0s elsewhere",
+              content: `import numpy as np
+
+identity = np.eye(3)
+print(identity)
 # [[1. 0. 0.]
 #  [0. 1. 0.]
 #  [0. 0. 1.]]`,
@@ -780,35 +809,71 @@ print(i)
           },
           {
             type: "diagram",
-            title: "Factory functions",
+            title: "Why would I use these?",
             nodes: [
               {
                 id: "zeros",
                 label: "np.zeros",
                 color: "#6366f1",
-                items: ["Start empty / reset", "Good for placeholders", "Defaults to float 0.0"],
+                items: [
+                  "Empty table before real data",
+                  "Reset or clear values to 0",
+                  "Example: 5×5 grid to fill in a loop",
+                ],
               },
               {
                 id: "ones",
                 label: "np.ones",
                 color: "#8b5cf6",
-                items: ["Fill with 1s", "Scale or initialize weights", "Same shape rules as zeros"],
+                items: [
+                  "Every cell starts at 1",
+                  "Easy to scale later (× 10, × 0.5)",
+                  "Example: default weights",
+                ],
               },
               {
                 id: "eye",
                 label: "np.eye",
                 color: "#4f46e5",
-                items: ["Square matrix", "1s on diagonal", "Used in linear algebra"],
+                items: [
+                  "Square matrix only",
+                  "1s on diagonal, 0 elsewhere",
+                  "Example: \"do nothing\" in matrix math",
+                ],
+              },
+            ],
+          },
+          {
+            type: "diagram",
+            title: "Pick the right tool",
+            nodes: [
+              {
+                id: "array",
+                label: "np.array()",
+                color: "#10b981",
+                items: ["You already know every number"],
+              },
+              {
+                id: "arange",
+                label: "arange / linspace",
+                color: "#f59e0b",
+                items: ["You want a number pattern"],
+              },
+              {
+                id: "factory",
+                label: "zeros / ones / eye",
+                color: "#4f46e5",
+                items: ["You only know the shape + fill value"],
               },
             ],
           },
           {
             type: "text",
             content:
-              "Need every cell the **same custom value**? Use **`np.full(shape, value)`** — like `np.full((2, 2), 7)` for a 2×2 grid of sevens.",
+              "Bonus: **`np.full(shape, value)`** fills every cell with **any** number you choose — not just 0 or 1. Handy when you want a whole grid of 7s or -1s.",
             code: {
               lang: "python",
-              label: "Fill with any number",
+              label: "Every cell is 7",
               content: `import numpy as np
 
 board = np.full((2, 2), 7)
@@ -819,13 +884,32 @@ print(board)
           },
           {
             type: "callout",
+            variant: "info",
+            content:
+              "**Remember:** `np.array()` = you type the data. `arange` / `linspace` = generate a sequence. **`zeros` / `ones` / `eye`** = build an empty or starter grid when you only care about **size and fill value**.",
+          },
+          {
+            type: "callout",
             variant: "tip",
             content:
-              "Use **zeros** to pre-allocate space you'll fill in a loop, **ones** when you need a neutral starting value, and **eye** when linear algebra shows up later.",
+              "For `zeros` and `ones`, use a **tuple** for 2D: `(rows, cols)` like `(2, 3)`. For 1D, just pass one number: `np.ones(5)`.",
           },
           {
             type: "quiz",
-            question: "Which function creates a matrix with 1s on the diagonal?",
+            question: "You need a 4×4 table of zeros before filling it with sensor data. Best choice?",
+            options: [
+              "np.array([[0,0,...]]) typed by hand",
+              "np.zeros((4, 4))",
+              "np.linspace(0, 0, 16)",
+              "np.eye(4)",
+            ],
+            answer: 1,
+            explanation:
+              "np.zeros((4, 4)) builds the right shape filled with 0 in one line.",
+          },
+          {
+            type: "quiz",
+            question: "Which function creates a matrix with 1s on the diagonal only?",
             options: ["np.ones", "np.zeros", "np.eye", "np.full"],
             answer: 2,
             explanation: "`np.eye(n)` builds an n×n identity matrix.",
