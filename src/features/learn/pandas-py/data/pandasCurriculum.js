@@ -67,22 +67,36 @@ print(students)`,
           },
           {
             type: "quiz",
-            question: "What does Pandas mainly help with?",
+            question: "What is a DataFrame?",
             options: [
-              "Drawing 3D games",
-              "Working with rows-and-columns data",
-              "Sending HTTP requests",
-              "Compiling C++ code",
+              "A Python game engine",
+              "A spreadsheet-like table",
+              "A database server",
+              "A web browser",
             ],
             answer: 1,
             explanation:
-              "Pandas is built for tabular data — tables with named columns and labeled rows.",
+              "A DataFrame is Pandas' table structure containing rows and columns.",
+          },
+
+          {
+            type: "quiz",
+            question: "What does Pandas mainly help with?",
+            options: [
+              "Building games",
+              "Creating websites",
+              "Working with tabular data",
+              "Compiling programs",
+            ],
+            answer: 2,
+            explanation:
+              "Pandas is designed for tables of data such as CSV files, spreadsheets, and reports.",
           },
         ],
         challenge: {
           title: "Your First DataFrame",
           description:
-            "Import pandas as `pd`, create a DataFrame `df` with columns `fruit` and `qty` (values `[\"apple\", \"banana\"]` and `[3, 5]`), and print `df`.",
+            'Import pandas as `pd`, create a DataFrame `df` with columns `fruit` and `qty` (values `["apple", "banana"]` and `[3, 5]`), and print `df`.',
           starterCode: `# Import pandas as pd
 # Create df and print it
 
@@ -118,47 +132,95 @@ print(df)`,
           {
             type: "text",
             content:
-              "A **Series** is a single column with an index (row labels). A **DataFrame** is a collection of Series sharing the same index — a full table.",
+              "Pandas has **two main data structures**: a **Series** and a **DataFrame**. Learning these two objects is the foundation of working with Pandas.",
+          },
+          {
+            type: "text",
+            content:
+              "Think of a **Series** as a single column in a spreadsheet. It stores one type of information, such as student scores, product prices, or temperatures.",
+          },
+          {
+            type: "text",
+            content:
+              "A **DataFrame** is a complete table made up of multiple Series. Each column contains related data, and together the columns form a structured dataset.",
+          },
+          {
+            type: "diagram",
+            title: "Series vs DataFrame",
+            nodes: [
+              {
+                id: "series",
+                label: "Series",
+                color: "#14b8a6",
+                items: [
+                  "One column of data",
+                  "Has row labels (index)",
+                  "Example: student scores",
+                ],
+              },
+              {
+                id: "dataframe",
+                label: "DataFrame",
+                color: "#0891b2",
+                items: [
+                  "Multiple columns",
+                  "Rows and columns",
+                  "Example: student records",
+                ],
+              },
+            ],
           },
           {
             type: "code",
             lang: "python",
-            label: "Series and DataFrame side by side",
+            label: "Creating a Series and a DataFrame",
             content: `import pandas as pd
 
-scores = pd.Series([90, 85, 78], index=["Ali", "Sara", "Mo"])
-table = pd.DataFrame({"math": [90, 85, 78], "english": [88, 91, 80]},
+            scores = pd.Series([90, 85, 78], index=["Ali", "Sara", "Mo"])
+             table = pd.DataFrame({"math": [90, 85, 78], "english": [88, 91, 80]},
                      index=["Ali", "Sara", "Mo"])
-print(scores)
-print(table)`,
+             print(scores)
+             print(table)`,
           },
           {
             type: "callout",
             variant: "info",
             content:
-              "Selecting one column from a DataFrame gives you a Series: `df[\"score\"]` → Series.",
+              "A DataFrame is essentially a collection of Series that share the same row index.",
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              'Selecting a single column from a DataFrame returns a Series: `students["Math"]`.',
           },
           {
             type: "quiz",
-            question: "Which object represents one labeled column?",
-            options: ["list", "Series", "tuple", "dict"],
+            question: "Which Pandas object represents a single column of data?",
+            options: ["DataFrame", "Series", "Dictionary", "List"],
             answer: 1,
-            explanation: "A Series is one column (or row) with labels.",
+            explanation:
+              "A Series stores one column of data with labels, while a DataFrame stores multiple columns.",
           },
         ],
+
         challenge: {
           title: "Build a Series",
           description:
-            "Create `prices = pd.Series([10, 20, 30], index=[\"a\", \"b\", \"c\"])` and print it.",
+            'Create a Series called `prices` containing the values `10`, `20`, and `30` with index labels `"a"`, `"b"`, and `"c"`. Then print the Series.',
           starterCode: `import pandas as pd
-
-# Create prices Series and print
-
-`,
+      
+      # Create prices Series here
+      
+      `,
           solutionCode: `import pandas as pd
-
-prices = pd.Series([10, 20, 30], index=["a", "b", "c"])
-print(prices)`,
+      
+      prices = pd.Series(
+          [10, 20, 30],
+          index=["a", "b", "c"]
+      )
+      
+      print(prices)`,
           tests: [
             {
               id: 1,
@@ -168,7 +230,7 @@ print(prices)`,
             {
               id: 2,
               label: "Has index a, b, c",
-              keywords: ["\"a\"", "\"b\"", "\"c\""],
+              keywords: ['"a"', '"b"', '"c"'],
             },
             {
               id: 3,
@@ -214,7 +276,7 @@ print(temps["Tue"])   # 22`,
         challenge: {
           title: "Dict to Series",
           description:
-            "Create `colors = pd.Series({\"r\": \"red\", \"g\": \"green\", \"b\": \"blue\"})` and print `colors[\"g\"]`.",
+            'Create `colors = pd.Series({"r": "red", "g": "green", "b": "blue"})` and print `colors["g"]`.',
           starterCode: `import pandas as pd
 
 `,
@@ -226,7 +288,7 @@ print(colors["g"])`,
             { id: 1, label: "pd.Series from dict", keywords: ["pd.Series"] },
             {
               id: 2,
-              label: "Prints colors[\"g\"]",
+              label: 'Prints colors["g"]',
               keywords: [{ pattern: 'colors\\s*\\[\\s*"g"\\s*\\]' }],
             },
           ],
@@ -290,7 +352,8 @@ print(sales.mean())`,
         ],
         challenge: {
           title: "Average Score",
-          description: "Create `scores = pd.Series([70, 85, 90])` and print `scores.mean()`.",
+          description:
+            "Create `scores = pd.Series([70, 85, 90])` and print `scores.mean()`.",
           starterCode: `import pandas as pd
 
 `,
@@ -338,7 +401,7 @@ print(df.columns)`,
         challenge: {
           title: "Two-Column Table",
           description:
-            "Create `df` with `item` = `[\"pen\", \"book\"]` and `price` = `[2, 8]`. Print `df.shape`.",
+            'Create `df` with `item` = `["pen", "book"]` and `price` = `[2, 8]`. Print `df.shape`.',
           starterCode: `import pandas as pd
 
 `,
@@ -386,7 +449,11 @@ df = pd.DataFrame({"x": [10, 20, 30, 40, 50]})
 df = pd.DataFrame({"x": [10, 20, 30, 40, 50]})
 print(df.head(3))`,
           tests: [
-            { id: 1, label: "Uses head(3)", keywords: [{ pattern: "\\.head\\s*\\(\\s*3\\s*\\)" }] },
+            {
+              id: 1,
+              label: "Uses head(3)",
+              keywords: [{ pattern: "\\.head\\s*\\(\\s*3\\s*\\)" }],
+            },
           ],
         },
       },
@@ -398,7 +465,7 @@ print(df.head(3))`,
           {
             type: "text",
             content:
-              "Access columns with `df[\"col\"]` or `df.col`. Check types with `df.dtypes`. Cast with `.astype()`.",
+              'Access columns with `df["col"]` or `df.col`. Check types with `df.dtypes`. Cast with `.astype()`.',
           },
           {
             type: "code",
@@ -414,7 +481,7 @@ print(ages)`,
         challenge: {
           title: "Pick a Column",
           description:
-            "Given `df = pd.DataFrame({\"name\": [\"Ann\"], \"score\": [95]})`, print `df[\"score\"]`.",
+            'Given `df = pd.DataFrame({"name": ["Ann"], "score": [95]})`, print `df["score"]`.',
           starterCode: `import pandas as pd
 
 df = pd.DataFrame({"name": ["Ann"], "score": [95]})
@@ -464,7 +531,7 @@ print(df.loc["Ali", "score"])`,
         challenge: {
           title: "loc One Row",
           description:
-            "Create `df` with index `[\"x\", \"y\"]` and column `val` = `[1, 2]`. Print `df.loc[\"y\", \"val\"]`.",
+            'Create `df` with index `["x", "y"]` and column `val` = `[1, 2]`. Print `df.loc["y", "val"]`.',
           starterCode: `import pandas as pd
 
 `,
@@ -472,9 +539,7 @@ print(df.loc["Ali", "score"])`,
 
 df = pd.DataFrame({"val": [1, 2]}, index=["x", "y"])
 print(df.loc["y", "val"])`,
-          tests: [
-            { id: 1, label: "Uses .loc", keywords: [".loc"] },
-          ],
+          tests: [{ id: 1, label: "Uses .loc", keywords: [".loc"] }],
         },
       },
       {
@@ -510,7 +575,11 @@ df = pd.DataFrame({"a": [10, 20], "b": [30, 40]})
 df = pd.DataFrame({"a": [10, 20], "b": [30, 40]})
 print(df.iloc[0, 0])`,
           tests: [
-            { id: 1, label: "Uses iloc[0, 0]", keywords: [{ pattern: "iloc\\s*\\[\\s*0\\s*,\\s*0\\s*\\]" }] },
+            {
+              id: 1,
+              label: "Uses iloc[0, 0]",
+              keywords: [{ pattern: "iloc\\s*\\[\\s*0\\s*,\\s*0\\s*\\]" }],
+            },
           ],
         },
       },
@@ -522,7 +591,7 @@ print(df.iloc[0, 0])`,
           {
             type: "text",
             content:
-              "Filter rows with a condition: `df[df[\"score\"] >= 90]` returns only rows where the condition is True.",
+              'Filter rows with a condition: `df[df["score"] >= 90]` returns only rows where the condition is True.',
           },
           {
             type: "code",
@@ -538,7 +607,7 @@ print(high)`,
         challenge: {
           title: "Filter Rows",
           description:
-            "Given `df` with `age` = `[17, 22, 15]`, create `adults = df[df[\"age\"] >= 18]` and print `adults`.",
+            'Given `df` with `age` = `[17, 22, 15]`, create `adults = df[df["age"] >= 18]` and print `adults`.',
           starterCode: `import pandas as pd
 
 df = pd.DataFrame({"age": [17, 22, 15]})
@@ -550,7 +619,11 @@ df = pd.DataFrame({"age": [17, 22, 15]})
 adults = df[df["age"] >= 18]
 print(adults)`,
           tests: [
-            { id: 1, label: "Boolean filter", keywords: [{ pattern: 'df\\s*\\[\\s*df\\s*\\[\\s*"age"\\s*\\]' }] },
+            {
+              id: 1,
+              label: "Boolean filter",
+              keywords: [{ pattern: 'df\\s*\\[\\s*df\\s*\\[\\s*"age"\\s*\\]' }],
+            },
             { id: 2, label: "Variable adults", keywords: ["adults"] },
           ],
         },
@@ -595,9 +668,7 @@ print(s.fillna(0))`,
 
 s = pd.Series([5, None, 8])
 print(s.fillna(0))`,
-          tests: [
-            { id: 1, label: "Uses fillna", keywords: [".fillna"] },
-          ],
+          tests: [{ id: 1, label: "Uses fillna", keywords: [".fillna"] }],
         },
       },
       {
@@ -622,7 +693,8 @@ print(df.dropna())`,
         ],
         challenge: {
           title: "Drop Missing Rows",
-          description: "Create `df = pd.DataFrame({\"v\": [1, None, 2]})` and print `df.dropna()`.",
+          description:
+            'Create `df = pd.DataFrame({"v": [1, None, 2]})` and print `df.dropna()`.',
           starterCode: `import pandas as pd
 
 `,
@@ -630,9 +702,7 @@ print(df.dropna())`,
 
 df = pd.DataFrame({"v": [1, None, 2]})
 print(df.dropna())`,
-          tests: [
-            { id: 1, label: "Uses dropna", keywords: [".dropna()"] },
-          ],
+          tests: [{ id: 1, label: "Uses dropna", keywords: [".dropna()"] }],
         },
       },
       {
@@ -643,7 +713,7 @@ print(df.dropna())`,
           {
             type: "text",
             content:
-              "Assign new columns with `df[\"new_col\"] = ...`. You can compute from existing columns.",
+              'Assign new columns with `df["new_col"] = ...`. You can compute from existing columns.',
           },
           {
             type: "code",
@@ -659,7 +729,7 @@ print(df)`,
         challenge: {
           title: "New Column",
           description:
-            "Given `df` with `qty` = `[2, 3]`, add `df[\"double\"] = df[\"qty\"] * 2` and print `df`.",
+            'Given `df` with `qty` = `[2, 3]`, add `df["double"] = df["qty"] * 2` and print `df`.',
           starterCode: `import pandas as pd
 
 df = pd.DataFrame({"qty": [2, 3]})
@@ -671,7 +741,11 @@ df = pd.DataFrame({"qty": [2, 3]})
 df["double"] = df["qty"] * 2
 print(df)`,
           tests: [
-            { id: 1, label: "Adds double column", keywords: [{ pattern: 'df\\s*\\[\\s*"double"\\s*\\]' }] },
+            {
+              id: 1,
+              label: "Adds double column",
+              keywords: [{ pattern: 'df\\s*\\[\\s*"double"\\s*\\]' }],
+            },
           ],
         },
       },
@@ -691,7 +765,7 @@ print(df)`,
           {
             type: "text",
             content:
-              "**`groupby(\"col\")`** splits the table into groups, then you `.sum()`, `.mean()`, etc. on each group.",
+              '**`groupby("col")`** splits the table into groups, then you `.sum()`, `.mean()`, etc. on each group.',
           },
           {
             type: "code",
@@ -706,7 +780,7 @@ print(df.groupby("city")["sales"].sum())`,
         challenge: {
           title: "Sum by Group",
           description:
-            "Create `df` with `team` = `[\"red\", \"red\", \"blue\"]` and `pts` = `[3, 5, 2]`. Print `df.groupby(\"team\")[\"pts\"].sum()`.",
+            'Create `df` with `team` = `["red", "red", "blue"]` and `pts` = `[3, 5, 2]`. Print `df.groupby("team")["pts"].sum()`.',
           starterCode: `import pandas as pd
 
 `,
@@ -728,7 +802,7 @@ print(df.groupby("team")["pts"].sum())`,
           {
             type: "text",
             content:
-              "`.agg([\"mean\", \"max\"])` computes several statistics at once. Great for quick reports.",
+              '`.agg(["mean", "max"])` computes several statistics at once. Great for quick reports.',
           },
           {
             type: "code",
@@ -743,7 +817,7 @@ print(df.groupby("g")["v"].agg(["mean", "max"]))`,
         challenge: {
           title: "Group Mean",
           description:
-            "Given `df` with `dept` and `salary`, print `df.groupby(\"dept\")[\"salary\"].mean()`.",
+            'Given `df` with `dept` and `salary`, print `df.groupby("dept")["salary"].mean()`.',
           starterCode: `import pandas as pd
 
 df = pd.DataFrame({"dept": ["IT", "IT", "HR"], "salary": [50, 60, 45]})
@@ -754,7 +828,11 @@ df = pd.DataFrame({"dept": ["IT", "IT", "HR"], "salary": [50, 60, 45]})
 df = pd.DataFrame({"dept": ["IT", "IT", "HR"], "salary": [50, 60, 45]})
 print(df.groupby("dept")["salary"].mean())`,
           tests: [
-            { id: 1, label: "groupby dept", keywords: [{ pattern: 'groupby\\s*\\(\\s*"dept"\\s*\\)' }] },
+            {
+              id: 1,
+              label: "groupby dept",
+              keywords: [{ pattern: 'groupby\\s*\\(\\s*"dept"\\s*\\)' }],
+            },
             { id: 2, label: "mean salary", keywords: [".mean()"] },
           ],
         },
@@ -800,9 +878,7 @@ print(pd.concat([a, b]))`,
 a = pd.DataFrame({"n": [1]})
 b = pd.DataFrame({"n": [2]})
 print(pd.concat([a, b]))`,
-          tests: [
-            { id: 1, label: "Uses pd.concat", keywords: ["pd.concat"] },
-          ],
+          tests: [{ id: 1, label: "Uses pd.concat", keywords: ["pd.concat"] }],
         },
       },
       {
@@ -813,7 +889,7 @@ print(pd.concat([a, b]))`,
           {
             type: "text",
             content:
-              "`pd.merge(left, right, on=\"key\")` joins two tables like a SQL join on a shared column.",
+              '`pd.merge(left, right, on="key")` joins two tables like a SQL join on a shared column.',
           },
           {
             type: "code",
@@ -829,7 +905,7 @@ print(pd.merge(orders, names, on="id"))`,
         challenge: {
           title: "Simple Merge",
           description:
-            "Merge `left` and `right` on `id` where left has `id=[1], val=[10]` and right has `id=[1], tag=[\"a\"]`. Print result.",
+            'Merge `left` and `right` on `id` where left has `id=[1], val=[10]` and right has `id=[1], tag=["a"]`. Print result.',
           starterCode: `import pandas as pd
 
 left = pd.DataFrame({"id": [1], "val": [10]})
@@ -843,7 +919,11 @@ right = pd.DataFrame({"id": [1], "tag": ["a"]})
 print(pd.merge(left, right, on="id"))`,
           tests: [
             { id: 1, label: "Uses pd.merge", keywords: ["pd.merge"] },
-            { id: 2, label: "on id", keywords: [{ pattern: 'on\\s*=\\s*"id"' }] },
+            {
+              id: 2,
+              label: "on id",
+              keywords: [{ pattern: 'on\\s*=\\s*"id"' }],
+            },
           ],
         },
       },
@@ -863,7 +943,7 @@ print(pd.merge(left, right, on="id"))`,
           {
             type: "text",
             content:
-              "`pd.read_csv(\"file.csv\")` loads a CSV into a DataFrame. `df.to_csv(\"out.csv\", index=False)` saves without row numbers.",
+              '`pd.read_csv("file.csv")` loads a CSV into a DataFrame. `df.to_csv("out.csv", index=False)` saves without row numbers.',
           },
           {
             type: "code",
@@ -879,7 +959,8 @@ print(df)`,
           {
             type: "callout",
             variant: "tip",
-            content: "Always inspect with `df.head()` after loading a new file.",
+            content:
+              "Always inspect with `df.head()` after loading a new file.",
           },
         ],
         challenge: {
@@ -917,20 +998,27 @@ print(df)`,
           {
             type: "callout",
             variant: "info",
-            content: "Next steps: combine with NumPy for numeric work and Matplotlib for charts.",
+            content:
+              "Next steps: combine with NumPy for numeric work and Matplotlib for charts.",
           },
           {
             type: "quiz",
             question: "Which method loads a CSV file?",
-            options: ["pd.load_csv", "pd.read_csv", "pd.open_csv", "pd.import_csv"],
+            options: [
+              "pd.load_csv",
+              "pd.read_csv",
+              "pd.open_csv",
+              "pd.import_csv",
+            ],
             answer: 1,
-            explanation: "`pd.read_csv(path)` is the standard way to load CSV files.",
+            explanation:
+              "`pd.read_csv(path)` is the standard way to load CSV files.",
           },
         ],
         challenge: {
           title: "Mini Pipeline",
           description:
-            "Create `df = pd.DataFrame({\"cat\": [\"A\", \"A\", \"B\"], \"val\": [1, 2, 3]})`, print `df.groupby(\"cat\")[\"val\"].sum()`, then print `df.to_csv(index=False)`.",
+            'Create `df = pd.DataFrame({"cat": ["A", "A", "B"], "val": [1, 2, 3]})`, print `df.groupby("cat")["val"].sum()`, then print `df.to_csv(index=False)`.',
           starterCode: `import pandas as pd
 
 `,
