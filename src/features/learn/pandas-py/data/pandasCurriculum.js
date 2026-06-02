@@ -259,42 +259,57 @@ print(table)`,
           {
             type: "text",
             content:
-              "Create a Series from a list, dict, or NumPy array. The **index** labels each row — default is 0, 1, 2… or use custom names.",
+              "A **Series** is one of the most important data structures in Pandas. Think of it as a smart list: it stores values and gives each value a label called an **index**. This makes it easy to find and work with data.",
+          },
+          {
+            type: "text",
+            content:
+              "You can create a Series from a list, dictionary, or NumPy array. When using a dictionary, the keys automatically become the index labels.",
           },
           {
             type: "code",
             lang: "python",
-            label: "Series from a dict (keys become index)",
+            label: "Create a Series from a dictionary",
             content: `import pandas as pd
-
-temps = pd.Series({"Mon": 18, "Tue": 22, "Wed": 19})
-print(temps["Tue"])   # 22`,
+      
+      temps = pd.Series({
+          "Mon": 18,
+          "Tue": 22,
+          "Wed": 19
+      })
+      
+      print(temps)
+      print(temps["Tue"])`,
+          },
+          {
+            type: "callout",
+            variant: "info",
+            content:
+              "In this example, 'Mon', 'Tue', and 'Wed' are index labels. You can use them to access values directly instead of remembering positions.",
           },
           {
             type: "callout",
             variant: "tip",
-            content: "Use `.values` for the raw NumPy array behind a Series.",
+            content:
+              "Use `.values` to see the raw data stored inside a Series.",
           },
         ],
         challenge: {
-          title: "Dict to Series",
+          title: "Favorite Colors",
           description:
-            'Create `colors = pd.Series({"r": "red", "g": "green", "b": "blue"})` and print `colors["g"]`.',
+            'Create a Series named `colors` using a dictionary with keys `"r"`, `"g"`, and `"b"` and values `"red"`, `"green"`, and `"blue"`. Then print the value for `"g"`.',
           starterCode: `import pandas as pd
-
-`,
+      
+      `,
           solutionCode: `import pandas as pd
-
-colors = pd.Series({"r": "red", "g": "green", "b": "blue"})
-print(colors["g"])`,
-          tests: [
-            { id: 1, label: "pd.Series from dict", keywords: ["pd.Series"] },
-            {
-              id: 2,
-              label: 'Prints colors["g"]',
-              keywords: [{ pattern: 'colors\\s*\\[\\s*"g"\\s*\\]' }],
-            },
-          ],
+      
+      colors = pd.Series({
+          "r": "red",
+          "g": "green",
+          "b": "blue"
+      })
+      
+      print(colors["g"])`,
         },
       },
       {
