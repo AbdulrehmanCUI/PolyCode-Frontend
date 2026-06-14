@@ -296,7 +296,7 @@ function NumpyTheoryBlock({ block, step, accentColor }) {
         <RunnableCodeBlock
           block={block}
           accentColor={accentColor}
-          language="python"
+          language={block.lang || "python"}
         />
       </div>
     );
