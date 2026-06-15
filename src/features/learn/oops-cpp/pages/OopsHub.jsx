@@ -28,8 +28,7 @@ export default function OopsHub() {
     0,
   );
   const pct = Math.round((completedCount / ALL_LESSONS.length) * 100) || 0;
-  const nextLesson =
-    ALL_LESSONS.find((l) => !progress[l.id]) || ALL_LESSONS[0];
+  const nextLesson = ALL_LESSONS.find((l) => !progress[l.id]) || ALL_LESSONS[0];
   const resumeLesson =
     ALL_LESSONS.find((l) => l.id === lastLessonId) || nextLesson;
   const completedChapters = CHAPTERS.filter((ch) =>
@@ -157,7 +156,9 @@ export default function OopsHub() {
               </button>
             ))}
             {filteredLessons.length === 0 && (
-              <p className="oops-empty-copy">No lessons match that search yet.</p>
+              <p className="oops-empty-copy">
+                No lessons match that search yet.
+              </p>
             )}
           </div>
         </div>

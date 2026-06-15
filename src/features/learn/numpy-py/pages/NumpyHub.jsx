@@ -78,8 +78,8 @@ export default function NumpyHub() {
           <span className="oops-hero-accent">for Python</span>
         </h1>
         <p className="oops-hero-sub">
-          Learn ndarray basics, shape, dtype, and vector math with short lessons,
-          quizzes, and hands-on Python challenges.
+          Learn ndarray basics, shape, dtype, and vector math with short
+          lessons, quizzes, and hands-on Python challenges.
         </p>
 
         <div className="oops-hero-grid">
@@ -278,7 +278,8 @@ export default function NumpyHub() {
       <div className="oops-chapters">
         {NUMPY_CHAPTERS.map((chapter, index) => {
           const done = chapter.lessons.filter((l) => progress[l.id]).length;
-          const chapterPct = Math.round((done / chapter.lessons.length) * 100) || 0;
+          const chapterPct =
+            Math.round((done / chapter.lessons.length) * 100) || 0;
           const firstUnfinished = chapter.lessons.find((l) => !progress[l.id]);
           const allDone = done === chapter.lessons.length;
 
@@ -326,12 +327,18 @@ export default function NumpyHub() {
                 onClick={() =>
                   navigate(
                     `${BASE_PATH}/lesson/${
-                      firstUnfinished ? firstUnfinished.id : chapter.lessons[0].id
+                      firstUnfinished
+                        ? firstUnfinished.id
+                        : chapter.lessons[0].id
                     }`,
                   )
                 }
               >
-                {allDone ? "Review Chapter →" : done > 0 ? "Continue →" : "Start →"}
+                {allDone
+                  ? "Review Chapter →"
+                  : done > 0
+                    ? "Continue →"
+                    : "Start →"}
               </button>
             </div>
           );

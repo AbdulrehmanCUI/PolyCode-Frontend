@@ -8719,3 +8719,214 @@ body {
     align-items: flex-start;
   }
 }
+
+.certificate-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.certificate {
+  width: 1000px;
+  max-width: 100%;
+  background: #fff;
+  padding: 60px;
+  border: 3px solid #c9a227;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.certificate::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid #d4d4d4;
+}
+
+.certificate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.certificate-logo1 {
+  height: 250px;
+  object-fit: contain;
+}
+.certificate-logo2 {
+  height: 180px;
+
+  object-fit: contain;
+}
+.certificate-company {
+  text-align: center;
+  margin-top: 20px;
+  color: #10b981;
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: 1px;
+}
+
+.certificate-title {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 42px;
+  letter-spacing: 3px;
+  color: #111827;
+}
+
+.certificate-awarded {
+  text-align: center;
+  margin-top: 30px;
+  color: #6b7280;
+  font-size: 18px;
+}
+
+.certificate-name {
+  font-size: 76px;
+  font-family: "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 700;
+  color: #10b981;
+  text-align: center;
+}
+
+.certificate-text {
+  text-align: center;
+  color: #6b7280;
+  font-size: 18px;
+}
+
+.certificate-course {
+  font-size: 32px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #000;
+  text-align: center;
+}
+
+.certificate-stats {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  margin-top: 40px;
+}
+
+.certificate-stats div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.certificate-stats strong {
+  font-size: 30px;
+  color: #10b981;
+}
+
+.certificate-stats span {
+  color: #6b7280;
+}
+
+.certificate-info {
+  margin-top: 40px;
+  text-align: center;
+  line-height: 2;
+  color: #374151;
+}
+
+.certificate-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-top: 60px;
+}
+
+.signature-image {
+  height: 120px;
+  margin-bottom: -20px;
+}
+
+.signature-line {
+  width: 220px;
+  border-bottom: 2px solid #111827;
+  margin-top: 10px;
+}
+
+.signature-name {
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.signature-role {
+  color: #6b7280;
+  text-align: center;
+}
+
+.certificate-seal {
+  width: 120px;
+  height: 120px;
+  border: 5px solid #10b981;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #10b981;
+}
+
+.download-btn {
+  margin-top: 25px;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 10px;
+  background: #10b981;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.download-btn:hover {
+  opacity: 0.9;
+}
+
+.cert-divider {
+  text-align: center;
+  font-size: 20px;
+  color: #c9a227;
+  margin: 20px 0 40px;
+  letter-spacing: 8px;
+}
+.official-stamp {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+}
+.certificate-info {
+  display: flex;
+  justify-content: center;
+  gap: 120px;
+  margin-top: 50px;
+  text-align: center;
+}
+.verify-url {
+  color: #0f766e;
+  font-size: 14px;
+}
+.certificate-watermark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+.certificate-watermark img {
+  width: 500px;
+}

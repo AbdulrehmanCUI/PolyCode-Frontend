@@ -6,7 +6,7 @@ import {
   PANDAS_TOTAL_XP,
 } from "../data/pandasCurriculum";
 import usePandasProgress from "../hooks/usePandasProgress";
-
+import CourseCertificate from "../../shared/CourseCertificate";
 const BASE_PATH = "/learn/pandas-py";
 
 function lessonPlainText(lesson) {
@@ -28,10 +28,9 @@ export default function PandasHub() {
   } = usePandasProgress();
 
   const completedCount = Object.keys(progress).length;
-  const earnedXP = PANDAS_LESSONS.filter((lesson) => progress[lesson.id]).reduce(
-    (sum, lesson) => sum + lesson.xp,
-    0,
-  );
+  const earnedXP = PANDAS_LESSONS.filter(
+    (lesson) => progress[lesson.id],
+  ).reduce((sum, lesson) => sum + lesson.xp, 0);
   const pct = Math.round((completedCount / PANDAS_LESSONS.length) * 100) || 0;
   const nextLesson =
     PANDAS_LESSONS.find((lesson) => !progress[lesson.id]) || PANDAS_LESSONS[0];
@@ -151,7 +150,10 @@ export default function PandasHub() {
               placeholder="Search DataFrame, loc, groupby..."
               aria-label="Search Pandas lessons"
             />
-            <div className="oops-filter-tabs" aria-label="Filter Pandas lessons">
+            <div
+              className="oops-filter-tabs"
+              aria-label="Filter Pandas lessons"
+            >
               {[
                 ["all", "All"],
                 ["todo", "To do"],
@@ -278,7 +280,8 @@ export default function PandasHub() {
       <div className="oops-chapters">
         {PANDAS_CHAPTERS.map((chapter, index) => {
           const done = chapter.lessons.filter((l) => progress[l.id]).length;
-          const chapterPct = Math.round((done / chapter.lessons.length) * 100) || 0;
+          const chapterPct =
+            Math.round((done / chapter.lessons.length) * 100) || 0;
           const firstUnfinished = chapter.lessons.find((l) => !progress[l.id]);
           const allDone = done === chapter.lessons.length;
 
@@ -326,17 +329,30 @@ export default function PandasHub() {
                 onClick={() =>
                   navigate(
                     `${BASE_PATH}/lesson/${
-                      firstUnfinished ? firstUnfinished.id : chapter.lessons[0].id
+                      firstUnfinished
+                        ? firstUnfinished.id
+                        : chapter.lessons[0].id
                     }`,
                   )
                 }
               >
-                {allDone ? "Review Chapter →" : done > 0 ? "Continue →" : "Start →"}
+                {allDone
+                  ? "Review Chapter →"
+                  : done > 0
+                    ? "Continue →"
+                    : "Start →"}
               </button>
             </div>
           );
         })}
       </div>
+      <CourseCertificate
+        courseName="Pandas for Python"
+        totalLessons={PANDAS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={PANDAS_TOTAL_XP}
+      />
     </div>
   );
 }

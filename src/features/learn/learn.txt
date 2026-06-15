@@ -69,6 +69,7 @@ learn/
 ├── shared/
 │   ├── annotationCursors.js
 │   ├── applyLessonVideoLinks.js
+│   ├── CourseCertificate.jsx
 │   ├── LearnNavContext.js
 │   ├── LearnProfileMenu.jsx
 │   ├── LessonAnnotator.jsx
@@ -81,7 +82,7 @@ learn/
 │   ├── shared.txt
 │   └── youtubeUtils.js
 
-Total files: 47
+Total files: 48
 
 ================================================================================
 FILE CONTENTS
@@ -547,10 +548,6 @@ function text(content, codeBlock = null) {
 
 function diagram(title, nodes) {
   return { type: "diagram", title, nodes };
-}
-
-function code(label, content) {
-  return { type: "code", lang: "javascript", label, content };
 }
 
 export const JS_FUNDAMENTALS_CHAPTERS = [
@@ -1893,21 +1890,26 @@ export default function useJsFundamentalsProgress() {
   const [localVersion, setLocalVersion] = useState(0);
   const refreshLocal = useCallback(() => setLocalVersion((v) => v + 1), []);
 
-  const localCompletedMap = useMemo(
-    () => readJson(LOCAL_KEY, {}),
-    [localVersion],
-  );
-  const completedMap = isAuthenticated ? localCompletedMap : {};
-  const savedCodeMap = useMemo(
-    () => (isAuthenticated ? readJson(LOCAL_CODE_KEY, {}) : {}),
-    [isAuthenticated, localVersion],
-  );
-  const notesMap = useMemo(() => readJson(LOCAL_NOTES_KEY, {}), [localVersion]);
-  const bookmarks = useMemo(
-    () => readJson(LOCAL_BOOKMARKS_KEY, []),
-    [localVersion],
-  );
+  const localSnapshot = useMemo(() => {
+    void localVersion;
+    return {
+      completed: readJson(LOCAL_KEY, {}),
+      savedCode: readJson(LOCAL_CODE_KEY, {}),
+      notes: readJson(LOCAL_NOTES_KEY, {}),
+      bookmarks: readJson(LOCAL_BOOKMARKS_KEY, []),
+    };
+  }, [localVersion]);
+
+  const completedMap = isAuthenticated ? localSnapshot.completed : {};
+  const savedCodeMap = isAuthenticated ? localSnapshot.savedCode : {};
+  const notesMap = localSnapshot.notes;
+  const bookmarks = localSnapshot.bookmarks;
   const lastLessonId = localStorage.getItem(LOCAL_LAST_KEY);
+
+  const getLessonNote = useCallback(
+    (id) => localSnapshot.notes[id] || "",
+    [localSnapshot],
+  );
 
   const completeLesson = useCallback(
     async (lesson) => {
@@ -1980,6 +1982,7 @@ export default function useJsFundamentalsProgress() {
     saveNote,
     toggleBookmark,
     addTime,
+    getLessonNote,
   };
 }
 
@@ -2369,7 +2372,7 @@ export default function JsFundamentalsLessonPage() {
     isAuthenticated,
     completedMap: progress,
     savedCodeMap,
-    notesMap,
+    getLessonNote,
     bookmarks,
     completeLesson,
     rememberLesson,
@@ -2405,8 +2408,8 @@ export default function JsFundamentalsLessonPage() {
   }, [lessonId, rememberLesson]);
 
   useEffect(() => {
-    setNoteDraft(notesMap[lessonId] || "");
-  }, [lessonId]);
+    setNoteDraft(getLessonNote(lessonId));
+  }, [lessonId, getLessonNote]);
 
   useEffect(() => {
     setConfidence(
@@ -7845,21 +7848,26 @@ export default function useNumpyProgress() {
   const [localVersion, setLocalVersion] = useState(0);
   const refreshLocal = useCallback(() => setLocalVersion((v) => v + 1), []);
 
-  const localCompletedMap = useMemo(
-    () => readJson(LOCAL_KEY, {}),
-    [localVersion],
-  );
-  const completedMap = isAuthenticated ? localCompletedMap : {};
-  const savedCodeMap = useMemo(
-    () => (isAuthenticated ? readJson(LOCAL_CODE_KEY, {}) : {}),
-    [isAuthenticated, localVersion],
-  );
-  const notesMap = useMemo(() => readJson(LOCAL_NOTES_KEY, {}), [localVersion]);
-  const bookmarks = useMemo(
-    () => readJson(LOCAL_BOOKMARKS_KEY, []),
-    [localVersion],
-  );
+  const localSnapshot = useMemo(() => {
+    void localVersion;
+    return {
+      completed: readJson(LOCAL_KEY, {}),
+      savedCode: readJson(LOCAL_CODE_KEY, {}),
+      notes: readJson(LOCAL_NOTES_KEY, {}),
+      bookmarks: readJson(LOCAL_BOOKMARKS_KEY, []),
+    };
+  }, [localVersion]);
+
+  const completedMap = isAuthenticated ? localSnapshot.completed : {};
+  const savedCodeMap = isAuthenticated ? localSnapshot.savedCode : {};
+  const notesMap = localSnapshot.notes;
+  const bookmarks = localSnapshot.bookmarks;
   const lastLessonId = localStorage.getItem(LOCAL_LAST_KEY);
+
+  const getLessonNote = useCallback(
+    (id) => localSnapshot.notes[id] || "",
+    [localSnapshot],
+  );
 
   const completeLesson = useCallback(
     async (lesson) => {
@@ -7932,6 +7940,7 @@ export default function useNumpyProgress() {
     saveNote,
     toggleBookmark,
     addTime,
+    getLessonNote,
   };
 }
 
@@ -8019,8 +8028,8 @@ export default function NumpyHub() {
           <span className="oops-hero-accent">for Python</span>
         </h1>
         <p className="oops-hero-sub">
-          Learn ndarray basics, shape, dtype, and vector math with short lessons,
-          quizzes, and hands-on Python challenges.
+          Learn ndarray basics, shape, dtype, and vector math with short
+          lessons, quizzes, and hands-on Python challenges.
         </p>
 
         <div className="oops-hero-grid">
@@ -8219,7 +8228,8 @@ export default function NumpyHub() {
       <div className="oops-chapters">
         {NUMPY_CHAPTERS.map((chapter, index) => {
           const done = chapter.lessons.filter((l) => progress[l.id]).length;
-          const chapterPct = Math.round((done / chapter.lessons.length) * 100) || 0;
+          const chapterPct =
+            Math.round((done / chapter.lessons.length) * 100) || 0;
           const firstUnfinished = chapter.lessons.find((l) => !progress[l.id]);
           const allDone = done === chapter.lessons.length;
 
@@ -8267,12 +8277,18 @@ export default function NumpyHub() {
                 onClick={() =>
                   navigate(
                     `${BASE_PATH}/lesson/${
-                      firstUnfinished ? firstUnfinished.id : chapter.lessons[0].id
+                      firstUnfinished
+                        ? firstUnfinished.id
+                        : chapter.lessons[0].id
                     }`,
                   )
                 }
               >
-                {allDone ? "Review Chapter →" : done > 0 ? "Continue →" : "Start →"}
+                {allDone
+                  ? "Review Chapter →"
+                  : done > 0
+                    ? "Continue →"
+                    : "Start →"}
               </button>
             </div>
           );
@@ -8353,7 +8369,7 @@ export default function NumpyLessonPage() {
     isAuthenticated,
     completedMap: progress,
     savedCodeMap,
-    notesMap,
+    getLessonNote,
     bookmarks,
     completeLesson,
     rememberLesson,
@@ -8401,8 +8417,8 @@ export default function NumpyLessonPage() {
   }, [lessonId, rememberLesson]);
 
   useEffect(() => {
-    setNoteDraft(notesMap[lessonId] || "");
-  }, [lessonId]);
+    setNoteDraft(getLessonNote(lessonId));
+  }, [lessonId, getLessonNote]);
 
   useEffect(() => {
     setConfidence(localStorage.getItem(`numpy_py_confidence_${lessonId}`) || "");
@@ -14719,21 +14735,25 @@ export default function useOopsProgress() {
   }, [token, localVersion]);
 
   const completedMap = useMemo(() => {
+    void localVersion;
     if (remoteProgress) return progressToMap(remoteProgress);
     return readJson(LOCAL_KEY, {});
   }, [remoteProgress, localVersion]);
 
   const savedCodeMap = useMemo(() => {
+    void localVersion;
     if (remoteProgress) return savedCodeToMap(remoteProgress);
     return readJson(LOCAL_CODE_KEY, {});
   }, [remoteProgress, localVersion]);
 
   const notesMap = useMemo(() => {
+    void localVersion;
     if (remoteProgress) return notesToMap(remoteProgress);
     return readJson(LOCAL_NOTES_KEY, {});
   }, [remoteProgress, localVersion]);
 
   const bookmarks = useMemo(() => {
+    void localVersion;
     if (remoteProgress) return remoteProgress.bookmarks || [];
     return readJson(LOCAL_BOOKMARKS_KEY, []);
   }, [remoteProgress, localVersion]);
@@ -14852,6 +14872,11 @@ export default function useOopsProgress() {
     [token],
   );
 
+  const getLessonNote = useCallback(
+    (id) => notesMap[id] || "",
+    [notesMap],
+  );
+
   return {
     user,
     syncState,
@@ -14867,6 +14892,7 @@ export default function useOopsProgress() {
     saveNote,
     toggleBookmark,
     addTime,
+    getLessonNote,
   };
 }
 
@@ -14953,7 +14979,7 @@ export default function LessonPage() {
     remoteProgress,
     completedMap: progress,
     savedCodeMap,
-    notesMap,
+    getLessonNote,
     bookmarks,
     completeLesson,
     rememberLesson,
@@ -15002,8 +15028,8 @@ export default function LessonPage() {
   }, [lessonId, rememberLesson]);
 
   useEffect(() => {
-    setNoteDraft(notesMap[lessonId] || "");
-  }, [lessonId]);
+    setNoteDraft(getLessonNote(lessonId));
+  }, [lessonId, getLessonNote]);
 
   useEffect(() => {
     setConfidence(localStorage.getItem(`oops_confidence_${lessonId}`) || "");
@@ -15365,8 +15391,7 @@ export default function OopsHub() {
     0,
   );
   const pct = Math.round((completedCount / ALL_LESSONS.length) * 100) || 0;
-  const nextLesson =
-    ALL_LESSONS.find((l) => !progress[l.id]) || ALL_LESSONS[0];
+  const nextLesson = ALL_LESSONS.find((l) => !progress[l.id]) || ALL_LESSONS[0];
   const resumeLesson =
     ALL_LESSONS.find((l) => l.id === lastLessonId) || nextLesson;
   const completedChapters = CHAPTERS.filter((ch) =>
@@ -15494,7 +15519,9 @@ export default function OopsHub() {
               </button>
             ))}
             {filteredLessons.length === 0 && (
-              <p className="oops-empty-copy">No lessons match that search yet.</p>
+              <p className="oops-empty-copy">
+                No lessons match that search yet.
+              </p>
             )}
           </div>
         </div>
@@ -18013,21 +18040,26 @@ export default function usePandasProgress() {
   const [localVersion, setLocalVersion] = useState(0);
   const refreshLocal = useCallback(() => setLocalVersion((v) => v + 1), []);
 
-  const localCompletedMap = useMemo(
-    () => readJson(LOCAL_KEY, {}),
-    [localVersion],
-  );
-  const completedMap = isAuthenticated ? localCompletedMap : {};
-  const savedCodeMap = useMemo(
-    () => (isAuthenticated ? readJson(LOCAL_CODE_KEY, {}) : {}),
-    [isAuthenticated, localVersion],
-  );
-  const notesMap = useMemo(() => readJson(LOCAL_NOTES_KEY, {}), [localVersion]);
-  const bookmarks = useMemo(
-    () => readJson(LOCAL_BOOKMARKS_KEY, []),
-    [localVersion],
-  );
+  const localSnapshot = useMemo(() => {
+    void localVersion;
+    return {
+      completed: readJson(LOCAL_KEY, {}),
+      savedCode: readJson(LOCAL_CODE_KEY, {}),
+      notes: readJson(LOCAL_NOTES_KEY, {}),
+      bookmarks: readJson(LOCAL_BOOKMARKS_KEY, []),
+    };
+  }, [localVersion]);
+
+  const completedMap = isAuthenticated ? localSnapshot.completed : {};
+  const savedCodeMap = isAuthenticated ? localSnapshot.savedCode : {};
+  const notesMap = localSnapshot.notes;
+  const bookmarks = localSnapshot.bookmarks;
   const lastLessonId = localStorage.getItem(LOCAL_LAST_KEY);
+
+  const getLessonNote = useCallback(
+    (id) => localSnapshot.notes[id] || "",
+    [localSnapshot],
+  );
 
   const completeLesson = useCallback(
     async (lesson) => {
@@ -18100,6 +18132,7 @@ export default function usePandasProgress() {
     saveNote,
     toggleBookmark,
     addTime,
+    getLessonNote,
   };
 }
 
@@ -18115,7 +18148,7 @@ import {
   PANDAS_TOTAL_XP,
 } from "../data/pandasCurriculum";
 import usePandasProgress from "../hooks/usePandasProgress";
-
+import CourseCertificate from "../../shared/CourseCertificate";
 const BASE_PATH = "/learn/pandas-py";
 
 function lessonPlainText(lesson) {
@@ -18137,10 +18170,9 @@ export default function PandasHub() {
   } = usePandasProgress();
 
   const completedCount = Object.keys(progress).length;
-  const earnedXP = PANDAS_LESSONS.filter((lesson) => progress[lesson.id]).reduce(
-    (sum, lesson) => sum + lesson.xp,
-    0,
-  );
+  const earnedXP = PANDAS_LESSONS.filter(
+    (lesson) => progress[lesson.id],
+  ).reduce((sum, lesson) => sum + lesson.xp, 0);
   const pct = Math.round((completedCount / PANDAS_LESSONS.length) * 100) || 0;
   const nextLesson =
     PANDAS_LESSONS.find((lesson) => !progress[lesson.id]) || PANDAS_LESSONS[0];
@@ -18260,7 +18292,10 @@ export default function PandasHub() {
               placeholder="Search DataFrame, loc, groupby..."
               aria-label="Search Pandas lessons"
             />
-            <div className="oops-filter-tabs" aria-label="Filter Pandas lessons">
+            <div
+              className="oops-filter-tabs"
+              aria-label="Filter Pandas lessons"
+            >
               {[
                 ["all", "All"],
                 ["todo", "To do"],
@@ -18387,7 +18422,8 @@ export default function PandasHub() {
       <div className="oops-chapters">
         {PANDAS_CHAPTERS.map((chapter, index) => {
           const done = chapter.lessons.filter((l) => progress[l.id]).length;
-          const chapterPct = Math.round((done / chapter.lessons.length) * 100) || 0;
+          const chapterPct =
+            Math.round((done / chapter.lessons.length) * 100) || 0;
           const firstUnfinished = chapter.lessons.find((l) => !progress[l.id]);
           const allDone = done === chapter.lessons.length;
 
@@ -18435,17 +18471,30 @@ export default function PandasHub() {
                 onClick={() =>
                   navigate(
                     `${BASE_PATH}/lesson/${
-                      firstUnfinished ? firstUnfinished.id : chapter.lessons[0].id
+                      firstUnfinished
+                        ? firstUnfinished.id
+                        : chapter.lessons[0].id
                     }`,
                   )
                 }
               >
-                {allDone ? "Review Chapter →" : done > 0 ? "Continue →" : "Start →"}
+                {allDone
+                  ? "Review Chapter →"
+                  : done > 0
+                    ? "Continue →"
+                    : "Start →"}
               </button>
             </div>
           );
         })}
       </div>
+      <CourseCertificate
+        courseName="Pandas for Python"
+        totalLessons={PANDAS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={PANDAS_TOTAL_XP}
+      />
     </div>
   );
 }
@@ -18482,7 +18531,7 @@ export default function PandasLessonPage() {
     isAuthenticated,
     completedMap: progress,
     savedCodeMap,
-    notesMap,
+    getLessonNote,
     bookmarks,
     completeLesson,
     rememberLesson,
@@ -18516,8 +18565,8 @@ export default function PandasLessonPage() {
   }, [lessonId, rememberLesson]);
 
   useEffect(() => {
-    setNoteDraft(notesMap[lessonId] || "");
-  }, [lessonId]);
+    setNoteDraft(getLessonNote(lessonId));
+  }, [lessonId, getLessonNote]);
 
   useEffect(() => {
     setConfidence(
@@ -20369,17 +20418,26 @@ export default function usePointersProgress() {
   const [localVersion, setLocalVersion] = useState(0);
   const refreshLocal = useCallback(() => setLocalVersion((value) => value + 1), []);
 
-  const completedMap = useMemo(() => readJson(LOCAL_KEY, {}), [localVersion]);
-  const savedCodeMap = useMemo(
-    () => readJson(LOCAL_CODE_KEY, {}),
-    [localVersion],
-  );
-  const notesMap = useMemo(() => readJson(LOCAL_NOTES_KEY, {}), [localVersion]);
-  const bookmarks = useMemo(
-    () => readJson(LOCAL_BOOKMARKS_KEY, []),
-    [localVersion],
-  );
+  const localSnapshot = useMemo(() => {
+    void localVersion;
+    return {
+      completed: readJson(LOCAL_KEY, {}),
+      savedCode: readJson(LOCAL_CODE_KEY, {}),
+      notes: readJson(LOCAL_NOTES_KEY, {}),
+      bookmarks: readJson(LOCAL_BOOKMARKS_KEY, []),
+    };
+  }, [localVersion]);
+
+  const completedMap = localSnapshot.completed;
+  const savedCodeMap = localSnapshot.savedCode;
+  const notesMap = localSnapshot.notes;
+  const bookmarks = localSnapshot.bookmarks;
   const lastLessonId = localStorage.getItem(LOCAL_LAST_KEY);
+
+  const getLessonNote = useCallback(
+    (id) => localSnapshot.notes[id] || "",
+    [localSnapshot],
+  );
 
   const completeLesson = useCallback(
     async (lesson) => {
@@ -20449,6 +20507,7 @@ export default function usePointersProgress() {
     saveNote,
     toggleBookmark,
     addTime,
+    getLessonNote,
   };
 }
 
@@ -20853,7 +20912,7 @@ export default function PointersLessonPage() {
     user,
     completedMap: progress,
     savedCodeMap,
-    notesMap,
+    getLessonNote,
     bookmarks,
     completeLesson,
     rememberLesson,
@@ -20902,8 +20961,8 @@ export default function PointersLessonPage() {
   }, [lessonId, rememberLesson]);
 
   useEffect(() => {
-    setNoteDraft(notesMap[lessonId] || "");
-  }, [lessonId]);
+    setNoteDraft(getLessonNote(lessonId));
+  }, [lessonId, getLessonNote]);
 
   useEffect(() => {
     setConfidence(localStorage.getItem(`pointers_cpp_confidence_${lessonId}`) || "");
@@ -21511,6 +21570,95 @@ export function applyLessonVideoLinks(lessons, videoLinks = {}) {
     if (!url) return lesson;
     return { ...lesson, videoUrl: url };
   });
+}
+
+
+--------------------------------------------------------------------------------
+FILE: /shared/CourseCertificate.jsx
+--------------------------------------------------------------------------------
+// learn/shared/CourseCertificate.jsx
+import { useRef } from "react";
+import { useAuth } from "../../auth/context/AuthContext";
+
+export default function CourseCertificate({
+  courseName,
+  totalLessons,
+  completedCount,
+  earnedXP,
+  totalXP,
+}) {
+  const { user } = useAuth();
+  const ref = useRef();
+
+  const isComplete = completedCount >= totalLessons;
+  if (!isComplete) return null;
+
+  const date = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  const username =
+    user?.name || user?.username || user?.email?.split("@")[0] || "Learner";
+
+  const handlePrint = () => {
+    const html = ref.current?.innerHTML;
+    if (!html) return;
+    const win = window.open("", "_blank");
+    win.document.write(`
+      <!DOCTYPE html><html><head>
+      <title>${courseName} Certificate</title>
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #fff; display: flex; justify-content: center;
+               align-items: center; min-height: 100vh; font-family: Georgia, serif; }
+        .cert-card { width: 820px; padding: 56px 64px; border: 5px double #059669;
+                     text-align: center; position: relative; }
+        .cert-card::before, .cert-card::after {
+          content: ''; position: absolute; width: 100px; height: 100px;
+          border: 2px solid #05966940;
+        }
+        .cert-card::before { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+        .cert-card::after  { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+        .cert-logo     { font-size: .75rem; letter-spacing: .2em; text-transform: uppercase;
+                         color: #059669; margin-bottom: 2rem; font-weight: 700; }
+        .cert-presents { font-size: .9rem; color: #6b7280; margin-bottom: .75rem; }
+        .cert-username { font-size: 2.5rem; font-style: italic; color: #059669;
+                         border-bottom: 1px solid #05966940; display: inline-block;
+                         padding-bottom: .4rem; margin-bottom: 1rem; }
+        .cert-body     { font-size: .9rem; color: #6b7280; margin-bottom: .75rem; }
+        .cert-course   { font-size: 1.6rem; font-weight: 700; color: #111;
+                         margin-bottom: 1.25rem; }
+        .cert-meta     { font-size: .8rem; color: #9ca3af; margin-bottom: 1.75rem; }
+        .cert-seal     { font-size: 1.5rem; color: #05966980; letter-spacing: .3em; }
+        @media print { body { background: #fff; } }
+      </style></head><body>
+      <div class="cert-card">${html}</div>
+      </body></html>
+    `);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 400);
+  };
+
+  return (
+    <div className="cert-wrap">
+      <div className="cert-card" ref={ref}>
+        <div className="cert-logo">PolyCode</div>
+        <p className="cert-presents">This certifies that</p>
+        <h2 className="cert-username">{username}</h2>
+        <p className="cert-body">has successfully completed</p>
+        <h3 className="cert-course">{courseName}</h3>
+        <p className="cert-meta">
+          {completedCount} lessons · {earnedXP} XP earned · {date}
+        </p>
+        <div className="cert-seal">✦ PolyCode ✦</div>
+      </div>
+      <button className="cert-download-btn" onClick={handlePrint}>
+        🖨 Print / Save as PDF
+      </button>
+    </div>
+  );
 }
 
 
