@@ -8,6 +8,8 @@ import {
   getVSCodeEditorOptions,
   POLYCODE_VSCODE_THEME,
 } from "../../../../shared/utils/monacoTheme";
+import ChallengeCompleteCelebration from "../../shared/ChallengeCompleteCelebration";
+import { useChallengeCelebration } from "../../shared/useChallengeCelebration";
 
 export default function CodeChallenge({
   challenge,
@@ -31,6 +33,8 @@ export default function CodeChallenge({
   const monacoRef = useRef(null);
   const fixedSelectionDecorationRef = useRef([]);
   const fixedSelectionRangeRef = useRef(null);
+  const { showCelebration, triggerCelebration, dismissCelebration } =
+    useChallengeCelebration(challenge.id);
   useEffect(() => {
     const challengeChanged = activeChallengeId.current !== challenge.id;
 
@@ -181,10 +185,13 @@ export default function CodeChallenge({
         stdout,
         expected: expectedOutput,
       });
-      if (allPassed && !isCompleted) {
-        Promise.resolve(onComplete()).catch((error) => {
-          console.error("Unable to save lesson progress:", error);
-        });
+      if (allPassed) {
+        triggerCelebration();
+        if (!isCompleted) {
+          Promise.resolve(onComplete()).catch((error) => {
+            console.error("Unable to save lesson progress:", error);
+          });
+        }
       }
       setRunning(false);
     }, 800);
@@ -1103,6 +1110,11 @@ export default function CodeChallenge({
 
   return (
     <div className="oops-challenge">
+      <ChallengeCompleteCelebration
+        show={showCelebration}
+        accentColor={accentColor}
+        onDismiss={dismissCelebration}
+      />
       {/* Problem statement */}
       <div className="oops-problem-panel">
         <div className="oops-problem-header">
