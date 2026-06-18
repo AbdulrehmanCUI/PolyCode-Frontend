@@ -9087,6 +9087,7 @@ body {
   width: 100px;
   height: 100px;
   object-fit: contain;
+  margin-right: 50px;
 }
 
 /* =========================
@@ -9139,4 +9140,5 @@ body {
   font-size: 0.6rem;
   color: #64748b;
   gap: 0.25rem;
+  margin-left: 600px;
 }

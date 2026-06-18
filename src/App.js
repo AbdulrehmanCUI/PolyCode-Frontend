@@ -7,6 +7,8 @@ import {
   useNavigate,
   useLocation,
 } from "react-router-dom";
+import VerifyCertificatePage from "./features/learn/shared/VerifyCertificatePage";
+
 import Navbar from "./features/navigation/components/Navbar";
 import Sidebar from "./features/navigation/components/Sidebar";
 import { PlaygroundProvider } from "./features/playground/context/PlaygroundContext";
@@ -15,7 +17,6 @@ import SelectionPins from "./shared/components/SelectionPins";
 import { LearnNavProvider } from "./features/learn/shared/LearnNavContext";
 import GlobalAssistant from "./features/assistant/components/GlobalAssistant";
 import { AssistantProvider } from "./features/assistant/context/AssistantContext";
-import VerifyCertificatePage from "./features/learn/shared/VerifyCertificatePage";
 import "./App.css";
 import "./styles/theme-light.css";
 import "./styles/stack-picker-dark.css";
@@ -204,15 +205,12 @@ function MainApp({
                   />
                 }
               />
+
               <Route
                 path="/daily-challenge"
                 element={<DailyChallenge theme={theme} />}
               />
               <Route path="*" element={<Navigate to="/hub" replace />} />
-              <Route
-                path="/verify-certificate"
-                element={<VerifyCertificatePage />}
-              />
             </Routes>
           </Suspense>
         </main>
@@ -409,6 +407,14 @@ function AppRoutes() {
           element={
             <ThemedShell theme={theme}>
               <SignupPage />
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/verify-certificate"
+          element={
+            <ThemedShell theme={theme}>
+              <VerifyCertificatePage />
             </ThemedShell>
           }
         />
