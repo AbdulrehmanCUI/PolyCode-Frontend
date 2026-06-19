@@ -55,6 +55,12 @@ const NumpyHub = lazy(() => import("./features/learn/numpy-py/pages/NumpyHub"));
 const NumpyLessonPage = lazy(
   () => import("./features/learn/numpy-py/pages/NumpyLessonPage"),
 );
+const MatplotlibHub = lazy(
+  () => import("./features/learn/matplotlib-py/pages/MatplotlibHub"),
+);
+const MatplotlibLessonPage = lazy(
+  () => import("./features/learn/matplotlib-py/pages/MatplotlibLessonPage"),
+);
 const PandasHub = lazy(
   () => import("./features/learn/pandas-py/pages/PandasHub"),
 );
@@ -355,7 +361,8 @@ function AppRoutes() {
     const path = location.pathname;
     if (
       path.startsWith("/learn/numpy-py") ||
-      path.startsWith("/learn/pandas-py")
+      path.startsWith("/learn/pandas-py") ||
+      path.startsWith("/learn/matplotlib-py")
     ) {
       handleLanguageSelect("Python", { stay: true });
     } else if (path.startsWith("/learn/js-fundamentals")) {
@@ -623,6 +630,38 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <PandasLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        {/* ✅ CORRECT: Route is the direct child, ThemedShell is inside the element prop */}
+        <Route
+          path="/learn/matplotlib-py"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onToggleTheme={toggleTheme}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <MatplotlibHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        <Route
+          path="/learn/matplotlib-py/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onToggleTheme={toggleTheme}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <MatplotlibLessonPage />
               </LearnShell>
             </ThemedShell>
           }
