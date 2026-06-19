@@ -6,6 +6,7 @@ import {
   Navigate,
   useNavigate,
   useLocation,
+  useParams,
 } from "react-router-dom";
 import VerifyCertificatePage from "./features/learn/shared/VerifyCertificatePage";
 
@@ -216,6 +217,47 @@ function MainApp({
         </main>
       </div>
     </>
+  );
+}
+
+function ProfileRouteOrMainApp({
+  theme,
+  onToggleTheme,
+  onGoToStackPicker,
+  selectedLanguage,
+  onLanguageSelect,
+}) {
+  const { username = "" } = useParams();
+
+  if (username.startsWith("@")) {
+    return (
+      <ThemedShell theme={theme}>
+        <LearnShell
+          theme={theme}
+          onToggleTheme={onToggleTheme}
+          onGoToStackPicker={onGoToStackPicker}
+          selectedLanguage={selectedLanguage}
+        >
+          <ProfilePage />
+        </LearnShell>
+      </ThemedShell>
+    );
+  }
+
+  return (
+    <ThemedShell theme={theme}>
+      {selectedLanguage ? (
+        <MainApp
+          selectedLanguage={selectedLanguage}
+          onLanguageSelect={onLanguageSelect}
+          onGoToStackPicker={onGoToStackPicker}
+          theme={theme}
+          onToggleTheme={onToggleTheme}
+        />
+      ) : (
+        <Navigate to="/select-language" replace />
+      )}
+    </ThemedShell>
   );
 }
 
@@ -722,18 +764,15 @@ function AppRoutes() {
           element={<ProfileRedirect />}
         />
         <Route
-          path="/@:username"
+          path="/:username"
           element={
-            <ThemedShell theme={theme}>
-              <LearnShell
-                theme={theme}
-                onToggleTheme={toggleTheme}
-                onGoToStackPicker={goToStackPicker}
-                selectedLanguage={selectedLanguage}
-              >
-                <ProfilePage />
-              </LearnShell>
-            </ThemedShell>
+            <ProfileRouteOrMainApp
+              theme={theme}
+              onToggleTheme={toggleTheme}
+              onGoToStackPicker={goToStackPicker}
+              selectedLanguage={selectedLanguage}
+              onLanguageSelect={handleLanguageSelect}
+            />
           }
         />
         <Route

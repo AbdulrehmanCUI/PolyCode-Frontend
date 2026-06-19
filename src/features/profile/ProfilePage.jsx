@@ -233,7 +233,7 @@ export default function ProfilePage() {
   const [publicUser, setPublicUser] = React.useState(null);
   const [profileLoading, setProfileLoading] = React.useState(false);
   const [profileError, setProfileError] = React.useState("");
-  const routeUsername = username?.trim().toLowerCase();
+  const routeUsername = username?.replace(/^@/, "").trim().toLowerCase();
   const signedInUsername = user?.username?.toLowerCase();
   const isOwnProfile =
     !routeUsername || Boolean(signedInUsername && routeUsername === signedInUsername);
