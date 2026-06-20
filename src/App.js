@@ -54,24 +54,44 @@ function lazyWithChunkRetry(importer) {
   );
 }
 
-const LandingPage = lazyWithChunkRetry(() => import("./features/landing/pages/LandingPage"));
+const LandingPage = lazyWithChunkRetry(
+  () => import("./features/landing/pages/LandingPage"),
+);
 const LanguageLandingPage = lazyWithChunkRetry(
   () => import("./features/language/pages/LanguageLandingPage"),
 );
-const HomePage = lazyWithChunkRetry(() => import("./features/docs/pages/Home/HomePage"));
-const DocumentPage = lazyWithChunkRetry(() => import("./features/docs/pages/DocumentPage"));
-const CategoryPage = lazyWithChunkRetry(() => import("./features/docs/pages/CategoryPage"));
-const SearchPage = lazyWithChunkRetry(() => import("./features/docs/pages/SearchPage"));
+const HomePage = lazyWithChunkRetry(
+  () => import("./features/docs/pages/Home/HomePage"),
+);
+const DocumentPage = lazyWithChunkRetry(
+  () => import("./features/docs/pages/DocumentPage"),
+);
+const CategoryPage = lazyWithChunkRetry(
+  () => import("./features/docs/pages/CategoryPage"),
+);
+const SearchPage = lazyWithChunkRetry(
+  () => import("./features/docs/pages/SearchPage"),
+);
 const PlaygroundPage = lazyWithChunkRetry(
   () => import("./features/playground/pages/PlaygroundPage"),
 );
-const LoginPage = lazyWithChunkRetry(() => import("./features/auth/pages/LoginPage"));
-const SignupPage = lazyWithChunkRetry(() => import("./features/auth/pages/SignupPage"));
-const DailyChallenge = lazyWithChunkRetry(() => import("./pages/DailyChallenges"));
-const ProfilePage = lazyWithChunkRetry(() => import("./features/profile/ProfilePage"));
+const LoginPage = lazyWithChunkRetry(
+  () => import("./features/auth/pages/LoginPage"),
+);
+const SignupPage = lazyWithChunkRetry(
+  () => import("./features/auth/pages/SignupPage"),
+);
+const DailyChallenge = lazyWithChunkRetry(
+  () => import("./pages/DailyChallenges"),
+);
+const ProfilePage = lazyWithChunkRetry(
+  () => import("./features/profile/ProfilePage"),
+);
 
 // Learn — OOP C++ pages
-const OopsHub = lazyWithChunkRetry(() => import("./features/learn/oops-cpp/pages/OopsHub"));
+const OopsHub = lazyWithChunkRetry(
+  () => import("./features/learn/oops-cpp/pages/OopsHub"),
+);
 const LessonPage = lazyWithChunkRetry(
   () => import("./features/learn/oops-cpp/pages/LessonPage"),
 );
@@ -81,21 +101,19 @@ const PointersHub = lazyWithChunkRetry(
 const PointersLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/pointers-cpp/pages/PointersLessonPage"),
 );
-const NumpyHub = lazyWithChunkRetry(() => import("./features/learn/numpy-py/pages/NumpyHub"));
+const NumpyHub = lazyWithChunkRetry(
+  () => import("./features/learn/numpy-py/pages/NumpyHub"),
+);
 const NumpyLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/numpy-py/pages/NumpyLessonPage"),
 );
-<<<<<<< HEAD
-const MatplotlibHub = lazy(
+const MatplotlibHub = lazyWithChunkRetry(
   () => import("./features/learn/matplotlib-py/pages/MatplotlibHub"),
 );
-const MatplotlibLessonPage = lazy(
+const MatplotlibLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/matplotlib-py/pages/MatplotlibLessonPage"),
 );
-const PandasHub = lazy(
-=======
 const PandasHub = lazyWithChunkRetry(
->>>>>>> dba4fce096a98baa63529dfde20143e058b87e7e
   () => import("./features/learn/pandas-py/pages/PandasHub"),
 );
 const PandasLessonPage = lazyWithChunkRetry(
@@ -835,10 +853,7 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
-        <Route
-          path="/profile"
-          element={<ProfileRedirect />}
-        />
+        <Route path="/profile" element={<ProfileRedirect />} />
         <Route
           path="/*"
           element={
