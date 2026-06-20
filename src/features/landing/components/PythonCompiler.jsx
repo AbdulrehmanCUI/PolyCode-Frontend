@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { Sparkles } from "lucide-react";
+import { ArrowRight, Play, Terminal } from "lucide-react";
 import {
   runPythonCode,
   formatPythonOutput,
@@ -26,6 +26,7 @@ const LANGUAGES = [
     id: "python",
     label: "Python",
     accent: "#3776ab",
+    file: "main.py",
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg",
     desc: "Versatile and beginner-friendly — great for AI, data science, and automation.",
     code: `# Python Example\nname = "PolyCode"\nprint(f"Welcome to {name}!")`,
@@ -34,6 +35,7 @@ const LANGUAGES = [
     id: "javascript",
     label: "JavaScript",
     accent: "#d97706",
+    file: "app.js",
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg",
     desc: "The language of the web — build interactive UIs, APIs, and full-stack apps.",
     code: `// JavaScript Example\nconst name = "PolyCode";\nconsole.log(\`Welcome to \${name}!\`);`,
@@ -42,6 +44,7 @@ const LANGUAGES = [
     id: "cpp",
     label: "C++",
     accent: "#f34b7d",
+    file: "main.cpp",
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg",
     desc: "High-performance systems language for games, OS internals, and embedded software.",
     code: `// C++ Example\n#include <iostream>\nusing namespace std;\n\nint main() {\n  cout << "Welcome to PolyCode!" << endl;\n  return 0;\n}`,
@@ -50,6 +53,7 @@ const LANGUAGES = [
     id: "csharp",
     label: "C#",
     accent: "#9b4f96",
+    file: "Program.cs",
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg",
     desc: "Modern OOP from Microsoft — apps, games, and enterprise backends.",
     code: `// C# Example\nstring name = "PolyCode";\nConsole.WriteLine("Welcome to " + name + "!");`,
@@ -183,14 +187,14 @@ export default function TryItSection() {
   return (
     <section className="tryit-section">
       <div className="landing-container">
-        <div className="tryit-header">
+        <header className="tryit-header">
           <p className="landing-sec-label">Live Playground</p>
-          <h2 className="landing-sec-title">Try Code Instantly</h2>
+          <h2 className="landing-sec-title">Learn by Doing</h2>
           <p className="landing-sec-sub tryit-header-sub">
-            Switch languages and run the built-in sample — open the full
-            playground to write your own code.
+            Write real code, run samples instantly, and switch languages to see
+            how PolyCode teaches every stack.
           </p>
-        </div>
+        </header>
 
         <div className="tryit-tabs" role="tablist" aria-label="Languages">
           {LANGUAGES.map((lang) => (
@@ -214,83 +218,85 @@ export default function TryItSection() {
           ))}
         </div>
 
-        <div className="tryit-shell">
-          <div className="tryit-panel">
-            <div className="tryit-body">
-              <aside
-                className="tryit-left"
-                style={{ "--lang-accent": activeLang.accent }}
+        <div
+          className="tryit-compiler"
+          style={{ "--lang-accent": activeLang.accent }}
+        >
+          <aside className="tryit-sidebar">
+            <div className="tryit-lang-badge">
+              <img
+                src={activeLang.icon}
+                alt=""
+                className="tryit-lang-logo"
+                aria-hidden
+              />
+            </div>
+            <h3 className="tryit-lang-name">{activeLang.label}</h3>
+            <p className="tryit-lang-desc">{activeLang.desc}</p>
+            <div className="tryit-sidebar-actions">
+              <button
+                type="button"
+                className="tryit-run-btn"
+                onClick={run}
+                disabled={running}
               >
-                <div className="tryit-lang-badge">
-                  <img
-                    src={activeLang.icon}
-                    alt=""
-                    className="tryit-lang-logo"
-                    aria-hidden
-                  />
-                </div>
-                <div>
-                  <h3 className="tryit-lang-name">{activeLang.label}</h3>
-                  <p className="tryit-lang-desc">{activeLang.desc}</p>
-                </div>
-                <div className="tryit-sidebar-actions">
-                  <button
-                    type="button"
-                    className="tryit-run-btn"
-                    onClick={run}
-                    disabled={running}
-                  >
-                    {running ? "▶ Running…" : "▶ Run Code"}
-                  </button>
-                  <a
-                    href={`/language/${activeLang.id}`}
-                    className="tryit-learn-btn"
-                  >
-                    Learn {activeLang.label} →
-                  </a>
-                </div>
-              </aside>
+                <Play size={16} fill="currentColor" aria-hidden />
+                {running ? "Running…" : "Run Code"}
+              </button>
+              <a
+                href={`/language/${activeLang.id}`}
+                className="tryit-learn-btn"
+              >
+                <span>Learn {activeLang.label}</span>
+                <ArrowRight size={16} aria-hidden />
+              </a>
+            </div>
+          </aside>
 
-              <div className="tryit-right">
-                <div className="tryit-terminal">
-                  <DemoCodePanel code={demoCode} />
-
-                  <div
-                    className={[
-                      "tryit-output",
-                      !hasOutput && "tryit-output--empty",
-                      isError && "tryit-output--error",
-                      running && "tryit-output--running",
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
-                  >
-                    <div className="tryit-output-head">
-                      <span className="tryit-output-label">
-                        <Sparkles size={12} />
-                        Output
-                      </span>
-                      {hasOutput && !isError ? (
-                        <span className="tryit-output-badge tryit-output-badge--ok">
-                          Success
-                        </span>
-                      ) : null}
-                      {isError ? (
-                        <span className="tryit-output-badge tryit-output-badge--err">
-                          Failed
-                        </span>
-                      ) : null}
-                    </div>
-                    <pre className="tryit-output-pre">
-                      {running
-                        ? "Executing your code…"
-                        : hasOutput
-                          ? output
-                          : OUTPUT_HINT}
-                    </pre>
-                  </div>
-                </div>
+          <div className="tryit-editor-pane">
+            <div className="tryit-workspace-toolbar">
+              <div className="tryit-file-tab">
+                <span className="tryit-file-dot" aria-hidden />
+                {activeLang.file}
               </div>
+              <span className="tryit-toolbar-label">Code Editor</span>
+            </div>
+
+            <DemoCodePanel code={demoCode} />
+
+            <div
+              className={[
+                "tryit-output",
+                !hasOutput && "tryit-output--empty",
+                isError && "tryit-output--error",
+                running && "tryit-output--running",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
+              <div className="tryit-output-head">
+                <span className="tryit-output-label">
+                  <Terminal size={13} aria-hidden />
+                  Output
+                </span>
+                {hasOutput && !isError ? (
+                  <span className="tryit-output-badge tryit-output-badge--ok">
+                    Success
+                  </span>
+                ) : null}
+                {isError ? (
+                  <span className="tryit-output-badge tryit-output-badge--err">
+                    Failed
+                  </span>
+                ) : null}
+              </div>
+              <pre className="tryit-output-pre">
+                {running
+                  ? "Executing your code…"
+                  : hasOutput
+                    ? output
+                    : OUTPUT_HINT}
+              </pre>
             </div>
           </div>
         </div>
