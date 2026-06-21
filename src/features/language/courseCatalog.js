@@ -173,6 +173,17 @@ export const languageCourses = {
       accent: "#179c24",
     },
   ],
+  ruby: [
+    {
+      title: "Ruby Fundamentals",
+      tag: "Interactive Course",
+      icon: Terminal,
+      description:
+        "Foundational Ruby Programming: expressive syntax, block-based iteration, dynamic typing, core object-oriented principles, modules and mixins, error handling, and file I/O operations.",
+      href: "/learn/ruby-fundamentals",
+      accent: "#701516",
+    }
+  ]
 };
 
 /** Navbar learn links per language (mirrors languageCourses). */
@@ -194,6 +205,7 @@ export const learnNavByLanguage = {
   ],
   javascript: [{ label: "JS Basics", to: "/learn/js-fundamentals" }],
   php: [{ label: "PHP Basics", to: "/learn/php-fundamentals" }],
+  ruby: [{label: "Ruby Basics", to: "/learn/ruby-fundamentals"}]
 };
 
 /** Infer stack from an active /learn/* route when language is not set. */
@@ -217,6 +229,9 @@ export function inferLanguageFromLearnPath(pathname = "") {
   }
   if (pathname.startsWith("/learn/php-fundamentals")) {
     return "php";
+  }
+  if (pathname.startsWith("/learn/ruby-fundamentals")){
+    return "ruby";
   }
   return null;
 }
