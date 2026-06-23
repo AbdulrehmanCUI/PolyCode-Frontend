@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ProfileAvatar from "./ProfileAvatar";
+import ThemeSettingsMenu from "../../../shared/theme/ThemeSettingsMenu";
 import {
   getDisplayBio,
   getDisplayName,
@@ -18,6 +19,8 @@ export default function ProfileHero({
   followSaving = false,
   onToggleFollow,
   onLoadConnections,
+  theme = "dark",
+  onThemeChange,
 }) {
   const [activeList, setActiveList] = useState(null);
   const [connectionUsers, setConnectionUsers] = useState([]);
@@ -155,6 +158,18 @@ export default function ProfileHero({
             <span>Current Streak</span>
             <strong>{totalStreak} days</strong>
           </div>
+          {typeof onThemeChange === "function" ? (
+            <div className="profile-appearance">
+              <span className="profile-appearance-label">Appearance</span>
+              <ThemeSettingsMenu
+                theme={theme}
+                onThemeChange={onThemeChange}
+                buttonClassName="profile-theme-btn"
+                panelClassName="profile-theme-panel theme-settings-panel"
+                align="left"
+              />
+            </div>
+          ) : null}
           {canEdit && (
             <button
               type="button"

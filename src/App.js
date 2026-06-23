@@ -33,6 +33,8 @@ import {
 } from "./shared/theme/themes";
 import "./styles/stack-picker-dark.css";
 import "./styles/responsive.css";
+import "./styles/theme-dark.css";
+import "./styles/theme-profile.css";
 
 import LandingShell from "./features/landing/LandingShell";
 
@@ -71,6 +73,9 @@ const LandingPage = lazyWithChunkRetry(
 );
 const LanguageLandingPage = lazyWithChunkRetry(
   () => import("./features/language/pages/LanguageLandingPage"),
+);
+const AllCoursesPage = lazyWithChunkRetry(
+  () => import("./features/courses/pages/AllCoursesPage"),
 );
 const HomePage = lazyWithChunkRetry(
   () => import("./features/docs/pages/Home/HomePage"),
@@ -377,7 +382,11 @@ function LearnShell({
           aria-hidden="true"
         />
       )}
-      <main className="main-content learn-content">{children}</main>
+      <main className="main-content learn-content">
+        {React.isValidElement(children)
+          ? React.cloneElement(children, { theme, onThemeChange })
+          : children}
+      </main>
     </LearnNavProvider>
   );
 }
@@ -596,6 +605,14 @@ function AppRoutes() {
                 continueLanguage={selectedLanguage}
               />
             </StackPickerShell>
+          }
+        />
+        <Route
+          path="/courses"
+          element={
+            <ThemedShell theme={theme}>
+              <AllCoursesPage />
+            </ThemedShell>
           }
         />
         <Route

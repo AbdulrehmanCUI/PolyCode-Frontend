@@ -5,7 +5,6 @@ import {
   Bot,
   Brain,
   Braces,
-  CheckCircle2,
   CircleDot,
   ClipboardList,
   Code,

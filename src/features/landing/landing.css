@@ -551,6 +551,12 @@ NAVBAR
   padding: 0.55rem;
 }
 
+.ln-course-groups-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
 .ln-course-groups {
   display: grid;
   grid-template-columns: 148px minmax(0, 1fr);
@@ -617,6 +623,7 @@ NAVBAR
   gap: 0.15rem;
   padding: 0.15rem 0.2rem 0.15rem 0.35rem;
   min-width: 0;
+  min-height: 0;
 }
 
 .ln-course-groups-panel-title {
@@ -662,6 +669,58 @@ NAVBAR
 
 .ln-course-group-all:hover {
   opacity: 1;
+}
+
+.ln-course-group-see-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+  margin-top: auto;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--stack-accent) 38%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--stack-accent) 14%, transparent);
+  color: var(--stack-accent);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.ln-course-group-see-all:hover {
+  background: color-mix(in srgb, var(--stack-accent) 22%, transparent);
+  border-color: color-mix(in srgb, var(--stack-accent) 55%, transparent);
+}
+
+.ln-course-groups-view-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--v2-cyan, var(--accent, #ffe566));
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.ln-course-groups-view-all:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: color-mix(in srgb, var(--v2-cyan, var(--accent, #ffe566)) 40%, transparent);
 }
 
 @keyframes ln-dropdown-in-right {
@@ -1946,9 +2005,9 @@ NAVBAR
    ============================================================ */
 
 .polycode-landing {
-  --v2-cyan: #00e5ff;
-  --v2-cyan-dim: rgba(0, 229, 255, 0.07);
-  --v2-cyan-border: rgba(0, 229, 255, 0.18);
+  --v2-cyan: var(--acid, #ffe566);
+  --v2-cyan-dim: var(--acid-dim, rgba(255, 229, 102, 0.12));
+  --v2-cyan-border: rgba(255, 229, 102, 0.28);
   --v2-violet: #7c3aed;
   --v2-violet-dim: rgba(124, 58, 237, 0.1);
   --v2-orange: #fb923c;
@@ -2878,9 +2937,9 @@ NAVBAR
    ============================================================ */
 
 .polycode-landing {
-  --v2-cyan: #00e5ff;
-  --v2-cyan-dim: rgba(0, 229, 255, 0.07);
-  --v2-cyan-border: rgba(0, 229, 255, 0.18);
+  --v2-cyan: var(--acid, #ffe566);
+  --v2-cyan-dim: var(--acid-dim, rgba(255, 229, 102, 0.12));
+  --v2-cyan-border: rgba(255, 229, 102, 0.28);
   --v2-violet: #7c3aed;
   --v2-violet-dim: rgba(124, 58, 237, 0.1);
   --v2-orange: #fb923c;
@@ -4956,16 +5015,60 @@ NAVBAR
 }
 
 .landing-mobile-course-group-all {
-  align-self: flex-start;
-  margin-top: 0.15rem;
-  padding: 0.35rem 0.5rem;
+  margin-top: 4px;
+  padding: 8px 10px 2px;
   border: none;
   background: none;
-  color: var(--stack-accent, var(--v2-cyan));
-  font-size: 0.75rem;
+  color: var(--stack-accent, var(--v2-cyan, #00e5ff));
+  font: inherit;
+  font-size: 0.82rem;
   font-weight: 700;
-  font-family: inherit;
+  text-align: left;
   cursor: pointer;
+}
+
+.landing-mobile-course-group-see-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--stack-accent) 38%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--stack-accent) 14%, transparent);
+  color: var(--stack-accent);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.landing-mobile-course-group-see-all:hover {
+  background: color-mix(in srgb, var(--stack-accent) 22%, transparent);
+}
+
+.landing-mobile-course-groups-view-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--v2-cyan, var(--accent, #ffe566));
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.landing-mobile-course-groups-view-all:hover {
+  background: rgba(255, 255, 255, 0.09);
 }
 
 .landing-mobile-cta {
@@ -5640,6 +5743,26 @@ NAVBAR
 .app.theme-light .polycode-landing .ln-course-groups-panel-title,
 .polycode-landing.polycode-landing--light .ln-course-groups-panel-title {
   color: #94a3b8;
+}
+
+.app.theme-light .polycode-landing .ln-course-groups-view-all,
+.polycode-landing.polycode-landing--light .ln-course-groups-view-all {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #4f46e5;
+}
+
+.app.theme-light .polycode-landing .ln-course-groups-view-all:hover,
+.polycode-landing.polycode-landing--light .ln-course-groups-view-all:hover {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+
+.app.theme-light .polycode-landing .landing-mobile-course-groups-view-all,
+.polycode-landing.polycode-landing--light .landing-mobile-course-groups-view-all {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #4f46e5;
 }
 
 .app.theme-light .polycode-landing .landing-mobile-course-group,

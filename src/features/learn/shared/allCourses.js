@@ -20,3 +20,14 @@ export const COURSE_GROUPS = courseStackGroups
     courses: languageCourses[group.id] || [],
   }))
   .filter((group) => group.courses.length > 0);
+
+/** Max stacks shown in navbar left column before "view all courses" CTA. */
+export const STACK_NAV_LIMIT = 5;
+
+/** Max courses shown in navbar stack panel before "see all" CTA. */
+export const COURSE_PANEL_LIMIT = 5;
+
+export function getAllCoursesPath(stackId = null) {
+  if (!stackId) return "/courses";
+  return `/courses?stack=${encodeURIComponent(stackId)}`;
+}

@@ -4243,7 +4243,10 @@ body {
   padding: 16px;
   border: 1px solid var(--learn-card-border, var(--vscode-border, #3c3c3c));
   border-radius: 10px;
-  background: var(--learn-card-bg, color-mix(in srgb, var(--vscode-panel, #252526) 92%, #ffffff));
+  background: var(
+    --learn-card-bg,
+    color-mix(in srgb, var(--vscode-panel, #252526) 92%, #ffffff)
+  );
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
 }
 
@@ -4443,6 +4446,10 @@ body {
   gap: 10px;
 }
 
+.learn-lesson-chapter-tag {
+  color: var(--ch-color, var(--lesson-accent, var(--acid, #ffe566)));
+}
+
 .oops-path-step {
   min-height: 56px;
   border: 1px solid var(--learn-tile-border, var(--border, #1e2433));
@@ -4550,7 +4557,8 @@ body {
 }
 
 .oops-path-step.done {
-  box-shadow: inset 3px 0 0 var(--learn-chapter-progress-fill, var(--acid, #ffe566));
+  box-shadow: inset 3px 0 0
+    var(--learn-chapter-progress-fill, var(--acid, #ffe566));
 }
 
 .oops-path-step.active {
@@ -4754,7 +4762,9 @@ body {
   border: none;
   border-radius: 7px;
   cursor: pointer;
-  transition: opacity 0.15s, filter 0.15s;
+  transition:
+    opacity 0.15s,
+    filter 0.15s;
 }
 
 .oops-chapter-cta:hover {
@@ -5087,15 +5097,15 @@ body {
 
 .profile-hero {
   padding: clamp(20px, 4vw, 34px);
-  border: 1px solid rgba(55, 148, 255, 0.22);
+  border: 1px solid var(--profile-hero-border, var(--border, #1e2433));
   border-radius: 12px;
   background:
     radial-gradient(
       circle at top right,
-      rgba(0, 212, 255, 0.14),
+      var(--profile-hero-glow, rgba(255, 229, 102, 0.12)),
       transparent 38%
     ),
-    var(--vscode-panel, #252526);
+    var(--profile-hero-bg, var(--vscode-panel, #252526));
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
 }
 
@@ -5114,7 +5124,14 @@ body {
   border-radius: 999px;
   overflow: hidden;
   flex-shrink: 0;
-  background: linear-gradient(135deg, var(--vscode-blue, #007acc), #00d4ff);
+  background: var(
+    --profile-avatar-ring,
+    linear-gradient(
+      135deg,
+      var(--vscode-blue, #007acc),
+      var(--profile-accent, #ffe566)
+    )
+  );
 }
 
 .profile-hero-avatar--lg {
@@ -5176,8 +5193,8 @@ body {
   gap: 6px;
   padding: 5px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(55, 148, 255, 0.35);
-  background: rgba(55, 148, 255, 0.12);
+  border: 1px solid var(--profile-accent-border, rgba(55, 148, 255, 0.35));
+  background: var(--profile-accent-dim, rgba(55, 148, 255, 0.12));
   color: var(--txt-0, #f0f0ff);
   font-size: 0.72rem;
   font-weight: 700;
@@ -5233,11 +5250,11 @@ body {
 }
 
 .profile-hero-stat:hover strong {
-  color: var(--acid, #ffe566);
+  color: var(--profile-accent, var(--acid, #ffe566));
 }
 
 .profile-hero-stat[aria-expanded="true"] {
-  color: var(--acid, #ffe566);
+  color: var(--profile-accent, var(--acid, #ffe566));
 }
 
 .profile-hero-message-btn {
@@ -5252,8 +5269,8 @@ body {
 }
 
 .profile-hero-message-btn:hover {
-  border-color: rgba(0, 212, 255, 0.45);
-  background: rgba(0, 212, 255, 0.08);
+  border-color: var(--profile-accent-border, rgba(255, 229, 102, 0.45));
+  background: var(--profile-accent-dim, rgba(255, 229, 102, 0.08));
 }
 
 .profile-hero-message-btn:disabled {
@@ -5275,9 +5292,10 @@ body {
 .profile-connection-panel {
   margin-top: 14px;
   max-width: 420px;
-  border: 1px solid var(--border, #1e2433);
+  border: 1px solid var(--profile-panel-border, var(--border, #1e2433));
   border-radius: 14px;
-  background: var(--bg-card, rgba(8, 13, 22, 0.72));
+  background: var(--profile-panel-bg, var(--vscode-panel-2, #1a1e28));
+  color: var(--profile-panel-muted, var(--txt-2, #94a3b8));
   padding: 12px;
   box-shadow: var(--shadow-sm);
 }
@@ -5291,18 +5309,22 @@ body {
 }
 
 .profile-connection-panel-head strong {
-  color: var(--txt-0, #f0f0ff);
+  color: var(--profile-panel-fg, var(--txt-0, #f8fafc));
   font-size: 0.92rem;
 }
 
 .profile-connection-panel-head button {
   border: none;
   background: transparent;
-  color: var(--txt-2, #94a3b8);
+  color: var(--profile-panel-muted, var(--txt-2, #94a3b8));
   cursor: pointer;
   font: inherit;
   font-size: 0.78rem;
   font-weight: 700;
+}
+
+.profile-connection-panel-head button:hover {
+  color: var(--profile-panel-fg, var(--txt-0, #f8fafc));
 }
 
 .profile-connection-list {
@@ -5322,7 +5344,7 @@ body {
 }
 
 .profile-connection-user:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--profile-panel-hover, rgba(255, 255, 255, 0.06));
 }
 
 .profile-connection-user .profile-avatar-sm {
@@ -5335,19 +5357,19 @@ body {
 }
 
 .profile-connection-user strong {
-  color: var(--txt-0, #f8fafc);
+  color: var(--profile-panel-fg, var(--txt-0, #f8fafc));
   font-size: 0.88rem;
   line-height: 1.25;
 }
 
 .profile-connection-user small {
-  color: var(--txt-2, #94a3b8);
+  color: var(--profile-panel-muted, var(--txt-2, #94a3b8));
   font-size: 0.76rem;
 }
 
 .profile-connection-state {
   margin: 0;
-  color: var(--txt-2, #94a3b8);
+  color: var(--profile-panel-muted, var(--txt-2, #94a3b8));
   font-size: 0.84rem;
 }
 
@@ -5755,7 +5777,7 @@ body {
 
 .profile-total-progress strong {
   display: block;
-  color: var(--acid, #ffe566);
+  color: var(--profile-accent, var(--acid, #ffe566));
   font-size: 1.45rem;
   margin-top: 4px;
 }
@@ -5807,7 +5829,7 @@ body {
 }
 
 .profile-activity-head strong {
-  color: var(--cyan, #00d4ff);
+  color: var(--profile-accent, var(--cyan, #00d4ff));
   font-size: 0.92rem;
 }
 
@@ -6038,7 +6060,8 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  border: 1px solid var(--learn-card-border, var(--border, rgba(255, 255, 255, 0.08)));
+  border: 1px solid
+    var(--learn-card-border, var(--border, rgba(255, 255, 255, 0.08)));
   border-radius: 16px;
   background: var(--learn-cert-bg);
   padding: 18px;
@@ -8132,7 +8155,11 @@ body {
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
-    linear-gradient(160deg, color-mix(in srgb, var(--stage-color) 12%, transparent), transparent 55%),
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--stage-color) 12%, transparent),
+      transparent 55%
+    ),
     rgba(255, 255, 255, 0.025);
 }
 
@@ -8194,7 +8221,9 @@ body {
   font-weight: 700;
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 
 .matplotlib-path-cta:hover {
@@ -8261,7 +8290,9 @@ body {
   background: rgba(255, 255, 255, 0.03);
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 
 .matplotlib-prereq-card:hover {
@@ -8319,7 +8350,8 @@ body {
   gap: 14px;
   padding: 16px 18px;
   border-radius: 12px;
-  border: 1px solid color-mix(in srgb, var(--lesson-accent, #4f46e5) 35%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--lesson-accent, #4f46e5) 35%, transparent);
   background: color-mix(in srgb, var(--lesson-accent, #4f46e5) 8%, transparent);
 }
 

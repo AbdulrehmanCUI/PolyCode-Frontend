@@ -245,7 +245,7 @@ function getCompletedTrackCertificate(track) {
   };
 }
 
-export default function ProfilePage() {
+export default function ProfilePage({ theme = "dark", onThemeChange }) {
   const { username } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -528,6 +528,8 @@ export default function ProfilePage() {
         followSaving={followSaving}
         onToggleFollow={handleToggleFollow}
         onLoadConnections={loadProfileConnections}
+        theme={theme}
+        onThemeChange={onThemeChange}
       />
 
       {followError && (
