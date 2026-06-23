@@ -173,7 +173,7 @@ const RubyFundamentalsLessonPage = lazyWithChunkRetry(
 );
 
 const PageFallback = () => (
-  <div className="loading">
+  <div className="loading-overlay">
     <div className="spinner-container">
       <div className="spinner" />
     </div>
