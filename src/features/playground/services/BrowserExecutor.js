@@ -169,6 +169,7 @@ const PYTHON_STDLIB_PREFIXES = [
   'collections', 'itertools', 'functools', 'typing', 'statistics',
   'string', 'textwrap', 'unicodedata', 'struct', 'codecs', 'copy',
   'pprint', 'reprlib', 'enum', 'graphlib', 'contextlib', 'abc',
+  'io', 'pickle', 'pathlib', 'warnings', 'builtins',
 ];
 
 /** Pyodide wheels available via loadPackage (used by learn + playground). */
@@ -180,6 +181,7 @@ const PYTHON_PYODIDE_PACKAGES = {
   micropip: 'micropip',
   sklearn: 'scikit-learn',
   skimage: 'scikit-image',
+  joblib: 'joblib',
 };
 
 function getImportedModules(code = '') {
@@ -201,15 +203,37 @@ function isAllowedPythonModule(moduleName = '') {
   return Object.prototype.hasOwnProperty.call(PYTHON_PYODIDE_PACKAGES, moduleName);
 }
 
+function getPyodideWheelPackages(code = '') {
+  const wheels = new Set();
+  for (const name of getImportedModules(code)) {
+    const wheel = PYTHON_PYODIDE_PACKAGES[name];
+    if (wheel) wheels.add(wheel);
+  }
+  // scikit-learn already bundles joblib — loading both causes Pyodide errors.
+  if (wheels.has("scikit-learn")) {
+    wheels.delete("joblib");
+  }
+  return [...wheels];
+}
+
 async function ensurePyodidePackages(py, code = '') {
-  const needed = getImportedModules(code)
-    .map((name) => PYTHON_PYODIDE_PACKAGES[name])
-    .filter(Boolean);
+  const needed = getPyodideWheelPackages(code);
 
   for (const pkg of needed) {
     if (pyodideLoadedPackages.has(pkg)) continue;
-    await py.loadPackage(pkg);
-    pyodideLoadedPackages.add(pkg);
+    try {
+      await py.loadPackage(pkg);
+      pyodideLoadedPackages.add(pkg);
+      if (pkg === "scikit-learn") {
+        pyodideLoadedPackages.add("joblib");
+      }
+    } catch (error) {
+      const message = error?.message || String(error);
+      throw new Error(
+        `Could not load ${pkg} in the browser (${message}). ` +
+          "Start the PolyCode backend (port 5000) so this lesson can run with server Python.",
+      );
+    }
   }
 }
 
@@ -297,7 +321,7 @@ export async function runPython(code, stdin = '') {
           '',
           '💡 This playground runs Python with Pyodide (WebAssembly).',
           '',
-          '✅ Available: stdlib, numpy, pandas, matplotlib, scipy, micropip',
+          '✅ Available: stdlib, numpy, pandas, matplotlib, scipy, scikit-learn, joblib, micropip',
           '❌ Not available: requests, socket, threading, subprocess, etc.',
         ].join('\n'),
         error: `Module '${importedModule}' is not available in the browser.`,
