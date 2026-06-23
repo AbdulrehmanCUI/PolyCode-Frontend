@@ -55,11 +55,11 @@
   }
 
   .doc-header h1 {
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: clamp(1.3rem, 4vw, 1.6rem);
   }
 
   .page-title-hero {
-    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-size: clamp(1.45rem, 4.5vw, 1.85rem);
   }
 }
 
@@ -298,10 +298,24 @@
 
   .doc-header {
     margin-bottom: 28px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .doc-header h1 {
-    font-size: clamp(1.75rem, 7vw, 2.5rem);
+    font-size: clamp(1.3rem, 6vw, 1.55rem);
+    order: 2;
+    width: 100%;
+  }
+
+  .doc-badge-row {
+    order: 1;
+  }
+
+  .doc-stats {
+    order: 3;
+    width: 100%;
   }
 
   .doc-badge-row {
@@ -319,7 +333,7 @@
   }
 
   .page-title-hero {
-    font-size: clamp(1.85rem, 8vw, 2.75rem);
+    font-size: clamp(1.4rem, 7vw, 1.75rem);
   }
 
   .search-page-form {
@@ -342,7 +356,6 @@
   .grid-2,
   .grid-3,
   .cat-grid,
-  .lang-grid,
   .grid-bento {
     grid-template-columns: 1fr !important;
   }
@@ -402,8 +415,8 @@
   }
 
   .doc-header h1 {
-    font-size: 1.65rem;
-    letter-spacing: -0.03em;
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
   }
 
   .doc-stats {
@@ -606,10 +619,19 @@
   }
 }
 
-/* ── Stack picker ── */
+/* Stack picker — keep languages in a horizontal grid on small screens */
 @media (max-width: 900px) {
   .language-select-page-wrapper .lang-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+    gap: 12px;
+  }
+
+  .language-select-page-wrapper .lang-card {
+    padding: 20px 12px;
+  }
+
+  .language-select-page-wrapper .lang-card .lang-name {
+    font-size: 0.95rem;
   }
 }
 

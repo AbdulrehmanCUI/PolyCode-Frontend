@@ -223,9 +223,13 @@ NAVBAR
 
 .landing-logo-text {
   font-size: 0.95rem;
-  font-weight: 800;
-  color: #f0f0ff;
+  font-weight: 700;
+  color: var(--txt-0, #f0f0ff);
   letter-spacing: -0.02em;
+  -webkit-text-fill-color: currentColor;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
 }
 
 .landing-logo-sub {
@@ -755,13 +759,17 @@ NAVBAR
 }
 
 .landing-logo-text {
-  color: #ffffff;
+  color: var(--txt-0, #ffffff);
 
   font-size: 1.15rem;
-  font-weight: 800;
+  font-weight: 700;
 
   line-height: 1;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
+  -webkit-text-fill-color: currentColor;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
 }
 
 .landing-logo-sub {
@@ -2636,7 +2644,7 @@ NAVBAR
 
 @media (max-width: 560px) {
   .polycode-landing .landing-get-started .lang-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.75rem;
   }
 
@@ -5181,12 +5189,40 @@ NAVBAR
 .polycode-landing.polycode-landing--light .landing-sec-title,
 .polycode-landing.polycode-landing--light .cs-title {
   color: #111827;
+  -webkit-text-fill-color: #111827;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
 }
 
 .app.theme-light .polycode-landing .landing-logo-sub,
 .polycode-landing.polycode-landing--light .landing-logo-sub {
-  color: #64748b;
+  color: #475569;
   opacity: 1;
+}
+
+.app.theme-light .polycode-landing .landing-brand-mark,
+.polycode-landing.polycode-landing--light .landing-brand-mark {
+  background: linear-gradient(145deg, #eef2ff 0%, #f8fafc 52%, #ecfeff 100%);
+  border: 1px solid rgba(79, 70, 229, 0.24);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.app.theme-light .polycode-landing .landing-brand:hover .landing-brand-mark,
+.polycode-landing.polycode-landing--light .landing-brand:hover .landing-brand-mark {
+  border-color: rgba(79, 70, 229, 0.42);
+  box-shadow:
+    0 2px 10px rgba(79, 70, 229, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.app.theme-light .polycode-landing .landing-logo,
+.polycode-landing.polycode-landing--light .landing-logo {
+  width: 26px;
+  height: 26px;
+  filter: contrast(1.14) saturate(1.22) drop-shadow(0 1px 2px rgba(15, 23, 42, 0.12));
 }
 
 .app.theme-light .polycode-landing .landing-nav-link,
