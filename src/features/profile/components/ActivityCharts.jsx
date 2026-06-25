@@ -1,7 +1,15 @@
 import React from "react";
 
-const CHART_HEIGHT = 100;
-const CHART_PAD = { top: 8, right: 4, bottom: 22, left: 4 };
+const CHART_HEIGHT = 120;
+const CHART_VIEW_WIDTH = 400;
+const CHART_PAD = { top: 10, right: 8, bottom: 24, left: 8 };
+const DAILY_CHART_DAYS = 42;
+const WEEKLY_CHART_WEEKS = 12;
+
+function sliceRecentDays(days, dayCount) {
+  if (!days.length) return [];
+  return days.slice(-Math.min(dayCount, days.length));
+}
 
 function bucketWeeks(days) {
   const weeks = [];
@@ -48,18 +56,24 @@ function ChartTooltip({ tooltip }) {
 
 export function ActivityLineChart({ days }) {
   const [tooltip, setTooltip] = React.useState(null);
-  const maxCount = Math.max(1, ...days.map((day) => day.count));
-  const width = Math.max(days.length * 6, 280);
+  const chartDays = React.useMemo(
+    () => sliceRecentDays(days, DAILY_CHART_DAYS),
+    [days],
+  );
+  const maxCount = Math.max(1, ...chartDays.map((day) => day.count));
+  const width = CHART_VIEW_WIDTH;
   const innerW = width - CHART_PAD.left - CHART_PAD.right;
   const innerH = CHART_HEIGHT - CHART_PAD.top - CHART_PAD.bottom;
   const axisLabels = sampleAxisLabels(
-    days.map((day) => ({ ...day, shortLabel: day.label })),
+    chartDays.map((day) => ({ ...day, shortLabel: day.label })),
   );
 
-  const points = days.map((day, index) => {
+  const points = chartDays.map((day, index) => {
     const x =
       CHART_PAD.left +
-      (days.length <= 1 ? innerW / 2 : (index / (days.length - 1)) * innerW);
+      (chartDays.length <= 1
+        ? innerW / 2
+        : (index / (chartDays.length - 1)) * innerW);
     const y = CHART_PAD.top + innerH - (day.count / maxCount) * innerH;
     return { ...day, x, y };
   });
@@ -82,11 +96,15 @@ export function ActivityLineChart({ days }) {
 
   return (
     <div className="profile-activity-chart profile-activity-line-chart">
-      <h3>Daily trend</h3>
+      <div className="profile-chart-heading">
+        <h3>Daily trend</h3>
+        <span className="profile-chart-range">Last {chartDays.length} days</span>
+      </div>
       <div className="profile-chart-wrap">
         <svg
           className="profile-chart-svg"
           viewBox={`0 0 ${width} ${CHART_HEIGHT}`}
+          preserveAspectRatio="xMidYMid meet"
           role="img"
           aria-label="Line chart of daily lesson completions"
         >
@@ -126,7 +144,9 @@ export function ActivityLineChart({ days }) {
           {axisLabels.map(({ index, label }) => {
             const x =
               CHART_PAD.left +
-              (days.length <= 1 ? innerW / 2 : (index / (days.length - 1)) * innerW);
+              (chartDays.length <= 1
+                ? innerW / 2
+                : (index / (chartDays.length - 1)) * innerW);
             return (
               <text
                 key={`${label}-${index}`}
@@ -148,14 +168,18 @@ export function ActivityLineChart({ days }) {
 
 export function ActivityBarChart({ days }) {
   const [tooltip, setTooltip] = React.useState(null);
-  const weeks = React.useMemo(() => bucketWeeks(days), [days]);
+  const chartDays = React.useMemo(
+    () => sliceRecentDays(days, WEEKLY_CHART_WEEKS * 7),
+    [days],
+  );
+  const weeks = React.useMemo(() => bucketWeeks(chartDays), [chartDays]);
   const maxCount = Math.max(1, ...weeks.map((week) => week.count));
-  const width = Math.max(weeks.length * 28, 280);
+  const width = CHART_VIEW_WIDTH;
   const innerW = width - CHART_PAD.left - CHART_PAD.right;
   const innerH = CHART_HEIGHT - CHART_PAD.top - CHART_PAD.bottom;
-  const barGap = 8;
+  const barGap = weeks.length > 8 ? 6 : 10;
   const barWidth = Math.max(
-    10,
+    12,
     (innerW - barGap * Math.max(weeks.length - 1, 0)) / Math.max(weeks.length, 1),
   );
   const axisLabels = sampleAxisLabels(weeks);
@@ -171,11 +195,17 @@ export function ActivityBarChart({ days }) {
 
   return (
     <div className="profile-activity-chart profile-activity-bar-chart">
-      <h3>Weekly totals</h3>
+      <div className="profile-chart-heading">
+        <h3>Weekly totals</h3>
+        <span className="profile-chart-range">
+          Last {weeks.length} week{weeks.length === 1 ? "" : "s"}
+        </span>
+      </div>
       <div className="profile-chart-wrap">
         <svg
           className="profile-chart-svg"
           viewBox={`0 0 ${width} ${CHART_HEIGHT}`}
+          preserveAspectRatio="xMidYMid meet"
           role="img"
           aria-label="Bar chart of weekly lesson completions"
         >
