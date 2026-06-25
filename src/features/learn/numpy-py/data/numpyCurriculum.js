@@ -3163,106 +3163,216 @@ print(grid.ravel())`,
           {
             type: "text",
             content:
-              "Often you get data in **pieces** and want **one bigger table**. Like combining **Week 1** and **Week 2** sales, or putting **names** next to **scores**. NumPy has simple tools to **glue arrays together**.",
+              "Real data often arrives in **separate pieces** — two weekly reports, two column lists, two route tallies. NumPy can **glue** those pieces into one array. Below, each method is shown as: **piece 1 → piece 2 → combined result → code**.",
           },
-          {
-            type: "diagram",
-            title: "Two ways to stack (picture it)",
-            nodes: [
-              {
-                id: "vstack",
-                label: "vstack — vertical",
-                color: "#f97316",
-                items: [
-                  "Stack on top of each other",
-                  "Each piece becomes a new row",
-                  "Week 1 above Week 2",
-                ],
-              },
-              {
-                id: "hstack",
-                label: "hstack — horizontal",
-                color: "#fb923c",
-                items: [
-                  "Place side by side",
-                  "Each piece becomes new columns",
-                  "Names beside scores",
-                ],
-              },
-            ],
-          },
-          {
-            type: "code",
-            lang: "python",
-            label: "vstack — two weeks of test scores",
-            content: `import numpy as np
 
-week1 = np.array([80, 90, 85])   # Ali, Ben, Cara
-week2 = np.array([88, 92, 78])
-
-# Stack as rows: row 1 = week 1, row 2 = week 2
-both_weeks = np.vstack([week1, week2])
-print(both_weeks)
-print(both_weeks.shape)   # (2, 3)`,
-          },
-          {
-            type: "code",
-            lang: "python",
-            label: "hstack — student ID + score in one table",
-            content: `import numpy as np
-
-ids = np.array([[101],
-                [102]])           # two students
-scores = np.array([[95],
-                   [87]])
-
-# Put ID column next to score column
-report = np.hstack([ids, scores])
-print(report)
-# [[101, 95],
-#  [102, 87]]`,
-          },
+          // ── np.vstack ──────────────────────────────────────────────
           {
             type: "text",
             content:
-              "**`np.concatenate`** is the general glue — you choose **which direction** with `axis`. **`axis=0`** is like vstack (down). **`axis=1`** is like hstack (across).",
+              "**np.vstack — stack rows (vertical).** Use when each piece is a **row** and you want to **pile them on top of each other** — like sliding Week 2's report under Week 1's.",
+          },
+          {
+            type: "scenario",
+            content:
+              "A café manager receives **two separate weekly sales sheets** — one for Week 1, one for Week 2. Each sheet is its own small table (one row, four days).",
+          },
+          {
+            type: "array",
+            title: "Piece 1 — Week 1 (separate array `week1`)",
+            label: "week1",
+            values: [420, 380, 510, 490],
+            colLabels: ["Mon", "Tue", "Wed", "Thu"],
+            accentColor: "#f97316",
+            footnote: "This lives in **its own variable**. Not joined to Week 2 yet.",
+          },
+          {
+            type: "array",
+            title: "Piece 2 — Week 2 (separate array `week2`)",
+            label: "week2",
+            values: [450, 395, 530, 505],
+            colLabels: ["Mon", "Tue", "Wed", "Thu"],
+            accentColor: "#fb923c",
+            footnote: "Same column layout as Week 1, but still a **second, separate** array.",
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              "**Before vstack:** two arrays, each shape **(4,)** or **(1, 4)**. **After `np.vstack([week1, week2])`:** one table, shape **(2, 4)** — Week 1 on top, Week 2 below.",
+          },
+          {
+            type: "array",
+            title: "Combined — after `np.vstack([week1, week2])`",
+            rows: [
+              {
+                label: "week1",
+                values: [420, 380, 510, 490],
+                colLabels: ["Mon", "Tue", "Wed", "Thu"],
+              },
+              {
+                label: "week2",
+                values: [450, 395, 530, 505],
+                colLabels: ["Mon", "Tue", "Wed", "Thu"],
+              },
+            ],
+            accentColor: "#22c55e",
+            footnote: "One manager's view: **both weeks in a single (2 × 4) table**.",
           },
           {
             type: "code",
             lang: "python",
-            label: "concatenate — same idea, more control",
+            label: "vstack — café sales, two weeks",
             content: `import numpy as np
 
-a = np.array([1, 2, 3])
-b = np.array([4, 5, 6])
+week1 = np.array([420, 380, 510, 490])   # piece 1
+week2 = np.array([450, 395, 530, 505])   # piece 2
 
-# Join into one long list
-line = np.concatenate([a, b])
-print(line)   # [1, 2, 3, 4, 5, 6]`,
+both_weeks = np.vstack([week1, week2])    # combine ↓
+print(both_weeks)
+print(both_weeks.shape)   # (2, 4)`,
+          },
+
+          // ── np.hstack ──────────────────────────────────────────────
+          {
+            type: "text",
+            content:
+              "**np.hstack — stack columns (horizontal).** Use when each piece is a **column** and you want to **place them side by side** — like putting badge numbers next to hours worked.",
           },
           {
-            type: "table",
-            title: "Quick cheat sheet",
-            showTotals: false,
-            columns: ["Function", "Plain English", "Real-life example"],
+            type: "scenario",
+            content:
+              "HR exports **badge numbers** in one file and **hours worked** in another. Same three employees, but two separate column lists.",
+          },
+          {
+            type: "array",
+            title: "Piece 1 — badge numbers (separate array `badges`)",
+            rows: [
+              { label: "Sara", values: [1042], colLabels: ["Badge #"] },
+              { label: "Omar", values: [1048], colLabels: ["Badge #"] },
+              { label: "Lina", values: [1051], colLabels: ["Badge #"] },
+            ],
+            accentColor: "#f97316",
+            footnote: "A **(3 × 1)** column — IDs only. No hours yet.",
+          },
+          {
+            type: "array",
+            title: "Piece 2 — hours worked (separate array `hours`)",
+            rows: [
+              { label: "Sara", values: [38], colLabels: ["Hours"] },
+              { label: "Omar", values: [40], colLabels: ["Hours"] },
+              { label: "Lina", values: [36], colLabels: ["Hours"] },
+            ],
+            accentColor: "#fb923c",
+            footnote: "Another **(3 × 1)** column — hours only. Same row order as badges.",
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              "**Before hstack:** two columns stored separately. **After `np.hstack([badges, hours])`:** one **(3 × 2)** payroll table — badge on the left, hours on the right for each person.",
+          },
+          {
+            type: "array",
+            title: "Combined — after `np.hstack([badges, hours])`",
             rows: [
               {
-                label: "vstack",
-                values: ["Stack as new rows", "Put Week 2 under Week 1"],
+                label: "Sara",
+                values: [1042, 38],
+                colLabels: ["Badge #", "Hours"],
               },
               {
-                label: "hstack",
-                values: ["Stack as new columns", "Put scores beside names"],
+                label: "Omar",
+                values: [1048, 40],
+                colLabels: ["Badge #", "Hours"],
               },
               {
-                label: "concatenate",
-                values: ["Join along any axis", "Merge playlists end-to-end"],
+                label: "Lina",
+                values: [1051, 36],
+                colLabels: ["Badge #", "Hours"],
               },
             ],
+            accentColor: "#22c55e",
+            footnote: "One row per employee — **both columns merged horizontally**.",
           },
           {
+            type: "code",
+            lang: "python",
+            label: "hstack — badges beside hours",
+            content: `import numpy as np
+
+badges = np.array([[1042], [1048], [1051]])   # piece 1
+hours  = np.array([[38], [40], [36]])          # piece 2
+
+payroll = np.hstack([badges, hours])           # combine →
+print(payroll)
+# [[1042, 38],
+#  [1048, 40],
+#  [1051, 36]]`,
+          },
+
+          // ── np.concatenate ─────────────────────────────────────────
+          {
+            type: "text",
+            content:
+              "**np.concatenate — join end-to-end (any axis).** Use when you want to **tape lists together** into one longer sequence. On 1D arrays it lines up morning stops, then afternoon stops. On 2D tables, **`axis=0`** stacks down (like vstack) and **`axis=1`** joins across (like hstack).",
+          },
+          {
+            type: "scenario",
+            content:
+              "A delivery driver tallies packages at **three morning stops**, then **three afternoon stops**. You get two short lists — not a table yet.",
+          },
+          {
+            type: "array",
+            title: "Piece 1 — morning route (separate array `morning`)",
+            label: "morning",
+            values: [4, 7, 2],
+            colLabels: ["Stop 1", "Stop 2", "Stop 3"],
+            accentColor: "#f97316",
+            footnote: "Three morning counts — shape **(3,)**. Afternoon not included.",
+          },
+          {
+            type: "array",
+            title: "Piece 2 — afternoon route (separate array `afternoon`)",
+            label: "afternoon",
+            values: [5, 1, 6],
+            colLabels: ["Stop 1", "Stop 2", "Stop 3"],
+            accentColor: "#fb923c",
+            footnote: "Three afternoon counts — another separate **(3,)** array.",
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              "**Before concatenate:** `[4, 7, 2]` and `[5, 1, 6]` — two short lists. **After `np.concatenate([morning, afternoon])`:** one long list `[4, 7, 2, 5, 1, 6]` — shape **(6,)**.",
+          },
+          {
+            type: "array",
+            title: "Combined — after `np.concatenate([morning, afternoon])`",
+            label: "full_day",
+            values: [4, 7, 2, 5, 1, 6],
+            colLabels: ["1", "2", "3", "4", "5", "6"],
+            accentColor: "#22c55e",
+            footnote:
+              "Morning stops first, afternoon stops second — **one timeline** for the whole day.",
+          },
+          {
+            type: "code",
+            lang: "python",
+            label: "concatenate — morning then afternoon",
+            content: `import numpy as np
+
+morning   = np.array([4, 7, 2])    # piece 1
+afternoon = np.array([5, 1, 6])    # piece 2
+
+full_day = np.concatenate([morning, afternoon])
+print(full_day)   # [4, 7, 2, 5, 1, 6]`,
+          },
+
+          {
             type: "quiz",
-            question: "You have Monday's sales and Tuesday's sales. You want one table with Monday on top and Tuesday below. Which do you use?",
+            question:
+              "You have Monday's sales row and Tuesday's sales row. You want one table with Monday on top and Tuesday below. Which do you use?",
             options: ["hstack", "vstack", "reshape only", "transpose only"],
             answer: 1,
             explanation:
