@@ -2,6 +2,7 @@ import {
   Boxes,
   FileText,
   Grid3x3,
+  Globe,
   Layers3,
   Play,
   Brain,
@@ -9,6 +10,7 @@ import {
   Terminal,
   Presentation,
   Coffee,
+  BrainCircuit,
 } from "lucide-react";
 
 export function languageKey(value = "") {
@@ -45,6 +47,15 @@ export const generalCourses = [
 export const languageCourses = {
   cpp: [
     {
+      title: "C++ Fundamentals",
+      tag: "Interactive Course",
+      icon: Terminal,
+      description:
+        "Beginner to advanced C++: variables, control flow, functions, arrays, pointers, structs, OOP preview, STL, and capstone projects.",
+      href: "/learn/cpp-fundamentals",
+      accent: "#f34b7d",
+    },
+    {
       title: "OOPs C++",
       tag: "Interactive Course",
       icon: Boxes,
@@ -64,6 +75,15 @@ export const languageCourses = {
     },
   ],
   "c++": [
+    {
+      title: "C++ Fundamentals",
+      tag: "Interactive Course",
+      icon: Terminal,
+      description:
+        "Beginner to advanced C++: variables, control flow, functions, arrays, pointers, structs, OOP preview, STL, and capstone projects.",
+      href: "/learn/cpp-fundamentals",
+      accent: "#f34b7d",
+    },
     {
       title: "OOPs C++",
       tag: "Interactive Course",
@@ -104,23 +124,52 @@ export const languageCourses = {
     },
     {
       tag: "Data Visualization",
-      title: "Matplotlib-py",
+      title: "Matplotlib · py",
       description:
-        "Master the art of plotting, charts, and customizing beautiful data science visualizations from scratch.",
+        "Beginner → Pro: line plots to publication dashboards — 8 chapters, objectives per lesson, cheat sheet, and hands-on challenges.",
       href: "/learn/matplotlib-py",
       accent: "#239120",
       icon: Presentation,
+    },
+    {
+      title: "AI/ML · py",
+      tag: "Data Course",
+      icon: BrainCircuit,
+      description:
+        "Foundations of AI/ML: Machine Learning, Deep Learning, Neural Networks, Model Evaluation, and Deployment workflows with Python.",
+      href: "/learn/ai_ml-py",
+      accent: "#dfbe00",
     },
   ],
   javascript: [
     {
       title: "JavaScript Fundamentals",
-      tag: "Interactive Course",
+      tag: "Core Course",
       icon: Grid3x3,
       description:
-        "Variables, logic, functions, arrays, and objects with friendly theory and hands-on JS challenges.",
+        "Core language skills: variables, logic, functions, arrays, objects, async, and classes with hands-on challenges.",
       href: "/learn/js-fundamentals",
       accent: "#f59e0b",
+    },
+    {
+      title: "JavaScript Web Development",
+      tag: "Web Course",
+      icon: Globe,
+      description:
+        "Beginner to advanced browser track: DOM, events, forms, fetch, storage, performance, routing, a11y, security, and capstone projects.",
+      href: "/learn/js-web-dev",
+      accent: "#22c55e",
+    },
+  ],
+  php: [
+    {
+      title: "PHP Fundamentals",
+      tag: "Interactive Course",
+      icon: Terminal,
+      description:
+        "Modern server-side PHP: strict types, control flow, match expressions, associative arrays, superglobals, OOP constructor property promotion, and custom REST API endpoints.",
+      href: "/learn/php-fundamentals",
+      accent: "#777bb4",
     },
   ],
   csharp: [
@@ -194,15 +243,68 @@ export const languageCourses = {
       accent: "#a855f7",
     },
   ],
+  ruby: [
+    {
+      title: "Ruby Fundamentals",
+      tag: "Interactive Course",
+      icon: Terminal,
+      description:
+        "Foundational Ruby Programming: expressive syntax, block-based iteration, dynamic typing, core object-oriented principles, modules and mixins, error handling, and file I/O operations.",
+      href: "/learn/ruby-fundamentals",
+      accent: "#701516",
+    }
+  ]
 };
+
+/** Ordered stacks for navbar grouping (one row per language, sub-courses inside). */
+export const courseStackGroups = [
+  {
+    id: "cpp",
+    label: "C++",
+    accent: "#659ad2",
+    languagePath: "/language/C++",
+  },
+  {
+    id: "python",
+    label: "Python",
+    accent: "#3776ab",
+    languagePath: "/language/Python",
+  },
+  {
+    id: "javascript",
+    label: "JavaScript",
+    accent: "#f7df1e",
+    languagePath: "/language/JavaScript",
+  },
+  {
+    id: "csharp",
+    label: "C#",
+    accent: "#179c24",
+    languagePath: "/language/C%23",
+  },
+  {
+    id: "php",
+    label: "PHP",
+    accent: "#777bb4",
+    languagePath: "/language/PHP",
+  },
+  {
+    id: "ruby",
+    label: "Ruby",
+    accent: "#701516",
+    languagePath: "/language/Ruby",
+  },
+];
 
 /** Navbar learn links per language (mirrors languageCourses). */
 export const learnNavByLanguage = {
   cpp: [
+    { label: "Basics", to: "/learn/cpp-fundamentals" },
     { label: "OOPs", to: "/learn/oops-cpp" },
     { label: "Pointers", to: "/learn/pointers-cpp" },
   ],
   "c++": [
+    { label: "Basics", to: "/learn/cpp-fundamentals" },
     { label: "OOPs", to: "/learn/oops-cpp" },
     { label: "Pointers", to: "/learn/pointers-cpp" },
   ],
@@ -210,6 +312,11 @@ export const learnNavByLanguage = {
     { label: "NumPy", to: "/learn/numpy-py" },
     { label: "Pandas", to: "/learn/pandas-py" },
     { label: "Matplotlib", to: "/learn/matplotlib-py" },
+    { label: "AI/ML", to: "/learn/ai_ml-py" },
+  ],
+  javascript: [
+    { label: "Fundamentals", to: "/learn/js-fundamentals" },
+    { label: "Web Dev", to: "/learn/js-web-dev" },
   ],
   javascript: [{ label: "JS Basics", to: "/learn/js-fundamentals" }],
   java: [
@@ -219,11 +326,14 @@ export const learnNavByLanguage = {
     { label: "Spring Boot", to: "/hub?language=Java&category=04-professional" },
     { label: "Mastery", to: "/hub?language=Java&category=05-mastery" },
   ],
+  php: [{ label: "PHP Basics", to: "/learn/php-fundamentals" }],
+  ruby: [{label: "Ruby Basics", to: "/learn/ruby-fundamentals"}]
 };
 
 /** Infer stack from an active /learn/* route when language is not set. */
 export function inferLanguageFromLearnPath(pathname = "") {
   if (
+    pathname.startsWith("/learn/cpp-fundamentals") ||
     pathname.startsWith("/learn/oops-cpp") ||
     pathname.startsWith("/learn/pointers-cpp")
   ) {
@@ -232,12 +342,22 @@ export function inferLanguageFromLearnPath(pathname = "") {
   if (
     pathname.startsWith("/learn/numpy-py") ||
     pathname.startsWith("/learn/pandas-py") ||
-    pathname.startsWith("/learn/matplotlib-py")
+    pathname.startsWith("/learn/matplotlib-py") ||
+    pathname.startsWith("/learn/ai_ml-py")
   ) {
     return "python";
   }
-  if (pathname.startsWith("/learn/js-fundamentals")) {
+  if (
+    pathname.startsWith("/learn/js-fundamentals") ||
+    pathname.startsWith("/learn/js-web-dev")
+  ) {
     return "javascript";
+  }
+  if (pathname.startsWith("/learn/php-fundamentals")) {
+    return "php";
+  }
+  if (pathname.startsWith("/learn/ruby-fundamentals")){
+    return "ruby";
   }
   return null;
 }

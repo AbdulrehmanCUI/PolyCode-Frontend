@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
-  ChevronRight,
   Minus,
   Sparkles,
   ThumbsDown,
@@ -24,7 +25,7 @@ import {
   postAssistantFeedback,
 } from "../lib/assistantApi";
 import { ASSISTANT_CONFIG } from "../lib/assistantConfig";
-import { useTypewriter } from "../lib/useTypewriter";
+import AssistantComposer from "./AssistantComposer";
 import AssistantAvatar from "./AssistantAvatar";
 import AssistantMarkdown from "../../assistant/components/AssistantMarkdown";
 
@@ -146,6 +147,13 @@ function saveSession(session) {
 }
 
 function ReplyFeedback({ feedback, onRate, disabled, required }) {
+  const handleRate = (rating) => (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (disabled || feedback === rating) return;
+    onRate(rating);
+  };
+
   return (
     <div
       className={`assistant-feedback${required && !feedback ? " assistant-feedback--required" : ""}`}
@@ -156,7 +164,7 @@ function ReplyFeedback({ feedback, onRate, disabled, required }) {
       <button
         type="button"
         className={`assistant-feedback-btn${feedback === "like" ? " assistant-feedback-btn--active-like" : ""}`}
-        onClick={() => onRate("like")}
+        onClick={handleRate("like")}
         disabled={disabled}
         aria-label="Helpful reply"
         aria-pressed={feedback === "like"}
@@ -166,7 +174,7 @@ function ReplyFeedback({ feedback, onRate, disabled, required }) {
       <button
         type="button"
         className={`assistant-feedback-btn${feedback === "dislike" ? " assistant-feedback-btn--active-dislike" : ""}`}
-        onClick={() => onRate("dislike")}
+        onClick={handleRate("dislike")}
         disabled={disabled}
         aria-label="Not helpful reply"
         aria-pressed={feedback === "dislike"}
@@ -177,25 +185,13 @@ function ReplyFeedback({ feedback, onRate, disabled, required }) {
   );
 }
 
-function MentorReply({
+const MentorReply = memo(function MentorReply({
   msg,
-  reduceMotion,
   showFeedback,
   onRate,
-  feedbackSaving,
-  onStreamComplete,
   feedbackRequired,
 }) {
-  const shouldStream = Boolean(msg.stream) && !reduceMotion;
-  const { displayed, done } = useTypewriter(msg.content, shouldStream);
-  const visible = shouldStream ? displayed : msg.content;
-  const canRate = showFeedback && done && msg.content && msg.id !== "welcome";
-
-  useEffect(() => {
-    if (shouldStream && done && onStreamComplete) {
-      onStreamComplete(msg.id);
-    }
-  }, [shouldStream, done, msg.id, onStreamComplete]);
+  const canRate = showFeedback && msg.content && msg.id !== "welcome";
 
   return (
     <article className="assistant-mentor-reply">
@@ -206,33 +202,22 @@ function MentorReply({
           <span className="assistant-mentor-name">{ASSISTANT_CONFIG.name}</span>
         </div>
         <div className="assistant-markdown">
-          <AssistantMarkdown content={visible} />
-          {!done && shouldStream ? (
-            <span className="assistant-stream-cursor" />
-          ) : null}
+          <AssistantMarkdown content={msg.content} streaming={false} />
         </div>
         {canRate ? (
           <ReplyFeedback
             feedback={msg.feedback}
             onRate={onRate}
-            disabled={feedbackSaving}
+            disabled={false}
             required={feedbackRequired}
           />
         ) : null}
       </div>
     </article>
   );
-}
+});
 
-function ThinkingIndicator() {
-  return (
-    <div className="assistant-thinking">
-      <span className="assistant-thinking-text">PolyMentor is thinking…</span>
-    </div>
-  );
-}
-
-function UserReply({ content, user }) {
+const UserReply = memo(function UserReply({ content, user }) {
   return (
     <div className="assistant-user-row">
       {user ? (
@@ -245,6 +230,14 @@ function UserReply({ content, user }) {
       </div>
     </div>
   );
+});
+
+function ThinkingIndicator() {
+  return (
+    <div className="assistant-thinking">
+      <span className="assistant-thinking-text">PolyMentor is thinking…</span>
+    </div>
+  );
 }
 
 function getPendingFeedbackMessage(messages) {
@@ -253,7 +246,8 @@ function getPendingFeedbackMessage(messages) {
     if (
       message.role === "assistant" &&
       message.id !== "welcome" &&
-      message.content?.trim()
+      message.content?.trim() &&
+      !message.stream
     ) {
       return message.feedback ? null : message;
     }
@@ -263,28 +257,48 @@ function getPendingFeedbackMessage(messages) {
 
 export default function AssistantFab() {
   const { user } = useAuth();
+  const userId = user?._id || user?.id || null;
   const { context: assistantContext } = useAssistant();
+  const { pathname } = useLocation();
+  const compactDock = pathname !== "/select-language";
   const reduceMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [session, setSession] = useState(() => loadSession());
-  const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(null);
-  const [feedbackSavingId, setFeedbackSavingId] = useState(null);
   const [assistantLevel, setAssistantLevel] = useState(() => loadAssistantLevel());
   const messagesEndRef = useRef(null);
   const messagesScrollRef = useRef(null);
-  const inputRef = useRef(null);
   const sessionRef = useRef(session);
   const dockRef = useRef(null);
   const dragStateRef = useRef(null);
   const suppressDockClickRef = useRef(false);
   const [dockPosition, setDockPosition] = useState(() => loadDockPosition());
   const [draggingDock, setDraggingDock] = useState(false);
+  const lastUserIdRef = useRef(userId);
 
   useEffect(() => {
     sessionRef.current = session;
   }, [session]);
+
+  useEffect(() => {
+    const previousUserId = lastUserIdRef.current;
+    if (previousUserId === userId) return;
+
+    // First login on a guest session — keep chat; backend claims anonymous prompts.
+    if (!previousUserId && userId) {
+      lastUserIdRef.current = userId;
+      return;
+    }
+
+    // Logout or account switch — avoid 403 from another user's session id.
+    setSession({
+      sessionId: generateSessionId(),
+      messages: [WELCOME_MESSAGE],
+    });
+    setError(null);
+    lastUserIdRef.current = userId;
+  }, [userId]);
 
   useEffect(() => {
     if (!dockPosition) return undefined;
@@ -310,7 +324,17 @@ export default function AssistantFab() {
       try {
         const current = loadSession();
         const data = await fetchAssistantSession(current.sessionId);
-        if (cancelled || !data?.messages?.length) return;
+        if (cancelled) return;
+
+        if (data?.forbidden) {
+          setSession({
+            sessionId: generateSessionId(),
+            messages: [WELCOME_MESSAGE],
+          });
+          return;
+        }
+
+        if (!data?.messages?.length) return;
 
         const serverMessages = data.messages.map((m, index) => ({
           id:
@@ -339,17 +363,81 @@ export default function AssistantFab() {
   useEffect(() => {
     if (!open) return;
 
-    window.requestAnimationFrame(() => {
-      const scrollNode = messagesScrollRef.current;
-      if (scrollNode) {
-        scrollNode.scrollTop = scrollNode.scrollHeight;
-      }
-    });
-  }, [session.messages, open, sending]);
+    const scrollNode = messagesScrollRef.current;
+    if (!scrollNode) return;
+
+    const scrollToBottom = () => {
+      scrollNode.scrollTop = scrollNode.scrollHeight;
+    };
+
+    scrollToBottom();
+    const rafId = window.requestAnimationFrame(scrollToBottom);
+    const timerId = window.setTimeout(scrollToBottom, 200);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.clearTimeout(timerId);
+    };
+  }, [open]);
 
   useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 150);
+    if (!open) return;
+
+    const scrollNode = messagesScrollRef.current;
+    if (!scrollNode) return;
+
+    const distanceFromBottom =
+      scrollNode.scrollHeight - scrollNode.scrollTop - scrollNode.clientHeight;
+    const shouldStickToBottom = sending || distanceFromBottom < 96;
+
+    if (!shouldStickToBottom) return;
+
+    window.requestAnimationFrame(() => {
+      scrollNode.scrollTop = scrollNode.scrollHeight;
+    });
+  }, [session.messages, sending, open]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const body = document.body;
+    const html = document.documentElement;
+    const previousBodyOverflow = body.style.overflow;
+    const previousHtmlOverscroll = html.style.overscrollBehavior;
+
+    body.style.overflow = "hidden";
+    html.style.overscrollBehavior = "none";
+
+    return () => {
+      body.style.overflow = previousBodyOverflow;
+      html.style.overscrollBehavior = previousHtmlOverscroll;
+    };
   }, [open]);
+
+  useEffect(() => {
+    const scrollEl = messagesScrollRef.current;
+    if (!open || !scrollEl) return undefined;
+
+    const trapWheel = (event) => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollEl;
+      const maxScroll = scrollHeight - clientHeight;
+
+      if (maxScroll <= 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const atTop = scrollTop <= 0;
+      const atBottom = scrollTop + clientHeight >= scrollHeight - 1;
+
+      if ((event.deltaY < 0 && atTop) || (event.deltaY > 0 && atBottom)) {
+        event.preventDefault();
+      }
+    };
+
+    scrollEl.addEventListener("wheel", trapWheel, { passive: false });
+    return () => scrollEl.removeEventListener("wheel", trapWheel);
+  }, [open, session.messages.length]);
 
   useEffect(() => {
     saveSession(session);
@@ -390,20 +478,23 @@ export default function AssistantFab() {
       const msgs = sessionRef.current.messages;
       const msgIndex = msgs.findIndex((m) => m.id === messageId);
       if (msgIndex < 0) return;
+      if (msgs[msgIndex]?.feedback === rating) return;
 
       const userMsg = [...msgs.slice(0, msgIndex)]
         .reverse()
         .find((m) => m.role === "user" && m.content?.trim());
-      if (!userMsg) return;
+      if (!userMsg) {
+        setError("Could not find your question for this reply. Try refreshing.");
+        return;
+      }
 
-      const previousFeedback = msgs[msgIndex]?.feedback;
       setSession((prev) => ({
         ...prev,
         messages: prev.messages.map((m) =>
           m.id === messageId ? { ...m, feedback: rating } : m,
         ),
       }));
-      setFeedbackSavingId(messageId);
+      setError(null);
 
       try {
         await postAssistantFeedback({
@@ -414,28 +505,20 @@ export default function AssistantFab() {
           assistant_message: assistantContent,
           context: assistantContext,
         });
-      } catch {
-        setSession((prev) => ({
-          ...prev,
-          messages: prev.messages.map((m) =>
-            m.id === messageId ? { ...m, feedback: previousFeedback || null } : m,
-          ),
-        }));
-      } finally {
-        setFeedbackSavingId(null);
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Could not sync feedback to server.";
+        const friendly =
+          message === "Forbidden"
+            ? "This chat belongs to another account. Start a new chat with the trash icon."
+            : message.includes("Sign in to rate")
+              ? "Sign in to save feedback for this conversation."
+              : message;
+        setError(`${friendly} (saved locally — you can keep chatting)`);
       }
     },
     [assistantContext],
   );
-
-  const handleStreamComplete = useCallback((messageId) => {
-    setSession((prev) => ({
-      ...prev,
-      messages: prev.messages.map((message) =>
-        message.id === messageId ? { ...message, stream: false } : message,
-      ),
-    }));
-  }, []);
 
   const sendText = useCallback(
     async (text) => {
@@ -450,7 +533,6 @@ export default function AssistantFab() {
         ...prev,
         messages: [...prev.messages, userMsg, pendingMsg],
       }));
-      setDraft("");
       setSending(true);
       setError(null);
 
@@ -468,12 +550,12 @@ export default function AssistantFab() {
           level: assistantLevel,
           assistant_message_id: assistantId,
         });
+        const resolvedAssistantId = res.assistantMessageId || assistantId;
         const assistantMsg = {
-          id: assistantId,
+          id: resolvedAssistantId,
           role: "assistant",
           content: res.response,
           feedback: null,
-          stream: true,
         };
         setSession((prev) => ({
           ...prev,
@@ -492,17 +574,6 @@ export default function AssistantFab() {
     [sending, assistantContext, assistantLevel],
   );
 
-  const send = useCallback(async () => {
-    await sendText(draft);
-  }, [draft, sendText]);
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      send();
-    }
-  };
-
   const pendingFeedback = getPendingFeedbackMessage(session.messages);
   const inputLocked = sending || Boolean(pendingFeedback);
 
@@ -518,7 +589,7 @@ export default function AssistantFab() {
     msg.id === "welcome" ? getWelcomeMessage(assistantContext) : msg.content;
 
   const handleDockPointerDown = (event) => {
-    if (event.button !== 0) return;
+    if (compactDock || event.button !== 0) return;
     event.preventDefault();
 
     const rect = dockRef.current?.getBoundingClientRect();
@@ -610,7 +681,7 @@ export default function AssistantFab() {
     setOpen(true);
   };
 
-  return (
+  return createPortal(
     <>
       <AnimatePresence>
         {open ? (
@@ -708,13 +779,10 @@ export default function AssistantFab() {
                   ) : (
                     <MentorReply
                       msg={{ ...msg, content: messageContent(msg) }}
-                      reduceMotion={reduceMotion}
                       showFeedback
-                      feedbackSaving={feedbackSavingId === msg.id}
                       feedbackRequired={msg.id === pendingFeedback?.id}
-                      onStreamComplete={handleStreamComplete}
                       onRate={(rating) =>
-                        handleFeedback(msg.id, rating, messageContent(msg))
+                        handleFeedback(msg.id, rating, msg.content)
                       }
                     />
                   )}
@@ -752,35 +820,18 @@ export default function AssistantFab() {
                   Like or dislike the last answer before sending another message.
                 </p>
               ) : null}
-              <div
-                className={`assistant-composer${inputLocked && !sending ? " assistant-composer--locked" : ""}`}
-              >
-                <span className="assistant-composer-prompt">&gt;</span>
-                <textarea
-                  ref={inputRef}
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder={
-                    pendingFeedback
-                      ? "Rate the reply above to continue…"
-                      : ASSISTANT_CONFIG.inputPlaceholder
-                  }
-                  rows={1}
-                  disabled={inputLocked}
-                  aria-label="Ask PolyMentor"
-                  className="assistant-composer-input"
-                />
-                <button
-                  type="button"
-                  onClick={send}
-                  disabled={!draft.trim() || inputLocked}
-                  aria-label="Send"
-                  className="assistant-composer-send"
-                >
-                  <ChevronRight size={20} />
-                </button>
-              </div>
+              <AssistantComposer
+                autoFocus={open}
+                onSend={sendText}
+                disabled={inputLocked}
+                locked={Boolean(pendingFeedback)}
+                sending={sending}
+                placeholder={
+                  pendingFeedback
+                    ? "Rate the reply above to continue…"
+                    : ASSISTANT_CONFIG.inputPlaceholder
+                }
+              />
               <p className="assistant-powered-by">{ASSISTANT_CONFIG.poweredByLabel}</p>
             </div>
           </motion.aside>
@@ -792,7 +843,9 @@ export default function AssistantFab() {
           ref={dockRef}
           role="button"
           tabIndex={0}
-          className={`assistant-dock-btn polym_mentor-dock${draggingDock ? " assistant-dock-btn--dragging" : ""}`}
+          className={`assistant-dock-btn polym_mentor-dock${
+            compactDock ? " assistant-dock-btn--compact" : ""
+          }${draggingDock ? " assistant-dock-btn--dragging" : ""}`}
           onPointerDown={handleDockPointerDown}
           onPointerMove={handleDockPointerMove}
           onPointerUp={handleDockPointerUp}
@@ -805,11 +858,11 @@ export default function AssistantFab() {
             }
           }}
           aria-label={`Open ${ASSISTANT_CONFIG.name}`}
-          initial={reduceMotion ? {} : { x: 40, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.5, type: "spring", stiffness: 260, damping: 24 }}
+          initial={reduceMotion ? false : { opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.35, type: "spring", stiffness: 320, damping: 26 }}
           style={
-            dockPosition
+            !compactDock && dockPosition
               ? {
                   left: dockPosition.x,
                   top: dockPosition.y,
@@ -820,20 +873,25 @@ export default function AssistantFab() {
           }
         >
           <div aria-hidden="true" className="assistant-dock-inner">
-            <AssistantAvatar size="lg" alt={ASSISTANT_CONFIG.name} />
-            <span className="assistant-dock-copy">
-              <span className="assistant-dock-title">
-                <Zap size={12} />
-                {ASSISTANT_CONFIG.name}
-              </span>
-              <span className="assistant-dock-hint">Tap to open mentor</span>
-            </span>
-            <span className="assistant-dock-sparkle">
-              <Sparkles size={16} />
-            </span>
+            <AssistantAvatar size={compactDock ? "md" : "lg"} alt={ASSISTANT_CONFIG.name} />
+            {!compactDock ? (
+              <>
+                <span className="assistant-dock-copy">
+                  <span className="assistant-dock-title">
+                    <Zap size={12} />
+                    {ASSISTANT_CONFIG.name}
+                  </span>
+                  <span className="assistant-dock-hint">Tap to open mentor</span>
+                </span>
+                <span className="assistant-dock-sparkle">
+                  <Sparkles size={16} />
+                </span>
+              </>
+            ) : null}
           </div>
         </motion.div>
       ) : null}
-    </>
+    </>,
+    document.body,
   );
 }

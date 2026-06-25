@@ -22,17 +22,24 @@ import {
   getPythonRuntimeError,
   runPythonCode,
 } from "./runPython";
+import PythonRunOutput from "./PythonRunOutput";
 import {
   formatCsharpOutput,
   getCsharpRuntimeError,
   runCsharpCode,
 } from "./runCsharp";
+import {
+  formatRubyOutput,
+  getRubyRuntimeError,
+  runRubyCode,
+} from "./runRuby";
 
 function normalizeLang(lang = "python") {
   const value = lang.toLowerCase();
   if (value === "c++" || value === "cpp") return "cpp";
   if (value === "javascript" || value === "js") return "javascript";
   if (value === "csharp" || value === "c#") return "csharp";
+  if (value === "ruby") return "ruby"; // Explicitly normalize ruby strings
   return value;
 }
 
@@ -40,6 +47,7 @@ function monacoLanguage(lang) {
   if (lang === "cpp") return "cpp";
   if (lang === "javascript") return "javascript";
   if (lang === "csharp") return "csharp";
+  if (lang === "ruby") return "ruby";
   return "python";
 }
 
@@ -51,7 +59,10 @@ async function executeTheoryCode(source, lang) {
     return runJavaScriptCode(source);
   }
   if (lang === "csharp") {
-    return runCsharpCode(source); 
+    return runCsharpCode(source);
+  }
+  if (lang === "ruby") {
+    return runRubyCode(source, { learn: true });
   }
   return runPythonCode(source);
 }
@@ -60,6 +71,7 @@ function formatTheoryOutput(result, lang) {
   if (lang === "cpp") return formatCppOutput(result);
   if (lang === "javascript") return formatJavaScriptOutput(result);
   if (lang === "csharp") return formatCsharpOutput(result);
+  if (lang === "ruby") return formatRubyOutput(result);
   return formatPythonOutput(result);
 }
 
@@ -67,6 +79,7 @@ function getTheoryRuntimeError(result, lang) {
   if (lang === "cpp") return getCppRuntimeError(result);
   if (lang === "javascript") return getJavaScriptRuntimeError(result);
   if (lang === "csharp") return getCsharpRuntimeError(result);
+  if (lang === "ruby") return getRubyRuntimeError(result);
   return getPythonRuntimeError(result);
 }
 
@@ -127,11 +140,19 @@ export default function RunnableCodeBlock({
 
       const stdout =
         formatTheoryOutput(result, lang) ||
-        (runtime === "server"
-          ? "Ran on server (no printed output)."
-          : "Ran in browser (no printed output).");
+        (result.plotImages?.length
+          ? `Rendered ${result.plotImages.length} chart${result.plotImages.length > 1 ? "s" : ""}.`
+          : lang === "ruby"
+            ? "Ruby ran successfully. Add puts to display values, e.g. puts total"
+            : runtime === "server"
+              ? "Ran on server (no printed output)."
+              : "Ran in browser (no printed output).");
 
-      setOutput({ status: "pass", stdout });
+      setOutput({
+        status: "pass",
+        stdout,
+        plotImages: result.plotImages || [],
+      });
     } catch (error) {
       setOutput({
         status: "fail",
@@ -243,9 +264,11 @@ export default function RunnableCodeBlock({
             )}
           </div>
         </div>
-        <pre className="oops-output-body">
-          {output?.stdout || "Output will appear here after you run the code."}
-        </pre>
+        <PythonRunOutput
+          stdout={output?.stdout}
+          plotImages={output?.plotImages}
+          emptyHint="Output will appear here after you run the code."
+        />
       </div>
     </div>
   );
