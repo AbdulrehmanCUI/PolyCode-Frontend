@@ -62,7 +62,11 @@ function loadFabPosition() {
       Number.isFinite(parsed.x) &&
       Number.isFinite(parsed.y)
     ) {
-      return parsed;
+      const clamped = clampFabPosition(parsed.x, parsed.y);
+      if (clamped.x !== parsed.x || clamped.y !== parsed.y) {
+        saveFabPosition(clamped);
+      }
+      return clamped;
     }
   } catch {
     // ignore
@@ -438,6 +442,21 @@ export default function LessonAnnotator({ storageKey, children }) {
 
     redrawCanvas(strokes);
   }, [redrawCanvas, strokes]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setFabPosition((current) => {
+        if (!current) return current;
+        const clamped = clampFabPosition(current.x, current.y);
+        if (clamped.x === current.x && clamped.y === current.y) return current;
+        saveFabPosition(clamped);
+        return clamped;
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const saved = loadAnnotations(storageKey);
