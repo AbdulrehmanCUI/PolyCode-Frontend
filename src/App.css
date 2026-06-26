@@ -9670,9 +9670,10 @@ body {
 
 .lesson-annotator-fab-wrap {
   position: fixed;
-  right: 24px;
-  bottom: 96px;
-  z-index: 1100;
+  left: 24px;
+  bottom: 160px;
+  right: auto;
+  z-index: 2100;
   width: 44px;
   min-height: 44px;
   pointer-events: none;
@@ -9713,7 +9714,8 @@ body {
 .lesson-annotator-fab-menu {
   position: absolute;
   top: calc(100% + 8px);
-  right: 0;
+  left: 0;
+  right: auto;
   width: 188px;
   border: 1px solid var(--border, #1e2433);
   border-radius: 14px;
@@ -10122,8 +10124,8 @@ body {
 
 @media (max-width: 640px) {
   .lesson-annotator-fab-wrap {
-    right: 16px;
-    bottom: 88px;
+    left: 16px;
+    bottom: 152px;
   }
 
   .lesson-annotator-fab-menu {
