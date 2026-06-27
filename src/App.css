@@ -6143,7 +6143,7 @@ body {
 }
 
 .profile-activity-chart h3 {
-  margin: 0 0 10px;
+  margin: 0;
   color: var(--txt-3, #3a4260);
   font-size: 0.68rem;
   font-weight: 900;
@@ -6151,14 +6151,32 @@ body {
   text-transform: uppercase;
 }
 
+.profile-chart-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.profile-chart-range {
+  color: var(--txt-3, #64748b);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
 .profile-chart-wrap {
   position: relative;
+  min-height: 148px;
 }
 
 .profile-chart-svg {
   display: block;
   width: 100%;
   height: 148px;
+  overflow: visible;
 }
 
 .profile-chart-grid-line {
@@ -9661,9 +9679,10 @@ body {
 
 .lesson-annotator-fab-wrap {
   position: fixed;
-  right: 24px;
-  bottom: 96px;
-  z-index: 1100;
+  left: 24px;
+  bottom: 160px;
+  right: auto;
+  z-index: 2100;
   width: 44px;
   min-height: 44px;
   pointer-events: none;
@@ -9704,7 +9723,8 @@ body {
 .lesson-annotator-fab-menu {
   position: absolute;
   top: calc(100% + 8px);
-  right: 0;
+  left: 0;
+  right: auto;
   width: 188px;
   border: 1px solid var(--border, #1e2433);
   border-radius: 14px;
@@ -10113,8 +10133,8 @@ body {
 
 @media (max-width: 640px) {
   .lesson-annotator-fab-wrap {
-    right: 16px;
-    bottom: 88px;
+    left: 16px;
+    bottom: 152px;
   }
 
   .lesson-annotator-fab-menu {

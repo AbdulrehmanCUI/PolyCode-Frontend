@@ -3423,46 +3423,224 @@ print(np.vstack([a, b]))`,
           {
             type: "text",
             content:
-              "Need fake data or simulations? **`np.random.rand`** gives uniform floats in [0, 1). **`np.random.randint`** picks random integers. Set a **seed** with **`np.random.seed(42)`** to get reproducible 'luck' — same seed, same numbers every run.",
+              "Real life is full of **luck** — dice rolls, raffle draws, which song shuffle plays next. When you **test** a game or practice a lesson, you often need **fake luck** that looks random but you can **replay the same way** every time. NumPy's **`np.random`** module is your toolkit for that.",
           },
           {
-            type: "code",
-            lang: "python",
-            label: "Random floats and ints",
-            content: `import numpy as np
-
-print(np.random.rand(3))        # 3 random floats
-print(np.random.randint(1, 7, 5))  # five dice rolls (1–6)`,
+            type: "scenario",
+            content:
+              "You're building a **board-game night app**. You need to roll dice, draw cards, and test that the score screen works — but every time you run your code, you want the **same test rolls** so you can fix bugs without guessing.",
           },
           {
-            type: "code",
-            lang: "python",
-            label: "Reproducible with seed",
-            content: `import numpy as np
+            type: "diagram",
+            title: "Two main ways to get random numbers",
+            nodes: [
+              {
+                id: "rand",
+                label: "np.random.rand()",
+                color: "#eab308",
+                items: [
+                  "Decimal numbers from 0 up to (but not including) 1",
+                  "Like: 0.37, 0.91, 0.04",
+                  "Great for percentages & simulations",
+                ],
+              },
+              {
+                id: "randint",
+                label: "np.random.randint()",
+                color: "#f59e0b",
+                items: [
+                  "Whole numbers in a range you pick",
+                  "Like dice: 1, 2, 3, 4, 5, 6",
+                  "Great for rolls, counts, coin flips (0/1)",
+                ],
+              },
+              {
+                id: "seed",
+                label: "np.random.seed()",
+                color: "#ca8a04",
+                items: [
+                  "Freezes the random pattern",
+                  "Same seed → same numbers next run",
+                  "Essential for fair testing & sharing code",
+                ],
+              },
+            ],
+          },
+          {
+            type: "table",
+            title: "Quick cheat sheet — random helpers",
+            columns: ["Function", "What you get", "Real-life use"],
+            rows: [
+              {
+                label: "rand",
+                values: [
+                  "`np.random.rand(5)`",
+                  "5 decimals between 0 and 1",
+                  "Random discount %, lottery odds",
+                ],
+              },
+              {
+                label: "randint",
+                values: [
+                  "`np.random.randint(1, 7, 5)`",
+                  "5 whole numbers from 1 to 6",
+                  "Five dice rolls",
+                ],
+              },
+              {
+                label: "seed",
+                values: [
+                  "`np.random.seed(42)`",
+                  "Locks the next random sequence",
+                  "Same test data every debug run",
+                ],
+              },
+            ],
+            showTotals: false,
+            footnote:
+              "`randint(low, high)` uses **high exclusive** — `randint(1, 7)` gives 1–6, perfect for a six-sided die.",
+          },
+
+          // ── np.random.rand ─────────────────────────────────────────
+          {
+            type: "text",
+            content:
+              "**`np.random.rand(n)`** — random **decimals** between **0** and **1** (1 is never included). Think of each number as a **random percentage** or a **spin on a wheel** that only goes from 0% to 99.9%.",
+            code: {
+              lang: "python",
+              label: "Three random decimals — like three raffle wheel spins",
+              content: `import numpy as np
+
+# Three random floats in [0, 1)
+spins = np.random.rand(3)
+print(spins)
+# Example: [0.37  0.91  0.04]  — different every run (unless you set a seed)`,
+            },
+          },
+          {
+            type: "array",
+            title: "What `rand(5)` might look like (one possible run)",
+            label: "rand(5)",
+            values: [0.37, 0.91, 0.04, 0.72, 0.15],
+            colLabels: ["#1", "#2", "#3", "#4", "#5"],
+            accentColor: "#eab308",
+            footnote:
+              "Each value is **independent** — getting 0.91 does not change the next spin. All are ≥ 0 and **< 1**.",
+          },
+
+          // ── np.random.randint ──────────────────────────────────────
+          {
+            type: "text",
+            content:
+              "**`np.random.randint(low, high, size=n)`** — random **whole numbers**. The **high** end is **exclusive**, so `randint(1, 7)` gives **1 through 6** — exactly like a fair die.",
+            code: {
+              lang: "python",
+              label: "Roll five dice at game night",
+              content: `import numpy as np
+
+rolls = np.random.randint(1, 7, size=5)
+print(rolls)
+# Example: [4 1 6 3 5]  — five separate die faces`,
+            },
+          },
+          {
+            type: "scenario",
+            content:
+              "At **family game night**, you roll one die five times to move your token. NumPy can simulate those five rolls in **one line** — no physical dice needed while you're coding the app.",
+          },
+          {
+            type: "array",
+            title: "Five dice rolls — `randint(1, 7, size=5)`",
+            label: "rolls",
+            values: [4, 1, 6, 3, 5],
+            colLabels: ["Roll 1", "Roll 2", "Roll 3", "Roll 4", "Roll 5"],
+            accentColor: "#f59e0b",
+            footnote:
+              "Each cell is an integer from **1 to 6**. Run again without a seed and you'll usually get a different row.",
+          },
+
+          // ── np.random.seed ─────────────────────────────────────────
+          {
+            type: "text",
+            content:
+              "Here's the problem: **true random** is hard to test. If your dice code prints `[4 1 6]` today and `[2 2 5]` tomorrow, how do you know the bug is fixed? **`np.random.seed(number)`** resets the random generator so the **next** random numbers are **the same every time** you use that seed.",
+            code: {
+              lang: "python",
+              label: "Same seed → identical dice rolls on every run",
+              content: `import numpy as np
 
 np.random.seed(42)
-print(np.random.rand(3))
+print(np.random.randint(1, 7, size=3))
+# [6 3 1]  — always these three if seed is 42
 
-np.random.seed(42)
-print(np.random.rand(3))  # identical!`,
+np.random.seed(42)   # reset to the same starting point
+print(np.random.randint(1, 7, size=3))
+# [6 3 1]  — identical! Great for debugging.`,
+            },
+          },
+          {
+            type: "diagram",
+            title: "Seed = replay button for luck",
+            nodes: [
+              {
+                id: "no-seed",
+                label: "No seed",
+                color: "#f43f5e",
+                items: [
+                  "Every run → new random numbers",
+                  "Good for real games",
+                  "Hard to debug \"what went wrong?\"",
+                ],
+              },
+              {
+                id: "with-seed",
+                label: "With seed(42)",
+                color: "#22c55e",
+                items: [
+                  "Every run → same sequence",
+                  "Good for tests & homework checks",
+                  "Teammates get same results too",
+                ],
+              },
+            ],
           },
           {
             type: "callout",
             variant: "tip",
             content:
-              "Seeds are essential for debugging ML models and sharing reproducible experiments.",
+              "Set the seed **once at the top** of your script before any `rand` or `randint` calls. Change the number (7, 42, 100) to get a **different** — but still **repeatable** — lucky pattern.",
+          },
+          {
+            type: "callout",
+            variant: "info",
+            content:
+              "**Learning outcome check:** You can now use **`rand`** for decimals, **`randint`** for dice-style integers, and **`seed`** so your luck-based examples repeat when you need fair tests.",
           },
           {
             type: "quiz",
-            question: "Why set np.random.seed()?",
+            question: "Which function rolls a fair six-sided die many times?",
             options: [
-              "Faster computation",
-              "Reproducible random results",
-              "Better accuracy",
-              "Required for arrays",
+              "np.random.rand(1, 7, 5)",
+              "np.random.randint(1, 7, size=5)",
+              "np.random.seed(1, 6)",
+              "np.random.choice(6)",
             ],
             answer: 1,
-            explanation: "A fixed seed makes random sequences repeatable.",
+            explanation:
+              "`randint(1, 7, size=5)` gives five integers from 1 to 6. `rand` gives decimals, not die faces.",
+          },
+          {
+            type: "quiz",
+            question: "Why set np.random.seed() before testing?",
+            options: [
+              "To make Python run faster",
+              "To get the same random numbers every run",
+              "To force all rolls to be 6",
+              "Because arrays require a seed",
+            ],
+            answer: 1,
+            explanation:
+              "A fixed seed makes the random sequence repeatable — essential for debugging and sharing reproducible experiments.",
           },
         ],
         challenge: {
@@ -3506,37 +3684,193 @@ print(np.random.randint(1, 7, size=5))`,
           {
             type: "text",
             content:
-              "**`np.random.choice`** draws items from a list — like picking **raffle tickets** from a bowl. Use `replace=False` when each ticket can only win once.",
+              "Sometimes you don't need a **new random number** — you need to **pick from a list you already have**: lunch spots, team names, student IDs. NumPy gives you **`choice`** (draw from a bowl), **`shuffle`** (mix in place), and **`permutation`** (mix into a **copy**). Together they help you build **fair** picks with no favourites.",
+          },
+          {
+            type: "scenario",
+            content:
+              "A PE teacher has **four house teams** — Red, Blue, Green, Yellow — and must pick **two** for a friendly match. Everyone agrees the pick should be **random and fair**, with **no team chosen twice**.",
+          },
+
+          // ── np.random.choice ───────────────────────────────────────
+          {
+            type: "text",
+            content:
+              "**`np.random.choice(items, size=n, replace=...)`** — reach into a bowl and pull out items. **`replace=True`** (default) means you can pick the **same item twice** (like drawing a card and putting it back). **`replace=False`** means each item can only be picked **once** — perfect for \"pick two different teams.\"",
+          },
+          {
+            type: "table",
+            title: "choice — replace True vs False",
+            columns: ["Setting", "Meaning", "Example"],
+            rows: [
+              {
+                label: "replace=True",
+                values: [
+                  "Put item back after each draw",
+                  "Same lunch spot can appear twice in a week",
+                  "`choice(spots, size=5)`",
+                ],
+              },
+              {
+                label: "replace=False",
+                values: [
+                  "Each item picked at most once",
+                  "Two different teams for today's match",
+                  "`choice(teams, size=2, replace=False)`",
+                ],
+              },
+            ],
+            showTotals: false,
+            footnote:
+              "`size` cannot be bigger than the list length when `replace=False` — you can't pick 5 unique teams from only 4 names.",
+          },
+          {
+            type: "array",
+            title: "The bowl — four teams in `teams`",
+            label: "teams",
+            values: ["Red", "Blue", "Green", "Yellow"],
+            colLabels: ["Slot 1", "Slot 2", "Slot 3", "Slot 4"],
+            accentColor: "#eab308",
+            footnote:
+              "`np.random.choice(teams, size=2, replace=False)` picks **2 different** names from this row.",
           },
           {
             type: "text",
             content:
-              "**`shuffle`** reorders an array in place (same cards, new order). **`permutation`** returns a **new** shuffled copy and leaves the original alone — useful when you must keep the old order for records.",
+              "**Fair team picker** — two teams, no repeats:",
+            code: {
+              lang: "python",
+              label: "Pick two different teams for today's match",
+              content: `import numpy as np
+
+teams = np.array(["Red", "Blue", "Green", "Yellow"])
+match = np.random.choice(teams, size=2, replace=False)
+print(match)
+# Example: ['Green' 'Red']  — order may vary`,
+            },
           },
           {
-            type: "code",
-            lang: "python",
-            label: "Pick lunch spots without repeating",
-            content: `import numpy as np
+            type: "text",
+            content:
+              "**Lunch roulette** — with replacement, the same spot can win twice (you might eat tacos two days in a row):",
+            code: {
+              lang: "python",
+              label: "Pick 3 lunch spots — repeats allowed",
+              content: `import numpy as np
 
 spots = np.array(["tacos", "pasta", "sushi", "burger"])
-lunch_week = np.random.choice(spots, size=3, replace=False)
-print(lunch_week)`,
+week = np.random.choice(spots, size=3, replace=True)
+print(week)
+# Example: ['tacos' 'sushi' 'tacos']  — tacos twice is OK here`,
+            },
+          },
+
+          // ── shuffle vs permutation ─────────────────────────────────
+          {
+            type: "text",
+            content:
+              "**`np.random.shuffle(arr)`** — **reorders the array in place**. The same items stay; only their **order** changes. Like shuffling a **physical deck** — the cards in your hand change order, and the deck variable itself is mixed.",
           },
           {
-            type: "code",
-            lang: "python",
-            label: "Shuffle vs permutation",
-            content: `import numpy as np
+            type: "text",
+            content:
+              "**`np.random.permutation(arr)`** — returns a **new** shuffled array and **leaves the original untouched**. Use this when you need the **old order for records** (attendance list) but also a **random order for today's activity**.",
+          },
+          {
+            type: "diagram",
+            title: "shuffle vs permutation — what happens to the original?",
+            nodes: [
+              {
+                id: "shuffle",
+                label: "np.random.shuffle",
+                color: "#f59e0b",
+                items: [
+                  "Changes the array you pass in",
+                  "Original order is gone",
+                  "Like mixing cards in the same pile",
+                ],
+              },
+              {
+                id: "perm",
+                label: "np.random.permutation",
+                color: "#22c55e",
+                items: [
+                  "Returns a new shuffled copy",
+                  "Original array stays the same",
+                  "Like photocopying then shuffling the copy",
+                ],
+              },
+            ],
+          },
+          {
+            type: "scenario",
+            content:
+              "A teacher has **`queue = [101, 102, 103, 104]`** (student IDs in register order). For **presentation order**, she shuffles a **copy** so the official register file still shows 101→104, but today's speaking order is random.",
+          },
+          {
+            type: "array",
+            title: "Before shuffle — register order",
+            label: "queue (before)",
+            values: [101, 102, 103, 104],
+            colLabels: ["1st", "2nd", "3rd", "4th"],
+            accentColor: "#6366f1",
+            footnote: "Official order — saved for the school record.",
+          },
+          {
+            type: "text",
+            content:
+              "**Shuffle in place** — the variable itself gets a new order:",
+            code: {
+              lang: "python",
+              label: "shuffle — queue variable is permanently reordered",
+              content: `import numpy as np
 
 queue = np.array([101, 102, 103, 104])
 np.random.shuffle(queue)
-print("shuffled queue:", queue)
+print(queue)
+# Example: [103  101  104  102]  — original order is lost`,
+            },
+          },
+          {
+            type: "text",
+            content:
+              "**Permutation** — keep the register, get a separate random line:",
+            code: {
+              lang: "python",
+              label: "permutation — original stays, new array for today",
+              content: `import numpy as np
 
-nums = np.array([10, 20, 30])
-shuffled_copy = np.random.permutation(nums)
-print("original:", nums)
-print("permuted:", shuffled_copy)`,
+register = np.array([101, 102, 103, 104])
+today_order = np.random.permutation(register)
+
+print("register:", register)       # [101 102 103 104] — unchanged
+print("today:", today_order)       # e.g. [104  101  103  102]`,
+            },
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              "**Building fair teams:** use **`choice(..., replace=False)`** so nobody is picked twice. **Shuffling a line:** use **`permutation`** if you still need the original list; use **`shuffle`** only when overwriting the old order is fine.",
+          },
+          {
+            type: "callout",
+            variant: "info",
+            content:
+              "**Learning outcome check:** You can **`choice`** items from a list, **`shuffle`** in place, and use **`permutation`** when the original must stay — all tools for unbiased random samples.",
+          },
+          {
+            type: "quiz",
+            question: "You need two different teams from four names. Best call?",
+            options: [
+              "np.random.choice(teams, size=2, replace=True)",
+              "np.random.choice(teams, size=2, replace=False)",
+              "np.random.shuffle(2)",
+              "np.random.permutation(teams, size=2)",
+            ],
+            answer: 1,
+            explanation:
+              "`replace=False` guarantees no duplicate picks — exactly what you want for two distinct teams.",
           },
           {
             type: "quiz",
@@ -3548,7 +3882,8 @@ print("permuted:", shuffled_copy)`,
               "neither",
             ],
             answer: 1,
-            explanation: "permutation returns a new array; shuffle edits in place.",
+            explanation:
+              "`permutation` returns a new shuffled array. `shuffle` edits the array you pass in.",
           },
         ],
         challenge: {
@@ -3593,51 +3928,192 @@ print(np.random.choice(teams, size=2, replace=False))`,
           {
             type: "text",
             content:
-              "A **simulation** uses random numbers to mimic real life — coin tosses, dice games, or guessing how many customers visit a shop each hour.",
+              "A **simulation** uses random numbers to **pretend real life** before you try the real thing — flip coins, roll dice, guess how many customers visit a café. You run **many trials**, then **count** or **average** the results. Patterns emerge: a fair die's average creeps toward **3.5** when you roll enough times.",
+          },
+          {
+            type: "scenario",
+            content:
+              "A café owner wonders: *\"If about half my walk-ins buy coffee, how many sales might I get in 20 busy minutes?\"* She doesn't want to close the shop to experiment — so she **simulates** 20 random yes/no customers on her laptop first.",
+          },
+          {
+            type: "diagram",
+            title: "How a simulation works (4 steps)",
+            nodes: [
+              {
+                id: "step1",
+                label: "1. Set the rules",
+                color: "#eab308",
+                items: [
+                  "Die faces 1–6, or coin 0/1",
+                  "Optional: seed for repeat tests",
+                ],
+              },
+              {
+                id: "step2",
+                label: "2. Run many trials",
+                color: "#f59e0b",
+                items: [
+                  "randint or rand with size=100+",
+                  "One array = hundreds of outcomes",
+                ],
+              },
+              {
+                id: "step3",
+                label: "3. Count or average",
+                color: "#ca8a04",
+                items: [
+                  "np.sum(flips == 0) for heads",
+                  "rolls.mean() for average die",
+                ],
+              },
+              {
+                id: "step4",
+                label: "4. Answer \"what if?\"",
+                color: "#22c55e",
+                items: [
+                  "Is my guess reasonable?",
+                  "Test ideas cheaply before real life",
+                ],
+              },
+            ],
+          },
+
+          // ── Coin flip simulation ───────────────────────────────────
+          {
+            type: "text",
+            content:
+              "**Coin flips** — use `randint(0, 2, size=n)` where **0 = heads** and **1 = tails**. After 20 flips, **count** how many of each with a boolean mask and **`np.sum`**.",
+            code: {
+              lang: "python",
+              label: "Simulate 20 coin flips and count heads vs tails",
+              content: `import numpy as np
+
+np.random.seed(0)
+flips = np.random.randint(0, 2, size=20)   # 0=heads, 1=tails
+
+heads = np.sum(flips == 0)
+tails = np.sum(flips == 1)
+print("Heads:", heads, "  Tails:", tails)
+# With seed 0: Heads: 11  Tails: 9  — will repeat every run`,
+            },
+          },
+          {
+            type: "array",
+            title: "20 coin flips (0 = heads, 1 = tails) — one possible run with seed 0",
+            label: "flips",
+            values: [0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0],
+            colLabels: [
+              "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+              "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+            ],
+            accentColor: "#eab308",
+            footnote:
+              "**Count:** `np.sum(flips == 0)` → heads. More flips → counts usually get closer to 50/50 (not exact every time).",
+          },
+
+          // ── Dice average simulation ────────────────────────────────
+          {
+            type: "text",
+            content:
+              "**Dice average** — roll many times, then **`.mean()`**. On a fair die, the **theoretical** average is **3.5** (midpoint of 1–6). With only **5 rolls** you might get 4.2 or 2.8; with **100 rolls** you usually get much closer to 3.5.",
+            code: {
+              lang: "python",
+              label: "Average of 100 dice rolls — stable pattern",
+              content: `import numpy as np
+
+np.random.seed(42)
+rolls = np.random.randint(1, 7, size=100)
+print("Average roll:", rolls.mean())
+# With seed 42: about 3.47 — close to the fair-die average 3.5`,
+            },
+          },
+          {
+            type: "table",
+            title: "More trials → steadier averages (fair die, target ≈ 3.5)",
+            columns: ["Trials", "Typical average", "Lesson"],
+            rows: [
+              {
+                label: "5 rolls",
+                values: ["Might be 2.0 or 5.2", "Too few — luck swings big"],
+              },
+              {
+                label: "20 rolls",
+                values: ["Often 3.0 – 4.0", "Starting to stabilise"],
+              },
+              {
+                label: "100 rolls",
+                values: ["Often near 3.3 – 3.7", "Pattern is clearer"],
+              },
+              {
+                label: "1000 rolls",
+                values: ["Very close to 3.5", "Law of large numbers"],
+              },
+            ],
+            showTotals: false,
+            footnote:
+              "You don't need exact math — just remember: **more random trials → clearer picture** of what to expect.",
+          },
+
+          // ── Café “what if” ─────────────────────────────────────────
+          {
+            type: "scenario",
+            content:
+              "**What-if question:** *\"Over 50 customers, if each has a 30% chance of buying a pastry, how many pastry sales might I see?\"* Simulate 50 random decimals below 0.3 and count them — no real customers needed.",
           },
           {
             type: "text",
             content:
-              "Run many trials and look at averages. More trials usually get closer to what you expect (dice average near 3.5). Set a **seed** when you want the same “random” story every time you test code.",
+              "**Modeling a chance** — each customer gets a random decimal; if it's **under 0.30**, they buy:",
+            code: {
+              lang: "python",
+              label: "50 customers, ~30% pastry chance — count buyers",
+              content: `import numpy as np
+
+np.random.seed(1)
+chance = np.random.rand(50)          # 50 random decimals 0–1
+buys_pastry = chance < 0.30          # True where they buy
+sales = np.sum(buys_pastry)
+print("Pastry sales:", sales)
+# With seed 1: 18 sales out of 50 — one possible "what if" answer`,
+            },
           },
           {
-            type: "code",
-            lang: "python",
-            label: "Simulate 20 coin flips",
-            content: `import numpy as np
-
-np.random.seed(0)
-flips = np.random.randint(0, 2, size=20)  # 0=heads, 1=tails
-heads = np.sum(flips == 0)
-print("Heads:", heads, "Tails:", 20 - heads)`,
-          },
-          {
-            type: "code",
-            lang: "python",
-            label: "Average of 100 dice rolls",
-            content: `import numpy as np
-
-np.random.seed(42)
-rolls = np.random.randint(1, 7, size=100)
-print("Average roll:", rolls.mean())`,
+            type: "callout",
+            variant: "tip",
+            content:
+              "Always **`np.random.seed(...)`** at the start when you're **learning or debugging** a simulation. Remove or change the seed when you want **fresh** random stories.",
           },
           {
             type: "callout",
             variant: "info",
             content:
-              "Simulations help you test ideas before building expensive real-world experiments.",
+              "**Learning outcome check:** You can **run many trials**, **count outcomes** (`np.sum` on masks), and **average** results (`.mean()`) to answer real **\"what if?\"** questions before trying them in the real world.",
           },
           {
             type: "quiz",
             question: "Why run many random trials in a simulation?",
             options: [
-              "To slow Python down",
+              "To slow Python down on purpose",
               "To see stable patterns in random outcomes",
-              "To remove NaN",
-              "To change array dtype",
+              "To remove NaN from arrays",
+              "To change array dtype to float",
             ],
             answer: 1,
-            explanation: "Large samples reveal averages and probabilities more clearly.",
+            explanation:
+              "Large samples reveal averages and probabilities more clearly — a few rolls are noisy; hundreds smooth out the pattern.",
+          },
+          {
+            type: "quiz",
+            question: "You flipped 20 coins (0=heads). How do you count heads?",
+            options: [
+              "np.mean(flips)",
+              "np.sum(flips == 0)",
+              "np.sort(flips)",
+              "flips.count(0)",
+            ],
+            answer: 1,
+            explanation:
+              "`flips == 0` builds a True/False mask for heads; `np.sum` counts how many True values.",
           },
         ],
         challenge: {

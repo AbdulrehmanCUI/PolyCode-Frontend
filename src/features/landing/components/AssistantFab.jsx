@@ -1,14 +1,11 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   Minus,
-  Sparkles,
   ThumbsDown,
   ThumbsUp,
   Trash2,
-  Zap,
 } from "lucide-react";
 import { useAuth } from "../../auth/context/AuthContext";
 import { useAssistant } from "../../assistant/context/AssistantContext";
@@ -30,9 +27,6 @@ import AssistantAvatar from "./AssistantAvatar";
 import AssistantMarkdown from "../../assistant/components/AssistantMarkdown";
 
 const MAX_STORED_MESSAGES = 20;
-const DOCK_POSITION_KEY = "polycode_assistant_dock_position";
-const DOCK_MARGIN = 12;
-const DRAG_CLICK_THRESHOLD = 6;
 const ASSISTANT_LEVEL_KEY = "polycode_assistant_level";
 const ASSISTANT_LEVELS = ["beginner", "intermediate", "advanced"];
 
@@ -65,47 +59,6 @@ function loadSession() {
     /* ignore */
   }
   return { sessionId: generateSessionId(), messages: [WELCOME_MESSAGE] };
-}
-
-function loadDockPosition() {
-  if (typeof window === "undefined") return null;
-
-  try {
-    const raw = localStorage.getItem(DOCK_POSITION_KEY);
-    if (!raw) return null;
-
-    const parsed = JSON.parse(raw);
-    if (Number.isFinite(parsed?.x) && Number.isFinite(parsed?.y)) {
-      return parsed;
-    }
-  } catch {
-    /* ignore */
-  }
-
-  return null;
-}
-
-function clampDockPosition(position, size = { width: 220, height: 76 }) {
-  if (typeof window === "undefined") return position;
-
-  return {
-    x: Math.min(
-      Math.max(DOCK_MARGIN, position.x),
-      Math.max(DOCK_MARGIN, window.innerWidth - size.width - DOCK_MARGIN),
-    ),
-    y: Math.min(
-      Math.max(DOCK_MARGIN, position.y),
-      Math.max(DOCK_MARGIN, window.innerHeight - size.height - DOCK_MARGIN),
-    ),
-  };
-}
-
-function saveDockPosition(position) {
-  try {
-    localStorage.setItem(DOCK_POSITION_KEY, JSON.stringify(position));
-  } catch {
-    /* ignore */
-  }
 }
 
 function loadAssistantLevel() {
@@ -190,13 +143,18 @@ const MentorReply = memo(function MentorReply({
   showFeedback,
   onRate,
   feedbackRequired,
+  isWelcome = false,
 }) {
   const canRate = showFeedback && msg.content && msg.id !== "welcome";
 
   return (
     <article className="assistant-mentor-reply">
       <span aria-hidden className="assistant-mentor-accent" />
-      <div className="assistant-mentor-card">
+      <div
+        className={`assistant-mentor-card${
+          isWelcome ? " assistant-mentor-card--welcome" : ""
+        }`}
+      >
         <div className="assistant-mentor-meta">
           <AssistantAvatar size="sm" />
           <span className="assistant-mentor-name">{ASSISTANT_CONFIG.name}</span>
@@ -235,6 +193,7 @@ const UserReply = memo(function UserReply({ content, user }) {
 function ThinkingIndicator() {
   return (
     <div className="assistant-thinking">
+      <AssistantAvatar size="sm" alt="" />
       <span className="assistant-thinking-text">PolyMentor is thinking…</span>
     </div>
   );
@@ -259,8 +218,6 @@ export default function AssistantFab() {
   const { user } = useAuth();
   const userId = user?._id || user?.id || null;
   const { context: assistantContext } = useAssistant();
-  const { pathname } = useLocation();
-  const compactDock = pathname !== "/select-language";
   const reduceMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [session, setSession] = useState(() => loadSession());
@@ -271,10 +228,6 @@ export default function AssistantFab() {
   const messagesScrollRef = useRef(null);
   const sessionRef = useRef(session);
   const dockRef = useRef(null);
-  const dragStateRef = useRef(null);
-  const suppressDockClickRef = useRef(false);
-  const [dockPosition, setDockPosition] = useState(() => loadDockPosition());
-  const [draggingDock, setDraggingDock] = useState(false);
   const lastUserIdRef = useRef(userId);
 
   useEffect(() => {
@@ -299,23 +252,6 @@ export default function AssistantFab() {
     setError(null);
     lastUserIdRef.current = userId;
   }, [userId]);
-
-  useEffect(() => {
-    if (!dockPosition) return undefined;
-
-    const onResize = () => {
-      const rect = dockRef.current?.getBoundingClientRect();
-      const nextPosition = clampDockPosition(dockPosition, {
-        width: rect?.width || 220,
-        height: rect?.height || 76,
-      });
-      setDockPosition(nextPosition);
-      saveDockPosition(nextPosition);
-    };
-
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [dockPosition]);
 
   useEffect(() => {
     let cancelled = false;
@@ -588,99 +524,6 @@ export default function AssistantFab() {
   const messageContent = (msg) =>
     msg.id === "welcome" ? getWelcomeMessage(assistantContext) : msg.content;
 
-  const handleDockPointerDown = (event) => {
-    if (compactDock || event.button !== 0) return;
-    event.preventDefault();
-
-    const rect = dockRef.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    dragStateRef.current = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      offsetX: event.clientX - rect.left,
-      offsetY: event.clientY - rect.top,
-      moved: false,
-      width: rect.width,
-      height: rect.height,
-    };
-    suppressDockClickRef.current = false;
-
-    dockRef.current?.setPointerCapture?.(event.pointerId);
-  };
-
-  const handleDockPointerMove = (event) => {
-    const state = dragStateRef.current;
-    if (!state || state.pointerId !== event.pointerId) return;
-
-    const deltaX = event.clientX - state.startX;
-    const deltaY = event.clientY - state.startY;
-    if (!state.moved && Math.hypot(deltaX, deltaY) < DRAG_CLICK_THRESHOLD) {
-      return;
-    }
-
-    event.preventDefault();
-    state.moved = true;
-    suppressDockClickRef.current = true;
-    setDraggingDock(true);
-
-    setDockPosition(
-      clampDockPosition(
-        {
-          x: event.clientX - state.offsetX,
-          y: event.clientY - state.offsetY,
-        },
-        { width: state.width, height: state.height },
-      ),
-    );
-  };
-
-  const handleDockPointerUp = (event) => {
-    const state = dragStateRef.current;
-    if (!state || state.pointerId !== event.pointerId) return;
-
-    dragStateRef.current = null;
-    dockRef.current?.releasePointerCapture?.(event.pointerId);
-    setDraggingDock(false);
-
-    if (state.moved) {
-      const rect = dockRef.current?.getBoundingClientRect();
-      const nextPosition = clampDockPosition(
-        {
-          x: event.clientX - state.offsetX,
-          y: event.clientY - state.offsetY,
-        },
-        { width: rect?.width || state.width, height: rect?.height || state.height },
-      );
-      setDockPosition(nextPosition);
-      saveDockPosition(nextPosition);
-      return;
-    }
-
-    setOpen(true);
-  };
-
-  const handleDockPointerCancel = (event) => {
-    const state = dragStateRef.current;
-    if (!state || state.pointerId !== event.pointerId) return;
-
-    dragStateRef.current = null;
-    dockRef.current?.releasePointerCapture?.(event.pointerId);
-    setDraggingDock(false);
-  };
-
-  const openFromDock = (event) => {
-    if (suppressDockClickRef.current) {
-      event?.preventDefault?.();
-      event?.stopPropagation?.();
-      suppressDockClickRef.current = false;
-      return;
-    }
-
-    setOpen(true);
-  };
-
   return createPortal(
     <>
       <AnimatePresence>
@@ -710,9 +553,13 @@ export default function AssistantFab() {
             className="assistant-panel polym_mentor-panel"
           >
             <div className="assistant-panel-header">
-              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.75rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", minWidth: 0 }}>
-                  <AssistantAvatar size="md" alt={ASSISTANT_CONFIG.name} />
+              <div className="assistant-panel-header-row">
+                <div className="assistant-panel-header-main">
+                  <AssistantAvatar
+                    size="header"
+                    highlight
+                    alt={ASSISTANT_CONFIG.name}
+                  />
                   <div>
                     <p id="polym_mentor-title" className="assistant-panel-title">
                       {ASSISTANT_CONFIG.name}
@@ -741,7 +588,7 @@ export default function AssistantFab() {
                     </label>
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: "0.25rem" }}>
+                <div className="assistant-panel-header-actions">
                   <button
                     type="button"
                     onClick={clearSession}
@@ -779,6 +626,7 @@ export default function AssistantFab() {
                   ) : (
                     <MentorReply
                       msg={{ ...msg, content: messageContent(msg) }}
+                      isWelcome={msg.id === "welcome"}
                       showFeedback
                       feedbackRequired={msg.id === pendingFeedback?.id}
                       onRate={(rating) =>
@@ -792,7 +640,7 @@ export default function AssistantFab() {
               {showQuickPrompts ? (
                 <div>
                   <p className="assistant-quick-label">Quick prompts</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                  <div className="assistant-quick-list">
                     {quickPrompts.map((prompt) => (
                       <button
                         key={prompt}
@@ -843,14 +691,8 @@ export default function AssistantFab() {
           ref={dockRef}
           role="button"
           tabIndex={0}
-          className={`assistant-dock-btn polym_mentor-dock${
-            compactDock ? " assistant-dock-btn--compact" : ""
-          }${draggingDock ? " assistant-dock-btn--dragging" : ""}`}
-          onPointerDown={handleDockPointerDown}
-          onPointerMove={handleDockPointerMove}
-          onPointerUp={handleDockPointerUp}
-          onPointerCancel={handleDockPointerCancel}
-          onClick={openFromDock}
+          className="assistant-dock-btn polym_mentor-dock assistant-dock-btn--compact"
+          onClick={() => setOpen(true)}
           onKeyDown={(event) => {
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
@@ -861,33 +703,9 @@ export default function AssistantFab() {
           initial={reduceMotion ? false : { opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.35, type: "spring", stiffness: 320, damping: 26 }}
-          style={
-            !compactDock && dockPosition
-              ? {
-                  left: dockPosition.x,
-                  top: dockPosition.y,
-                  right: "auto",
-                  bottom: "auto",
-                }
-              : undefined
-          }
         >
           <div aria-hidden="true" className="assistant-dock-inner">
-            <AssistantAvatar size={compactDock ? "md" : "lg"} alt={ASSISTANT_CONFIG.name} />
-            {!compactDock ? (
-              <>
-                <span className="assistant-dock-copy">
-                  <span className="assistant-dock-title">
-                    <Zap size={12} />
-                    {ASSISTANT_CONFIG.name}
-                  </span>
-                  <span className="assistant-dock-hint">Tap to open mentor</span>
-                </span>
-                <span className="assistant-dock-sparkle">
-                  <Sparkles size={16} />
-                </span>
-              </>
-            ) : null}
+            <AssistantAvatar size="dock" highlight alt={ASSISTANT_CONFIG.name} />
           </div>
         </motion.div>
       ) : null}
