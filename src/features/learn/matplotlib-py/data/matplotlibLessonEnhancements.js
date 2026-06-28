@@ -295,22 +295,23 @@ export const LESSON_ENHANCEMENTS = {
 
 export function applyLessonEnhancements(lesson) {
   const meta = LESSON_ENHANCEMENTS[lesson.id];
-  if (!meta) return lesson;
+  const objectives = meta?.objectives || [
+    `Understand the core idea in "${lesson.title}"`,
+    "Apply the Matplotlib patterns from this lesson in code",
+    "Choose visuals that match the data story you need to tell",
+  ];
 
-  const prefix = [];
-  if (meta.objectives?.length) {
-    prefix.push({ type: "objectives", items: meta.objectives });
-  }
-  if (meta.scenario) {
+  const prefix = [{ type: "objectives", items: objectives }];
+  if (meta?.scenario) {
     prefix.push({ type: "scenario", content: meta.scenario });
   }
-  if (meta.prepend?.length) {
+  if (meta?.prepend?.length) {
     prefix.push(...meta.prepend);
   }
 
   return {
     ...lesson,
-    theory: [...prefix, ...lesson.theory, ...(meta.append || [])],
+    theory: [...prefix, ...lesson.theory, ...(meta?.append || [])],
   };
 }
 
