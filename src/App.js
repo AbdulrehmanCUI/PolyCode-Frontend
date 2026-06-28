@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  Link,
   useNavigate,
   useLocation,
 } from "react-router-dom";
@@ -206,8 +207,18 @@ function AppFooter() {
     <footer className="app-footer">
       <div className="app-footer-inner">
         <div className="app-footer-meta">
-          <span className="app-footer-project">PolyCode</span>
+          <Link to="/" className="app-footer-home" aria-label="PolyCode home">
+            <img
+              src="/images/polycode-logo.png"
+              alt=""
+              className="app-footer-polycode-logo"
+              width={28}
+              height={28}
+              decoding="async"
+            />
+          </Link>
           <span className="app-footer-copy">© {year}</span>
+          <span className="app-footer-project">PolyCode</span>
         </div>
         <a
           className="app-footer-brand"

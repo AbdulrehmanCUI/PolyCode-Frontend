@@ -1,5 +1,5 @@
 import { getApiBase } from "../../../config/apiBase";
-import { DefaultRubyVM } from "../../../lib/rubyWasmBrowser";
+import { loadDefaultRubyVM } from "../../../lib/rubyWasmBrowser";
 
 const RUBY_WASM_URL = `${process.env.PUBLIC_URL || ""}/ruby/ruby-stdlib.wasm`;
 
@@ -66,6 +66,7 @@ async function loadRubyWasmModule() {
 async function initRubyVM() {
   if (!rubyVmPromise) {
     rubyVmPromise = (async () => {
+      const DefaultRubyVM = await loadDefaultRubyVM();
       const rubyModule = await loadRubyWasmModule();
       const { vm } = await DefaultRubyVM(rubyModule);
       return vm;
