@@ -670,24 +670,6 @@ export default function NumpyIntroTheory({
 
   return (
     <div className="numpy-intro-theory">
-      <header
-        className="numpy-lesson-hero"
-        style={{ "--numpy-accent": accentColor }}
-      >
-        <span className="numpy-chapter-badge">{lesson.chapterTitle}</span>
-        <h2 className="numpy-lesson-title" id="numpy-lesson-heading">
-          {lesson.title}
-        </h2>
-        <p className="numpy-lesson-intro-label">Introduction</p>
-        <p className="numpy-lesson-hook">
-          {introText?.content ? (
-            <InlineText text={introText.content} />
-          ) : (
-            "We'll explain this idea in plain English — no jargon overload."
-          )}
-        </p>
-      </header>
-
       {outcomeItems.length > 0 && (
         <section
           className="numpy-lesson-outcomes numpy-lesson-outcomes-top"
@@ -706,6 +688,24 @@ export default function NumpyIntroTheory({
           </ul>
         </section>
       )}
+
+      <header
+        className="numpy-lesson-hero"
+        style={{ "--numpy-accent": accentColor }}
+      >
+        <span className="numpy-chapter-badge">{lesson.chapterTitle}</span>
+        <h2 className="numpy-lesson-title" id="numpy-lesson-heading">
+          {lesson.title}
+        </h2>
+        <p className="numpy-lesson-intro-label">Introduction</p>
+        <p className="numpy-lesson-hook">
+          {introText?.content ? (
+            <InlineText text={introText.content} />
+          ) : (
+            "We'll explain this idea in plain English — no jargon overload."
+          )}
+        </p>
+      </header>
 
       <div className="numpy-learn-path">
         <div className="numpy-path-label">
