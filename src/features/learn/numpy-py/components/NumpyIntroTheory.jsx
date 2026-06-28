@@ -688,6 +688,25 @@ export default function NumpyIntroTheory({
         </p>
       </header>
 
+      {outcomeItems.length > 0 && (
+        <section
+          className="numpy-lesson-outcomes numpy-lesson-outcomes-top"
+          style={{ "--numpy-accent": accentColor }}
+          aria-labelledby="numpy-outcomes-heading"
+        >
+          <h2 id="numpy-outcomes-heading" className="numpy-outcomes-heading">
+            Learning outcomes
+          </h2>
+          <ul className="numpy-outcomes-list">
+            {outcomeItems.map((item) => (
+              <li key={item}>
+                <InlineText text={item} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <div className="numpy-learn-path">
         <div className="numpy-path-label">
           <span>Your learning path</span>
@@ -714,25 +733,6 @@ export default function NumpyIntroTheory({
           );
         })}
       </div>
-
-      {outcomeItems.length > 0 && (
-        <section
-          className="numpy-lesson-outcomes"
-          style={{ "--numpy-accent": accentColor }}
-          aria-labelledby="numpy-outcomes-heading"
-        >
-          <h2 id="numpy-outcomes-heading" className="numpy-outcomes-heading">
-            Learning outcomes
-          </h2>
-          <ul className="numpy-outcomes-list">
-            {outcomeItems.map((item) => (
-              <li key={item}>
-                <InlineText text={item} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
 
       <LessonReadGate
         markedAsRead={markedAsRead}
