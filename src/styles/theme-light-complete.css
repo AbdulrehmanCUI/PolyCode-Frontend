@@ -278,6 +278,29 @@
   color: var(--poly-blue) !important;
 }
 
+.app.theme-light .numpy-intro-theory--course-start .numpy-chapter-badge {
+  color: #b45309 !important;
+}
+
+.app.theme-light .numpy-intro-theory--course-start .numpy-lesson-hero {
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.06),
+    var(--poly-surface) 55%
+  ) !important;
+  border-color: rgba(37, 99, 235, 0.28) !important;
+  box-shadow: 0 0 0 1px rgba(180, 83, 9, 0.12) !important;
+}
+
+.app.theme-light .numpy-intro-theory--course-start .lesson-objectives {
+  background: rgba(37, 99, 235, 0.06) !important;
+  border-color: rgba(37, 99, 235, 0.22) !important;
+}
+
+.app.theme-light .numpy-intro-theory--course-start .numpy-path-label span {
+  color: #b45309 !important;
+}
+
 .app.theme-light .numpy-step-num-code {
   display: none !important;
 }

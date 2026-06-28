@@ -606,8 +606,8 @@ export default function NumpyIntroTheory({
   markedAsRead = false,
   onMarkAsRead = () => {},
   onGoChallenge,
+  introVariant = "default",
 }) {
-  const accentColor = LEARN_ACCENT;
   const {
     preparedLesson,
     quizCount,
@@ -616,24 +616,31 @@ export default function NumpyIntroTheory({
     getSelection,
   } = useLessonQuizAttempts(quizStoragePrefix, lesson?.id, lesson);
   const activeLesson = preparedLesson || lesson;
-  const theoryWithoutObjectives = activeLesson.theory.filter(
-    (block) => block.type !== "objectives",
+  const isCourseStart = introVariant === "course-start";
+  const accentColor =
+    isCourseStart && activeLesson?.chapterColor
+      ? activeLesson.chapterColor
+      : LEARN_ACCENT;
+  const theoryBase = isCourseStart
+    ? activeLesson.theory
+    : activeLesson.theory.filter((block) => block.type !== "objectives");
+  const objectivesBlock = activeLesson.theory.find(
+    (block) => block.type === "objectives",
   );
-  const objectivesBlock = activeLesson.theory.find((block) => block.type === "objectives");
   const outcomeItems =
     activeLesson.outcomes?.length > 0
       ? activeLesson.outcomes
       : objectivesBlock?.items || [];
-  const introText = theoryWithoutObjectives.find(
+  const introText = theoryBase.find(
     (block) => block.type === "text" && !block.code,
   );
-  const introTextIndex = theoryWithoutObjectives.findIndex(
+  const introTextIndex = theoryBase.findIndex(
     (block) => block.type === "text" && !block.code,
   );
   const theoryBlocks =
     introTextIndex >= 0
-      ? theoryWithoutObjectives.filter((_, index) => index !== introTextIndex)
-      : theoryWithoutObjectives;
+      ? theoryBase.filter((_, index) => index !== introTextIndex)
+      : theoryBase;
   const theoryWithQuizMeta = mapTheoryWithQuizIndices(theoryBlocks);
   const quizSlides = theoryWithQuizMeta
     .filter(({ block }) => block.type === "quiz")
@@ -642,8 +649,10 @@ export default function NumpyIntroTheory({
   let quizSliderRendered = false;
 
   return (
-    <div className="numpy-intro-theory">
-      {outcomeItems.length > 0 && (
+    <div
+      className={`numpy-intro-theory${isCourseStart ? " numpy-intro-theory--course-start" : ""}`}
+    >
+      {!isCourseStart && outcomeItems.length > 0 && (
         <section
           className="numpy-lesson-outcomes numpy-lesson-outcomes-top"
           style={{ "--numpy-accent": accentColor }}
@@ -670,7 +679,9 @@ export default function NumpyIntroTheory({
         <h2 className="numpy-lesson-title" id="numpy-lesson-heading">
           {activeLesson.title}
         </h2>
-        <p className="numpy-lesson-intro-label">Introduction</p>
+        {!isCourseStart && (
+          <p className="numpy-lesson-intro-label">Introduction</p>
+        )}
         <p className="numpy-lesson-hook">
           {introText?.content ? (
             <InlineText text={introText.content} />
@@ -683,7 +694,9 @@ export default function NumpyIntroTheory({
       <div className="numpy-learn-path">
         <div className="numpy-path-label">
           <span>Your learning path</span>
-          <small>Read the idea, then run the code right below it</small>
+          {!isCourseStart && (
+            <small>Read the idea, then run the code right below it</small>
+          )}
         </div>
 
         {theoryWithQuizMeta.map(({ block, theoryIndex, quizIndex }) => {

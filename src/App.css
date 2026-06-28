@@ -8723,6 +8723,38 @@ body {
   margin: 0 auto;
 }
 
+.numpy-intro-theory--course-start .numpy-lesson-hero {
+  border-color: color-mix(in srgb, var(--numpy-accent, #2563eb) 48%, transparent);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--numpy-accent, #2563eb) 16%, transparent),
+      transparent 58%
+    ),
+    rgba(255, 255, 255, 0.02);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--acid, #ffe566) 22%, transparent);
+}
+
+.numpy-intro-theory--course-start .numpy-chapter-badge {
+  color: var(--acid, #ffe566);
+}
+
+.numpy-intro-theory--course-start .numpy-path-label {
+  margin-top: 4px;
+  padding-bottom: 14px;
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--acid, #ffe566) 28%,
+    var(--border, rgba(255, 255, 255, 0.08))
+  );
+}
+
+.numpy-intro-theory--course-start .lesson-objectives {
+  margin-top: 2px;
+  border-color: color-mix(in srgb, var(--numpy-accent, #2563eb) 42%, transparent);
+  background: color-mix(in srgb, var(--numpy-accent, #2563eb) 10%, transparent);
+}
+
 .numpy-lesson-hero {
   margin-bottom: 28px;
   padding: 24px 26px;
