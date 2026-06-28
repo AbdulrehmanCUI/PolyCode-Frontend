@@ -690,7 +690,7 @@ export default function NumpyIntroTheory({
           if (block.type === "quiz") {
             if (quizSliderRendered) return null;
             quizSliderRendered = true;
-            const step = ++stepCounter;
+            stepCounter += 1;
             return (
               <LessonQuizSlider
                 key={`quiz-slider-${theoryIndex}`}
