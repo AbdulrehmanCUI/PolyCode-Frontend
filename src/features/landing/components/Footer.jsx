@@ -88,7 +88,21 @@ export default function Footer() {
         </div>
 
         <div className="landing-footer-bar">
-          <p className="landing-footer-copy">© {year} PolyCode. All rights reserved.</p>
+          <div className="landing-footer-copy-wrap">
+            <Link to="/" className="landing-footer-home" aria-label="PolyCode home">
+              <img
+                src="/images/polycode-logo.png"
+                alt=""
+                className="landing-footer-polycode-logo"
+                width={24}
+                height={24}
+                decoding="async"
+              />
+            </Link>
+            <p className="landing-footer-copy">
+              © {year} PolyCode. All rights reserved.
+            </p>
+          </div>
           <a
             className="landing-footer-powered"
             href="https://www.quantumlogicslimited.com"

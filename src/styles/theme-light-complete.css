@@ -422,14 +422,61 @@ html[data-theme="light"] .lesson-annotator-fab-close,
 }
 
 /* Quizzes */
+.app.theme-light .numpy-quiz-card {
+  background: var(--poly-surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.app.theme-light .numpy-quiz-card.correct {
+  border-color: rgba(22, 163, 74, 0.35) !important;
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 72%) !important;
+}
+
+.app.theme-light .numpy-quiz-card.wrong {
+  border-color: rgba(239, 68, 68, 0.32) !important;
+  background: linear-gradient(180deg, #fef2f2 0%, #ffffff 72%) !important;
+}
+
+.app.theme-light .numpy-quiz-question {
+  color: var(--txt-0) !important;
+}
+
+.app.theme-light .numpy-quiz-option {
+  background: var(--poly-surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--txt-0) !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.app.theme-light .numpy-quiz-option:hover {
+  border-color: var(--poly-blue-border) !important;
+  background: var(--poly-blue-light) !important;
+  color: var(--poly-blue-deep) !important;
+}
+
 .app.theme-light .numpy-quiz-option.selected {
   border-color: var(--poly-blue) !important;
   background: var(--poly-blue-light) !important;
+  color: var(--poly-blue-deep) !important;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1);
 }
 
 .app.theme-light .numpy-quiz-option.answer {
   border-color: #16a34a !important;
   background: #f0fdf4 !important;
+  color: #166534 !important;
+}
+
+.app.theme-light .numpy-quiz-card.wrong .numpy-quiz-option.selected:not(.answer) {
+  border-color: #ef4444 !important;
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+}
+
+.app.theme-light .numpy-quiz-feedback {
+  color: var(--txt-1) !important;
+  border-top-color: var(--border) !important;
 }
 
 /* Scrollbar */
@@ -690,12 +737,6 @@ html[data-theme="light"] .lesson-annotator-fab-close,
   border-top-color: var(--border) !important;
 }
 
-.app.theme-light .main-content.learn-content .oops-theory-editor .monaco-editor,
-.app.theme-light .main-content.learn-content .oops-theory-editor .monaco-editor-background,
-.app.theme-light .main-content.learn-content .oops-theory-editor .margin-view-overlays {
-  background: #f8fafc !important;
-}
-
 .app.theme-light .main-content.learn-content .oops-auth-gate-theory {
   border-top-color: var(--border) !important;
   background: var(--poly-surface-muted) !important;
@@ -715,9 +756,52 @@ html[data-theme="light"] .lesson-annotator-fab-close,
   color: var(--poly-blue) !important;
 }
 
-.app.theme-light .main-content.learn-content .oops-editor .monaco-editor,
-.app.theme-light .main-content.learn-content .oops-editor .monaco-editor-background {
+.app.theme-light .main-content.learn-content .oops-theory-editor .monaco-editor,
+.app.theme-light .main-content.learn-content .oops-theory-editor .monaco-editor-background,
+.app.theme-light .main-content.learn-content .oops-theory-editor .margin-view-overlays {
   background: #ffffff !important;
+}
+
+.app.theme-light .main-content.learn-content .oops-editor-panel {
+  background: var(--poly-surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06) !important;
+}
+
+.app.theme-light .main-content.learn-content .oops-editor-topbar {
+  background: #f8fafc !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.app.theme-light .main-content.learn-content .oops-editor-lang {
+  color: var(--txt-0) !important;
+  font-weight: 600 !important;
+}
+
+.app.theme-light .main-content.learn-content .oops-editor {
+  background: #ffffff !important;
+}
+
+.app.theme-light .main-content.learn-content .oops-editor .monaco-editor,
+.app.theme-light .main-content.learn-content .oops-editor .monaco-editor-background,
+.app.theme-light .main-content.learn-content .oops-editor .margin-view-overlays,
+.app.theme-light .main-content.learn-content .oops-editor .monaco-editor .margin {
+  background: #ffffff !important;
+}
+
+.app.theme-light .main-content.learn-content .oops-run-bar {
+  background: #f8fafc !important;
+  border-top: 1px solid var(--border) !important;
+}
+
+.app.theme-light .main-content.learn-content .oops-editor .monaco-editor .oops-fixed-selection-inline {
+  color: #0f172a !important;
+  background: rgba(37, 99, 235, 0.16) !important;
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.22) !important;
+}
+
+.app.theme-light .main-content.learn-content .oops-editor .monaco-editor .oops-fixed-selection-range {
+  background: rgba(37, 99, 235, 0.1) !important;
 }
 
 .app.theme-light .main-content.learn-content .oops-editor-action {
