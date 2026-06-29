@@ -105,9 +105,14 @@ function renderMarkdown(text) {
   });
 }
 
-function ReplyFeedback({ feedback, onRate, disabled }) {
+function ReplyFeedback({ feedback, onRate, disabled, required }) {
   return (
-    <div className="assistant-feedback">
+    <div
+      className={`assistant-feedback${required && !feedback ? " assistant-feedback--required" : ""}`}
+    >
+      {required && !feedback ? (
+        <span className="assistant-feedback-hint">Rate this answer to continue</span>
+      ) : null}
       <button
         type="button"
         className={`assistant-feedback-btn${feedback === "like" ? " assistant-feedback-btn--active-like" : ""}`}
@@ -139,6 +144,7 @@ function MentorReply({
   onRate,
   feedbackSaving,
   onStreamComplete,
+  feedbackRequired,
 }) {
   const shouldStream = Boolean(msg.stream) && !reduceMotion;
   const { displayed, done } = useTypewriter(msg.content, shouldStream);
@@ -200,6 +206,7 @@ function MentorReply({
             feedback={msg.feedback}
             onRate={onRate}
             disabled={feedbackSaving}
+            required={feedbackRequired}
           />
         ) : null}
       </div>
@@ -240,6 +247,20 @@ function UserReply({ content, user }) {
       </div>
     </div>
   );
+}
+
+function getPendingFeedbackMessage(messages) {
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    const message = messages[i];
+    if (
+      message.role === "assistant" &&
+      message.id !== "welcome" &&
+      message.content?.trim()
+    ) {
+      return message.feedback ? null : message;
+    }
+  }
+  return null;
 }
 
 export default function AssistantFab() {
@@ -386,6 +407,7 @@ export default function AssistantFab() {
   const sendText = useCallback(
     async (text) => {
       if (!text.trim() || sending) return;
+      if (getPendingFeedbackMessage(sessionRef.current.messages)) return;
 
       const userMsg = { id: `user-${Date.now()}`, role: "user", content: text };
       const assistantId = `assistant-${Date.now()}`;
@@ -447,12 +469,15 @@ export default function AssistantFab() {
     }
   };
 
+  const pendingFeedback = getPendingFeedbackMessage(session.messages);
+  const inputLocked = sending || Boolean(pendingFeedback);
+
   const quickPrompts = getQuickPrompts(assistantContext);
   const contextLabel = getContextLabel(assistantContext);
 
   const showQuickPrompts =
     session.messages.length <= 1 &&
-    !sending &&
+    !inputLocked &&
     session.messages.every((m) => m.id === "welcome");
 
   const messageContent = (msg) =>
@@ -559,6 +584,7 @@ export default function AssistantFab() {
                       reduceMotion={reduceMotion}
                       showFeedback
                       feedbackSaving={feedbackSavingId === msg.id}
+                      feedbackRequired={msg.id === pendingFeedback?.id}
                       onStreamComplete={handleStreamComplete}
                       onRate={(rating) =>
                         handleFeedback(msg.id, rating, messageContent(msg))
@@ -623,7 +649,15 @@ export default function AssistantFab() {
                 padding: "1rem",
               }}
             >
-              <div style={{ display: "flex", alignItems: "flex-end", gap: "0.5rem", borderRadius: "0.75rem", border: "1px solid var(--border)", background: "#0a1018", padding: "0.5rem" }}>
+              {pendingFeedback ? (
+                <p className="assistant-feedback-lock-notice" role="status">
+                  Like or dislike the last answer before sending another message.
+                </p>
+              ) : null}
+              <div
+                className={`assistant-composer${inputLocked && !sending ? " assistant-composer--locked" : ""}`}
+                style={{ display: "flex", alignItems: "flex-end", gap: "0.5rem", borderRadius: "0.75rem", border: "1px solid var(--border)", background: "#0a1018", padding: "0.5rem" }}
+              >
                 <span style={{ paddingBottom: "0.5rem", paddingLeft: "0.25rem", fontFamily: "ui-monospace, monospace", fontWeight: 700, color: "var(--acid)" }}>
                   &gt;
                 </span>
@@ -632,9 +666,13 @@ export default function AssistantFab() {
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={ASSISTANT_CONFIG.inputPlaceholder}
+                  placeholder={
+                    pendingFeedback
+                      ? "Rate the reply above to continue…"
+                      : ASSISTANT_CONFIG.inputPlaceholder
+                  }
                   rows={1}
-                  disabled={sending}
+                  disabled={inputLocked}
                   aria-label="Ask PolyMentor"
                   style={{
                     flex: 1,
@@ -652,7 +690,7 @@ export default function AssistantFab() {
                 <button
                   type="button"
                   onClick={send}
-                  disabled={!draft.trim() || sending}
+                  disabled={!draft.trim() || inputLocked}
                   aria-label="Send"
                   style={{
                     display: "flex",
@@ -665,7 +703,7 @@ export default function AssistantFab() {
                     background: "var(--acid)",
                     color: "#fff",
                     cursor: "pointer",
-                    opacity: !draft.trim() || sending ? 0.3 : 1,
+                    opacity: !draft.trim() || inputLocked ? 0.3 : 1,
                   }}
                 >
                   <ChevronRight size={20} />
