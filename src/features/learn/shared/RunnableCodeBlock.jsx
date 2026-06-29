@@ -32,16 +32,12 @@ import {
   formatRubyOutput,
   getRubyRuntimeError,
   runRubyCode,
-<<<<<<< HEAD
 } from "./runRuby"; 
 import {
   formatPhpOutput,
   getPhpRuntimeError,
   runPhpCode,
 } from "./runPhp";
-=======
-} from "./runRuby";
->>>>>>> 700af2aa1564b9c0509d333abe73d64198041bc1
 
 function normalizeLang(lang = "python") {
   const value = lang.toLowerCase();
@@ -58,10 +54,7 @@ function monacoLanguage(lang) {
   if (lang === "javascript") return "javascript";
   if (lang === "csharp") return "csharp";
   if (lang === "ruby") return "ruby";
-<<<<<<< HEAD
   if (lang === "php") return "php";
-=======
->>>>>>> 700af2aa1564b9c0509d333abe73d64198041bc1
   return "python";
 }
 
@@ -76,7 +69,7 @@ async function executeTheoryCode(source, lang) {
     return runCsharpCode(source);
   }
   if (lang === "ruby") {
-    return runRubyCode(source, { learn: true });
+    return runRubyCode(source);
   }
   if (lang === "php"){
     return runPhpCode(source);
