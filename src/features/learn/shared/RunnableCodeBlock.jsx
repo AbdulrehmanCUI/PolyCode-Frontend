@@ -80,6 +80,7 @@ function formatTheoryOutput(result, lang) {
   if (lang === "javascript") return formatJavaScriptOutput(result);
   if (lang === "csharp") return formatCsharpOutput(result);
   if (lang === "ruby") return formatRubyOutput(result);
+  if (lang === "php") return formatPhpOutput(result);
   return formatPythonOutput(result);
 }
 
@@ -88,6 +89,8 @@ function getTheoryRuntimeError(result, lang) {
   if (lang === "javascript") return getJavaScriptRuntimeError(result);
   if (lang === "csharp") return getCsharpRuntimeError(result);
   if (lang === "ruby") return getRubyRuntimeError(result);
+  if (lang === "php") return getPhpRuntimeError(result);
+
   return getPythonRuntimeError(result);
 }
 

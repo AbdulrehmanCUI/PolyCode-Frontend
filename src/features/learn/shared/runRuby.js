@@ -2,7 +2,6 @@ import { DefaultRubyVM } from "@ruby/wasm-wasi/dist/browser";
 
 let rubyVM = null;
 
-let rubyVmPromise = null;
 /**
  * Initializes the Ruby WebAssembly Virtual Machine.
  * Fetches the binary from the local public folder to bypass CORS in production.
@@ -50,72 +49,6 @@ export function prepareRubyLearnCode(code = "") {
 
   const trailer = unique.map((name) => `puts "${name} = #{${name}}"`).join("\n");
   return `${code.replace(/\s*$/, "")}\n\n${trailer}\n`;
-}
-
-function buildRubyCaptureScript(source) {
-  const encoded = JSON.stringify(source);
-  return `
-require "stringio"
-__polycode_out = StringIO.new
-__polycode_err = StringIO.new
-$stdout = __polycode_out
-$stderr = __polycode_err
-__polycode_exit = 0
-begin
-  eval(${encoded}, binding, "(polycode)")
-rescue Exception => e
-  __polycode_err.puts("#{e.class}: #{e.message}")
-  if e.backtrace
-    e.backtrace.first(8).each { |line| __polycode_err.puts(line) }
-  end
-  __polycode_exit = 1
-end
-[__polycode_out.string, __polycode_err.string, __polycode_exit]
-`;
-}
-
-async function loadRubyWasmModule() {
-  const response = await fetch(RUBY_WASM_URL);
-  if (!response.ok) {
-    throw new Error("Could not load the in-browser Ruby runtime.");
-  }
-
-  try {
-    return await WebAssembly.compileStreaming(response);
-  } catch (_) {
-    const bytes = await response.arrayBuffer();
-    return WebAssembly.compile(bytes);
-  }
-}
-
-async function initRubyVM() {
-  if (!rubyVmPromise) {
-    rubyVmPromise = (async () => {
-      const DefaultRubyVM = await loadDefaultRubyVM();
-      const rubyModule = await loadRubyWasmModule();
-      const { vm } = await DefaultRubyVM(rubyModule);
-      return vm;
-    })();
-  }
-
-  return rubyVmPromise;
-}
-async function runRubyInBrowser(source) {
-  const vm = await initRubyVM();
-  const result = vm.eval(buildRubyCaptureScript(source));
-  const stdout = result?.[0]?.toString?.() ?? String(result?.[0] ?? "");
-  const stderr = result?.[1]?.toString?.() ?? String(result?.[1] ?? "");
-  const exitCode = Number(result?.[2] ?? 0);
-
-  return {
-    stdout: stdout.trimEnd(),
-    stderr: stderr.trimEnd(),
-    error:
-      exitCode === 0
-        ? null
-        : stderr.trimEnd() || `Ruby exited with code ${exitCode}`,
-    exitCode,
-  };
 }
 
 /**
