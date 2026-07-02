@@ -149,6 +149,12 @@ const MatplotlibHub = lazyWithChunkRetry(
 const MatplotlibLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/matplotlib-py/pages/MatplotlibLessonPage"),
 );
+const PythonOopHub = lazyWithChunkRetry(
+  () => import("./features/learn/python-oop-py/pages/PythonOopHub"),
+);
+const PythonOopLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/python-oop-py/pages/PythonOopLessonPage"),
+);
 const PandasHub = lazyWithChunkRetry(
   () => import("./features/learn/pandas-py/pages/PandasHub"),
 );
@@ -606,6 +612,7 @@ function AppRoutes() {
       path.startsWith("/learn/pandas-py") ||
       path.startsWith("/learn/fastapi-py") ||
       path.startsWith("/learn/matplotlib-py") ||
+      path.startsWith("/learn/python-oop-py") ||
       path.startsWith("/learn/ai_ml-py")
     ) {
       handleLanguageSelect("Python", { stay: true });
@@ -1099,6 +1106,36 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <MatplotlibLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/python-oop-py"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <PythonOopHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/python-oop-py/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <PythonOopLessonPage />
               </LearnShell>
             </ThemedShell>
           }
