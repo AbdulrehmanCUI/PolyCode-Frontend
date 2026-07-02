@@ -8,6 +8,7 @@ import {
 import { useSiteMonacoTheme } from "../../../../shared/hooks/useSiteMonacoTheme";
 import ChallengeCompleteCelebration from "../../shared/ChallengeCompleteCelebration";
 import { useChallengeCelebration } from "../../shared/useChallengeCelebration";
+import PolyGuardPanel from "../../../polyguard/components/PolyGuardPanel";
 
 function normalizeWhitespace(value = "") {
   return value.replace(/\s+/g, "");
@@ -57,6 +58,7 @@ export default function CsharpCodeChallenge({
   const [output, setOutput] = useState(null);
   const [showSolution, setShowSolution] = useState(false);
   const [running, setRunning] = useState(false);
+  const [submitGeneration, setSubmitGeneration] = useState(0);
   const activeChallengeId = useRef(challenge.id);
   const runTestsRef = useRef(null);
   const { showCelebration, triggerCelebration, dismissCelebration } =
@@ -71,6 +73,7 @@ export default function CsharpCodeChallenge({
       setResults(null);
       setOutput(null);
       setShowSolution(false);
+      setSubmitGeneration(0);
       return;
     }
 
@@ -115,6 +118,7 @@ export default function CsharpCodeChallenge({
           expected: "Program executable output stream logs.",
         });
         setRunning(false);
+        setSubmitGeneration((value) => value + 1);
         return;
       }
 
@@ -152,6 +156,7 @@ export default function CsharpCodeChallenge({
       }
 
       setRunning(false);
+      setSubmitGeneration((value) => value + 1);
     }, 600);
   }
 
@@ -318,6 +323,20 @@ export default function CsharpCodeChallenge({
           <pre className="oops-output-body">
             {output?.stdout || "Compile your source entry assembly to inspect output lines."}
           </pre>
+          <PolyGuardPanel
+            code={showSolution ? challenge.solutionCode : code}
+            language="csharp"
+            variant="learn"
+            disabled={!canRun || showSolution}
+            resetKey={`${challenge.id}:${showSolution ? "solution" : "code"}`}
+            autoRunKey={submitGeneration || null}
+            hideManualTrigger
+            analysisContext={{
+              testResults: results,
+              runtimeError:
+                output?.status === "fail" ? output?.stdout : "",
+            }}
+          />
         </div>
       </div>
 

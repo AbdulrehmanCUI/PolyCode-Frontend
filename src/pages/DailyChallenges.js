@@ -17,6 +17,7 @@ import {
 import { getApiBase } from "../config/apiBase";
 import ChallengeCompleteCelebration from "../features/learn/shared/ChallengeCompleteCelebration";
 import { useChallengeCelebration } from "../features/learn/shared/useChallengeCelebration";
+import PolyGuardPanel from "../features/polyguard/components/PolyGuardPanel";
 import "./DailyChallenges.css";
 
 export default function DailyChallenge({ theme }) {
@@ -329,6 +330,14 @@ export default function DailyChallenge({ theme }) {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <PolyGuardPanel
+          code={code}
+          language={language}
+          variant="learn"
+          className="daily-challenge-polyguard"
+          resetKey={challenge?._id}
+        />
       </div>
     </motion.div>
   </>

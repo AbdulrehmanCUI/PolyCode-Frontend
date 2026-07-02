@@ -13,6 +13,8 @@ import {
 } from "../../shared/runCpp";
 import ChallengeCompleteCelebration from "../../shared/ChallengeCompleteCelebration";
 import { useChallengeCelebration } from "../../shared/useChallengeCelebration";
+import PolyGuardPanel from "../../../polyguard/components/PolyGuardPanel";
+import { buildRuntimeFailureResults } from "../../shared/buildRuntimeTestResults";
 
 function normalizeWhitespace(value = "") {
   return value.replace(/\s+/g, "");
@@ -52,6 +54,7 @@ export default function CppFundamentalsCodeChallenge({
   const [output, setOutput] = useState(null);
   const [showSolution, setShowSolution] = useState(false);
   const [running, setRunning] = useState(false);
+  const [submitGeneration, setSubmitGeneration] = useState(0);
   const activeChallengeId = useRef(challenge.id);
   const runTestsRef = useRef(null);
   const { showCelebration, triggerCelebration, dismissCelebration } =
@@ -66,6 +69,7 @@ export default function CppFundamentalsCodeChallenge({
       setResults(null);
       setOutput(null);
       setShowSolution(false);
+      setSubmitGeneration(0);
       return;
     }
 
@@ -99,24 +103,25 @@ export default function CppFundamentalsCodeChallenge({
       try {
         runPayload = await runCppCode(code);
       } catch (error) {
-        setResults({
-          passed: false,
-          tests: [
+        setResults(
+          buildRuntimeFailureResults(
+            challenge,
+            code,
+            challenge.solutionCode,
+            testPasses,
             {
-              id: "runtime",
-              label: "C++ runs without errors",
-              passed: false,
-              hint: error.message || "Could not run C++.",
+              runtimeLabel: "C++ runs without errors",
+              runtimeHint: error.message || "Could not run C++.",
             },
-            ...challenge.tests.map((test) => ({ ...test, passed: false })),
-          ],
-        });
+          ),
+        );
         setOutput({
           status: "fail",
           stdout: error.message || "Run failed",
           expected: expectedOutput,
         });
         setRunning(false);
+        setSubmitGeneration((value) => value + 1);
         return;
       }
 
@@ -125,24 +130,25 @@ export default function CppFundamentalsCodeChallenge({
       const stdout = formatCppOutput(runResult);
 
       if (runtimeError) {
-        setResults({
-          passed: false,
-          tests: [
+        setResults(
+          buildRuntimeFailureResults(
+            challenge,
+            code,
+            challenge.solutionCode,
+            testPasses,
             {
-              id: "runtime",
-              label: "C++ runs without errors",
-              passed: false,
-              hint: "Fix the error in Output, then run again.",
+              runtimeLabel: "C++ runs without errors",
+              runtimeHint: "Fix the error in Output, then run again.",
             },
-            ...challenge.tests.map((test) => ({ ...test, passed: false })),
-          ],
-        });
+          ),
+        );
         setOutput({
           status: "fail",
           stdout: runtimeError,
           expected: expectedOutput,
         });
         setRunning(false);
+        setSubmitGeneration((value) => value + 1);
         return;
       }
 
@@ -170,6 +176,7 @@ export default function CppFundamentalsCodeChallenge({
       }
 
       setRunning(false);
+      setSubmitGeneration((value) => value + 1);
     }, 600);
   }
 
@@ -293,6 +300,20 @@ export default function CppFundamentalsCodeChallenge({
           <pre className="oops-output-body">
             {output?.stdout || "Run your code to see output here."}
           </pre>
+          <PolyGuardPanel
+            code={showSolution ? challenge.solutionCode : code}
+            language="cpp"
+            variant="learn"
+            disabled={!canRun || showSolution}
+            resetKey={`${challenge.id}:${showSolution ? "solution" : "code"}`}
+            autoRunKey={submitGeneration || null}
+            hideManualTrigger
+            analysisContext={{
+              testResults: results,
+              runtimeError:
+                output?.status === "fail" ? output?.stdout : "",
+            }}
+          />
         </div>
       </div>
 

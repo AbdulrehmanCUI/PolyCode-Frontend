@@ -1,81 +1,90 @@
 import { useCallback, useMemo, useState } from "react";
 import { useAuth } from "../../../auth/context/AuthContext";
 import { recordLessonXp } from "../../shared/recordLessonXp";
+import {
+  readScopedJson,
+  readScopedString,
+  resolveLearnUserScope,
+  writeScopedJson,
+  writeScopedString,
+} from "../../shared/scopedProgressStorage";
 
 const LOCAL_KEY = "numpy_py_progress";
 const LOCAL_CODE_KEY = "numpy_py_saved_code";
 const LOCAL_BOOKMARKS_KEY = "numpy_py_bookmarks";
 const LOCAL_LAST_KEY = "numpy_py_last_lesson";
 
-function readJson(key, fallback) {
-  try {
-    return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
-  } catch {
-    return fallback;
-  }
-}
-
 export default function useNumpyProgress() {
-  const { user, isAuthenticated, token } = useAuth();
+  const { user, isAuthenticated, token, loading } = useAuth();
   const [localVersion, setLocalVersion] = useState(0);
   const refreshLocal = useCallback(() => setLocalVersion((v) => v + 1), []);
+  const scopeReady = Boolean(resolveLearnUserScope(user, token));
 
   const localSnapshot = useMemo(() => {
     void localVersion;
+    if (!scopeReady) {
+      return { completed: {}, savedCode: {}, bookmarks: [] };
+    }
     return {
-      completed: readJson(LOCAL_KEY, {}),
-      savedCode: readJson(LOCAL_CODE_KEY, {}),
-      bookmarks: readJson(LOCAL_BOOKMARKS_KEY, []),
+      completed: readScopedJson(LOCAL_KEY, user, {}, token),
+      savedCode: readScopedJson(LOCAL_CODE_KEY, user, {}, token),
+      bookmarks: readScopedJson(LOCAL_BOOKMARKS_KEY, user, [], token),
     };
-  }, [localVersion]);
+  }, [localVersion, scopeReady, token, user]);
 
-  const completedMap = isAuthenticated ? localSnapshot.completed : {};
-  const savedCodeMap = isAuthenticated ? localSnapshot.savedCode : {};
-  const bookmarks = localSnapshot.bookmarks;
-  const lastLessonId = localStorage.getItem(LOCAL_LAST_KEY);
+  const completedMap =
+    isAuthenticated && !loading && scopeReady ? localSnapshot.completed : {};
+  const savedCodeMap =
+    isAuthenticated && !loading && scopeReady ? localSnapshot.savedCode : {};
+  const bookmarks = scopeReady ? localSnapshot.bookmarks : [];
+  const lastLessonId = scopeReady
+    ? readScopedString(LOCAL_LAST_KEY, user, token)
+    : null;
 
   const completeLesson = useCallback(
     async (lesson) => {
-      if (!isAuthenticated) return;
-      const current = readJson(LOCAL_KEY, {});
+      if (!isAuthenticated || !scopeReady) return;
+      const current = readScopedJson(LOCAL_KEY, user, {}, token);
       current[lesson.id] = { xp: lesson.xp, at: Date.now() };
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(current));
-      localStorage.setItem(LOCAL_LAST_KEY, lesson.id);
+      writeScopedJson(LOCAL_KEY, user, current, token);
+      writeScopedString(LOCAL_LAST_KEY, user, lesson.id, token);
       refreshLocal();
       recordLessonXp(token, "numpy-py", lesson);
     },
-    [isAuthenticated, refreshLocal, token],
+    [isAuthenticated, refreshLocal, scopeReady, token, user],
   );
 
   const rememberLesson = useCallback(
     async (lessonId) => {
-      localStorage.setItem(LOCAL_LAST_KEY, lessonId);
+      if (!scopeReady) return;
+      writeScopedString(LOCAL_LAST_KEY, user, lessonId, token);
       refreshLocal();
     },
-    [refreshLocal],
+    [refreshLocal, scopeReady, token, user],
   );
 
   const saveCode = useCallback(
     async (lessonId, code) => {
-      if (!isAuthenticated) return;
-      const current = readJson(LOCAL_CODE_KEY, {});
+      if (!isAuthenticated || !scopeReady) return;
+      const current = readScopedJson(LOCAL_CODE_KEY, user, {}, token);
       current[lessonId] = code;
-      localStorage.setItem(LOCAL_CODE_KEY, JSON.stringify(current));
+      writeScopedJson(LOCAL_CODE_KEY, user, current, token);
       refreshLocal();
     },
-    [isAuthenticated, refreshLocal],
+    [isAuthenticated, refreshLocal, scopeReady, token, user],
   );
 
   const toggleBookmark = useCallback(
     async (lessonId) => {
-      const current = readJson(LOCAL_BOOKMARKS_KEY, []);
+      if (!scopeReady) return;
+      const current = readScopedJson(LOCAL_BOOKMARKS_KEY, user, [], token);
       const next = current.includes(lessonId)
         ? current.filter((id) => id !== lessonId)
         : [...current, lessonId];
-      localStorage.setItem(LOCAL_BOOKMARKS_KEY, JSON.stringify(next));
+      writeScopedJson(LOCAL_BOOKMARKS_KEY, user, next, token);
       refreshLocal();
     },
-    [refreshLocal],
+    [refreshLocal, scopeReady, token, user],
   );
 
   const addTime = useCallback(async () => {}, []);

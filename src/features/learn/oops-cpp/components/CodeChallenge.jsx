@@ -9,6 +9,7 @@ import {
 import { useSiteMonacoTheme } from "../../../../shared/hooks/useSiteMonacoTheme";
 import ChallengeCompleteCelebration from "../../shared/ChallengeCompleteCelebration";
 import { useChallengeCelebration } from "../../shared/useChallengeCelebration";
+import PolyGuardPanel from "../../../polyguard/components/PolyGuardPanel";
 
 export default function CodeChallenge({
   challenge,
@@ -26,6 +27,7 @@ export default function CodeChallenge({
   const [output, setOutput] = useState(null);
   const [showSolution, setShowSolution] = useState(false);
   const [running, setRunning] = useState(false);
+  const [submitGeneration, setSubmitGeneration] = useState(0);
   const activeChallengeId = useRef(challenge.id);
   const runTestsRef = useRef(null);
   const editorRef = useRef(null);
@@ -44,6 +46,7 @@ export default function CodeChallenge({
       setResults(null);
       setOutput(null);
       setShowSolution(false);
+      setSubmitGeneration(0);
       clearFixedSelection();
       return;
     }
@@ -96,6 +99,7 @@ export default function CodeChallenge({
           expected: expectedOutput,
         });
         setRunning(false);
+        setSubmitGeneration((value) => value + 1);
         return;
       }
 
@@ -129,6 +133,7 @@ export default function CodeChallenge({
           expected: expectedOutput,
         });
         setRunning(false);
+        setSubmitGeneration((value) => value + 1);
         return;
       }
 
@@ -153,6 +158,7 @@ export default function CodeChallenge({
           expected: expectedOutput,
         });
         setRunning(false);
+        setSubmitGeneration((value) => value + 1);
         return;
       }
 
@@ -194,6 +200,7 @@ export default function CodeChallenge({
         }
       }
       setRunning(false);
+      setSubmitGeneration((value) => value + 1);
     }, 800);
   }
 
@@ -1182,6 +1189,23 @@ export default function CodeChallenge({
           <pre className="oops-output-body">
             {output?.stdout || "Run your code to see console output here."}
           </pre>
+        </div>
+
+        <div className="polyguard-learn-wrap">
+          <PolyGuardPanel
+            code={showSolution ? challenge.solutionCode : code}
+            language="cpp"
+            variant="learn"
+            disabled={!canRun || showSolution}
+            resetKey={`${challenge.id}:${showSolution ? "solution" : "code"}`}
+            autoRunKey={submitGeneration || null}
+            hideManualTrigger
+            analysisContext={{
+              testResults: results,
+              runtimeError:
+                output?.status === "fail" ? output?.stdout : "",
+            }}
+          />
         </div>
       </div>
 

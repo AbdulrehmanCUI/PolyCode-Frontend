@@ -4,6 +4,9 @@ import {
   resolveEngine,
 } from "../../playground/services/BrowserExecutor";
 import "../../playground/components/IDE.css";
+import PolyGuardAnalyzeButton from "../../polyguard/components/PolyGuardAnalyzeButton";
+import PolyGuardReport from "../../polyguard/components/PolyGuardReport";
+import usePolyGuardAnalyze from "../../polyguard/hooks/usePolyGuardAnalyze";
 
 // ── Lazy-load the heavy syntax-highlighter library ──
 // This keeps it out of the initial bundle; it's downloaded only when a
@@ -110,6 +113,12 @@ export default function CodeBlock({
   const [output, setOutput] = useState(null);
   const [previewHTML, setPreview] = useState(null);
   const textareaRef = useRef(null);
+  const {
+    analyze: analyzeWithPolyGuard,
+    result: polyguardResult,
+    error: polyguardError,
+    loading: polyguardLoading,
+  } = usePolyGuardAnalyze();
 
   const langInfo = resolveEngine(language);
   const hasOutput = output !== null || previewHTML !== null;
@@ -229,6 +238,13 @@ export default function CodeBlock({
             {running ? "⟳ Running…" : "▶ Run"}
           </button>
 
+          <PolyGuardAnalyzeButton
+            variant="default"
+            onClick={() => analyzeWithPolyGuard(code, language)}
+            loading={polyguardLoading}
+            disabled={!String(code || "").trim()}
+          />
+
           {langInfo.engine === "server" && (
             <span
               className="ide-runtime-pill"
@@ -306,6 +322,16 @@ export default function CodeBlock({
           </div>
         )}
       </div>
+
+      {(polyguardLoading || polyguardResult || polyguardError) && (
+        <div className="polyguard-docs-panel">
+          <PolyGuardReport
+            result={polyguardResult}
+            error={polyguardError}
+            loading={polyguardLoading}
+          />
+        </div>
+      )}
 
       {editMode && (
         <div className="ide-edit-hint">

@@ -184,6 +184,15 @@ export const languageCourses = {
       accent: "#3776ab",
     },
     {
+      title: "Python OOP · py",
+      tag: "Core Course",
+      icon: Boxes,
+      description:
+        "Beginner → Pro: classes, encapsulation, inheritance, polymorphism, design patterns, capstone project, and cheat sheet — 8 chapters, 25 lessons.",
+      href: "/learn/python-oop-py",
+      accent: "#7c3aed",
+    },
+    {
       title: "NumPy · py",
       tag: "Data Course",
       icon: Grid3x3,
@@ -364,6 +373,7 @@ export const learnNavByLanguage = {
   ],
   python: [
     { label: "Fundamentals", to: "/learn/python-fundamentals" },
+    { label: "OOP", to: "/learn/python-oop-py" },
     { label: "NumPy", to: "/learn/numpy-py" },
     { label: "Pandas", to: "/learn/pandas-py" },
     { label: "FastAPI", to: "/learn/fastapi-py" },
@@ -411,6 +421,7 @@ export function inferLanguageFromLearnPath(pathname = "") {
   }
   if (
     pathname.startsWith("/learn/python-fundamentals") ||
+    pathname.startsWith("/learn/python-oop-py") ||
     pathname.startsWith("/learn/numpy-py") ||
     pathname.startsWith("/learn/pandas-py") ||
     pathname.startsWith("/learn/fastapi-py") ||

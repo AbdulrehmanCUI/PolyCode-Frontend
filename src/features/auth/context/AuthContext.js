@@ -21,12 +21,17 @@ import {
   updateProfile as updateProfileApi,
   uploadProfileAvatar,
 } from "../../profile/services/profileApi";
+import { isolateLearnProgressForUser } from "../../learn/shared/scopedProgressStorage";
 
 const AuthContext = createContext(null);
 
 function applySession(setToken, setUser, token, user) {
   setStoredToken(token);
   rememberSignedInUser(user);
+  const userId = user?._id || user?.id;
+  if (userId) {
+    isolateLearnProgressForUser(String(userId));
+  }
   setToken(token);
   setUser(user);
 }
@@ -63,6 +68,10 @@ export function AuthProvider({ children }) {
       if (requestId !== bootstrapRequestId.current) return;
 
       rememberSignedInUser(data.user);
+      const userId = data.user?._id || data.user?.id;
+      if (userId) {
+        isolateLearnProgressForUser(String(userId));
+      }
       setToken(storedToken);
       setUser(data.user);
     } catch (error) {

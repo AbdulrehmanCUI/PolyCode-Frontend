@@ -43,12 +43,6 @@ import {
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MIN_ACTIVITY_DAYS = 30;
 
-function toDateKey(value) {
-  const date = value ? new Date(value) : null;
-  if (!date || Number.isNaN(date.getTime())) return null;
-  return date.toISOString().slice(0, 10);
-}
-
 function getResponsiveActivityDays(width = 0) {
   if (width < 560) return 30;
   if (width < 860) return 60;
@@ -56,23 +50,20 @@ function getResponsiveActivityDays(width = 0) {
   return Math.min(365, Math.max(MIN_ACTIVITY_DAYS, columns * 7));
 }
 
-function buildActivityDays(dayCount, ...progressMaps) {
+function buildActivityDaysFromDailyXp(dayCount, dailyXpDays = []) {
   const counts = new Map();
+  dailyXpDays.forEach((day) => {
+    if (!day?.date) return;
+    const lessons = Number(day.lessonsCompleted) || 0;
+    if (lessons > 0) counts.set(day.date, lessons);
+  });
+  return buildActivityDaysFromCounts(dayCount, counts);
+}
+
+function buildActivityDaysFromCounts(dayCount, counts = new Map()) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const todayKey = today.toISOString().slice(0, 10);
   const start = new Date(today.getTime() - (dayCount - 1) * DAY_MS);
-  const startKey = start.toISOString().slice(0, 10);
-
-  progressMaps.forEach((progress) => {
-    Object.values(progress).forEach((item) => {
-      let key = toDateKey(item?.at || item?.completedAt || item);
-      if (!key || key < startKey || key > todayKey) {
-        key = todayKey;
-      }
-      counts.set(key, (counts.get(key) || 0) + 1);
-    });
-  });
 
   return Array.from({ length: dayCount }, (_, index) => {
     const date = new Date(start.getTime() + index * DAY_MS);
@@ -304,25 +295,20 @@ export default function ProfilePage() {
   const [activityWidth, setActivityWidth] = React.useState(0);
   const activityWrapRef = React.useRef(null);
   const activityDayCount = getResponsiveActivityDays(activityWidth);
-  const activityDays = React.useMemo(
-    () =>
-      buildActivityDays(
+  const activityDays = React.useMemo(() => {
+    if (isOwnProfile && isAuthenticated) {
+      return buildActivityDaysFromDailyXp(
         activityDayCount,
-        oops.completedMap,
-        pointers.completedMap,
-        numpy.completedMap,
-        pandas.completedMap,
-        fastapi.completedMap,
-      ),
-    [
-      activityDayCount,
-      oops.completedMap,
-      pointers.completedMap,
-      numpy.completedMap,
-      pandas.completedMap,
-      fastapi.completedMap,
-    ],
-  );
+        dailyXp.data?.days || [],
+      );
+    }
+    return buildActivityDaysFromCounts(activityDayCount);
+  }, [
+    activityDayCount,
+    dailyXp.data,
+    isAuthenticated,
+    isOwnProfile,
+  ]);
   const completedCertificates = [
     getCompletedTrackCertificate({
       courseName: "OOPs C++",
@@ -450,7 +436,7 @@ export default function ProfilePage() {
       window.cancelAnimationFrame(animationFrame);
       observer.disconnect();
     };
-  }, []);
+  }, [isOwnProfile]);
 
   if (loading || profileLoading) {
     return (
@@ -597,9 +583,11 @@ export default function ProfilePage() {
         />
       ) : null}
 
-      <div ref={activityWrapRef}>
-        <ActivityGraph days={activityDays} />
-      </div>
+      {isOwnProfile ? (
+        <div ref={activityWrapRef}>
+          <ActivityGraph days={activityDays} />
+        </div>
+      ) : null}
 
       <div className="profile-track-grid">
         <TrackProgressCard

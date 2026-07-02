@@ -20,6 +20,7 @@ import {
   runPythonCode,
 } from "./runPython";
 import PythonRunOutput from "./PythonRunOutput";
+import PolyGuardPanel from "../../polyguard/components/PolyGuardPanel";
 import {
   formatCsharpOutput,
   getCsharpRuntimeError,
@@ -278,6 +279,13 @@ export default function RunnableCodeBlock({
           stdout={output?.stdout}
           plotImages={output?.plotImages}
           emptyHint="Output will appear here after you run the code."
+        />
+        <PolyGuardPanel
+          code={code}
+          language={lang}
+          variant="learn"
+          disabled={!canRun}
+          resetKey={block.content}
         />
       </div>
     </div>

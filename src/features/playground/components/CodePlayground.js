@@ -60,6 +60,8 @@ import PlaygroundSettingsMenu from "./PlaygroundSettingsMenu";
 import { useAppSettings } from "../../../shared/settings/AppSettingsContext";
 import { playSound } from "../../../shared/sound/soundEffects";
 import { recordPlaygroundRunXp } from "../../learn/shared/recordLessonXp";
+import PolyGuardPlaygroundTab from "../../polyguard/components/PolyGuardPlaygroundTab";
+import PolyGuardAnalyzeButton from "../../polyguard/components/PolyGuardAnalyzeButton";
 import "./CodePlayground.css";
 
 const LANG_GROUPS = [
@@ -1221,6 +1223,14 @@ export default function CodePlayground({
               "▶ Run"
             )}
           </button>
+          <PolyGuardAnalyzeButton
+            variant="playground"
+            onClick={() =>
+              updateWorkspace(language, { activeTab: "polyguard" })
+            }
+            disabled={!String(code || "").trim()}
+            title="Open PolyGuard security analysis"
+          />
         </div>
       </div>
 
@@ -1371,6 +1381,15 @@ export default function CodePlayground({
                   🌐 Preview
                 </button>
               )}
+              <button
+                type="button"
+                className={`pg-tab ${activeTab === "polyguard" ? "active" : ""}`}
+                onClick={() =>
+                  updateWorkspace(language, { activeTab: "polyguard" })
+                }
+              >
+                🛡️ PolyGuard
+              </button>
             </div>
             <button
               type="button"
@@ -1380,6 +1399,10 @@ export default function CodePlayground({
                   clearAllRunHistory();
                   return;
                 }
+                if (activeTab === "polyguard") {
+                  updateWorkspace(language, { activeTab: "output" });
+                  return;
+                }
                 updateWorkspace(language, {
                   output: [],
                   previewHTML: null,
@@ -1387,7 +1410,11 @@ export default function CodePlayground({
                 });
               }}
             >
-              {activeTab === "history" ? "CLEAR ALL" : "CLEAR"}
+              {activeTab === "history"
+                ? "CLEAR ALL"
+                : activeTab === "polyguard"
+                  ? "BACK"
+                  : "CLEAR"}
             </button>
           </div>
 
@@ -1533,6 +1560,13 @@ export default function CodePlayground({
                 srcDoc={previewHTML}
                 title="Preview"
                 sandbox="allow-scripts"
+              />
+            )}
+            {activeTab === "polyguard" && (
+              <PolyGuardPlaygroundTab
+                code={code}
+                language={language}
+                isActive={activeTab === "polyguard"}
               />
             )}
           </div>
