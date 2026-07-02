@@ -186,7 +186,7 @@ export function analyzeCodeLocally(code, language = "python", context = {}) {
       verdict: displayVerdict,
       securityLabel,
       actions,
-      findings: ruleFindings,
+      findings,
       metrics: {
         score,
         grade: gradeFromScore(score),

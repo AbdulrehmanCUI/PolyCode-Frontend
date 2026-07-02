@@ -155,6 +155,12 @@ const PythonOopHub = lazyWithChunkRetry(
 const PythonOopLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/python-oop-py/pages/PythonOopLessonPage"),
 );
+const PythonFileHandlingHub = lazyWithChunkRetry(
+  () => import("./features/learn/python-file-handling-py/pages/PythonFileHandlingHub"),
+);
+const PythonFileHandlingLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/python-file-handling-py/pages/PythonFileHandlingLessonPage"),
+);
 const PandasHub = lazyWithChunkRetry(
   () => import("./features/learn/pandas-py/pages/PandasHub"),
 );
@@ -613,6 +619,7 @@ function AppRoutes() {
       path.startsWith("/learn/fastapi-py") ||
       path.startsWith("/learn/matplotlib-py") ||
       path.startsWith("/learn/python-oop-py") ||
+      path.startsWith("/learn/python-file-handling-py") ||
       path.startsWith("/learn/ai_ml-py")
     ) {
       handleLanguageSelect("Python", { stay: true });
@@ -1136,6 +1143,36 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <PythonOopLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/python-file-handling-py"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <PythonFileHandlingHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/python-file-handling-py/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <PythonFileHandlingLessonPage />
               </LearnShell>
             </ThemedShell>
           }
