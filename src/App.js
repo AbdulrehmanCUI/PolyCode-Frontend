@@ -629,9 +629,11 @@ function AppRoutes() {
       path.startsWith("/learn/ai_ml-py")
     ) {
       handleLanguageSelect("Python", { stay: true });
-    } else if (path.startsWith("/learn/js-fundamentals")) {
-      handleLanguageSelect("JavaScript", { stay: true });
-    } else if (path.startsWith("/learn/js-web-dev")) {
+    } else if (
+      path.startsWith("/learn/js-fundamentals") ||
+      path.startsWith("/learn/js-dom") ||
+      path.startsWith("/learn/js-web-dev")
+    ) {
       handleLanguageSelect("JavaScript", { stay: true });
     } else if (path.startsWith("/learn/c-sharp-fundamentals")) {
       handleLanguageSelect("C#", { stay: true });
@@ -640,7 +642,8 @@ function AppRoutes() {
     } else if (
       path.startsWith("/learn/cpp-fundamentals") ||
       path.startsWith("/learn/oops-cpp") ||
-      path.startsWith("/learn/pointers-cpp")
+      path.startsWith("/learn/pointers-cpp") ||
+      path.startsWith("/learn/dsa-cpp")
     ) {
       handleLanguageSelect("C++", { stay: true });
     } else if (path.startsWith("/learn/ruby-fundamentals")) {
