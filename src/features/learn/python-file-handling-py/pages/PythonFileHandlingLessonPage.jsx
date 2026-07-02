@@ -1,24 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
+import { LEARN_ACCENT } from "../../shared/learnAccent";
 import { useNavigate, useParams } from "react-router-dom";
 import NumpyIntroTheory from "../../numpy-py/components/NumpyIntroTheory";
 import OopsSidebar from "../../oops-cpp/components/OopsSidebar";
 import LearnProfileMenu from "../../shared/LearnProfileMenu";
 import LessonContentShell from "../../shared/LessonContentShell";
-import CProjectsCodeChallenge from "../components/CProjectsCodeChallenge";
+import PythonCodeChallenge from "../../numpy-py/components/PythonCodeChallenge";
 import {
-  C_PROJECTS_CHAPTERS,
-  C_PROJECTS_LESSONS,
-  C_PROJECTS_TOTAL_XP,
-} from "../data/c_projectsCurriculum";
-import useCProjectsProgress from "../hooks/useCProjectsProgress";
+  PYTHON_FILE_HANDLING_CHAPTERS,
+  PYTHON_FILE_HANDLING_LESSONS,
+  PYTHON_FILE_HANDLING_TOTAL_XP,
+} from "../data/pythonFileHandlingCurriculum";
+import usePythonFileHandlingProgress from "../hooks/usePythonFileHandlingProgress";
 import useLessonReadGate from "../../shared/useLessonReadGate";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
 import { useLessonAssistantContext } from "../../../assistant/hooks/useLessonAssistantContext";
 
-const BASE_PATH = "/learn/c-projects";
-const READ_GATE_PREFIX = "c_projects";
+const BASE_PATH = "/learn/python-file-handling-py";
+const READ_GATE_PREFIX = "python_file_handling_py";
 
-export default function CProjectsLessonPage() {
+export default function PythonFileHandlingLessonPage() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState("theory");
@@ -42,37 +43,46 @@ export default function CProjectsLessonPage() {
     rememberLesson,
     saveCode,
     toggleBookmark,
-  } = useCProjectsProgress();
+  } = usePythonFileHandlingProgress();
   const codeSaveTimer = useRef(null);
 
-  const lesson = C_PROJECTS_LESSONS.find((item) => item.id === lessonId);
-  const lessonIdx = C_PROJECTS_LESSONS.findIndex((item) => item.id === lessonId);
-  const prev = C_PROJECTS_LESSONS[lessonIdx - 1];
-  const next = C_PROJECTS_LESSONS[lessonIdx + 1];
+  const lesson = PYTHON_FILE_HANDLING_LESSONS.find((item) => item.id === lessonId);
+  const lessonIdx = PYTHON_FILE_HANDLING_LESSONS.findIndex(
+    (item) => item.id === lessonId,
+  );
+  const prev = PYTHON_FILE_HANDLING_LESSONS[lessonIdx - 1];
+  const next = PYTHON_FILE_HANDLING_LESSONS[lessonIdx + 1];
 
   useLessonAssistantContext({
-    course: "C Projects",
-    language: "C",
+    course: "Python File Handling",
+    language: "Python",
     lesson,
     chapter: lesson?.chapterTitle,
     tab,
     code: savedCodeMap[lessonId] || "",
   });
 
-  useEffect(() => { setTab("theory"); }, [lessonId]);
+  useEffect(() => {
+    setTab("theory");
+  }, [lessonId]);
 
   useEffect(() => {
     if (lessonId) rememberLesson(lessonId);
   }, [lessonId, rememberLesson]);
 
-  useEffect(() => () => { window.clearTimeout(codeSaveTimer.current); }, []);
+  useEffect(
+    () => () => {
+      window.clearTimeout(codeSaveTimer.current);
+    },
+    [],
+  );
 
   if (!lesson) {
     return (
       <div className="oops-not-found">
-        <p>C Projects lesson not found.</p>
+        <p>File Handling lesson not found.</p>
         <button type="button" onClick={() => navigate(BASE_PATH)}>
-          ← Back to C Projects
+          ← Back to File Handling
         </button>
       </div>
     );
@@ -81,10 +91,9 @@ export default function CProjectsLessonPage() {
   const isCompleted = isAuthenticated && !!progress[lessonId];
   const isBookmarked = bookmarks.includes(lessonId);
   const completedCount = Object.keys(progress).length;
-  const earnedXP = C_PROJECTS_LESSONS.filter((item) => progress[item.id]).reduce(
-    (sum, item) => sum + item.xp,
-    0,
-  );
+  const earnedXP = PYTHON_FILE_HANDLING_LESSONS.filter(
+    (item) => progress[item.id],
+  ).reduce((sum, item) => sum + item.xp, 0);
 
   async function handleChallengeComplete() {
     await completeLesson(lesson);
@@ -102,9 +111,9 @@ export default function CProjectsLessonPage() {
       <OopsSidebar
         currentLessonId={lessonId}
         progress={progress}
-        chapters={C_PROJECTS_CHAPTERS}
+        chapters={PYTHON_FILE_HANDLING_CHAPTERS}
         basePath={BASE_PATH}
-        title="C Projects"
+        title="File Handling · py"
       />
 
       <div className="oops-lesson-main">
@@ -114,14 +123,18 @@ export default function CProjectsLessonPage() {
             className="oops-back-btn"
             onClick={() => navigate(BASE_PATH)}
           >
-            ← C Projects
+            ← File Handling · Python
           </button>
           <div className="oops-lesson-breadcrumb">
-            <span className="learn-lesson-chapter-tag">{lesson.chapterTitle}</span>
+            <span className="learn-lesson-chapter-tag">
+              {lesson.chapterTitle}
+            </span>
             <span className="oops-bc-sep">›</span>
             <span>{lesson.title}</span>
           </div>
-          {isCompleted && <span className="oops-completed-badge">✓ Completed</span>}
+          {isCompleted && (
+            <span className="oops-completed-badge">✓ Completed</span>
+          )}
           <button
             type="button"
             className={`oops-bookmark-btn ${isBookmarked ? "active" : ""}`}
@@ -138,16 +151,16 @@ export default function CProjectsLessonPage() {
           </button>
           <LearnProfileMenu
             user={user}
-            trackTitle="C Projects"
+            trackTitle="File Handling · py"
             syncLabel={
               isAuthenticated
-                ? "C Projects progress saved to your account"
+                ? "File Handling progress saved to your account"
                 : "Sign in to save progress"
             }
             completedCount={completedCount}
-            totalLessons={C_PROJECTS_LESSONS.length}
+            totalLessons={PYTHON_FILE_HANDLING_LESSONS.length}
             earnedXP={earnedXP}
-            totalXP={C_PROJECTS_TOTAL_XP}
+            totalXP={PYTHON_FILE_HANDLING_TOTAL_XP}
             bookmarksCount={bookmarks.length}
             streak={0}
           />
@@ -170,13 +183,14 @@ export default function CProjectsLessonPage() {
         </div>
 
         <LessonContentShell
-          storageKey={`c_projects:${lessonId}`}
+          storageKey={`python-file-handling-py:${lessonId}`}
           videoUrl={lesson.videoUrl}
-          videoTitle={`${lesson.title} — C`}
+          videoTitle={`${lesson.title} — Python File Handling`}
         >
           {tab === "theory" ? (
             <NumpyIntroTheory
               lesson={lesson}
+              introVariant="course-start"
               quizStoragePrefix={READ_GATE_PREFIX}
               confidence={confidence}
               onConfidenceChange={handleConfidenceChange}
@@ -185,9 +199,9 @@ export default function CProjectsLessonPage() {
               onGoChallenge={goToChallenge}
             />
           ) : (
-            <CProjectsCodeChallenge
+            <PythonCodeChallenge
               challenge={lesson.challenge}
-              accentColor="#f39c12"
+              accentColor={LEARN_ACCENT}
               isCompleted={isCompleted}
               onComplete={handleChallengeComplete}
               initialCode={savedCodeMap[lessonId]}
