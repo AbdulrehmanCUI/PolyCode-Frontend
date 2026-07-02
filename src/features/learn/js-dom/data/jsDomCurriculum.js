@@ -1,4 +1,4 @@
-﻿// PolyCode — JavaScript DOM course
+// PolyCode — JavaScript DOM course
 // 4 chapters · 12 lessons · DOM-focused browser challenges
 // Add video links in jsDomVideoLinks.js
 
