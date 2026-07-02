@@ -3928,211 +3928,236 @@ print(np.random.choice(teams, size=2, replace=False))`,
           {
             type: "text",
             content:
-              "A **simulation** uses random numbers to **pretend real life** before you try the real thing — flip coins, roll dice, guess how many customers visit a café. You run **many trials**, then **count** or **average** the results. Patterns emerge: a fair die's average creeps toward **3.5** when you roll enough times.",
+              "A **simulation** is **make-believe luck on the computer**. You do not need a real coin or dice. NumPy picks random numbers for you, and you **count** or **find the average** — that is the whole idea.",
+          },
+          {
+            type: "text",
+            content:
+              "**You only need two skills:** (1) **`np.sum`** — how many? (2) **`.mean()`** — what is the usual number? Everything in this lesson uses those two ideas.",
           },
           {
             type: "scenario",
             content:
-              "A café owner wonders: *\"If about half my walk-ins buy coffee, how many sales might I get in 20 busy minutes?\"* She doesn't want to close the shop to experiment — so she **simulates** 20 random yes/no customers on her laptop first.",
+              "**Ali** and **Sara** play at recess. They flip a coin **5 times** to see who starts. Ali asks: *\"How many heads will I get?\"* We can **pretend** 5 flips on the laptop instead of using a real coin.",
           },
           {
             type: "diagram",
-            title: "How a simulation works (4 steps)",
+            title: "Simulation = 3 easy steps",
             nodes: [
               {
                 id: "step1",
-                label: "1. Set the rules",
+                label: "Step 1 — Get random numbers",
                 color: "#eab308",
                 items: [
-                  "Die faces 1–6, or coin 0/1",
-                  "Optional: seed for repeat tests",
+                  "NumPy picks 0 or 1 (or 1–6 for a dice)",
+                  "Like a computer coin flip",
                 ],
               },
               {
                 id: "step2",
-                label: "2. Run many trials",
+                label: "Step 2 — Count or average",
                 color: "#f59e0b",
                 items: [
-                  "randint or rand with size=100+",
-                  "One array = hundreds of outcomes",
+                  "Count heads with np.sum",
+                  "Or use mean() for dice average",
                 ],
               },
               {
                 id: "step3",
-                label: "3. Count or average",
-                color: "#ca8a04",
-                items: [
-                  "np.sum(flips == 0) for heads",
-                  "rolls.mean() for average die",
-                ],
-              },
-              {
-                id: "step4",
-                label: "4. Answer \"what if?\"",
+                label: "Step 3 — Look at the answer",
                 color: "#22c55e",
                 items: [
-                  "Is my guess reasonable?",
-                  "Test ideas cheaply before real life",
+                  "3 heads out of 5? Fair enough",
+                  "Try more flips if you want a steadier guess",
                 ],
               },
             ],
-          },
-
-          // ── Coin flip simulation ───────────────────────────────────
-          {
-            type: "text",
-            content:
-              "**Coin flips** — use `randint(0, 2, size=n)` where **0 = heads** and **1 = tails**. After 20 flips, **count** how many of each with a boolean mask and **`np.sum`**.",
-            code: {
-              lang: "python",
-              label: "Simulate 20 coin flips and count heads vs tails",
-              content: `import numpy as np
-
-np.random.seed(0)
-flips = np.random.randint(0, 2, size=20)   # 0=heads, 1=tails
-
-heads = np.sum(flips == 0)
-tails = np.sum(flips == 1)
-print("Heads:", heads, "  Tails:", tails)
-# With seed 0: Heads: 11  Tails: 9  — will repeat every run`,
-            },
-          },
-          {
-            type: "array",
-            title: "20 coin flips (0 = heads, 1 = tails) — one possible run with seed 0",
-            label: "flips",
-            values: [0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0],
-            colLabels: [
-              "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
-              "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
-            ],
-            accentColor: "#eab308",
-            footnote:
-              "**Count:** `np.sum(flips == 0)` → heads. More flips → counts usually get closer to 50/50 (not exact every time).",
-          },
-
-          // ── Dice average simulation ────────────────────────────────
-          {
-            type: "text",
-            content:
-              "**Dice average** — roll many times, then **`.mean()`**. On a fair die, the **theoretical** average is **3.5** (midpoint of 1–6). With only **5 rolls** you might get 4.2 or 2.8; with **100 rolls** you usually get much closer to 3.5.",
-            code: {
-              lang: "python",
-              label: "Average of 100 dice rolls — stable pattern",
-              content: `import numpy as np
-
-np.random.seed(42)
-rolls = np.random.randint(1, 7, size=100)
-print("Average roll:", rolls.mean())
-# With seed 42: about 3.47 — close to the fair-die average 3.5`,
-            },
           },
           {
             type: "table",
-            title: "More trials → steadier averages (fair die, target ≈ 3.5)",
-            rowLabelHeader: "Trials",
-            columns: ["Typical average", "Lesson"],
+            title: "Three fun stories — same NumPy pattern",
+            columns: ["Story", "What we count"],
             rows: [
               {
-                label: "5 rolls",
+                label: "Coin flips",
                 values: [
-                  "Might be 2.0 or 5.2",
-                  "Too few — one lucky streak can fool you",
+                  "5 flips — 0 means heads, 1 means tails",
+                  "How many heads? (count the 0s)",
                 ],
               },
               {
-                label: "20 rolls",
+                label: "Dice rolls",
                 values: [
-                  "Often 3.0 – 4.0",
-                  "Starting to stabilise around fair-die average",
+                  "5 rolls — numbers 1 to 6",
+                  "What is the average roll?",
                 ],
               },
               {
-                label: "100 rolls",
+                label: "Rain or sun",
                 values: [
-                  "Often near 3.3 – 3.7",
-                  "Pattern is clearer — trust the trend more",
-                ],
-              },
-              {
-                label: "1000 rolls",
-                values: [
-                  "Very close to 3.5",
-                  "Law of large numbers — many trials reveal truth",
+                  "5 days — 0 sunny, 1 rainy",
+                  "How many rainy days? (count the 1s)",
                 ],
               },
             ],
             showTotals: false,
             footnote:
-              "You don't need exact math — just remember: **more random trials → clearer picture** of what to expect.",
+              "Coin and rain use the **same code pattern**. Dice uses **mean()** instead of counting.",
           },
 
-          // ── Café “what if” ─────────────────────────────────────────
-          {
-            type: "scenario",
-            content:
-              "**What-if question:** *\"Over 50 customers, if each has a 30% chance of buying a pastry, how many pastry sales might I see?\"* Simulate 50 random decimals below 0.3 and count them — no real customers needed.",
-          },
+          // ── Example 1: Coin ─────────────────────────────────────────
           {
             type: "text",
             content:
-              "**Modeling a chance** — each customer gets a random decimal; if it's **under 0.30**, they buy:",
+              "**Example 1 — 5 coin flips.** Rule: **0 = heads**, **1 = tails**. Line 1: set seed (so practice is repeatable). Line 2: get 5 random 0s and 1s. Line 3: count heads.",
+          },
+          {
+            type: "text",
+            content: "Follow each line below. Run it and read the printed numbers.",
             code: {
               lang: "python",
-              label: "50 customers, ~30% pastry chance — count buyers",
+              label: "5 coin flips — how many heads?",
               content: `import numpy as np
 
-np.random.seed(1)
-chance = np.random.rand(50)          # 50 random decimals 0–1
-buys_pastry = chance < 0.30          # True where they buy
-sales = np.sum(buys_pastry)
-print("Pastry sales:", sales)
-# With seed 1: 18 sales out of 50 — one possible "what if" answer`,
+np.random.seed(0)                         # step 1: lock luck for practice
+
+flips = np.random.randint(0, 2, size=5) # step 2: five flips (0 or 1)
+# Example result: [0, 1, 0, 0, 1]
+
+heads = np.sum(flips == 0)                # step 3: count zeros = heads
+print("Flips:", flips)
+print("Heads:", heads)`,
             },
+          },
+          {
+            type: "array",
+            title: "Sample result — count the 0s for heads",
+            label: "flips",
+            values: [0, 1, 0, 0, 1],
+            colLabels: ["Flip 1", "Flip 2", "Flip 3", "Flip 4", "Flip 5"],
+            accentColor: "#eab308",
+            footnote:
+              "This run has **3 heads** (three zeros). Your run might differ — that is normal with luck.",
           },
           {
             type: "callout",
             variant: "tip",
             content:
-              "Always **`np.random.seed(...)`** at the start when you're **learning or debugging** a simulation. Remove or change the seed when you want **fresh** random stories.",
+              "**`flips == 0`** asks: \"is this flip a head?\" **`np.sum`** adds up how many times the answer is yes. No need to loop by hand.",
+          },
+
+          // ── Example 2: Dice ─────────────────────────────────────────
+          {
+            type: "text",
+            content:
+              "**Example 2 — 5 dice rolls.** Imagine a board game. You roll 1–6 five times. **Average** = add all rolls and divide by 5. NumPy: `rolls.mean()`.",
+          },
+          {
+            type: "text",
+            content:
+              "A fair dice has middle value **3.5**. With only 5 rolls you might get average **2.4** or **4.2**. With **50 rolls** (your challenge!) the average usually lands near **3.5**.",
+            code: {
+              lang: "python",
+              label: "5 dice rolls — what is the average?",
+              content: `import numpy as np
+
+np.random.seed(42)
+
+rolls = np.random.randint(1, 7, size=5)  # five rolls: 1 through 6
+# Example: [4, 1, 6, 3, 5]
+
+print("Rolls:", rolls)
+print("Average:", rolls.mean())            # one number: typical roll`,
+            },
+          },
+          {
+            type: "array",
+            title: "Sample rolls — add and divide by 5, or use mean()",
+            label: "rolls",
+            values: [4, 1, 6, 3, 5],
+            colLabels: ["Roll 1", "Roll 2", "Roll 3", "Roll 4", "Roll 5"],
+            accentColor: "#f59e0b",
+            footnote:
+              "(4+1+6+3+5) / 5 = 3.8 — that is the average for this sample.",
+          },
+
+          // ── Example 3: Weather ──────────────────────────────────────
+          {
+            type: "scenario",
+            content:
+              "**Sara** checks the week: *\"Will it rain a lot?\"* We pretend **5 days**. **0 = sunny**, **1 = rainy**. Count the 1s — same idea as counting heads.",
+          },
+          {
+            type: "text",
+            content:
+              "**Example 3 — 5 days of weather.** Same steps as the coin. Only the story changes.",
+            code: {
+              lang: "python",
+              label: "5 days — how many rainy days?",
+              content: `import numpy as np
+
+np.random.seed(1)
+
+weather = np.random.randint(0, 2, size=5)  # 0=sunny, 1=rain
+# Example: [1, 0, 0, 1, 0]
+
+rainy = np.sum(weather == 1)               # count the 1s
+print("Weather:", weather)
+print("Rainy days:", rainy)`,
+            },
+          },
+          {
+            type: "array",
+            title: "Sample week — 1 means rain",
+            label: "weather",
+            values: [1, 0, 0, 1, 0],
+            colLabels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+            accentColor: "#4db6ac",
+            footnote: "This sample has **2 rainy days**. Sara might still pack a umbrella!",
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              "**`np.random.seed(0)`** — same random list every time you practice. **No seed** — new random list each run. Use a seed while learning; skip it when you want fresh luck.",
           },
           {
             type: "callout",
             variant: "info",
             content:
-              "**Learning outcome check:** You can **run many trials**, **count outcomes** (`np.sum` on masks), and **average** results (`.mean()`) to answer real **\"what if?\"** questions before trying them in the real world.",
+              "**Done!** Simulation = random numbers + **count** (`np.sum`) or **average** (`.mean()`). Your challenge rolls **50 dice** — more rolls → average closer to **3.5**.",
           },
           {
             type: "quiz",
-            question: "Why run many random trials in a simulation?",
+            question: "What does a simulation do in this lesson?",
             options: [
-              "To slow Python down on purpose",
-              "To see stable patterns in random outcomes",
-              "To remove NaN from arrays",
-              "To change array dtype to float",
+              "Deletes bad data from arrays",
+              "Uses random numbers to pretend real-life luck",
+              "Draws charts automatically",
+              "Sends data to the internet",
             ],
             answer: 1,
             explanation:
-              "Large samples reveal averages and probabilities more clearly — a few rolls are noisy; hundreds smooth out the pattern.",
+              "We use NumPy random numbers to copy coin flips, dice rolls, or weather — on the computer.",
           },
           {
             type: "quiz",
-            question: "You flipped 20 coins (0=heads). How do you count heads?",
+            question: "5 coin flips: 0 = head. How do you count heads?",
             options: [
               "np.mean(flips)",
               "np.sum(flips == 0)",
               "np.sort(flips)",
-              "flips.count(0)",
+              "flips[0]",
             ],
             answer: 1,
             explanation:
-              "`flips == 0` builds a True/False mask for heads; `np.sum` counts how many True values.",
+              "np.sum(flips == 0) counts how many times the flip equals 0 (head).",
           },
         ],
         challenge: {
-          title: "Roll 50 Dice",
+          title: "Roll 50 Dice (bigger simulation)",
           description:
-            "Set `np.random.seed(1)`, create `rolls = np.random.randint(1, 7, size=50)`, and print `rolls.mean()`.",
+            "Roll a dice **50 times** in one go. Set `np.random.seed(1)`, make `rolls = np.random.randint(1, 7, size=50)`, then print `rolls.mean()`. With 50 rolls, the average is usually close to **3.5**.",
           starterCode: `import numpy as np
 
 `,

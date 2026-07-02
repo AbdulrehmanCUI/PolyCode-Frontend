@@ -117,9 +117,9 @@ export const NUMPY_LESSON_OUTCOMES = {
     "Build fair teams or random samples without bias",
   ],
   "numpy-21b": [
-    "Run a simple simulation (many random trials)",
-    "Count outcomes across lots of random runs",
-    "Use random arrays to model real “what if” questions",
+    "Pretend coin flips, dice rolls, or weather with random numbers",
+    "Count results with `np.sum` (how many heads or rainy days?)",
+    "Find a typical dice roll with `.mean()` when you roll many times",
   ],
   "numpy-22": [
     "Find `NaN` values in messy data",
