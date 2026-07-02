@@ -258,11 +258,20 @@ export const languageCourses = {
       accent: "#f59e0b",
     },
     {
+      title: "JavaScript DOM",
+      tag: "DOM Course",
+      icon: Globe,
+      description:
+        "Build interactive browser pages with the Document Object Model: select elements, update content, handle events, and create dynamic UI safely.",
+      href: "/learn/js-dom",
+      accent: "#22c55e",
+    },
+    {
       title: "JavaScript Web Development",
       tag: "Web Course",
       icon: Globe,
       description:
-        "Beginner to advanced browser track: DOM, events, forms, fetch, storage, performance, routing, a11y, security, and capstone projects.",
+        "Beginner to advanced browser track: DOM, events, forms, fetch, storage, performance, routing, accessibility, security, and capstone projects.",
       href: "/learn/js-web-dev",
       accent: "#22c55e",
     },
@@ -392,6 +401,7 @@ export const learnNavByLanguage = {
   ],
   javascript: [
     { label: "Fundamentals", to: "/learn/js-fundamentals" },
+    { label: "DOM", to: "/learn/js-dom" },
     { label: "Web Dev", to: "/learn/js-web-dev" },
   ],
   php: [{ label: "PHP Basics", to: "/learn/php-fundamentals" }],
@@ -442,6 +452,7 @@ export function inferLanguageFromLearnPath(pathname = "") {
   }
   if (
     pathname.startsWith("/learn/js-fundamentals") ||
+    pathname.startsWith("/learn/js-dom") ||
     pathname.startsWith("/learn/js-web-dev")
   ) {
     return "javascript";
