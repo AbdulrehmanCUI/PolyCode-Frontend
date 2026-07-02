@@ -186,6 +186,12 @@ const JsFundamentalsLessonPage = lazyWithChunkRetry(
   () =>
     import("./features/learn/js-fundamentals/pages/JsFundamentalsLessonPage"),
 );
+const JsDomHub = lazyWithChunkRetry(
+  () => import("./features/learn/js-dom/pages/JsDomHub"),
+);
+const JsDomLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/js-dom/pages/JsDomLessonPage"),
+);
 const JsWebDevHub = lazyWithChunkRetry(
   () => import("./features/learn/js-web-dev/pages/JsWebDevHub"),
 );
@@ -1308,6 +1314,51 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <JsWebDevLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/js-dom"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <JsDomHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/js-dom/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <JsDomLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/js-dom/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <JsDomLessonPage />
               </LearnShell>
             </ThemedShell>
           }

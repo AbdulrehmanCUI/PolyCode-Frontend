@@ -143,6 +143,15 @@ export const languageCourses = {
       href: "/learn/pointers-cpp",
       accent: "#00d4ff",
     },
+    {
+      title: "DSA C++",
+      tag: "Advanced Course",
+      icon: Database,
+      description:
+        "Data structures and algorithms in C++: arrays, linked lists, trees, graphs, dynamic programming, and performance-focused problem solving.",
+      href: "/learn/dsa-cpp",
+      accent: "#22c55e",
+    },
   ],
   "c++": [
     {
@@ -171,6 +180,15 @@ export const languageCourses = {
         "Addresses, dereferencing, nullptr, arrays, 2D arrays, smart pointers, callbacks, and safety.",
       href: "/learn/pointers-cpp",
       accent: "#00d4ff",
+    },
+    {
+      title: "DSA C++",
+      tag: "Advanced Course",
+      icon: Database,
+      description:
+        "Data structures and algorithms in C++: arrays, linked lists, trees, graphs, dynamic programming, and performance-focused problem solving.",
+      href: "/learn/dsa-cpp",
+      accent: "#22c55e",
     },
   ],
   python: [
@@ -258,11 +276,20 @@ export const languageCourses = {
       accent: "#f59e0b",
     },
     {
+      title: "JavaScript DOM",
+      tag: "DOM Course",
+      icon: Globe,
+      description:
+        "Build interactive browser pages with the Document Object Model: select elements, update content, handle events, and create dynamic UI safely.",
+      href: "/learn/js-dom",
+      accent: "#22c55e",
+    },
+    {
       title: "JavaScript Web Development",
       tag: "Web Course",
       icon: Globe,
       description:
-        "Beginner to advanced browser track: DOM, events, forms, fetch, storage, performance, routing, a11y, security, and capstone projects.",
+        "Beginner to advanced browser track: DOM, events, forms, fetch, storage, performance, routing, accessibility, security, and capstone projects.",
       href: "/learn/js-web-dev",
       accent: "#22c55e",
     },
@@ -374,11 +401,13 @@ export const learnNavByLanguage = {
     { label: "Basics", to: "/learn/cpp-fundamentals" },
     { label: "OOPs", to: "/learn/oops-cpp" },
     { label: "Pointers", to: "/learn/pointers-cpp" },
+    { label: "DSA", to: "/learn/dsa-cpp" },
   ],
   "c++": [
     { label: "Basics", to: "/learn/cpp-fundamentals" },
     { label: "OOPs", to: "/learn/oops-cpp" },
     { label: "Pointers", to: "/learn/pointers-cpp" },
+    { label: "DSA", to: "/learn/dsa-cpp" },
   ],
   python: [
     { label: "Fundamentals", to: "/learn/python-fundamentals" },
@@ -392,6 +421,7 @@ export const learnNavByLanguage = {
   ],
   javascript: [
     { label: "Fundamentals", to: "/learn/js-fundamentals" },
+    { label: "DOM", to: "/learn/js-dom" },
     { label: "Web Dev", to: "/learn/js-web-dev" },
   ],
   php: [{ label: "PHP Basics", to: "/learn/php-fundamentals" }],
@@ -425,7 +455,8 @@ export function inferLanguageFromLearnPath(pathname = "") {
   if (
     pathname.startsWith("/learn/cpp-fundamentals") ||
     pathname.startsWith("/learn/oops-cpp") ||
-    pathname.startsWith("/learn/pointers-cpp")
+    pathname.startsWith("/learn/pointers-cpp") ||
+    pathname.startsWith("/learn/dsa-cpp")
   ) {
     return "cpp";
   }
@@ -443,6 +474,7 @@ export function inferLanguageFromLearnPath(pathname = "") {
   }
   if (
     pathname.startsWith("/learn/js-fundamentals") ||
+    pathname.startsWith("/learn/js-dom") ||
     pathname.startsWith("/learn/js-web-dev")
   ) {
     return "javascript";
