@@ -30,31 +30,28 @@ export default function NodeNpmHub() {
   } = useNodeNpmProgress();
 
   const completedCount = Object.keys(progress).length;
-  const lessons = NODE_NPM_LESSONS ?? [];
-  const chapters = NODE_NPM_CHAPTERS ?? [];
-  const totalXp = NODE_NPM_TOTAL_XP ?? 0;
-  const earnedXP = lessons.filter((lesson) => progress[lesson.id]).reduce(
+  const earnedXP = NODE_NPM_LESSONS.filter((lesson) => progress[lesson.id]).reduce(
     (sum, lesson) => sum + lesson.xp,
     0,
   );
   const pct =
-    lessons.length > 0
-      ? Math.round((completedCount / lessons.length) * 100)
-      : 0;
+    Math.round((completedCount / NODE_NPM_LESSONS.length) * 100) || 0;
   const nextLesson =
-    lessons.find((lesson) => !progress[lesson.id]) || lessons[0] || null;
+    NODE_NPM_LESSONS.find((lesson) => !progress[lesson.id]) ||
+    NODE_NPM_LESSONS[0] ||
+    null;
   const resumeLesson =
-    lessons.find((lesson) => lesson.id === lastLessonId) || nextLesson;
-  const completedChapters = chapters.filter((chapter) =>
+    NODE_NPM_LESSONS.find((lesson) => lesson.id === lastLessonId) || nextLesson;
+  const completedChapters = NODE_NPM_CHAPTERS.filter((chapter) =>
     chapter.lessons.every((lesson) => progress[lesson.id]),
   ).length;
   const bookmarkedLessons = bookmarks
-    .map((id) => lessons.find((lesson) => lesson.id === id))
+    .map((id) => NODE_NPM_LESSONS.find((lesson) => lesson.id === id))
     .filter(Boolean);
 
   const filteredLessons = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return lessons.filter((lesson) => {
+    return NODE_NPM_LESSONS.filter((lesson) => {
       const matchesQuery =
         !query ||
         lesson.title.toLowerCase().includes(query) ||
@@ -67,9 +64,9 @@ export default function NodeNpmHub() {
         (filter === "bookmarked" && bookmarks.includes(lesson.id));
       return matchesQuery && matchesFilter;
     });
-  }, [bookmarks, filter, lessons, progress, search]);
+  }, [bookmarks, filter, progress, search]);
 
-  if (!lessons.length) {
+  if (!NODE_NPM_LESSONS.length) {
     return (
       <div className="oops-not-found">
         <p>Node.js &amp; npm course failed to load. Restart the dev server.</p>
@@ -104,8 +101,8 @@ export default function NodeNpmHub() {
             <div className="oops-xp-meta">
               <span>
                 {isAuthenticated
-                  ? `${completedCount}/${lessons.length} lessons · ${earnedXP}/${totalXp} XP`
-                  : `Sign in to track progress · ${lessons.length} lessons`}
+                  ? `${completedCount}/${NODE_NPM_LESSONS.length} lessons · ${earnedXP}/${NODE_NPM_TOTAL_XP} XP`
+                  : `Sign in to track progress · ${NODE_NPM_LESSONS.length} lessons`}
               </span>
               <span>{isAuthenticated ? `${pct}%` : "—"}</span>
             </div>
@@ -247,19 +244,19 @@ export default function NodeNpmHub() {
         <div className="oops-stat-tile">
           <span>Lessons</span>
           <strong>
-            {completedCount}/{lessons.length}
+            {completedCount}/{NODE_NPM_LESSONS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>Chapters</span>
           <strong>
-            {completedChapters}/{chapters.length}
+            {completedChapters}/{NODE_NPM_CHAPTERS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>XP</span>
           <strong>
-            {earnedXP}/{totalXp}
+            {earnedXP}/{NODE_NPM_TOTAL_XP}
           </strong>
         </div>
         <div className="oops-stat-tile">
@@ -269,7 +266,7 @@ export default function NodeNpmHub() {
       </div>
 
       <LearnChapterPathOverview
-        chapters={chapters}
+        chapters={NODE_NPM_CHAPTERS}
         progress={progress}
         onChapterSelect={(chapter) =>
           navigate(`${BASE_PATH}/lesson/${chapter.lessons[0].id}`)
@@ -277,7 +274,7 @@ export default function NodeNpmHub() {
       />
 
       <LearnChapterGrid
-        chapters={chapters}
+        chapters={NODE_NPM_CHAPTERS}
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}

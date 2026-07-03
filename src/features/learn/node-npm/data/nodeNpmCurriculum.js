@@ -113,7 +113,7 @@ console.log(parseRuntime("node/22.0.0"));
 `,
           tests: [
             { id: 1, label: "Defines parseRuntime", keywords: [{ pattern: "function\\s+parseRuntime" }] },
-            { id: 2, label: "Splits on slash", keywords: [{ pattern: "split\\s*\\(\\s*['\"]\/['\"]" }] },
+            { id: 2, label: "Splits on slash", keywords: [{ pattern: "split\\s*\\(\\s*['\"]/['\"]" }] },
             { id: 3, label: "Returns name and version", keywords: [{ pattern: "name" }, { pattern: "version" }] },
           ],
         },
@@ -624,7 +624,7 @@ console.log(parseSemver("2.4.1"));
 `,
           solutionCode: `function parseSemver(version) {
   if (typeof version !== "string") return null;
-  const match = version.match(/^(\d+)\.(\d+)\.(\d+)$/);
+  const match = version.match(/^(\\d+)\\.(\\d+)\\.(\\d+)$/);
   if (!match) return null;
   return {
     major: Number(match[1]),
