@@ -9,6 +9,7 @@ import {
   Table2,
   Terminal,
   Presentation,
+  Coffee,
   BrainCircuit,
   Server,
   Cpu,
@@ -327,6 +328,55 @@ export const languageCourses = {
       accent: "#179c24",
     },
   ],
+
+  // ── Java Courses ─────────────────────────────────────────────────────────────
+  java: [
+    {
+      title: "Java Fundamentals",
+      tag: "Beginner Course",
+      icon: Coffee,
+      description:
+        "Java syntax, variables, control flow, methods, arrays, classes, strings, and user input — everything to write real Java from scratch.",
+      href: "/hub?language=Java&category=01-beginner",
+      accent: "#e76f00",
+    },
+    {
+      title: "Java Intermediate",
+      tag: "OOP Course",
+      icon: Boxes,
+      description:
+        "Inheritance, interfaces, collections, exception handling, generics, and file I/O — the core pillars of professional Java.",
+      href: "/hub?language=Java&category=02-intermediate",
+      accent: "#f59e0b",
+    },
+    {
+      title: "Java Advanced",
+      tag: "Advanced Course",
+      icon: Layers3,
+      description:
+        "Streams API, lambda expressions, multithreading, Optional, and JDBC — write fast, modern, production-ready Java.",
+      href: "/hub?language=Java&category=03-advanced",
+      accent: "#3b82f6",
+    },
+    {
+      title: "Spring Boot & REST",
+      tag: "Professional Course",
+      icon: Grid3x3,
+      description:
+        "Build REST APIs with Spring Boot, Spring Data JPA, Maven, request validation, and unit testing with JUnit and Mockito.",
+      href: "/hub?language=Java&category=04-professional",
+      accent: "#22c55e",
+    },
+    {
+      title: "Java Mastery",
+      tag: "Mastery Course",
+      icon: Brain,
+      description:
+        "Algorithms, data structures, design patterns, Big-O analysis, and full interview preparation to become a confident Java developer.",
+      href: "/hub?language=Java&category=05-mastery",
+      accent: "#a855f7",
+    },
+  ],
   ruby: [
     {
       title: "Ruby Fundamentals",
@@ -423,6 +473,14 @@ export const learnNavByLanguage = {
     { label: "Fundamentals", to: "/learn/js-fundamentals" },
     { label: "DOM", to: "/learn/js-dom" },
     { label: "Web Dev", to: "/learn/js-web-dev" },
+  ],
+  javascript: [{ label: "JS Basics", to: "/learn/js-fundamentals" }],
+  java: [
+    { label: "Fundamentals", to: "/hub?language=Java&category=01-beginner" },
+    { label: "Intermediate", to: "/hub?language=Java&category=02-intermediate" },
+    { label: "Advanced", to: "/hub?language=Java&category=03-advanced" },
+    { label: "Spring Boot", to: "/hub?language=Java&category=04-professional" },
+    { label: "Mastery", to: "/hub?language=Java&category=05-mastery" },
   ],
   php: [{ label: "PHP Basics", to: "/learn/php-fundamentals" }],
   csharp: [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
