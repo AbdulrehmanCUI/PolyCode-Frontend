@@ -1,25 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
-import { LEARN_ACCENT } from "../../shared/learnAccent";
 import { useNavigate, useParams } from "react-router-dom";
 import NumpyIntroTheory from "../../numpy-py/components/NumpyIntroTheory";
 import OopsSidebar from "../../oops-cpp/components/OopsSidebar";
 import LearnProfileMenu from "../../shared/LearnProfileMenu";
 import LessonContentShell from "../../shared/LessonContentShell";
-import RubyFundamentalsCodeChallenge from "../components/RubyFundamentalsCodeChallenge";
+import JavaScriptCodeChallenge from "../../js-fundamentals/components/JavaScriptCodeChallenge";
 import {
-  RUBY_FUNDAMENTALS_CHAPTERS,
-  RUBY_FUNDAMENTALS_LESSONS,
-  RUBY_FUNDAMENTALS_TOTAL_XP,
-} from "../data/rubyFundamentalsCurriculum";
-import useRubyFundamentalsProgress from "../hooks/useRubyFundamentalsProgress";
+  NODE_NPM_CHAPTERS,
+  NODE_NPM_LESSONS,
+  NODE_NPM_TOTAL_XP,
+} from "../data/nodeNpmCurriculum";
+import useNodeNpmProgress from "../hooks/useNodeNpmProgress";
 import useLessonReadGate from "../../shared/useLessonReadGate";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
 import { useLessonAssistantContext } from "../../../assistant/hooks/useLessonAssistantContext";
 
-const BASE_PATH = "/learn/ruby-fundamentals";
-const READ_GATE_PREFIX = "ruby_fundamentals";
+const BASE_PATH = "/learn/node-npm";
+const READ_GATE_PREFIX = "node_npm";
+const ACCENT = "#339933";
 
-export default function RubyFundamentalsLessonPage() {
+export default function NodeNpmLessonPage() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState("theory");
@@ -43,19 +43,17 @@ export default function RubyFundamentalsLessonPage() {
     rememberLesson,
     saveCode,
     toggleBookmark,
-  } = useRubyFundamentalsProgress();
+  } = useNodeNpmProgress();
   const codeSaveTimer = useRef(null);
 
-  const lesson = RUBY_FUNDAMENTALS_LESSONS.find((item) => item.id === lessonId);
-  const lessonIdx = RUBY_FUNDAMENTALS_LESSONS.findIndex(
-    (item) => item.id === lessonId,
-  );
-  const prev = RUBY_FUNDAMENTALS_LESSONS[lessonIdx - 1];
-  const next = RUBY_FUNDAMENTALS_LESSONS[lessonIdx + 1];
+  const lesson = NODE_NPM_LESSONS.find((item) => item.id === lessonId);
+  const lessonIdx = NODE_NPM_LESSONS.findIndex((item) => item.id === lessonId);
+  const prev = NODE_NPM_LESSONS[lessonIdx - 1];
+  const next = NODE_NPM_LESSONS[lessonIdx + 1];
 
   useLessonAssistantContext({
-    course: "Ruby Fundamentals",
-    language: "Ruby",
+    course: "Node.js & npm",
+    language: "JavaScript",
     lesson,
     chapter: lesson?.chapterTitle,
     tab,
@@ -80,9 +78,9 @@ export default function RubyFundamentalsLessonPage() {
   if (!lesson) {
     return (
       <div className="oops-not-found">
-        <p>Ruby lesson not found.</p>
+        <p>Node.js & npm lesson not found.</p>
         <button type="button" onClick={() => navigate(BASE_PATH)}>
-          ← Back to Ruby Fundamentals
+          ← Back to Node.js & npm
         </button>
       </div>
     );
@@ -91,7 +89,7 @@ export default function RubyFundamentalsLessonPage() {
   const isCompleted = isAuthenticated && !!progress[lessonId];
   const isBookmarked = bookmarks.includes(lessonId);
   const completedCount = Object.keys(progress).length;
-  const earnedXP = RUBY_FUNDAMENTALS_LESSONS.filter((item) => progress[item.id]).reduce(
+  const earnedXP = NODE_NPM_LESSONS.filter((item) => progress[item.id]).reduce(
     (sum, item) => sum + item.xp,
     0,
   );
@@ -112,9 +110,9 @@ export default function RubyFundamentalsLessonPage() {
       <OopsSidebar
         currentLessonId={lessonId}
         progress={progress}
-        chapters={RUBY_FUNDAMENTALS_CHAPTERS}
+        chapters={NODE_NPM_CHAPTERS}
         basePath={BASE_PATH}
-        title="Ruby Fundamentals"
+        title="Node.js & npm"
       />
 
       <div className="oops-lesson-main">
@@ -124,12 +122,10 @@ export default function RubyFundamentalsLessonPage() {
             className="oops-back-btn"
             onClick={() => navigate(BASE_PATH)}
           >
-            ← Ruby Fundamentals
+            ← Node.js & npm
           </button>
           <div className="oops-lesson-breadcrumb">
-            <span className="learn-lesson-chapter-tag">
-              {lesson.chapterTitle}
-            </span>
+            <span className="learn-lesson-chapter-tag">{lesson.chapterTitle}</span>
             <span className="oops-bc-sep">›</span>
             <span>{lesson.title}</span>
           </div>
@@ -152,16 +148,16 @@ export default function RubyFundamentalsLessonPage() {
           </button>
           <LearnProfileMenu
             user={user}
-            trackTitle="Ruby Fundamentals"
+            trackTitle="Node.js & npm"
             syncLabel={
               isAuthenticated
-                ? "Ruby progress saved to your account"
+                ? "Node.js & npm progress saved to your account"
                 : "Sign in to save progress"
             }
             completedCount={completedCount}
-            totalLessons={RUBY_FUNDAMENTALS_LESSONS.length}
+            totalLessons={NODE_NPM_LESSONS.length}
             earnedXP={earnedXP}
-            totalXP={RUBY_FUNDAMENTALS_TOTAL_XP}
+            totalXP={NODE_NPM_TOTAL_XP}
             bookmarksCount={bookmarks.length}
             streak={0}
           />
@@ -184,9 +180,9 @@ export default function RubyFundamentalsLessonPage() {
         </div>
 
         <LessonContentShell
-          storageKey={`ruby-fundamentals:${lessonId}`}
+          storageKey={`node-npm:${lessonId}`}
           videoUrl={lesson.videoUrl}
-          videoTitle={`${lesson.title} — Ruby`}
+          videoTitle={`${lesson.title} — Node.js & npm`}
         >
           {tab === "theory" ? (
             <NumpyIntroTheory
@@ -197,11 +193,12 @@ export default function RubyFundamentalsLessonPage() {
               markedAsRead={markedAsRead}
               onMarkAsRead={markAsRead}
               onGoChallenge={goToChallenge}
+              accentColor={ACCENT}
             />
           ) : (
-            <RubyFundamentalsCodeChallenge
+            <JavaScriptCodeChallenge
               challenge={{ id: lessonId, ...lesson.challenge }}
-              accentColor={LEARN_ACCENT}
+              accentColor={ACCENT}
               isCompleted={isCompleted}
               onComplete={handleChallengeComplete}
               initialCode={savedCodeMap[lessonId]}

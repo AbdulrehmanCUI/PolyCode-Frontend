@@ -100,6 +100,7 @@ export default function RunnableCodeBlock({
   language = "python",
 }) {
   const { loading: authLoading, isAuthenticated } = useAuth();
+  const { monacoTheme, beforeMount } = useSiteMonacoTheme();
   const canRun = isAuthenticated && !authLoading;
 
   const lang = normalizeLang(block.lang || language);
@@ -211,8 +212,8 @@ export default function RunnableCodeBlock({
           height="220px"
           language={editorLang}
           value={code}
-          beforeMount={definePolycodeMonacoTheme}
-          theme={POLYCODE_VSCODE_THEME}
+          beforeMount={beforeMount}
+          theme={monacoTheme}
           onChange={(value) => setCode(value ?? "")}
           options={getVSCodeEditorOptions({
             fontSize: 13,
@@ -267,9 +268,6 @@ export default function RunnableCodeBlock({
             )}
           </div>
         </div>
-        <pre className="oops-output-body">
-          {output?.stdout || "Output will appear here after you run the code."}
-        </pre>
         <PythonRunOutput
           stdout={output?.stdout}
           plotImages={output?.plotImages}

@@ -1,5 +1,8 @@
 export const REQUIRED_QUIZ_COUNT = 2;
 
+const OPTION_MAX_LEN = 110;
+const MIN_OPTION_LEN = 14;
+
 export function quizAttemptsKey(storagePrefix, lessonId) {
   return `${storagePrefix}_quiz_attempts_${lessonId}`;
 }
@@ -34,48 +37,798 @@ export function countQuizBlocks(theory = []) {
   return theory.filter((block) => block.type === "quiz").length;
 }
 
-function buildFallbackQuiz(lesson, slot) {
-  const title = lesson?.title || "this lesson";
-  const templates = [
+function stripMarkdown(text = "") {
+  return String(text)
+    .replace(/\*\*/g, "")
+    .replace(/`/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function truncateOption(text = "", max = OPTION_MAX_LEN) {
+  const clean = stripMarkdown(text);
+  if (clean.length <= max) return clean;
+  const slice = clean.slice(0, max - 1).trim();
+  const lastSpace = slice.lastIndexOf(" ");
+  if (lastSpace > max * 0.6) {
+    return `${slice.slice(0, lastSpace)}…`;
+  }
+  return `${slice}…`;
+}
+
+function isUsableOption(text = "") {
+  return stripMarkdown(text).length >= MIN_OPTION_LEN;
+}
+
+function hashString(value = "") {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) | 0;
+  }
+  return Math.abs(hash);
+}
+
+function seededShuffle(items, seed) {
+  const arr = [...items];
+  let state = seed || 1;
+  for (let index = arr.length - 1; index > 0; index -= 1) {
+    state = (state * 1103515245 + 12345) & 0x7fffffff;
+    const swap = state % (index + 1);
+    [arr[index], arr[swap]] = [arr[swap], arr[index]];
+  }
+  return arr;
+}
+
+function normalizeOption(text = "") {
+  return stripMarkdown(text).toLowerCase();
+}
+
+function technicalDistractors(lang = "code") {
+  const pools = {
+    python: [
+      "Raises a SyntaxError before the script runs",
+      "Returns None and discards the computed result",
+      "Converts every value to a string automatically",
+      "Only works inside a Jupyter notebook, not in scripts",
+    ],
+    javascript: [
+      "Throws before the event loop schedules the callback",
+      "Mutates the DOM without selecting any element",
+      "Returns undefined and stops the rest of the script",
+      "Only runs in strict mode with a special compiler flag",
+    ],
+    cpp: [
+      "Causes undefined behavior without a compile error",
+      "Allocates on the stack but never initializes memory",
+      "Deletes the object twice when scope ends",
+      "Silently converts the pointer to an integer type",
+    ],
+    default: [
+      "Produces no output and changes no program state",
+      "Only works on the first line of the source file",
+      "Requires a different library than the one in the lesson",
+      "Fails at runtime because the symbol is undefined",
+    ],
+  };
+  return pools[lang] || pools.default;
+}
+function genericDistractors(chapterTitle = "this topic") {
+  return [
+    `A technique that does not apply to ${chapterTitle}`,
+    "Memorizing syntax without knowing when to use it",
+    "Skipping the examples and going straight to the challenge",
+    "Ignoring the warnings and edge cases from the lesson",
+  ];
+}
+
+function inferLessonLang(ctx) {
+  const langs = ctx.codeBlocks.map((block) => block.lang).filter(Boolean);
+  if (langs.includes("python")) return "python";
+  if (langs.includes("javascript")) return "javascript";
+  if (langs.includes("cpp") || langs.includes("c")) return "cpp";
+  return "default";
+}
+
+function getExistingQuizTexts(theory = []) {
+  const texts = new Set();
+  theory
+    .filter((block) => block.type === "quiz")
+    .forEach((block) => {
+      if (block.question) texts.add(normalizeOption(block.question));
+      const correct = block.options?.[block.answer];
+      if (correct) texts.add(normalizeOption(correct));
+    });
+  return texts;
+}
+
+function buildShuffledQuiz({ question, correct, wrongPool, explanation, seed, lang }) {
+  const cleanCorrect = truncateOption(correct);
+  const techPool = technicalDistractors(lang);
+  const wrong = [...new Set(wrongPool.map(truncateOption).filter(isUsableOption))]
+    .filter((option) => normalizeOption(option) !== normalizeOption(cleanCorrect))
+    .slice(0, 6);
+
+  let techIndex = 0;
+  while (wrong.length < 3) {
+    const filler = techPool[techIndex % techPool.length];
+    techIndex += 1;
+    if (isUsableOption(filler) && normalizeOption(filler) !== normalizeOption(cleanCorrect)) {
+      wrong.push(filler);
+      continue;
+    }
+    const generic = genericDistractors()[wrong.length % 4];
+    if (isUsableOption(generic)) wrong.push(generic);
+    else wrong.push("This option does not match the lesson content");
+  }
+
+  const options = seededShuffle([cleanCorrect, ...wrong.slice(0, 3)], seed);
+  const answer = options.findIndex(
+    (option) => normalizeOption(option) === normalizeOption(cleanCorrect),
+  );
+
+  return {
+    question: question || "Quick check on this lesson",
+    options: options.map((option) => option || "Review the lesson text"),
+    answer: answer >= 0 ? answer : 0,
+    explanation:
+      explanation ||
+      cleanCorrect ||
+      "Review the lesson text above, then try the challenge.",
+  };
+}
+
+function normalizeTableRow(row) {
+  if (Array.isArray(row)) {
+    return { label: row[0], values: row.slice(1) };
+  }
+  return {
+    label: row?.label,
+    values: row?.values || [],
+  };
+}
+
+function sanitizeQuizBlock(quiz) {
+  if (!quiz || quiz.type !== "quiz") return quiz;
+
+  const options = (Array.isArray(quiz.options) ? quiz.options : [])
+    .map((option) => truncateOption(option) || "See the lesson above")
+    .filter(Boolean);
+
+  while (options.length < 4) {
+    options.push(genericDistractors()[options.length % 4]);
+  }
+
+  let answer = Number.isInteger(quiz.answer) ? quiz.answer : 0;
+  if (answer < 0 || answer >= options.length) answer = 0;
+
+  return {
+    ...quiz,
+    question: quiz.question || "Quick check on this lesson",
+    options: options.slice(0, 4),
+    answer,
+    explanation:
+      quiz.explanation ||
+      options[answer] ||
+      "Review the lesson text above, then try the challenge.",
+  };
+}
+
+function extractCodeBlocks(theory = []) {
+  const blocks = [];
+  theory.forEach((block) => {
+    if (block.type === "code" && block.content) {
+      blocks.push({
+        label: block.label || "code example",
+        lang: block.lang || "code",
+        content: block.content,
+      });
+    }
+    if (block.type === "text" && block.code?.content) {
+      blocks.push({
+        label: block.code.label || "code example",
+        lang: block.code.lang || "code",
+        content: block.code.content,
+      });
+    }
+  });
+  return blocks;
+}
+
+function extractFunctionCalls(code = "") {
+  const matches = [...String(code).matchAll(/(\w+(?:\.\w+)*)\s*\(/g)];
+  return [...new Set(matches.map((match) => match[1]))];
+}
+
+function extractImports(code = "") {
+  const imports = [];
+  const re = /import\s+([\w.]+)(?:\s+as\s+(\w+))?/g;
+  let match = re.exec(code);
+  while (match) {
+    imports.push({
+      module: match[1],
+      alias: match[2] || match[1].split(".").pop(),
+    });
+    match = re.exec(code);
+  }
+  return imports;
+}
+
+function extractInlineCodes(theory = []) {
+  const codes = new Set();
+  const re = /`([^`\n]+)`/g;
+  theory.forEach((block) => {
+    const sources = [block.content, block.title].filter(Boolean);
+    sources.forEach((source) => {
+      let match = re.exec(source);
+      while (match) {
+        if (match[1].length >= 2) codes.add(match[1]);
+        match = re.exec(source);
+      }
+    });
+  });
+  return [...codes];
+}
+
+function extractDefinitions(texts = []) {
+  const defs = [];
+  texts.forEach((text) => {
+    const patterns = [
+      /\*\*([^*]+)\*\*\s+is\s+(.+?)(?:[.!?]|$)/i,
+      /\*\*([^*]+)\*\*\s+\([^)]+\)\s+is\s+(.+?)(?:[.!?]|$)/i,
+      /The main thing\s+\*\*([^*]+)\*\*\s+gives you is\s+(.+?)(?:[.!?]|$)/i,
+    ];
+    patterns.forEach((pattern) => {
+      const match = text.match(pattern);
+      if (match) {
+        defs.push({
+          term: stripMarkdown(match[1]),
+          definition: stripMarkdown(match[2]),
+        });
+      }
+    });
+  });
+  return defs;
+}
+
+function describeApiCall(apiCall, corpus = "") {
+  const hints = [
     {
-      question: `What is the main focus of **${title}**?`,
-      options: [
-        "The core idea taught in this lesson",
-        "A topic unrelated to this course",
-        "Something only experts need to know",
-        "A deprecated pattern you should avoid",
-      ],
-      answer: 0,
-      explanation: `This lesson is about **${title}**. The first option matches what you just studied.`,
+      match: /\.show$/,
+      description: "Display the current figure on screen",
     },
     {
-      question: `Before moving on from **${title}**, you should be able to…`,
-      options: [
-        "Explain the idea in your own words",
-        "Skip the coding challenge",
-        "Ignore the examples in the lesson",
-        "Memorize syntax without understanding why",
-      ],
-      answer: 0,
-      explanation:
-        "Understanding the idea — not just copying code — is what makes the challenge easier.",
+      match: /\.plot$/,
+      description: "Draw a line chart from x and y data",
+    },
+    {
+      match: /\.scatter$/,
+      description: "Plot individual points to examine correlation",
+    },
+    {
+      match: /\.bar$/,
+      description: "Draw bars for comparing categories",
+    },
+    {
+      match: /\.hist$/,
+      description: "Show the distribution of values in bins",
+    },
+    {
+      match: /\.savefig$/,
+      description: "Save the figure to an image file",
+    },
+    {
+      match: /\.title$/,
+      description: "Set the chart title",
+    },
+    {
+      match: /\.xlabel$/,
+      description: "Label the horizontal axis",
+    },
+    {
+      match: /\.ylabel$/,
+      description: "Label the vertical axis",
+    },
+    {
+      match: /^np\.array$/,
+      description: "Create a NumPy array from a sequence",
+    },
+    {
+      match: /\.shape$/,
+      description: "Return the dimensions of the array",
+    },
+    {
+      match: /\.reshape$/,
+      description: "Change the array shape without changing data",
+    },
+    {
+      match: /\.read_csv$/,
+      description: "Load a CSV file into a DataFrame",
+    },
+    {
+      match: /\.head$/,
+      description: "Return the first rows of a DataFrame",
+    },
+    {
+      match: /console\.log$/,
+      description: "Print a value to the console",
+    },
+    {
+      match: /document\.querySelector$/,
+      description: "Select the first matching element in the DOM",
+    },
+    {
+      match: /addEventListener$/,
+      description: "Attach an event handler to an element",
+    },
+    {
+      match: /new\s+Promise|Promise$/,
+      description: "Handle asynchronous operations",
+    },
+    {
+      match: /malloc$/,
+      description: "Allocate memory on the heap",
+    },
+    {
+      match: /free$/,
+      description: "Release previously allocated heap memory",
+    },
+    {
+      match: /->/,
+      description: "Access a member through a pointer",
     },
   ];
 
-  return { ...templates[slot % templates.length], type: "quiz", _generated: true };
+  const hint = hints.find((item) => item.match.test(apiCall));
+  if (hint) return hint.description;
+
+  const corpusLine = corpus
+    .split(/\n/)
+    .find((line) => line.includes(apiCall) && line.length > apiCall.length + 8);
+  if (corpusLine) return truncateOption(stripMarkdown(corpusLine), 96);
+
+  return `Calls \`${apiCall}()\` as shown in the lesson`;
+}
+
+function collectCorpusText(theory = []) {
+  return theory
+    .map((block) => {
+      if (block.type === "text" && block.content) return block.content;
+      if (block.type === "callout" && block.content) return block.content;
+      if (block.type === "code" && block.content) return block.content;
+      if (block.type === "diagram") {
+        return (block.nodes || [])
+          .flatMap((node) => [node.label, ...(node.items || [])])
+          .join(" ");
+      }
+      return "";
+    })
+    .join("\n");
+}
+
+function extractLessonContext(lesson = {}, theory = []) {
+  const objectivesBlock = theory.find((block) => block.type === "objectives");
+  const objectives =
+    lesson.outcomes?.length > 0
+      ? lesson.outcomes
+      : objectivesBlock?.items || [];
+
+  const callouts = theory
+    .filter((block) => block.type === "callout")
+    .map((block) => ({
+      variant: block.variant || "info",
+      content: stripMarkdown(block.content),
+      raw: block.content || "",
+    }))
+    .filter((block) => block.content);
+
+  const texts = theory
+    .filter((block) => block.type === "text" && block.content)
+    .map((block) => stripMarkdown(block.content))
+    .filter(Boolean);
+
+  const rawTexts = theory
+    .filter((block) => block.type === "text" && block.content)
+    .map((block) => block.content);
+
+  const tables = theory.filter((block) => block.type === "table");
+
+  const diagrams = theory
+    .filter((block) => block.type === "diagram" && block.nodes?.length)
+    .map((block) => ({
+      title: block.title || "diagram",
+      nodes: block.nodes.map((node) => ({
+        label: node.label,
+        items: (node.items || []).map(stripMarkdown).filter(Boolean),
+      })),
+    }));
+
+  const codeBlocks = extractCodeBlocks(theory);
+  const imports = codeBlocks.flatMap((block) =>
+    extractImports(block.content).map((item) => ({
+      ...item,
+      label: block.label,
+    })),
+  );
+  const apiCalls = [
+    ...new Set(codeBlocks.flatMap((block) => extractFunctionCalls(block.content))),
+  ];
+  const inlineCodes = extractInlineCodes(theory);
+  const definitions = extractDefinitions([...texts, ...rawTexts.map(stripMarkdown)]);
+  const corpus = collectCorpusText(theory);
+
+  const challenge = lesson.challenge
+    ? {
+        title: lesson.challenge.title || "coding challenge",
+        description: stripMarkdown(lesson.challenge.description || ""),
+        tests: (lesson.challenge.tests || [])
+          .map((test) => test.label)
+          .filter(Boolean),
+      }
+    : null;
+
+  return {
+    title: lesson.title || "this lesson",
+    chapter: lesson.chapterTitle || "this chapter",
+    lessonId: lesson.id || lesson.title || "lesson",
+    objectives,
+    callouts,
+    texts,
+    tables,
+    diagrams,
+    codeBlocks,
+    imports,
+    apiCalls,
+    inlineCodes,
+    definitions,
+    challenge,
+    corpus,
+  };
+}
+
+function quizOverlapsExisting(quiz, existingTexts) {
+  if (!quiz) return true;
+  const correct = quiz.options?.[quiz.answer];
+  if (correct && existingTexts.has(normalizeOption(correct))) return true;
+  if (quiz.question && existingTexts.has(normalizeOption(quiz.question))) return true;
+  return false;
+}
+
+function buildFromDefinition(ctx, seed) {
+  const def = ctx.definitions[seed % ctx.definitions.length];
+  if (!def) return null;
+
+  const wrongPool = [
+    ...ctx.definitions
+      .filter((item) => item.term !== def.term)
+      .map((item) => item.definition),
+    ...ctx.texts
+      .filter((text) => !text.toLowerCase().includes(def.term.toLowerCase()))
+      .map((text) => truncateOption(text.split(/(?<=[.!?])\s+/)[0], 96)),
+    `A library unrelated to ${ctx.chapter}`,
+  ];
+
+  return buildShuffledQuiz({
+    question: `According to **${ctx.title}**, what is **${def.term}**?`,
+    correct: def.definition,
+    wrongPool,
+    explanation: `**${def.term}** — ${def.definition}`,
+    seed,
+  });
+}
+
+function buildFromImport(ctx, seed) {
+  const imp = ctx.imports[seed % ctx.imports.length];
+  if (!imp) return null;
+
+  const wrongPool = [
+    ...ctx.imports
+      .filter((item) => item.alias !== imp.alias)
+      .map((item) => item.module),
+    "The Python standard library root package only",
+    "A random variable name with no module behind it",
+    "An optional nickname that changes every run",
+  ];
+
+  return buildShuffledQuiz({
+    question: `In the **${imp.label}** example, what does the alias \`${imp.alias}\` refer to?`,
+    correct: imp.module,
+    wrongPool,
+    explanation: `\`${imp.alias}\` is shorthand for \`${imp.module}\` in this lesson.`,
+    seed: seed + 1,
+  });
+}
+
+function buildFromApiCall(ctx, seed) {
+  const apiCall = ctx.apiCalls[seed % ctx.apiCalls.length];
+  if (!apiCall) return null;
+
+  const correct = describeApiCall(apiCall, ctx.corpus);
+  const wrongPool = [
+    ...ctx.apiCalls
+      .filter((call) => call !== apiCall)
+      .map((call) => describeApiCall(call, ctx.corpus)),
+    ...technicalDistractors(inferLessonLang(ctx)),
+  ];
+
+  return buildShuffledQuiz({
+    question: `In **${ctx.title}**, what does \`${apiCall}()\` do?`,
+    correct,
+    wrongPool,
+    explanation: `\`${apiCall}()\` — ${correct}`,
+    seed: seed + 2,
+    lang: inferLessonLang(ctx),
+  });
+}
+
+function buildFromCodePresence(ctx, seed) {
+  const block = ctx.codeBlocks[seed % ctx.codeBlocks.length];
+  if (!block) return null;
+
+  const calls = extractFunctionCalls(block.content);
+  const target = calls[seed % (calls.length || 1)];
+  if (!target) return null;
+
+  const wrongPool = [
+    ...calls.filter((call) => call !== target),
+    ...ctx.apiCalls.filter((call) => call !== target),
+    "A comment line that Python ignores",
+    "A variable assignment with no function call",
+  ];
+
+  return buildShuffledQuiz({
+    question: `Which function call appears in the **${block.label}** example?`,
+    correct: `${target}()`,
+    wrongPool: wrongPool.map((item) => (item.includes("()") ? item : `${item}()`)),
+    explanation: `The **${block.label}** snippet uses \`${target}()\`.`,
+    seed: seed + 3,
+  });
+}
+
+function buildFromDiagram(ctx, seed) {
+  const diagram = ctx.diagrams[seed % ctx.diagrams.length];
+  if (!diagram) return null;
+
+  const node = diagram.nodes[seed % diagram.nodes.length];
+  if (!node?.items?.length) return null;
+
+  const correct = node.items[seed % node.items.length];
+  const wrongPool = [
+    ...diagram.nodes
+      .filter((item) => item.label !== node.label)
+      .flatMap((item) => item.items),
+    ...node.items.filter((item) => item !== correct),
+    "None of the above — this node is not part of the lesson",
+  ];
+
+  return buildShuffledQuiz({
+    question: `In **${diagram.title}**, which point belongs under **${node.label}**?`,
+    correct,
+    wrongPool,
+    explanation: `**${node.label}** is tied to: ${correct}`,
+    seed: seed + 4,
+  });
+}
+
+function buildFromChallenge(ctx, seed) {
+  if (!ctx.challenge?.tests?.length) return null;
+
+  const test = ctx.challenge.tests[seed % ctx.challenge.tests.length];
+  const wrongPool = [
+    ...ctx.challenge.tests.filter((item) => item !== test),
+    "Submit code that never imports the required library",
+    "Skip the required function and only print a message",
+    "Hard-code the expected output without using the lesson API",
+  ];
+
+  return buildShuffledQuiz({
+    question: `For the **${ctx.challenge.title}** challenge, which requirement must your code satisfy?`,
+    correct: test,
+    wrongPool,
+    explanation: `Your solution is checked for: **${test}**.`,
+    seed: seed + 5,
+  });
+}
+
+function buildFromInlineCode(ctx, seed) {
+  const token = ctx.inlineCodes[seed % ctx.inlineCodes.length];
+  if (!token || token.length < 2) return null;
+
+  const corpusHit = ctx.corpus
+    .split(/\n|\. /)
+    .map(stripMarkdown)
+    .find(
+      (line) =>
+        line.includes(token) &&
+        line.length > token.length + 12 &&
+        line.length < 160,
+    );
+
+  if (!corpusHit) return null;
+
+  return buildShuffledQuiz({
+    question: `What does the lesson say about \`${token}\`?`,
+    correct: corpusHit,
+    wrongPool: [
+      ...ctx.texts
+        .filter((text) => !text.includes(token))
+        .map((text) => truncateOption(text.split(/(?<=[.!?])\s+/)[0], 96)),
+      `\`${token}\` is never mentioned in this lesson`,
+      `\`${token}\` is only used in the challenge, not in theory`,
+    ],
+    explanation: corpusHit,
+    seed: seed + 6,
+  });
+}
+
+function buildFromObjectives(ctx, seed) {
+  if (!ctx.objectives.length) return null;
+
+  const correct = ctx.objectives[seed % ctx.objectives.length];
+  const wrongPool = [
+    ...ctx.objectives.filter((item) => item !== correct),
+    ...genericDistractors(ctx.chapter),
+  ];
+
+  return buildShuffledQuiz({
+    question: `After **${ctx.title}**, which skill should you be able to demonstrate?`,
+    correct,
+    wrongPool,
+    explanation: `This lesson targets: **${truncateOption(correct, 120)}**`,
+    seed: seed + 7,
+  });
+}
+
+function buildFromCallout(ctx, seed) {
+  const callout = ctx.callouts[seed % ctx.callouts.length];
+  if (!callout) return null;
+
+  const labels = {
+    warning: "Which caution does this lesson raise",
+    tip: "Which best practice does this lesson recommend",
+    info: "Which fact does this lesson highlight",
+    success: "Which outcome does this lesson emphasize",
+  };
+  const lead = labels[callout.variant] || "Which key point does this lesson make";
+
+  return buildShuffledQuiz({
+    question: `${lead} about **${ctx.title}**?`,
+    correct: callout.content,
+    wrongPool: [
+      ...ctx.callouts
+        .filter((item) => item.content !== callout.content)
+        .map((item) => item.content),
+      ...genericDistractors(ctx.chapter),
+    ],
+    explanation: callout.content,
+    seed: seed + 8,
+  });
+}
+
+function buildFromTable(ctx, seed) {
+  const table = ctx.tables[seed % ctx.tables.length];
+  const rawRows = table?.rows || [];
+  const rows = rawRows.map(normalizeTableRow).filter((row) => row.label);
+  const row = rows[seed % (rows.length || 1)];
+  if (!table || !row) return null;
+
+  const correct = truncateOption(row.values?.[0] || row.label);
+  const wrongPool = [
+    ...rows
+      .filter((item) => item !== row)
+      .map((item) => item.values?.[0] || item.label),
+    ...genericDistractors(ctx.chapter),
+  ];
+
+  return buildShuffledQuiz({
+    question: `In **${ctx.title}**, what is associated with **${row.label}**?`,
+    correct,
+    wrongPool,
+    explanation: `The lesson table links **${row.label}** to **${correct}**.`,
+    seed: seed + 9,
+  });
+}
+
+function buildFromConceptSentence(ctx, seed) {
+  const candidates = ctx.texts
+    .map((text) => {
+      const sentence =
+        text.split(/(?<=[.!?])\s+/).find((part) => part.length >= 40) || text;
+      return truncateOption(sentence, 96);
+    })
+    .filter(isUsableOption);
+
+  const correct = candidates[seed % candidates.length];
+  if (!correct) return null;
+
+  const wrongPool = [
+    ...candidates.filter((item) => item !== correct),
+    `This topic is unrelated to ${ctx.chapter}`,
+    "You only need syntax recall, not the underlying idea",
+    "The lesson does not define any concrete concept",
+  ];
+
+  return buildShuffledQuiz({
+    question: `Which statement accurately describes a concept from **${ctx.title}**?`,
+    correct,
+    wrongPool,
+    explanation: correct,
+    seed: seed + 10,
+  });
+}
+
+function buildTechnicalLastResort(ctx, slot, seed) {
+  if (ctx.challenge?.description) {
+    return buildShuffledQuiz({
+      question: `What is the main task in the **${ctx.challenge.title}** challenge?`,
+      correct: truncateOption(ctx.challenge.description, 96),
+      wrongPool: [
+        "Rewrite the lesson without using any code",
+        "Memorize quiz answers without running examples",
+        "Skip imports and hope the grader passes it",
+      ],
+      explanation: ctx.challenge.description,
+      seed: seed + slot,
+    });
+  }
+
+  if (ctx.codeBlocks.length) {
+    const block = ctx.codeBlocks[slot % ctx.codeBlocks.length];
+    const calls = extractFunctionCalls(block.content);
+    if (calls.length) {
+      return buildFromCodePresence(ctx, seed + slot);
+    }
+  }
+
+  return buildFromConceptSentence(ctx, seed + slot);
+}
+
+function buildFallbackQuiz(lesson, theoryBlocks, slot) {
+  const ctx = extractLessonContext(lesson, theoryBlocks);
+  const existingTexts = getExistingQuizTexts(theoryBlocks);
+  const seed = hashString(`${ctx.lessonId}:${slot}:${ctx.title}`);
+
+  const builders = [
+    () => buildFromDefinition(ctx, seed + slot),
+    () => buildFromImport(ctx, seed + slot),
+    () => buildFromApiCall(ctx, seed + slot),
+    () => buildFromCodePresence(ctx, seed + slot),
+    () => buildFromDiagram(ctx, seed + slot),
+    () => buildFromChallenge(ctx, seed + slot),
+    () => buildFromInlineCode(ctx, seed + slot),
+    () => buildFromObjectives(ctx, seed + slot),
+    () => buildFromCallout(ctx, seed + slot),
+    () => buildFromTable(ctx, seed + slot),
+    () => buildFromConceptSentence(ctx, seed + slot),
+  ];
+
+  const start = (seed + slot) % builders.length;
+  for (let index = 0; index < builders.length; index += 1) {
+    const quiz = builders[(start + index) % builders.length]();
+    if (!quizOverlapsExisting(quiz, existingTexts)) {
+      return sanitizeQuizBlock({ ...quiz, type: "quiz", _generated: true });
+    }
+  }
+
+  return sanitizeQuizBlock({
+    ...buildTechnicalLastResort(ctx, slot, seed),
+    type: "quiz",
+    _generated: true,
+  });
 }
 
 /**
  * Ensures every lesson has at least `minCount` MCQ blocks (appends topic-aware fallbacks).
  */
 export function ensureMinimumQuizzes(theory = [], lesson = {}, minCount = REQUIRED_QUIZ_COUNT) {
-  const blocks = [...theory];
+  const blocks = theory.map((block) =>
+    block.type === "quiz" ? sanitizeQuizBlock(block) : block,
+  );
   const existing = countQuizBlocks(blocks);
   if (existing >= minCount) return blocks;
 
   let slot = 0;
   while (countQuizBlocks(blocks) < minCount) {
-    blocks.push(buildFallbackQuiz(lesson, slot));
+    blocks.push(buildFallbackQuiz(lesson, blocks, slot));
     slot += 1;
   }
   return blocks;

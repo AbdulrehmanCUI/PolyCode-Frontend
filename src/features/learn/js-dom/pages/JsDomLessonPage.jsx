@@ -197,7 +197,7 @@ export default function JsDomLessonPage() {
             />
           ) : (
             <JavaScriptCodeChallenge
-              challenge={lesson.challenge}
+              challenge={{ id: lessonId, ...lesson.challenge }}
               accentColor="#22c55e"
               isCompleted={isCompleted}
               onComplete={handleChallengeComplete}

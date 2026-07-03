@@ -26,8 +26,10 @@ function copyRubyLoader() {
 
   fs.mkdirSync(DEST_DIR, { recursive: true });
   const raw = fs.readFileSync(UMD_SRC, "utf8");
-  // Force the UMD bundle onto window even when webpack defines `module`.
-  const patched = "var module=void 0,exports=void 0;\n" + raw;
+  // Force the UMD bundle onto globalThis even when webpack/CRA defines
+  // `module`, `exports`, or AMD `define` in the page.
+  const patched =
+    "var module=void 0,exports=void 0,define=void 0;\n" + raw;
   fs.writeFileSync(UMD_DEST, patched);
   console.log("Ruby WASM loader ready at public/ruby/browser.umd.js");
 }

@@ -122,7 +122,7 @@ export default function DsaLessonPage() {
             />
           ) : (
             <CodeChallenge
-              challenge={lesson.challenge}
+              challenge={{ id: lessonId, ...lesson.challenge }}
               accentColor={LEARN_ACCENT}
               isCompleted={isCompleted}
               onComplete={handleChallengeComplete}

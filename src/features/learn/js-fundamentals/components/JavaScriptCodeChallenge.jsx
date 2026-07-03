@@ -65,16 +65,17 @@ export default function JavaScriptCodeChallenge({
   const [showSolution, setShowSolution] = useState(false);
   const [running, setRunning] = useState(false);
   const [submitGeneration, setSubmitGeneration] = useState(0);
-  const activeChallengeId = useRef(challenge.id);
+  const activeChallengeId = useRef(challenge.id ?? challenge.starterCode);
   const runTestsRef = useRef(null);
   const { showCelebration, triggerCelebration, dismissCelebration } =
-    useChallengeCelebration(challenge.id);
+    useChallengeCelebration(challenge.id ?? challenge.starterCode);
   const { monacoTheme, beforeMount } = useSiteMonacoTheme();
 
   useEffect(() => {
-    const challengeChanged = activeChallengeId.current !== challenge.id;
+    const challengeKey = challenge.id ?? challenge.starterCode;
+    const challengeChanged = activeChallengeId.current !== challengeKey;
     if (challengeChanged) {
-      activeChallengeId.current = challenge.id;
+      activeChallengeId.current = challengeKey;
       setCode(initialCode || challenge.starterCode);
       setResults(null);
       setOutput(null);

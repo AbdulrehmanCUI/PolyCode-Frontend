@@ -1,4 +1,4 @@
-var module=void 0,exports=void 0;
+var module=void 0,exports=void 0,define=void 0;
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define(['exports'], factory) :

@@ -13,6 +13,7 @@ import useLessonReadGate from "../../shared/useLessonReadGate";
 import useLessonQuizAttempts from "../../shared/useLessonQuizAttempts";
 import { mapTheoryWithQuizIndices } from "../../shared/lessonQuizUtils";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
+import LessonTopicOverview from "../../shared/LessonTopicOverview";
 import useOopsProgress from "../hooks/useOopsProgress";
 import { useLessonAssistantContext } from "../../../assistant/hooks/useLessonAssistantContext";
 
@@ -274,6 +275,11 @@ export default function LessonPage() {
         >
           {tab === "theory" ? (
             <div className="oops-theory-pane">
+              <LessonTopicOverview
+                lesson={theoryLesson || lesson}
+                accentColor={LEARN_ACCENT}
+                variant="oops"
+              />
               <div className="oops-lesson-title-row">
                 <div>
                   <span className="oops-interactive-label">Plain English</span>

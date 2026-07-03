@@ -294,6 +294,15 @@ export const languageCourses = {
       href: "/learn/js-web-dev",
       accent: "#22c55e",
     },
+    {
+      title: "Node.js & npm",
+      tag: "Server Course",
+      icon: Server,
+      description:
+        "Deep dive into Node.js and npm — package.json, semver, scripts, modules, security, CI, publishing, and monorepo workspaces.",
+      href: "/learn/node-npm",
+      accent: "#339933",
+    },
   ],
   php: [
     {
@@ -387,6 +396,15 @@ export const languageCourses = {
       href: "/learn/ruby-fundamentals",
       accent: "#701516",
     },
+    {
+      title: "Ruby Gems",
+      tag: "Interactive Course",
+      icon: Boxes,
+      description:
+        "Master the RubyGems ecosystem: Bundler, Gemfiles, gemspecs, semver, dependency resolution, testing, publishing, and professional library design — with hands-on challenges.",
+      href: "/learn/ruby-gems",
+      accent: "#9333ea",
+    },
   ],
 };
 
@@ -473,8 +491,8 @@ export const learnNavByLanguage = {
     { label: "Fundamentals", to: "/learn/js-fundamentals" },
     { label: "DOM", to: "/learn/js-dom" },
     { label: "Web Dev", to: "/learn/js-web-dev" },
+    { label: "Node & npm", to: "/learn/node-npm" },
   ],
-  javascript: [{ label: "JS Basics", to: "/learn/js-fundamentals" }],
   java: [
     { label: "Fundamentals", to: "/hub?language=Java&category=01-beginner" },
     { label: "Intermediate", to: "/hub?language=Java&category=02-intermediate" },
@@ -485,7 +503,10 @@ export const learnNavByLanguage = {
   php: [{ label: "PHP Basics", to: "/learn/php-fundamentals" }],
   csharp: [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
   "c#": [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
-  ruby: [{ label: "Ruby Basics", to: "/learn/ruby-fundamentals" }],
+  ruby: [
+    { label: "Ruby Basics", to: "/learn/ruby-fundamentals" },
+    { label: "Ruby Gems", to: "/learn/ruby-gems" },
+  ],
 };
 
 const learnNavLanguageAliases = {
@@ -533,14 +554,18 @@ export function inferLanguageFromLearnPath(pathname = "") {
   if (
     pathname.startsWith("/learn/js-fundamentals") ||
     pathname.startsWith("/learn/js-dom") ||
-    pathname.startsWith("/learn/js-web-dev")
+    pathname.startsWith("/learn/js-web-dev") ||
+    pathname.startsWith("/learn/node-npm")
   ) {
     return "javascript";
   }
   if (pathname.startsWith("/learn/php-fundamentals")) {
     return "php";
   }
-  if (pathname.startsWith("/learn/ruby-fundamentals")) {
+  if (
+    pathname.startsWith("/learn/ruby-fundamentals") ||
+    pathname.startsWith("/learn/ruby-gems")
+  ) {
     return "ruby";
   }
   if (pathname.startsWith("/learn/c-sharp-fundamentals")) {

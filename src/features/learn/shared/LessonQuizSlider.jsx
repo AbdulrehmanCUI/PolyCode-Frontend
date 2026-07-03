@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 function InlineText({ text, codeClassName = "numpy-inline-code" }) {
-  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+  const parts = String(text ?? "").split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
   return (
     <>
       {parts.map((part, index) => {

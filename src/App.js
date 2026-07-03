@@ -198,6 +198,12 @@ const JsWebDevHub = lazyWithChunkRetry(
 const JsWebDevLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/js-web-dev/pages/JsWebDevLessonPage"),
 );
+const NodeNpmHub = lazyWithChunkRetry(
+  () => import("./features/learn/node-npm/pages/NodeNpmHub"),
+);
+const NodeNpmLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/node-npm/pages/NodeNpmLessonPage"),
+);
 const CsharpHub = lazyWithChunkRetry(
   () => import("./features/learn/csharp-fundamentals/pages/CsharpHub"),
 );
@@ -224,6 +230,12 @@ const RubyFundamentalsHub = lazyWithChunkRetry(
 const RubyFundamentalsLessonPage = lazyWithChunkRetry(
   () =>
     import("./features/learn/ruby-fundamentals/pages/rubyFundamentalsLessonPage"),
+);
+const RubyGemsHub = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-gems/pages/RubyGemsHub"),
+);
+const RubyGemsLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-gems/pages/RubyGemsLessonPage"),
 );
 
 // ─── C Language Courses ───────────────────────────────────────────────────────
@@ -632,7 +644,8 @@ function AppRoutes() {
     } else if (
       path.startsWith("/learn/js-fundamentals") ||
       path.startsWith("/learn/js-dom") ||
-      path.startsWith("/learn/js-web-dev")
+      path.startsWith("/learn/js-web-dev") ||
+      path.startsWith("/learn/node-npm")
     ) {
       handleLanguageSelect("JavaScript", { stay: true });
     } else if (path.startsWith("/learn/c-sharp-fundamentals")) {
@@ -646,7 +659,10 @@ function AppRoutes() {
       path.startsWith("/learn/dsa-cpp")
     ) {
       handleLanguageSelect("C++", { stay: true });
-    } else if (path.startsWith("/learn/ruby-fundamentals")) {
+    } else if (
+      path.startsWith("/learn/ruby-fundamentals") ||
+      path.startsWith("/learn/ruby-gems")
+    ) {
       handleLanguageSelect("Ruby", { stay: true });
     } else if (
       path.startsWith("/learn/c-fundamentals") ||
@@ -1367,6 +1383,51 @@ function AppRoutes() {
           }
         />
         <Route
+          path="/learn/node-npm"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <NodeNpmHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/node-npm/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <NodeNpmLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/node-npm/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <NodeNpmLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
           path="/learn/c-sharp-fundamentals"
           element={
             <ThemedShell theme={theme}>
@@ -1495,6 +1556,51 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <RubyFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/ruby-gems"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyGemsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/ruby-gems/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyGemsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/ruby-gems/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyGemsLessonPage />
               </LearnShell>
             </ThemedShell>
           }

@@ -234,3 +234,59 @@
 .app.theme-ocean .profile-chart-point:focus-visible {
   fill: var(--accent, #14b8a6);
 }
+
+/* W3 topic overview — inherits theme accent from learn-content palette */
+.app.theme-ocean .main-content.learn-content .lesson-topic-overview--w3 {
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--accent) 8%, transparent),
+      transparent 55%
+    ),
+    rgba(6, 24, 32, 0.92);
+  border-color: color-mix(in srgb, var(--accent) 28%, rgba(45, 212, 191, 0.16));
+  border-left-color: var(--accent);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+}
+
+.app.theme-ocean .main-content.learn-content .lesson-topic-w3-title,
+.app.theme-ocean .main-content.learn-content .lesson-topic-w3-definition,
+.app.theme-ocean .main-content.learn-content .lesson-topic-w3-list li {
+  color: var(--txt-0);
+}
+
+.app.theme-ocean .main-content.learn-content .lesson-topic-w3-section-title,
+.app.theme-ocean .main-content.learn-content .lesson-topic-w3-xp {
+  color: var(--accent);
+}
+
+.app.theme-ocean .main-content.learn-content .lesson-topic-w3-syntax {
+  background: rgba(4, 16, 22, 0.85);
+  border-color: rgba(45, 212, 191, 0.2);
+  border-left-color: var(--accent);
+}
+
+.app.theme-ocean .main-content.learn-content .lesson-topic-w3-cli code {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: color-mix(in srgb, var(--accent) 75%, #ecfeff);
+}
+
+.app.theme-ocean .main-content.learn-content .oops-output-panel {
+  background:
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--accent) 10%, transparent),
+      transparent 40%
+    ),
+    var(--vscode-panel, #0a2430);
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--border));
+}
+
+.app.theme-ocean .main-content.learn-content .oops-output-head {
+  border-bottom-color: color-mix(in srgb, var(--accent) 18%, var(--border));
+}
+
+.app.theme-ocean .main-content.learn-content .oops-theory-output {
+  border-top-color: color-mix(in srgb, var(--accent) 18%, var(--border));
+}

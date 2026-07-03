@@ -5,21 +5,21 @@ import NumpyIntroTheory from "../../numpy-py/components/NumpyIntroTheory";
 import OopsSidebar from "../../oops-cpp/components/OopsSidebar";
 import LearnProfileMenu from "../../shared/LearnProfileMenu";
 import LessonContentShell from "../../shared/LessonContentShell";
-import RubyFundamentalsCodeChallenge from "../components/RubyFundamentalsCodeChallenge";
+import RubyFundamentalsCodeChallenge from "../../ruby-fundamentals/components/RubyFundamentalsCodeChallenge";
 import {
-  RUBY_FUNDAMENTALS_CHAPTERS,
-  RUBY_FUNDAMENTALS_LESSONS,
-  RUBY_FUNDAMENTALS_TOTAL_XP,
-} from "../data/rubyFundamentalsCurriculum";
-import useRubyFundamentalsProgress from "../hooks/useRubyFundamentalsProgress";
+  RUBY_GEMS_CHAPTERS,
+  RUBY_GEMS_LESSONS,
+  RUBY_GEMS_TOTAL_XP,
+} from "../data/rubyGemsCurriculum";
+import useRubyGemsProgress from "../hooks/useRubyGemsProgress";
 import useLessonReadGate from "../../shared/useLessonReadGate";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
 import { useLessonAssistantContext } from "../../../assistant/hooks/useLessonAssistantContext";
 
-const BASE_PATH = "/learn/ruby-fundamentals";
-const READ_GATE_PREFIX = "ruby_fundamentals";
+const BASE_PATH = "/learn/ruby-gems";
+const READ_GATE_PREFIX = "ruby_gems";
 
-export default function RubyFundamentalsLessonPage() {
+export default function RubyGemsLessonPage() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState("theory");
@@ -43,18 +43,16 @@ export default function RubyFundamentalsLessonPage() {
     rememberLesson,
     saveCode,
     toggleBookmark,
-  } = useRubyFundamentalsProgress();
+  } = useRubyGemsProgress();
   const codeSaveTimer = useRef(null);
 
-  const lesson = RUBY_FUNDAMENTALS_LESSONS.find((item) => item.id === lessonId);
-  const lessonIdx = RUBY_FUNDAMENTALS_LESSONS.findIndex(
-    (item) => item.id === lessonId,
-  );
-  const prev = RUBY_FUNDAMENTALS_LESSONS[lessonIdx - 1];
-  const next = RUBY_FUNDAMENTALS_LESSONS[lessonIdx + 1];
+  const lesson = RUBY_GEMS_LESSONS.find((item) => item.id === lessonId);
+  const lessonIdx = RUBY_GEMS_LESSONS.findIndex((item) => item.id === lessonId);
+  const prev = RUBY_GEMS_LESSONS[lessonIdx - 1];
+  const next = RUBY_GEMS_LESSONS[lessonIdx + 1];
 
   useLessonAssistantContext({
-    course: "Ruby Fundamentals",
+    course: "Ruby Gems",
     language: "Ruby",
     lesson,
     chapter: lesson?.chapterTitle,
@@ -80,9 +78,9 @@ export default function RubyFundamentalsLessonPage() {
   if (!lesson) {
     return (
       <div className="oops-not-found">
-        <p>Ruby lesson not found.</p>
+        <p>Ruby Gems lesson not found.</p>
         <button type="button" onClick={() => navigate(BASE_PATH)}>
-          ← Back to Ruby Fundamentals
+          ← Back to Ruby Gems
         </button>
       </div>
     );
@@ -91,7 +89,7 @@ export default function RubyFundamentalsLessonPage() {
   const isCompleted = isAuthenticated && !!progress[lessonId];
   const isBookmarked = bookmarks.includes(lessonId);
   const completedCount = Object.keys(progress).length;
-  const earnedXP = RUBY_FUNDAMENTALS_LESSONS.filter((item) => progress[item.id]).reduce(
+  const earnedXP = RUBY_GEMS_LESSONS.filter((item) => progress[item.id]).reduce(
     (sum, item) => sum + item.xp,
     0,
   );
@@ -112,9 +110,9 @@ export default function RubyFundamentalsLessonPage() {
       <OopsSidebar
         currentLessonId={lessonId}
         progress={progress}
-        chapters={RUBY_FUNDAMENTALS_CHAPTERS}
+        chapters={RUBY_GEMS_CHAPTERS}
         basePath={BASE_PATH}
-        title="Ruby Fundamentals"
+        title="Ruby Gems"
       />
 
       <div className="oops-lesson-main">
@@ -124,7 +122,7 @@ export default function RubyFundamentalsLessonPage() {
             className="oops-back-btn"
             onClick={() => navigate(BASE_PATH)}
           >
-            ← Ruby Fundamentals
+            ← Ruby Gems
           </button>
           <div className="oops-lesson-breadcrumb">
             <span className="learn-lesson-chapter-tag">
@@ -152,16 +150,16 @@ export default function RubyFundamentalsLessonPage() {
           </button>
           <LearnProfileMenu
             user={user}
-            trackTitle="Ruby Fundamentals"
+            trackTitle="Ruby Gems"
             syncLabel={
               isAuthenticated
-                ? "Ruby progress saved to your account"
+                ? "Ruby Gems progress saved to your account"
                 : "Sign in to save progress"
             }
             completedCount={completedCount}
-            totalLessons={RUBY_FUNDAMENTALS_LESSONS.length}
+            totalLessons={RUBY_GEMS_LESSONS.length}
             earnedXP={earnedXP}
-            totalXP={RUBY_FUNDAMENTALS_TOTAL_XP}
+            totalXP={RUBY_GEMS_TOTAL_XP}
             bookmarksCount={bookmarks.length}
             streak={0}
           />
@@ -184,13 +182,14 @@ export default function RubyFundamentalsLessonPage() {
         </div>
 
         <LessonContentShell
-          storageKey={`ruby-fundamentals:${lessonId}`}
+          storageKey={`ruby-gems:${lessonId}`}
           videoUrl={lesson.videoUrl}
-          videoTitle={`${lesson.title} — Ruby`}
+          videoTitle={`${lesson.title} — Ruby Gems`}
         >
           {tab === "theory" ? (
             <NumpyIntroTheory
               lesson={lesson}
+              accentColor={LEARN_ACCENT}
               quizStoragePrefix={READ_GATE_PREFIX}
               confidence={confidence}
               onConfidenceChange={handleConfidenceChange}

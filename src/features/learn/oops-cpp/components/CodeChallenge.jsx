@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import { useAuth } from "../../../auth/context/AuthContext";
-import { getApiBase } from "../../../../config/apiBase";
+import {
+  formatCppOutput,
+  getCppRuntimeError,
+  runCppCode,
+} from "../../shared/runCpp";
 import {
   getVSCodeEditorOptions,
 } from "../../../../shared/utils/monacoTheme";
@@ -28,20 +32,21 @@ export default function CodeChallenge({
   const [showSolution, setShowSolution] = useState(false);
   const [running, setRunning] = useState(false);
   const [submitGeneration, setSubmitGeneration] = useState(0);
-  const activeChallengeId = useRef(challenge.id);
+  const activeChallengeId = useRef(challenge.id ?? challenge.starterCode);
   const runTestsRef = useRef(null);
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
   const fixedSelectionDecorationRef = useRef([]);
   const fixedSelectionRangeRef = useRef(null);
   const { showCelebration, triggerCelebration, dismissCelebration } =
-    useChallengeCelebration(challenge.id);
+    useChallengeCelebration(challenge.id ?? challenge.starterCode);
   const { monacoTheme, beforeMount } = useSiteMonacoTheme();
   useEffect(() => {
-    const challengeChanged = activeChallengeId.current !== challenge.id;
+    const challengeKey = challenge.id ?? challenge.starterCode;
+    const challengeChanged = activeChallengeId.current !== challengeKey;
 
     if (challengeChanged) {
-      activeChallengeId.current = challenge.id;
+      activeChallengeId.current = challengeKey;
       setCode(initialCode || challenge.starterCode);
       setResults(null);
       setOutput(null);
@@ -74,7 +79,13 @@ export default function CodeChallenge({
 
     setTimeout(async () => {
       const expectedOutput = simulateCppOutput(challenge.solutionCode);
-      const diagnostics = getCppDiagnostics(code);
+      const compileOptional = Boolean(challenge.compileOptional);
+      let diagnostics = getCppDiagnostics(code);
+      if (compileOptional) {
+        diagnostics = diagnostics.filter(
+          (message) => !message.includes("int main()"),
+        );
+      }
 
       if (diagnostics.length) {
         const failedTests = challenge.tests.map((test) => ({
@@ -104,62 +115,48 @@ export default function CodeChallenge({
       }
 
       let compilerResult = null;
-      let compilerUnavailable = false;
+      let compilerWarning = "";
+      const shouldCompile = !compileOptional && /\bint\s+main\s*\(/.test(code);
 
-      try {
-        compilerResult = await runCppCodeRemotely(code);
-      } catch (error) {
-        compilerUnavailable = true;
-        console.warn("C++ compiler API unavailable, using local preview:", error);
-      }
+      if (shouldCompile) {
+        try {
+          const { result, runtime } = await runCppCode(code);
+          const runtimeError = getCppRuntimeError(result);
 
-      if (compilerUnavailable) {
-        setResults({
-          passed: false,
-          tests: [
-            {
-              id: "compile",
-              label: "C++ compiler is reachable",
+          if (runtimeError) {
+            setResults({
               passed: false,
-              hint: "Start or deploy the backend compiler API.",
-            },
-            ...challenge.tests.map((test) => ({ ...test, passed: false })),
-          ],
-        });
-        setOutput({
-          status: "fail",
-          stdout:
-            "C++ compiler API is unavailable, so this challenge cannot be verified reliably.\nCheck REACT_APP_API_URL and make sure /api/challenges/run-cpp is deployed.",
-          expected: expectedOutput,
-        });
-        setRunning(false);
-        setSubmitGeneration((value) => value + 1);
-        return;
-      }
+              tests: [
+                {
+                  id: "compile",
+                  label: "C++ compiles before acceptance tests",
+                  passed: false,
+                  hint: "Fix the compiler error shown in Output.",
+                },
+                ...challenge.tests.map((test) => ({ ...test, passed: false })),
+              ],
+            });
+            setOutput({
+              status: "fail",
+              stdout: runtimeError,
+              expected: expectedOutput,
+            });
+            setRunning(false);
+            setSubmitGeneration((value) => value + 1);
+            return;
+          }
 
-      const compilerError =
-        compilerResult?.error || compilerResult?.stderr || "";
-      if (compilerResult && (compilerResult.exitCode !== 0 || compilerError)) {
-        setResults({
-          passed: false,
-          tests: [
-            {
-              id: "compile",
-              label: "C++ compiles before acceptance tests",
-              passed: false,
-              hint: "Fix the compiler error shown in Output.",
-            },
-            ...challenge.tests.map((test) => ({ ...test, passed: false })),
-          ],
-        });
-        setOutput({
-          status: "fail",
-          stdout: compilerError || "Compilation failed.",
-          expected: expectedOutput,
-        });
-        setRunning(false);
-        setSubmitGeneration((value) => value + 1);
-        return;
+          compilerResult = result;
+          if (runtime === "browser") {
+            compilerWarning =
+              "Ran in local browser preview mode (compiler API unavailable).";
+          }
+        } catch (error) {
+          console.warn("C++ compiler API unavailable, using local preview:", error);
+          compilerWarning =
+            error.message ||
+            "Compiler API unavailable — running keyword checks with local preview.";
+        }
       }
 
       const testResults = challenge.tests.map((test) => {
@@ -184,7 +181,9 @@ export default function CodeChallenge({
       setResults({ passed: allPassed, tests: testResults });
       const stdout =
         compilerResult?.stdout?.trimEnd() ||
+        formatCppOutput(compilerResult || {}) ||
         simulatedOutput ||
+        compilerWarning ||
         "Program ran, but no console output was produced.";
       setOutput({
         status: allPassed ? "pass" : "fail",
@@ -313,28 +312,6 @@ export default function CodeChallenge({
         return ["cout"].filter(Boolean);
       default:
         return [];
-    }
-  }
-
-  async function runCppCodeRemotely(source) {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 12000);
-
-    try {
-      const response = await fetch(`${getApiBase()}/challenges/run-cpp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: source }),
-        signal: controller.signal,
-      });
-
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new Error(payload.message || payload.error || "Compiler API failed");
-      }
-      return payload;
-    } finally {
-      clearTimeout(timeout);
     }
   }
 

@@ -2,12 +2,13 @@ import React from "react";
 import RunnableCodeBlock from "../../shared/RunnableCodeBlock";
 import LessonReadGate from "../../shared/LessonReadGate";
 import LessonQuizSlider from "../../shared/LessonQuizSlider";
+import LessonTopicOverview from "../../shared/LessonTopicOverview";
 import { LEARN_ACCENT } from "../../shared/learnAccent";
 import { mapTheoryWithQuizIndices } from "../../shared/lessonQuizUtils";
 import useLessonQuizAttempts from "../../shared/useLessonQuizAttempts";
 
 function InlineText({ text }) {
-  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+  const parts = String(text ?? "").split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
   return (
     <>
       {parts.map((part, index) => {
@@ -607,6 +608,7 @@ export default function NumpyIntroTheory({
   onMarkAsRead = () => {},
   onGoChallenge,
   introVariant = "default",
+  accentColor: accentColorProp,
 }) {
   const {
     preparedLesson,
@@ -618,19 +620,10 @@ export default function NumpyIntroTheory({
   const activeLesson = preparedLesson || lesson;
   const isCourseStart = introVariant === "course-start";
   const accentColor =
-    isCourseStart && activeLesson?.chapterColor
-      ? activeLesson.chapterColor
-      : LEARN_ACCENT;
+    accentColorProp || activeLesson?.chapterColor || LEARN_ACCENT;
   const theoryBase = isCourseStart
     ? activeLesson.theory
     : activeLesson.theory.filter((block) => block.type !== "objectives");
-  const objectivesBlock = activeLesson.theory.find(
-    (block) => block.type === "objectives",
-  );
-  const outcomeItems =
-    activeLesson.outcomes?.length > 0
-      ? activeLesson.outcomes
-      : objectivesBlock?.items || [];
   const introText = theoryBase.find(
     (block) => block.type === "text" && !block.code,
   );
@@ -648,54 +641,47 @@ export default function NumpyIntroTheory({
   let stepCounter = 0;
   let quizSliderRendered = false;
 
+  const hasW3Overview =
+    activeLesson?.topicOverview?.style === "w3" ||
+    Boolean(activeLesson?.topicOverview?.definition);
+
   return (
     <div
-      className={`numpy-intro-theory${isCourseStart ? " numpy-intro-theory--course-start" : ""}`}
+      className={`numpy-intro-theory${isCourseStart ? " numpy-intro-theory--course-start" : ""}${hasW3Overview ? " numpy-intro-theory--w3" : ""}`}
     >
-      {!isCourseStart && outcomeItems.length > 0 && (
-        <section
-          className="numpy-lesson-outcomes numpy-lesson-outcomes-top"
-          style={{ "--numpy-accent": accentColor }}
-          aria-labelledby="numpy-outcomes-heading"
-        >
-          <h2 id="numpy-outcomes-heading" className="numpy-outcomes-heading">
-            Learning outcomes
-          </h2>
-          <ul className="numpy-outcomes-list">
-            {outcomeItems.map((item) => (
-              <li key={item}>
-                <InlineText text={item} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      {!isCourseStart ? (
+        <LessonTopicOverview lesson={activeLesson} accentColor={accentColor} />
+      ) : null}
 
-      <header
-        className="numpy-lesson-hero"
-        style={{ "--numpy-accent": accentColor }}
-      >
-        <span className="numpy-chapter-badge">{activeLesson.chapterTitle}</span>
-        <h2 className="numpy-lesson-title" id="numpy-lesson-heading">
-          {activeLesson.title}
-        </h2>
-        {!isCourseStart && (
+      {!isCourseStart && !hasW3Overview ? (
+        <header
+          className="numpy-lesson-hero"
+          style={{ "--numpy-accent": accentColor }}
+        >
+          <span className="numpy-chapter-badge">{activeLesson.chapterTitle}</span>
+          <h2 className="numpy-lesson-title" id="numpy-lesson-heading">
+            {activeLesson.title}
+          </h2>
           <p className="numpy-lesson-intro-label">Introduction</p>
-        )}
-        <p className="numpy-lesson-hook">
-          {introText?.content ? (
-            <InlineText text={introText.content} />
-          ) : (
-            "We'll explain this idea in plain English — no jargon overload."
-          )}
-        </p>
-      </header>
+          <p className="numpy-lesson-hook">
+            {introText?.content ? (
+              <InlineText text={introText.content} />
+            ) : (
+              "We'll explain this idea in plain English — no jargon overload."
+            )}
+          </p>
+        </header>
+      ) : null}
 
       <div className="numpy-learn-path">
         <div className="numpy-path-label">
-          <span>Your learning path</span>
+          <span>{hasW3Overview ? "Tutorial" : "Your learning path"}</span>
           {!isCourseStart && (
-            <small>Read the idea, then run the code right below it</small>
+            <small>
+              {hasW3Overview
+                ? "Read each section, run the examples, then try the challenge"
+                : "Read the idea, then run the code right below it"}
+            </small>
           )}
         </div>
 

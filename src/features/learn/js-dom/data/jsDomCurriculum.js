@@ -42,7 +42,8 @@ export const JS_DOM_CHAPTERS = [
             "The DOM is a live tree of page elements created by the browser from HTML. JavaScript can read that tree, update attributes, change text, and add or remove elements while the page is open.",
             {
               label: "DOM = page structure in memory",
-              content: `const page = { tag: "body", children: [{ tag: "h1", text: "Hello" }] };`,
+              content: `const page = { tag: "body", children: [{ tag: "h1", text: "Hello" }] };
+console.log(page.children[0].text);`,
             },
           ),
           diagram("HTML → DOM → Browser", [
@@ -264,7 +265,8 @@ console.log(found ? found.tag : "not found");
             {
               label: "Update a heading",
               content: `const heading = document.querySelector('h1');
-heading.textContent = 'New title';`,
+heading.textContent = 'New title';
+console.log(heading.textContent);`,
             },
           ),
           table("Content properties", ["Property", "Use", "Example"], [

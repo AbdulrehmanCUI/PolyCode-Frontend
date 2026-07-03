@@ -232,6 +232,11 @@
   --hero-gradient-end: #e2e8f0;
 }
 
+/* W3 lesson overview — always use the active theme accent, not course brand green */
+.main-content.learn-content .lesson-topic-overview--w3 {
+  --lesson-overview-accent: var(--accent, var(--acid));
+}
+
 .app.theme-light .main-content.learn-content {
   --ink: #f8fafc;
   --ink-2: #ffffff;

@@ -5,7 +5,7 @@ import RunnableCodeBlock from "../../shared/RunnableCodeBlock";
 
 // Minimal markdown bold + inline code renderer
 function InlineText({ text }) {
-  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+  const parts = String(text ?? "").split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
   return (
     <>
       {parts.map((p, i) => {

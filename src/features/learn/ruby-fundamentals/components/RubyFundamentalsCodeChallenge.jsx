@@ -55,16 +55,17 @@ export default function RubyFundamentalsCodeChallenge({
   const [showSolution, setShowSolution] = useState(false);
   const [running, setRunning] = useState(false);
   const [submitGeneration, setSubmitGeneration] = useState(0);
-  const activeChallengeId = useRef(challenge.id);
+  const activeChallengeId = useRef(challenge.id ?? challenge.starterCode);
   const runTestsRef = useRef(null);
   const { showCelebration, triggerCelebration, dismissCelebration } =
-    useChallengeCelebration(challenge.id);
+    useChallengeCelebration(challenge.id ?? challenge.starterCode);
   const { monacoTheme, beforeMount } = useSiteMonacoTheme();
 
   useEffect(() => {
-    const challengeChanged = activeChallengeId.current !== challenge.id;
+    const challengeKey = challenge.id ?? challenge.starterCode;
+    const challengeChanged = activeChallengeId.current !== challengeKey;
     if (challengeChanged) {
-      activeChallengeId.current = challenge.id;
+      activeChallengeId.current = challengeKey;
       setCode(initialCode || challenge.starterCode);
       setResults(null);
       setOutput(null);
@@ -93,7 +94,9 @@ export default function RubyFundamentalsCodeChallenge({
     window.setTimeout(async () => {
       let expectedOutput = "";
       try {
-        const expectedRun = await runRubyCode(challenge.solutionCode);
+        const expectedRun = await runRubyCode(challenge.solutionCode, {
+          learn: true,
+        });
         expectedOutput = formatRubyOutput(expectedRun.result);
       } catch {
         expectedOutput = "";
@@ -101,7 +104,7 @@ export default function RubyFundamentalsCodeChallenge({
 
       let runPayload;
       try {
-        runPayload = await runRubyCode(code);
+        runPayload = await runRubyCode(code, { learn: true });
       } catch (error) {
         setResults(
           buildRuntimeFailureResults(

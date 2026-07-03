@@ -779,8 +779,14 @@
 .app.theme-light .oops-easy-summary > div,
 .app.theme-light .oops-test-cases,
 .app.theme-light .oops-output-panel {
-  background: #f8fafc;
-  border-color: rgba(15, 23, 42, 0.1);
+  background:
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--accent) 6%, transparent),
+      transparent 38%
+    ),
+    #f8fafc;
+  border-color: color-mix(in srgb, var(--accent) 14%, rgba(15, 23, 42, 0.1));
 }
 
 .app.theme-light .profile-activity-cell,

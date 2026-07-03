@@ -1,36 +1,13 @@
-import { DefaultRubyVM } from "@ruby/wasm-wasi/dist/browser";
+import { getApiBase } from "../../../config/apiBase";
+import { loadDefaultRubyVM } from "../../../lib/rubyWasmBrowser";
 
-let rubyVM = null;
+const RUBY_WASM_URL = `${process.env.PUBLIC_URL || ""}/ruby/ruby-stdlib.wasm`;
 
-/**
- * Initializes the Ruby WebAssembly Virtual Machine.
- * Fetches the binary from the local public folder to bypass CORS in production.
- */
-export async function initRubyVM() {
-  if (rubyVM) return;
-  
-  try {
-    const response = await fetch("/ruby.wasm");
-    
-    if (!response.ok) {
-      throw new Error(`Download failed with status: ${response.status}`);
-    }
-
-    const buffer = await response.arrayBuffer();
-    const module = await WebAssembly.compile(buffer);
-    
-    const { vm } = await DefaultRubyVM(module);
-    rubyVM = vm;
-    
-    console.log("💎 PolyCode Ruby WASM Engine loaded successfully!");
-  } catch (error) {
-    console.error("Failed to start the Ruby Engine in initRubyVM:", error);
-    throw error; 
-  }
-}
+let rubyVmPromise = null;
 
 /**
- * Appends display lines so learners see computed values.
+ * Lesson snippets often assign variables without puts/print. Append display lines
+ * so learners still see computed values in the output panel.
  */
 export function prepareRubyLearnCode(code = "") {
   if (/\b(puts|print|pp)\b/.test(code)) {
@@ -38,7 +15,8 @@ export function prepareRubyLearnCode(code = "") {
   }
 
   const names = [];
-  const re = /^\s*([A-Za-z_][\w]*)\s*=/gm;
+  // Only top-level assignments (column 0) — skip locals inside defs/blocks.
+  const re = /^([A-Za-z_][\w]*)\s*=/gm;
   let match;
   while ((match = re.exec(code)) !== null) {
     names.push(match[1]);
@@ -51,73 +29,205 @@ export function prepareRubyLearnCode(code = "") {
   return `${code.replace(/\s*$/, "")}\n\n${trailer}\n`;
 }
 
-/**
- * Runs Ruby code flawlessly in the browser using the WASM VM.
- */
-export async function runRubyCode(code, { learn = false } = {}) {
-  const source = learn ? prepareRubyLearnCode(code) : code;
+function rubyWarningOnly(stderr = "") {
+  const lines = stderr
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  return (
+    lines.length > 0 &&
+    lines.every((line) => /warning:/i.test(line) || line.includes("(polycode)"))
+  );
+}
+
+function buildRubyWrapper(source) {
+  let delim = `POLY_${Math.random().toString(36).slice(2, 12)}`;
+  while (source.includes(delim)) {
+    delim = `POLY_${Math.random().toString(36).slice(2, 12)}`;
+  }
+
+  return `
+require "stringio"
+__polycode_out = StringIO.new
+__polycode_err = StringIO.new
+$stdout = __polycode_out
+$stderr = __polycode_err
+begin
+  eval(<<-'${delim}', binding, "(polycode)")
+${source}
+${delim}
+rescue Exception => e
+  __polycode_err.puts("#{e.class}: #{e.message}")
+  if e.backtrace
+    e.backtrace.first(8).each { |line| __polycode_err.puts(line) }
+  end
+ensure
+  $polycode_stdout = __polycode_out.string
+  $polycode_stderr = __polycode_err.string
+  $stdout = STDOUT
+  $stderr = STDERR
+end
+`;
+}
+
+async function loadRubyWasmModule() {
+  const response = await fetch(RUBY_WASM_URL);
+  if (!response.ok) {
+    throw new Error(
+      "Could not load the in-browser Ruby runtime. Re-run npm start in frontend.",
+    );
+  }
 
   try {
-    if (!rubyVM) await initRubyVM();
-    if (!rubyVM) throw new Error("Ruby WebAssembly environment was not initialized.");
+    return await WebAssembly.compileStreaming(response);
+  } catch (_) {
+    const bytes = await response.arrayBuffer();
+    return WebAssembly.compile(bytes);
+  }
+}
 
-    const wrapperCode = `
-      require 'stringio'
-      $stdout = StringIO.new
-      $stderr = StringIO.new
-      
-      begin
-        eval(<<~'POLYCODE_USER_SCRIPT')
-          ${source}
-        POLYCODE_USER_SCRIPT
-      rescue Exception => e
-        $stderr.puts e.message
-      ensure
-        $polycode_stdout = $stdout.string
-        $polycode_stderr = $stderr.string
-        $stdout = STDOUT
-        $stderr = STDERR
-      end
-    `;
+async function initRubyVM() {
+  if (!rubyVmPromise) {
+    rubyVmPromise = (async () => {
+      const DefaultRubyVM = await loadDefaultRubyVM();
+      const rubyModule = await loadRubyWasmModule();
+      const { vm } = await DefaultRubyVM(rubyModule);
+      return vm;
+    })();
+  }
 
-    rubyVM.eval(wrapperCode);
+  return rubyVmPromise;
+}
 
-    const stdoutBuffer = rubyVM.eval("$polycode_stdout").toString();
-    const stderrBuffer = rubyVM.eval("$polycode_stderr").toString();
-    const codeStatus = stderrBuffer.length > 0 ? 1 : 0;
+function readCapturedOutput(vm) {
+  const stdout = vm.eval("$polycode_stdout")?.toString?.() ?? "";
+  const stderr = vm.eval("$polycode_stderr")?.toString?.() ?? "";
+  return {
+    stdout: stdout.trimEnd(),
+    stderr: stderr.trimEnd(),
+  };
+}
 
-    return {
-      result: {
-        stdout: stdoutBuffer.trim(),
-        stderr: stderrBuffer.trim(),
-        code: codeStatus
-      },
-      runtime: "browser"
-    };
+async function runRubyInBrowser(source) {
+  const vm = await initRubyVM();
+  vm.eval(buildRubyWrapper(source));
+  const { stdout, stderr } = readCapturedOutput(vm);
+  const hasError = stderr && !rubyWarningOnly(stderr);
+  const exitCode = hasError ? 1 : 0;
 
-  } catch (err) {
-    return {
-      result: {
-        stdout: "",
-        stderr: `Initialization/Syntax Error: ${err.message}`,
-        code: 1
-      },
-      runtime: "browser"
-    };
+  return {
+    stdout,
+    stderr,
+    error:
+      exitCode === 0
+        ? null
+        : stderr || `Ruby exited with code ${exitCode}`,
+    exitCode,
+    code: exitCode,
+  };
+}
+
+async function readJsonResponse(response) {
+  const text = await response.text();
+  const trimmed = text.trim();
+  if (!trimmed) return {};
+  if (trimmed.startsWith("<")) {
+    throw new Error(
+      `Server returned HTML instead of JSON (HTTP ${response.status}).`,
+    );
+  }
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    throw new Error("Ruby API returned invalid JSON.");
+  }
+}
+
+async function runRubyOnServer(source) {
+  const endpoints = ["/challenges/run-ruby", "/documents/run-ruby"];
+  let lastError = null;
+
+  for (const path of endpoints) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 45000);
+
+    try {
+      const response = await fetch(`${getApiBase()}${path}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: source }),
+        signal: controller.signal,
+      });
+
+      const payload = await readJsonResponse(response);
+      if (!response.ok) {
+        lastError = new Error(
+          payload.message || payload.error || `Ruby API failed (${path})`,
+        );
+        if (response.status !== 404) {
+          break;
+        }
+        continue;
+      }
+      return payload;
+    } catch (error) {
+      lastError = error;
+      if (error.message?.includes("HTML instead of JSON")) {
+        break;
+      }
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  throw lastError || new Error("Ruby API unavailable");
+}
+
+export async function runRubyCode(code, { learn = false } = {}) {
+  const source = learn ? prepareRubyLearnCode(code) : code;
+  let serverFailure = null;
+
+  try {
+    const result = await runRubyOnServer(source);
+    const runtimeError = getRubyRuntimeError(result);
+    if (!runtimeError) {
+      return { result, runtime: "server" };
+    }
+    serverFailure = new Error(runtimeError);
+  } catch (serverError) {
+    if (serverError.name === "AbortError") {
+      throw new Error("Ruby run timed out. Try shorter code.");
+    }
+    serverFailure = serverError;
+  }
+
+  try {
+    const result = await runRubyInBrowser(source);
+    const runtimeError = getRubyRuntimeError(result);
+    if (runtimeError) {
+      throw new Error(runtimeError);
+    }
+    return { result, runtime: "browser" };
+  } catch (browserError) {
+    throw new Error(
+      browserError.message ||
+        serverFailure?.message ||
+        "Could not run Ruby. Check your connection or try again.",
+    );
   }
 }
 
 export function formatRubyOutput(result = {}) {
-  if (!result) return "";
   return [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
 }
 
 export function getRubyRuntimeError(runResult) {
-  if (!runResult) return "Unknown execution error.";
-  
-  if (runResult.code !== 0 || runResult.stderr) {
-    return runResult.stderr.trim() || `Process exited with code ${runResult.code}.`;
-  }
-  
-  return null;
+  const exitCode = runResult?.exitCode ?? runResult?.code;
+
+  return (
+    runResult?.error ||
+    (exitCode != null && exitCode !== 0
+      ? runResult.stderr || "Ruby exited with an error"
+      : "")
+  );
 }

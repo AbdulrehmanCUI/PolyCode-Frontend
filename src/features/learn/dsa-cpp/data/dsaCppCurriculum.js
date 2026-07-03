@@ -69,6 +69,7 @@ int main() {
         challenge: {
           title: "Estimate Complexity",
           description: "For each snippet, choose the correct Big-O from options (answers in comments).",
+          compileOptional: true,
           starterCode: `#include <iostream>
 
 using namespace std;
@@ -126,6 +127,7 @@ int main()
         challenge: {
           title: "Choose a pattern",
           description: "Given a short problem statement, pick the best pattern (answer in comment).",
+          compileOptional: true,
           starterCode: `// Problem: Given sorted array and target, find pair. // Best pattern:`,
           solutionCode: `// Two pointers`,
           tests: [
