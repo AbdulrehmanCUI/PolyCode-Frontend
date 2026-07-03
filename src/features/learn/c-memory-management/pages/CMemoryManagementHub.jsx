@@ -10,7 +10,32 @@ import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
 
 const BASE_PATH = "/learn/c-memory-management";
-
+const LEARNING_PATH = [
+  {
+    level: "Beginner",
+    chapters: ["ch-0"],
+    color: "#8e44ad",
+    summary: "Stack vs heap, memory segments, and reading addresses with %p.",
+  },
+  {
+    level: "Intermediate",
+    chapters: ["ch-1", "ch-2"],
+    color: "#7d3c98",
+    summary: "malloc, free, calloc, realloc, and NULL checks.",
+  },
+  {
+    level: "Advanced",
+    chapters: ["ch-3"],
+    color: "#6c3483",
+    summary: "Memory leaks, dangling pointers, and buffer overflows.",
+  },
+  {
+    level: "Pro",
+    chapters: ["ch-4"],
+    color: "#5b2c6f",
+    summary: "Dynamic arrays, safe free pattern, and heap string builder capstone.",
+  },
+];
 function lessonPlainText(lesson) {
   return lesson.theory
     .filter((block) => block.type === "text" || block.type === "callout")
@@ -232,7 +257,66 @@ export default function CMemoryManagementHub() {
           <strong>{bookmarks.length}</strong>
         </div>
       </div>
-
+   <section className="matplotlib-learn-path" aria-label="Learning path">
+  <div className="matplotlib-path-label">
+    <span>Your path · Beginner to Pro</span>
+    <small>
+      {C_MEMORY_MANAGEMENT_CHAPTERS.length} chapters ·{" "}
+      {C_MEMORY_MANAGEMENT_LESSONS.length} lessons
+    </small>
+  </div>
+  <div className="matplotlib-path-grid">
+    {LEARNING_PATH.map((stage) => {
+      const stageChapters = C_MEMORY_MANAGEMENT_CHAPTERS.filter((ch) =>
+        stage.chapters.includes(ch.id),
+      );
+      const stageLessons = stageChapters.flatMap((ch) => ch.lessons);
+      const stageDone = stageLessons.filter((l) => progress[l.id]).length;
+      const stagePct =
+        stageLessons.length > 0
+          ? Math.round((stageDone / stageLessons.length) * 100)
+          : 0;
+      return (
+        <article
+          key={stage.level}
+          className="matplotlib-path-card"
+          style={{ "--stage-color": stage.color }}
+        >
+          <header className="matplotlib-path-card-head">
+            <span className="matplotlib-path-level">{stage.level}</span>
+            <span className="matplotlib-path-pct">{stagePct}%</span>
+          </header>
+          <p className="matplotlib-path-summary">{stage.summary}</p>
+          <ul className="matplotlib-path-chapters">
+            {stageChapters.map((ch) => (
+              <li key={ch.id}>
+                <span aria-hidden>{ch.icon}</span>
+                {ch.title}
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            className="matplotlib-path-cta"
+            onClick={() => {
+              const firstOpen =
+                stageLessons.find((l) => !progress[l.id]) || stageLessons[0];
+              if (firstOpen) {
+                navigate(`${BASE_PATH}/lesson/${firstOpen.id}`);
+              }
+            }}
+          >
+            {stageDone === stageLessons.length && stageLessons.length > 0
+              ? "Review stage →"
+              : stageDone > 0
+                ? "Continue stage →"
+                : "Start stage →"}
+          </button>
+        </article>
+      );
+    })}
+  </div>
+</section>
       <LearnChapterPathOverview
         chapters={C_MEMORY_MANAGEMENT_CHAPTERS}
         progress={progress}
