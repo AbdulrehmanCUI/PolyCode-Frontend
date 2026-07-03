@@ -20,7 +20,6 @@ import {
   formatCsharpOutput,
   getCsharpRuntimeError,
 } from "../../learn/shared/runCsharp.js";
-import PolyGuardPanel from "../../polyguard/components/PolyGuardPanel";
 
 const LANGUAGES = [
   {
@@ -298,12 +297,6 @@ export default function TryItSection() {
                     ? output
                     : OUTPUT_HINT}
               </pre>
-              <PolyGuardPanel
-                code={demoCode}
-                language={activeLang.id}
-                variant="learn"
-                resetKey={`${activeLang.id}:${demoCode}`}
-              />
             </div>
           </div>
         </div>

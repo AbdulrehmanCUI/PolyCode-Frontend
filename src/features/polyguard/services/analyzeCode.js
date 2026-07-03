@@ -1,15 +1,11 @@
 import { analyzeCodeLocally } from "../lib/analyzeLocally";
-import { mapPolyGuardApiResponse } from "../lib/mapApiResponse";
+import { enrichPolyGuardAnalysis } from "../lib/enrichAnalysis";
 import { getPolyGuardAnalyzeUrl } from "../config";
 import { toPolyGuardLanguage } from "../lib/mapLanguage";
 
-function isMlApiEnabled() {
-  return process.env.REACT_APP_POLYGUARD_USE_ML === "true";
-}
-
 /**
- * ML API mode: POST /analyze on HuggingFace Space (REACT_APP_POLYGUARD_USE_ML=true).
- * Local mode: browser rules engine (default when USE_ML is not set).
+ * Primary analyzer: local rules engine + lesson context (accurate for learning code).
+ * Optional remote ML augment when REACT_APP_POLYGUARD_REMOTE_AUGMENT=true.
  */
 export async function analyzeCodeWithPolyGuard(
   code,
@@ -22,8 +18,14 @@ export async function analyzeCodeWithPolyGuard(
   }
 
   const lang = toPolyGuardLanguage(language);
+  const local = analyzeCodeLocally(trimmed, lang, options.context || {});
 
-  if (isMlApiEnabled()) {
+  const useRemote = process.env.REACT_APP_POLYGUARD_REMOTE_AUGMENT === "true";
+  if (!useRemote) {
+    return local;
+  }
+
+  try {
     const response = await fetch(getPolyGuardAnalyzeUrl(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -38,15 +40,16 @@ export async function analyzeCodeWithPolyGuard(
     }
 
     if (!response.ok || !payload) {
-      const detail =
-        payload?.detail || `PolyGuard API error (${response.status})`;
-      throw new Error(
-        typeof detail === "string" ? detail : "PolyGuard API request failed.",
-      );
+      return local;
     }
 
-    return mapPolyGuardApiResponse(payload, lang);
+    return enrichPolyGuardAnalysis(payload, {
+      code: trimmed,
+      language: lang,
+      context: options.context || {},
+      baseLocal: local,
+    });
+  } catch {
+    return local;
   }
-
-  return analyzeCodeLocally(trimmed, lang, options.context || {});
 }
