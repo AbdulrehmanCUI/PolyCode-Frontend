@@ -183,6 +183,7 @@ export default function PythonFileHandlingLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`python-file-handling-py:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — Python File Handling`}

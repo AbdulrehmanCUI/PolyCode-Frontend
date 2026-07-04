@@ -183,6 +183,7 @@ export default function MatplotlibLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`matplotlib-py:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — Matplotlib`}

@@ -182,6 +182,7 @@ export default function RubyGemsLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`ruby-gems:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — Ruby Gems`}

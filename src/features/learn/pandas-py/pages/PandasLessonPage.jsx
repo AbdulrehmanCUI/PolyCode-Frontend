@@ -182,6 +182,7 @@ export default function PandasLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`pandas-py:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — Pandas`}

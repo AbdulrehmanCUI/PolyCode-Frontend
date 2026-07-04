@@ -170,6 +170,7 @@ export default function CPointersLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`c_pointers:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — C`}

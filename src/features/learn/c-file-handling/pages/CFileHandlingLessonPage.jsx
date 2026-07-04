@@ -170,6 +170,7 @@ export default function CFileHandlingLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`c_file_handling:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — C`}

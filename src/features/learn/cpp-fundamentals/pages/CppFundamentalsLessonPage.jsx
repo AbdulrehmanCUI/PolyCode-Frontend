@@ -184,6 +184,7 @@ export default function CppFundamentalsLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`cpp-fundamentals:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — C++`}

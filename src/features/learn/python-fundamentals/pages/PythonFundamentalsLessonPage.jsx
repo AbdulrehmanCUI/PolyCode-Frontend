@@ -183,6 +183,7 @@ export default function PythonFundamentalsLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`python-fundamentals:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — Python Fundamentals`}

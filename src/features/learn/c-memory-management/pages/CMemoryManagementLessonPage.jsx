@@ -170,6 +170,7 @@ export default function CMemoryManagementLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`c_memory_management:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — C`}

@@ -181,6 +181,7 @@ export default function JsWebDevLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`js-web-dev:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — JavaScript Web Dev`}

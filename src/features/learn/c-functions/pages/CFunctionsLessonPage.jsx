@@ -170,6 +170,7 @@ export default function CFunctionsLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`c_functions:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — C`}

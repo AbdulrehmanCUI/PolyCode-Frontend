@@ -184,6 +184,7 @@ export default function JsFundamentalsLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`js-fundamentals:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — JavaScript`}
