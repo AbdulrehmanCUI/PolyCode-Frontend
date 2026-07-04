@@ -180,6 +180,7 @@ export default function NodeNpmLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`node-npm:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — Node.js & npm`}

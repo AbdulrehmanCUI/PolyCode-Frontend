@@ -182,6 +182,7 @@ export default function AiLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`aiml-py:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — AI/ML`}

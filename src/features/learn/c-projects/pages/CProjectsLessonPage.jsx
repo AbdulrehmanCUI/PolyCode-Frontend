@@ -170,6 +170,7 @@ export default function CProjectsLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`c_projects:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — C`}

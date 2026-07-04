@@ -184,6 +184,7 @@ export default function RubyFundamentalsLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`ruby-fundamentals:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — Ruby`}

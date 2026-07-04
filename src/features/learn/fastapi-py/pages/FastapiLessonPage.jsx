@@ -182,6 +182,7 @@ export default function FastapiLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`fastapi-py:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — FastAPI`}

@@ -183,6 +183,7 @@ export default function PythonOopLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`python-oop-py:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — Python OOP`}

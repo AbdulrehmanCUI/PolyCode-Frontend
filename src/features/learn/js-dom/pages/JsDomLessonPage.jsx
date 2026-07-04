@@ -181,6 +181,7 @@ export default function JsDomLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`js-dom:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — JavaScript DOM`}

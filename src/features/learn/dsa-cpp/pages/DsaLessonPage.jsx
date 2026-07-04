@@ -109,7 +109,7 @@ export default function DsaLessonPage() {
           <LessonChallengeTab active={tab === "challenge"} locked={challengeTabLocked} xp={lesson.xp} onClick={goToChallenge} />
         </div>
 
-        <LessonContentShell storageKey={`dsa-cpp:${lessonId}`} videoUrl={lesson.videoUrl} videoTitle={`${lesson.title} — DSA C++`}>
+        <LessonContentShell tab={tab} storageKey={`dsa-cpp:${lessonId}`} videoUrl={lesson.videoUrl} videoTitle={`${lesson.title} — DSA C++`}>
           {tab === "theory" ? (
             <NumpyIntroTheory
               lesson={lesson}

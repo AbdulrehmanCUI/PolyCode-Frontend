@@ -89,11 +89,13 @@ function clampFabPosition(x, y, size = 44) {
   };
 }
 
-function loadAnnotations(storageKey) {
-  if (!storageKey) return { strokes: [], labels: [] };
+function annotationStorageKey(storageKey) {
+  return `polycode_annotations_${storageKey}`;
+}
+
+function parseAnnotationPayload(raw) {
+  if (!raw) return { strokes: [], labels: [] };
   try {
-    const raw = localStorage.getItem(`polycode_annotations_${storageKey}`);
-    if (!raw) return { strokes: [], labels: [] };
     const parsed = JSON.parse(raw);
     return {
       strokes: Array.isArray(parsed.strokes) ? parsed.strokes : [],
@@ -104,12 +106,39 @@ function loadAnnotations(storageKey) {
   }
 }
 
+function loadAnnotations(storageKey) {
+  if (!storageKey) return { strokes: [], labels: [] };
+
+  const current = parseAnnotationPayload(
+    localStorage.getItem(annotationStorageKey(storageKey)),
+  );
+  if (current.strokes.length || current.labels.length) {
+    return current;
+  }
+
+  // One-time migrate notes saved before theory/challenge were split.
+  // Old key: "course:lessonId" → new theory key: "course:lessonId:theory"
+  if (storageKey.endsWith(":theory")) {
+    const legacyKey = storageKey.slice(0, -":theory".length);
+    const legacy = parseAnnotationPayload(
+      localStorage.getItem(annotationStorageKey(legacyKey)),
+    );
+    if (legacy.strokes.length || legacy.labels.length) {
+      localStorage.setItem(
+        annotationStorageKey(storageKey),
+        JSON.stringify(legacy),
+      );
+      localStorage.removeItem(annotationStorageKey(legacyKey));
+      return legacy;
+    }
+  }
+
+  return current;
+}
+
 function saveAnnotations(storageKey, data) {
   if (!storageKey) return;
-  localStorage.setItem(
-    `polycode_annotations_${storageKey}`,
-    JSON.stringify(data),
-  );
+  localStorage.setItem(annotationStorageKey(storageKey), JSON.stringify(data));
 }
 
 function getPoint(event, stage) {
@@ -387,13 +416,21 @@ export default function LessonAnnotator({ storageKey, children }) {
   const drawingRef = useRef(false);
   const currentStrokeRef = useRef(null);
   const prefsRef = useRef(loadAnnotationPrefs());
+  /** Only save annotations for the key currently loaded into state. */
+  const loadedKeyRef = useRef(storageKey);
+  /** Skip one save after loading a tab so we never write the previous tab's notes. */
+  const skipNextSaveRef = useRef(true);
 
   const [tool, setTool] = useState(TOOLS.POINTER);
   const [menuOpen, setMenuOpen] = useState(false);
   const [pencilColor, setPencilColor] = useState(prefsRef.current.pencilColor);
   const [laserColor, setLaserColor] = useState(prefsRef.current.laserColor);
-  const [strokes, setStrokes] = useState([]);
-  const [labels, setLabels] = useState([]);
+  const [strokes, setStrokes] = useState(
+    () => loadAnnotations(storageKey).strokes,
+  );
+  const [labels, setLabels] = useState(
+    () => loadAnnotations(storageKey).labels,
+  );
   const [textDraft, setTextDraft] = useState("");
   const [pendingTextPoint, setPendingTextPoint] = useState(null);
   const [laserPoint, setLaserPoint] = useState(null);
@@ -460,11 +497,26 @@ export default function LessonAnnotator({ storageKey, children }) {
 
   useEffect(() => {
     const saved = loadAnnotations(storageKey);
+    skipNextSaveRef.current = true;
+    loadedKeyRef.current = storageKey;
     setStrokes(saved.strokes);
     setLabels(saved.labels);
+    setPendingTextPoint(null);
+    setTextDraft("");
+    setLaserPoint(null);
+    setEditingLabelId(null);
+    drawingRef.current = false;
+    currentStrokeRef.current = null;
   }, [storageKey]);
 
   useEffect(() => {
+    // Avoid writing theory notes into the challenge key (and vice versa)
+    // when the tab changes before state has been swapped.
+    if (loadedKeyRef.current !== storageKey) return;
+    if (skipNextSaveRef.current) {
+      skipNextSaveRef.current = false;
+      return;
+    }
     saveAnnotations(storageKey, { strokes, labels });
   }, [storageKey, strokes, labels]);
 

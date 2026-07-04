@@ -186,6 +186,7 @@ export default function CsharpLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`csharp-fundamentals:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — C#`}

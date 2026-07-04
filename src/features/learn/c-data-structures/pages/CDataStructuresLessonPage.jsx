@@ -170,6 +170,7 @@ export default function CDataStructuresLessonPage() {
         </div>
 
         <LessonContentShell
+          tab={tab}
           storageKey={`c_data_structures:${lessonId}`}
           videoUrl={lesson.videoUrl}
           videoTitle={`${lesson.title} — C`}
