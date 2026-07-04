@@ -1,9 +1,10 @@
 // PolyCode — C# Fundamentals Interactive Course
-// 5 chapters · 13 lessons · Browser sandbox validation
+// 6 chapters · 20 lessons · Browser sandbox validation
 // Extended reference architectures live in the backend Docs Hub
 
 import { applyLessonVideoLinks } from "../../shared/applyLessonVideoLinks";
 import { CSHARP_VIDEO_LINKS } from "./csharpVideoLinks";
+import { applyChapterEnhancements } from "./csharpLessonEnhancements";
 
 const ACCENT = "#179c24"; // Distinct .NET Green branding color
 
@@ -30,7 +31,7 @@ function diagram(title, nodes) {
   return { type: "diagram", title, nodes };
 }
 
-export const CSHARP_CHAPTERS = [
+const RAW_CSHARP_CHAPTERS = [
   {
     id: "basics",
     title: "C# Basics & Console I/O",
@@ -256,7 +257,7 @@ class Program {
         xp: 12,
         theory: [
           text(
-            "Conditionals dictate execution path tracking using boolean evaluation targets. Relational checks match typical operators (`==`, `!=`, `>`, `<`, `>=`, `<=`).",
+            "**Conditionals** choose which code runs based on a boolean expression. Relational operators (`==`, `!=`, `>`, `<`, `>=`, `<=`) compare values and produce true or false.",
             {
               label: "Conditional evaluation branching chains",
               content: `int life = 75;
@@ -279,7 +280,7 @@ string rank = points > 100 ? "Pro" : "Rookie";`,
             }
           ),
           quiz(
-            "Which logical combination evaluation checks if both statements are simultaneously true?",
+            "Which operator checks that both conditions are true?",
             ["||", "&&", "!", "=="],
             1,
             "The short-circuit AND operator (&&) verifies compound conditions.",
@@ -341,10 +342,10 @@ Console.WriteLine(productType);`,
             "The discard operator token (`_`) functions identically to a classic standard `default:` evaluation break case.",
           ),
           quiz(
-            "What special discard literal token acts as the catch-all default fallback inside a switch expression pattern?",
+            "Which token is the catch-all default in a switch expression?",
             ["*", "default", "=>", "_"],
             3,
-            "The underscore symbol (_) maps structural default fallback configurations.",
+            "The underscore (_) matches any value not covered by earlier arms.",
           ),
         ],
         challenge: {
@@ -506,7 +507,7 @@ class Program {
         xp: 14,
         theory: [
           text(
-            "The **`foreach` loop** is a safe, clean alternative for stepping across list containers. It eliminates the need for manual counter trackers and index variable evaluations.",
+            "The **`foreach` loop** walks every element in a collection without managing an index yourself. It is the idiomatic way to read arrays and lists.",
             {
               label: "Iterating elements inside structural lists cleanly",
               content: `string[] skillTree = { "Melee", "Magic", "Stealth" };
@@ -518,12 +519,12 @@ foreach (string skill in skillTree) {
           ),
           callout(
             "warning",
-            "The collection loop variable inside a `foreach` engine configuration loop context is completely **read-only** and cannot be reassigned.",
+            "The loop variable in `foreach` is **read-only** — you cannot assign a new value to it inside the loop.",
           ),
         ],
         challenge: {
           title: "Summing Arrays Cleanly",
-          description: "Construct a `foreach` tracking configuration loop passing integers out of `pointsArray`, adding them sequentially to variable `total`.",
+          description: "Use a `foreach` loop over `pointsArray` to add each value to `total`.",
           starterCode: `using System;
 
 class Program {
@@ -559,7 +560,7 @@ class Program {
         xp: 16,
         theory: [
           text(
-            "When compilation requirements necessitate data containers that resize dynamically, drop static structures and transition to **`List<T>`**. This tracking collection uses **Generics** parameters inside angle brackets.",
+            "When you need a collection that grows or shrinks at runtime, use **`List<T>`**. The type inside angle brackets (`T`) tells the list what it stores — for example `List<string>` or `List<int>`.",
             {
               label: "Instantiating dynamic Generic arrays lists profiles",
               content: `using System.Collections.Generic;
@@ -574,7 +575,7 @@ Console.WriteLine(guestList.Count); // Outputs 1`,
           ),
           callout(
             "tip",
-            "While arrays query length using `.Length`, Generic List configuration modules query item sizes using **`.Count`** properties instead.",
+            "Arrays use `.Length`; `List<T>` uses **`.Count`** to report how many elements are stored.",
           ),
           quiz(
             "Which foundational import directive unlocks generic namespace structures such as List collections?",
@@ -752,9 +753,9 @@ class Program {
         xp: 14,
         theory: [
           text(
-            "Classes serve as **blueprints** modeling layout variables configurations. Objects represent distinct concrete **instances** of those blueprints created using the `new` keyword parameter configurations.",
+            "A **class** is a blueprint; an **object** is a concrete instance created with `new`. Fields on the object hold that instance's data.",
             {
-              label: "Constructing classes tracking properties and allocations",
+              label: "Defining a class and creating an object",
               content: `class Wizard {
     public string name;
     public int spellPower;
@@ -771,13 +772,13 @@ class Program {
           ),
           callout(
             "info",
-            "The access modifier keyword **`public`** opens attribute access tracking fields so external components can interact with them freely.",
+            "The **`public`** modifier lets code outside the class read and write that field.",
           ),
           quiz(
-            "Which keyword is invoked to instantiate a fresh concrete object configuration instance out of an existing blueprint class template?",
+            "Which keyword creates a new object from a class?",
             ["create", "make", "new", "bind"],
             2,
-            "The new keyword instantiates an instance object allocation in system memory profiles.",
+            "`new` allocates an instance and runs any constructor.",
           ),
         ],
         challenge: {
@@ -817,13 +818,12 @@ class Program {
         xp: 16,
         theory: [
           text(
-            "**Constructors** are specialized method layout systems that trigger automatically the moment an object is created. They share the exact same identifier name as their parent Class.",
+            "A **constructor** is a special method with the same name as the class. It runs automatically when you create an object and is the right place to set initial field values.",
             {
-              label: "Constructors initialization parameters assignments configurations",
+              label: "Parameterized constructor",
               content: `class Character {
     public string label;
 
-    // Parameterized constructor configuration layout profile
     public Character(string startLabel) {
         label = startLabel;
     }
@@ -831,11 +831,10 @@ class Program {
             }
           ),
           text(
-            "C# **Properties** use automatic shorthand templates `{ get; set; }` to protect internal variables, controlling how values are read or overwritten.",
+            "**Properties** wrap fields with `{ get; set; }` so outside code reads and writes through a controlled accessor instead of a public field.",
             {
-              label: "Shorthand encapsulation configuration layout parameters",
+              label: "Auto-property encapsulation",
               content: `class BankAccount {
-    // Encapsulated data control property assignments metrics configurations
     public double Balance { get; set; }
 }`,
             }
@@ -888,7 +887,524 @@ class Program {
       },
     ],
   },
+  {
+    id: "intermediate",
+    title: "Intermediate C#",
+    icon: "⚙️",
+    color: "#2563eb",
+    lessons: [
+      {
+        id: "cs-13",
+        title: "Dictionary & Key-Value Collections",
+        xp: 16,
+        theory: [
+          text(
+            "A **`Dictionary<TKey, TValue>`** maps unique keys to values — ideal for lookups by ID, SKU, or username. Average lookup is O(1).",
+            {
+              label: "Dictionary basics",
+              content: `using System.Collections.Generic;
+
+Dictionary<string, int> prices = new Dictionary<string, int>();
+prices["SWORD"] = 150;
+prices["SHIELD"] = 90;
+
+Console.WriteLine(prices["SWORD"]); // 150
+Console.WriteLine(prices.Count);`,
+            }
+          ),
+          diagram("List vs Dictionary", [
+            {
+              id: "list",
+              label: "List<T>",
+              color: "#fb923c",
+              items: ["Ordered sequence", "Index by position", "Duplicates allowed"],
+            },
+            {
+              id: "dict",
+              label: "Dictionary<K,V>",
+              color: "#2563eb",
+              items: ["Key → value map", "Fast lookup by key", "Keys must be unique"],
+            },
+          ]),
+          callout(
+            "warning",
+            "Reading a missing key with `dict[key]` throws **KeyNotFoundException**. Use `TryGetValue` or `ContainsKey` when the key might not exist.",
+          ),
+          quiz(
+            "Which collection is best for mapping product SKU strings to prices?",
+            ["List<string>", "Dictionary<string, int>", "bool[]", "char"],
+            1,
+            "Dictionaries are designed for key-based lookup.",
+          ),
+        ],
+        challenge: {
+          title: "Build a Price Lookup",
+          description:
+            "Create `Dictionary<string, int> catalog`, add key `\"POTION\"` with value `25`, then print the value for `\"POTION\"` with `Console.WriteLine`.",
+          starterCode: `using System;
+using System.Collections.Generic;
+
+class Program {
+    static void Main() {
+        // Create catalog, add POTION -> 25, print the price
+    }
+}`,
+          solutionCode: `using System;
+using System.Collections.Generic;
+
+class Program {
+    static void Main() {
+        Dictionary<string, int> catalog = new Dictionary<string, int>();
+        catalog["POTION"] = 25;
+        Console.WriteLine(catalog["POTION"]);
+    }
+}`,
+          tests: [
+            { id: 1, label: "Uses Dictionary", keywords: [{ pattern: "Dictionary\\s*<\\s*string\\s*,\\s*int\\s*>" }] },
+            { id: 2, label: "Adds POTION key", keywords: [{ pattern: "[\"']POTION[\"']" }] },
+            { id: 3, label: "Prints catalog value", keywords: [{ pattern: "Console\\.WriteLine\\s*\\(\\s*catalog\\s*\\[" }] },
+          ],
+        },
+      },
+      {
+        id: "cs-14",
+        title: "LINQ Basics",
+        xp: 18,
+        theory: [
+          text(
+            "**LINQ** (Language Integrated Query) filters and transforms collections with readable method chains. Common starters: `Where`, `Select`, and `OrderBy`.",
+            {
+              label: "Filter and project with LINQ",
+              content: `using System.Linq;
+
+int[] scores = { 40, 85, 92, 55 };
+var passing = scores.Where(s => s >= 60).ToList();
+
+foreach (int s in passing) {
+    Console.WriteLine(s);
+}`,
+            }
+          ),
+          diagram("LINQ pipeline", [
+            {
+              id: "source",
+              label: "Source data",
+              color: ACCENT,
+              items: ["Array, List, IEnumerable"],
+            },
+            {
+              id: "where",
+              label: "Where",
+              color: "#2563eb",
+              items: ["Filter items", "Keep matches only"],
+            },
+            {
+              id: "select",
+              label: "Select",
+              color: "#7c3aed",
+              items: ["Transform each item", "Project to new shape"],
+            },
+          ]),
+          callout(
+            "tip",
+            "Add `using System.Linq;` at the top. LINQ methods work on any `IEnumerable<T>`.",
+          ),
+          quiz(
+            "Which LINQ method keeps only elements that match a condition?",
+            ["Select", "Where", "OrderBy", "Count"],
+            1,
+            "`Where` filters; `Select` transforms.",
+          ),
+        ],
+        challenge: {
+          title: "Filter High Scores",
+          description:
+            "Given `int[] scores = { 30, 70, 95, 50 };`, use LINQ `Where` to keep scores >= 60, call `.Count()` on the result, and print the count.",
+          starterCode: `using System;
+using System.Linq;
+
+class Program {
+    static void Main() {
+        int[] scores = { 30, 70, 95, 50 };
+        // Use Where and Count, then print
+    }
+}`,
+          solutionCode: `using System;
+using System.Linq;
+
+class Program {
+    static void Main() {
+        int[] scores = { 30, 70, 95, 50 };
+        int count = scores.Where(s => s >= 60).Count();
+        Console.WriteLine(count);
+    }
+}`,
+          tests: [
+            { id: 1, label: "Uses Where", keywords: [{ pattern: "\\.Where\\s*\\(" }] },
+            { id: 2, label: "Uses Count", keywords: [{ pattern: "\\.Count\\s*\\(" }] },
+            { id: 3, label: "Prints result", keywords: [{ pattern: "Console\\.WriteLine" }] },
+          ],
+        },
+      },
+      {
+        id: "cs-15",
+        title: "Exception Handling",
+        xp: 16,
+        theory: [
+          text(
+            "When something goes wrong at runtime, C# throws an **exception**. Wrap risky code in `try` / `catch` so your program can recover or show a helpful message instead of crashing.",
+            {
+              label: "try / catch pattern",
+              content: `try {
+    int value = int.Parse("not-a-number");
+} catch (FormatException ex) {
+    Console.WriteLine("Invalid number: " + ex.Message);
+}`,
+            }
+          ),
+          callout(
+            "warning",
+            "Catch **specific** exception types when you can. A bare `catch (Exception)` works but hides which failure mode occurred.",
+          ),
+          quiz(
+            "Which block runs when int.Parse fails on non-numeric text?",
+            ["try", "catch", "finally only", "Main"],
+            1,
+            "The matching catch block handles the thrown exception.",
+          ),
+        ],
+        challenge: {
+          title: "Safe Parse",
+          description:
+            "In a try/catch, parse `string raw = \"42\"` with `int.Parse` into `int n` and print `n`. Catch `FormatException` and print `\"invalid\"`.",
+          starterCode: `using System;
+
+class Program {
+    static void Main() {
+        string raw = "42";
+        // try parse, catch FormatException
+    }
+}`,
+          solutionCode: `using System;
+
+class Program {
+    static void Main() {
+        string raw = "42";
+        try {
+            int n = int.Parse(raw);
+            Console.WriteLine(n);
+        } catch (FormatException) {
+            Console.WriteLine("invalid");
+        }
+    }
+}`,
+          tests: [
+            { id: 1, label: "Uses try/catch", keywords: [{ pattern: "try\\s*\\{" }, { pattern: "catch\\s*\\(" }] },
+            { id: 2, label: "Parses with int.Parse", keywords: [{ pattern: "int\\.Parse" }] },
+            { id: 3, label: "Catches FormatException", keywords: [{ pattern: "FormatException" }] },
+          ],
+        },
+      },
+      {
+        id: "cs-16",
+        title: "async / await Intro",
+        xp: 18,
+        theory: [
+          text(
+            "**async** methods can **await** tasks that represent work finishing later — often network or file I/O. While awaiting, the thread is not blocked waiting on the slow operation.",
+            {
+              label: "Minimal async method",
+              content: `using System.Threading.Tasks;
+
+static async Task<int> FetchValueAsync() {
+    await Task.Delay(100); // simulates I/O
+    return 42;
+}
+
+static async Task Main() {
+    int result = await FetchValueAsync();
+    Console.WriteLine(result);
+}`,
+            }
+          ),
+          diagram("async flow", [
+            {
+              id: "start",
+              label: "Call async method",
+              color: ACCENT,
+              items: ["Returns Task or Task<T>"],
+            },
+            {
+              id: "await",
+              label: "await",
+              color: "#2563eb",
+              items: ["Pause until work completes", "Thread can do other work"],
+            },
+            {
+              id: "resume",
+              label: "Resume",
+              color: "#7c3aed",
+              items: ["Continue after result", "Use return value"],
+            },
+          ]),
+          callout(
+            "info",
+            "Mark the calling method `async` and use `await` on tasks inside it. `Task.Delay` is a stand-in for real I/O in exercises.",
+          ),
+          quiz(
+            "What does await do inside an async method?",
+            ["Deletes the task", "Waits for the task without blocking the thread unnecessarily", "Compiles synchronously", "Throws always"],
+            1,
+            "await suspends the async method until the task completes, then resumes with the result.",
+          ),
+        ],
+        challenge: {
+          title: "Await a Task",
+          description:
+            "Write `static async Task<int> GetMagicNumber()` that awaits `Task.Delay(1)` and returns `7`. In `static async Task Main()`, await it and print the result.",
+          starterCode: `using System;
+using System.Threading.Tasks;
+
+class Program {
+  // TODO: GetMagicNumber and async Main
+}`,
+          solutionCode: `using System;
+using System.Threading.Tasks;
+
+class Program {
+    static async Task<int> GetMagicNumber() {
+        await Task.Delay(1);
+        return 7;
+    }
+
+    static async Task Main() {
+        int n = await GetMagicNumber();
+        Console.WriteLine(n);
+    }
+}`,
+          tests: [
+            { id: 1, label: "Defines async Task method", keywords: [{ pattern: "async\\s+Task" }] },
+            { id: 2, label: "Uses await", keywords: [{ pattern: "await\\s+" }] },
+            { id: 3, label: "Prints result", keywords: [{ pattern: "Console\\.WriteLine" }] },
+          ],
+        },
+      },
+      {
+        id: "cs-17",
+        title: "Interfaces",
+        xp: 16,
+        theory: [
+          text(
+            "An **interface** defines a contract — method signatures without bodies. Classes **implement** interfaces to promise they provide those members.",
+            {
+              label: "Interface and implementation",
+              content: `interface ILogger {
+    void Log(string message);
+}
+
+class ConsoleLogger : ILogger {
+    public void Log(string message) {
+        Console.WriteLine(message);
+    }
+}`,
+            }
+          ),
+          callout(
+            "tip",
+            "Program against `ILogger`, not `ConsoleLogger`, so you can swap implementations without changing callers.",
+          ),
+          quiz(
+            "Which keyword does a class use to adopt an interface?",
+            [":", "implements", "extends", "using"],
+            0,
+            "C# uses colon syntax: `class Foo : IBar`.",
+          ),
+        ],
+        challenge: {
+          title: "Implement IGreeter",
+          description:
+            "Define `interface IGreeter { string Greet(string name); }`. Implement it on class `FriendlyGreeter` returning `$\"Hello, {name}!\"`. In Main, create `IGreeter g = new FriendlyGreeter();` and print `g.Greet(\"PolyCode\")`.",
+          starterCode: `using System;
+
+// TODO: IGreeter, FriendlyGreeter, Main
+
+class Program {
+    static void Main() {
+    }
+}`,
+          solutionCode: `using System;
+
+interface IGreeter {
+    string Greet(string name);
+}
+
+class FriendlyGreeter : IGreeter {
+    public string Greet(string name) {
+        return $"Hello, {name}!";
+    }
+}
+
+class Program {
+    static void Main() {
+        IGreeter g = new FriendlyGreeter();
+        Console.WriteLine(g.Greet("PolyCode"));
+    }
+}`,
+          tests: [
+            { id: 1, label: "Defines IGreeter", keywords: [{ pattern: "interface\\s+IGreeter" }] },
+            { id: 2, label: "Implements interface", keywords: [{ pattern: ":\\s*IGreeter" }] },
+            { id: 3, label: "Prints greeting", keywords: [{ pattern: "Console\\.WriteLine" }, { pattern: "PolyCode" }] },
+          ],
+        },
+      },
+      {
+        id: "cs-18",
+        title: "Generics Intro",
+        xp: 16,
+        theory: [
+          text(
+            "**Generics** let you write code once and reuse it with different types. `List<int>` and `List<string>` share one `List<T>` definition — the compiler fills in `T` for you.",
+            {
+              label: "Generic method",
+              content: `static void Swap<T>(ref T a, ref T b) {
+    T temp = a;
+    a = b;
+    b = temp;
+}`,
+            }
+          ),
+          diagram("Generic type parameter", [
+            {
+              id: "def",
+              label: "List<T>",
+              color: ACCENT,
+              items: ["T is a placeholder", "Defined once in library"],
+            },
+            {
+              id: "int",
+              label: "List<int>",
+              color: "#2563eb",
+              items: ["T becomes int", "Type-safe at compile time"],
+            },
+            {
+              id: "str",
+              label: "List<string>",
+              color: "#7c3aed",
+              items: ["T becomes string", "No casting needed"],
+            },
+          ]),
+          quiz(
+            "Why prefer List<int> over ArrayList for integers?",
+            ["Generics avoid boxing and casting", "ArrayList is faster", "List cannot resize", "Generics are slower"],
+            0,
+            "Generic collections preserve type safety and skip boxing for value types.",
+          ),
+        ],
+        challenge: {
+          title: "Generic Identity",
+          description:
+            "Write `static T Identity<T>(T value)` that returns `value`. In Main, call `Identity<int>(99)` and print the result.",
+          starterCode: `using System;
+
+class Program {
+    // TODO: Identity<T> and Main
+}`,
+          solutionCode: `using System;
+
+class Program {
+    static T Identity<T>(T value) {
+        return value;
+    }
+
+    static void Main() {
+        Console.WriteLine(Identity<int>(99));
+    }
+}`,
+          tests: [
+            { id: 1, label: "Generic method", keywords: [{ pattern: "Identity\\s*<\\s*T\\s*>" }] },
+            { id: 2, label: "Returns value", keywords: [{ pattern: "return\\s+value" }] },
+            { id: 3, label: "Calls with int", keywords: [{ pattern: "Identity\\s*<\\s*int\\s*>\\s*\\(\\s*99" }] },
+          ],
+        },
+      },
+      {
+        id: "cs-19",
+        title: "File I/O with StreamReader",
+        xp: 18,
+        theory: [
+          text(
+            "**StreamReader** reads text files line by line. Wrap it in a **`using`** statement so the file is closed automatically when the block ends.",
+            {
+              label: "Read all lines",
+              content: `using System.IO;
+
+using (StreamReader reader = new StreamReader("notes.txt")) {
+    string line;
+    while ((line = reader.ReadLine()) != null) {
+        Console.WriteLine(line);
+    }
+}`,
+            }
+          ),
+          callout(
+            "tip",
+            "`File.ReadAllText` is fine for small files. `StreamReader` is better when you process one line at a time or files may be large.",
+          ),
+          quiz(
+            "Why use `using` with StreamReader?",
+            ["It makes files read faster", "It disposes the file handle when done", "It converts bytes to strings", "It is required for async only"],
+            1,
+            "`using` calls Dispose on the reader so the OS file handle is released.",
+          ),
+        ],
+        challenge: {
+          title: "Count Non-Empty Lines",
+          description:
+            "Write `static int CountLines(string path)` that opens a `StreamReader` with `using`, counts lines where `ReadLine()` is not null and not empty, and returns the count. (Body can use a while loop.)",
+          starterCode: `using System;
+using System.IO;
+
+class Program {
+    static int CountLines(string path) {
+        // TODO: StreamReader + using + count non-empty lines
+        return 0;
+    }
+
+    static void Main() {
+        Console.WriteLine(CountLines("data.txt"));
+    }
+}`,
+          solutionCode: `using System;
+using System.IO;
+
+class Program {
+    static int CountLines(string path) {
+        int count = 0;
+        using (StreamReader reader = new StreamReader(path)) {
+            string line;
+            while ((line = reader.ReadLine()) != null) {
+                if (line.Length > 0) count++;
+            }
+        }
+        return count;
+    }
+
+    static void Main() {
+        Console.WriteLine(CountLines("data.txt"));
+    }
+}`,
+          tests: [
+            { id: 1, label: "Uses StreamReader", keywords: [{ pattern: "StreamReader" }] },
+            { id: 2, label: "Uses using statement", keywords: [{ pattern: "using\\s*\\(" }] },
+            { id: 3, label: "Reads with ReadLine", keywords: [{ pattern: "ReadLine\\s*\\(" }] },
+          ],
+        },
+      },
+    ],
+  },
 ];
+
+export const CSHARP_CHAPTERS = applyChapterEnhancements(RAW_CSHARP_CHAPTERS);
 
 export const CSHARP_LESSONS = applyLessonVideoLinks(
   CSHARP_CHAPTERS.flatMap((ch) =>

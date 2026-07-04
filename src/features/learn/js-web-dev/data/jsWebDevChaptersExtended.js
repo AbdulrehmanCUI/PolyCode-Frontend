@@ -1,4 +1,4 @@
-// Chapters 6–11: Dynamic DOM → Advanced Web → Graduation (lessons jsweb-15 … jsweb-29)
+// Chapters 6–11: Dynamic DOM → Advanced Web → Graduation (lessons jsweb-23 … jsweb-33)
 
 import {
   quiz,
@@ -24,7 +24,7 @@ export const JS_WEB_DEV_EXTENDED_CHAPTERS = [
     color: DYNAMIC_COLOR,
     lessons: [
       {
-        id: "jsweb-15",
+        id: "jsweb-19",
         title: "Creating Elements",
         xp: 16,
         theory: [
@@ -89,7 +89,7 @@ console.log(todo.classList.length);`,
         },
       },
       {
-        id: "jsweb-16",
+        id: "jsweb-20",
         title: "Rendering Lists",
         xp: 17,
         theory: [
@@ -154,7 +154,7 @@ console.log(renderTodos(todos).length);`,
         },
       },
       {
-        id: "jsweb-17",
+        id: "jsweb-21",
         title: "Document Fragments",
         xp: 16,
         theory: [
@@ -218,7 +218,7 @@ console.log(next.children.length);`,
     color: TIMING_COLOR,
     lessons: [
       {
-        id: "jsweb-18",
+        id: "jsweb-22",
         title: "Debounce & Throttle",
         xp: 18,
         theory: [
@@ -285,7 +285,7 @@ run();`,
         },
       },
       {
-        id: "jsweb-19",
+        id: "jsweb-23",
         title: "Loading & Empty States",
         xp: 16,
         theory: [
@@ -336,7 +336,7 @@ console.log(getViewState({ loading: false, error: null, items: [] }));`,
         },
       },
       {
-        id: "jsweb-20",
+        id: "jsweb-24",
         title: "Smooth Animation",
         xp: 17,
         theory: [
@@ -377,6 +377,7 @@ console.log(lerp(0, 100, 0.5));`,
           tests: [
             { id: 1, label: "Defines lerp", keywords: [{ pattern: "function\\s+lerp" }] },
             { id: 2, label: "Logs 50", keywords: [{ pattern: "console\\.log\\s*\\(\\s*50" }] },
+            { id: 3, label: "Uses subtraction for lerp", keywords: [{ pattern: "end - start|start - end" }] },
           ],
         },
       },
@@ -389,7 +390,7 @@ console.log(lerp(0, 100, 0.5));`,
     color: URLS_COLOR,
     lessons: [
       {
-        id: "jsweb-21",
+        id: "jsweb-25",
         title: "Query Strings",
         xp: 15,
         theory: [
@@ -440,7 +441,7 @@ console.log(toQuery({ q: "dom", page: 2 }));`,
         },
       },
       {
-        id: "jsweb-22",
+        id: "jsweb-26",
         title: "Client-Side Routing",
         xp: 18,
         theory: [
@@ -485,7 +486,8 @@ function matchRoute(routes, path) {
 console.log(matchRoute(routes, "/about"));`,
           tests: [
             { id: 1, label: "Defines matchRoute", keywords: [{ pattern: "function\\s+matchRoute" }] },
-            { id: 2, label: "Logs about", keywords: [{ pattern: "console\\.log.*about" }] },
+            { id: 2, label: "Returns route or not-found", keywords: [{ pattern: "not-found|routes\\[path\\]" }] },
+            { id: 3, label: "Logs about", keywords: [{ pattern: "console\\.log.*about" }] },
           ],
         },
       },
@@ -498,7 +500,7 @@ console.log(matchRoute(routes, "/about"));`,
     color: A11Y_COLOR,
     lessons: [
       {
-        id: "jsweb-23",
+        id: "jsweb-27",
         title: "Semantic HTML & ARIA",
         xp: 16,
         theory: [
@@ -550,7 +552,7 @@ console.log(buttonProps("Save").ariaLabel);`,
         },
       },
       {
-        id: "jsweb-24",
+        id: "jsweb-28",
         title: "Focus & Keyboard",
         xp: 17,
         theory: [
@@ -608,7 +610,7 @@ console.log(isFocusable({ tag: "div" }));`,
     color: SECURITY_COLOR,
     lessons: [
       {
-        id: "jsweb-25",
+        id: "jsweb-29",
         title: "XSS Prevention",
         xp: 18,
         theory: [
@@ -654,7 +656,7 @@ console.log(escapeHtml("<script>"));`,
         },
       },
       {
-        id: "jsweb-26",
+        id: "jsweb-30",
         title: "Safe Data Flow",
         xp: 17,
         theory: [
@@ -712,7 +714,7 @@ console.log(sanitizeComment(long).length);`,
     color: ADVANCED_COLOR,
     lessons: [
       {
-        id: "jsweb-27",
+        id: "jsweb-31",
         title: "Custom Events",
         xp: 18,
         theory: [
@@ -763,7 +765,7 @@ bus.emit("saved", { id: 42 });`,
         },
       },
       {
-        id: "jsweb-28",
+        id: "jsweb-32",
         title: "Observers & Lifecycle",
         xp: 19,
         theory: [
@@ -826,7 +828,7 @@ c.run();`,
         },
       },
       {
-        id: "jsweb-29",
+        id: "jsweb-33",
         title: "Capstone: Mini Dashboard",
         xp: 25,
         theory: [

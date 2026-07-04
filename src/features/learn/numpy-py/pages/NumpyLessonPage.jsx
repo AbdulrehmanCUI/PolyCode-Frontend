@@ -1,7 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { LEARN_ACCENT } from "../../shared/learnAccent";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ConceptCard from "../../oops-cpp/components/ConceptCard";
 import NumpyIntroTheory from "../components/NumpyIntroTheory";
 import OopsSidebar from "../../oops-cpp/components/OopsSidebar";
 import LearnProfileMenu from "../../shared/LearnProfileMenu";
@@ -16,47 +14,10 @@ import useNumpyProgress from "../hooks/useNumpyProgress";
 import useLessonReadGate from "../../shared/useLessonReadGate";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
 import { useLessonAssistantContext } from "../../../assistant/hooks/useLessonAssistantContext";
+import { LEARN_ACCENT } from "../../shared/learnAccent";
 
 const BASE_PATH = "/learn/numpy-py";
 const READ_GATE_PREFIX = "numpy_py";
-
-function plainLessonText(text = "") {
-  return text.replace(/\*\*/g, "").replace(/`/g, "");
-}
-
-function getLessonPlainBlocks(lesson) {
-  return lesson.theory
-    .filter((block) => block.type === "text" || block.type === "callout")
-    .map((block) => plainLessonText(block.content));
-}
-
-function getReadableSummary(lesson) {
-  const blocks = getLessonPlainBlocks(lesson);
-  return {
-    plain:
-      blocks[0] ||
-      `${lesson.title} is a core NumPy idea for numeric Python.`,
-    why: `${lesson.title} helps you write faster, clearer data code without slow Python loops.`,
-    analogy:
-      blocks[1] ||
-      "Think of an ndarray as a spreadsheet column stored efficiently in memory.",
-  };
-}
-
-function getKeyTerms(lesson) {
-  const terms = new Set();
-  const source = `${lesson.title} ${getLessonPlainBlocks(lesson).join(" ")} ${
-    lesson.challenge.description
-  }`.toLowerCase();
-
-  ["numpy", "ndarray", "array", "shape", "dtype", "vector", "broadcast"].forEach(
-    (term) => {
-      if (source.includes(term)) terms.add(term);
-    },
-  );
-
-  return [...terms].slice(0, 6);
-}
 
 export default function NumpyLessonPage() {
   const { lessonId } = useParams();
@@ -89,20 +50,6 @@ export default function NumpyLessonPage() {
   const lessonIdx = NUMPY_LESSONS.findIndex((item) => item.id === lessonId);
   const prev = NUMPY_LESSONS[lessonIdx - 1];
   const next = NUMPY_LESSONS[lessonIdx + 1];
-  const firstTextBlock = lesson?.theory.find((block) => block.type === "text");
-  const firstCodeBlock = lesson?.theory.find((block) => block.type === "code");
-  const firstCallout = lesson?.theory.find((block) => block.type === "callout");
-  const practicePrompts = lesson?.challenge?.tests?.slice(0, 3) || [];
-  const lessonSummary = useMemo(
-    () => (lesson ? getReadableSummary(lesson) : null),
-    [lesson],
-  );
-  const keyTerms = useMemo(() => (lesson ? getKeyTerms(lesson) : []), [lesson]);
-  const briefStepItems = [
-    "Read the list vs ndarray comparison.",
-    "Run each code sample in the Playground or challenge.",
-    "Change one value in the array and predict the output before running.",
-  ];
 
   useLessonAssistantContext({
     course: "NumPy",
@@ -140,8 +87,6 @@ export default function NumpyLessonPage() {
   }
 
   const isCompleted = isAuthenticated && !!progress[lessonId];
-  // All NumPy lessons use NumpyIntroTheory (text+code blocks, visual tables, diagrams).
-  const useFriendlyTheory = true;
   const isBookmarked = bookmarks.includes(lessonId);
   const completedCount = Object.keys(progress).length;
   const earnedXP = NUMPY_LESSONS.filter((item) => progress[item.id]).reduce(
@@ -161,7 +106,9 @@ export default function NumpyLessonPage() {
   }
 
   return (
-    <div className={`oops-lesson-page ${focusMode ? "oops-focus-mode" : ""}`}>
+    <div
+      className={`oops-lesson-page oops-lesson-page--numpy ${focusMode ? "oops-focus-mode" : ""}`}
+    >
       <OopsSidebar
         currentLessonId={lessonId}
         progress={progress}
@@ -240,134 +187,17 @@ export default function NumpyLessonPage() {
           videoTitle={`${lesson.title} — NumPy`}
         >
           {tab === "theory" ? (
-            useFriendlyTheory ? (
-              <NumpyIntroTheory
+            <NumpyIntroTheory
               lesson={lesson}
+              autoW3={false}
+              accentColor={lesson.chapterColor || LEARN_ACCENT}
               quizStoragePrefix={READ_GATE_PREFIX}
               confidence={confidence}
-                onConfidenceChange={handleConfidenceChange}
-                markedAsRead={markedAsRead}
-                onMarkAsRead={markAsRead}
-                onGoChallenge={goToChallenge}
-              />
-            ) : (
-            <div className="oops-theory-pane">
-              <div className="oops-lesson-title-row">
-                <div>
-                  <span className="oops-interactive-label">Plain English</span>
-                  <h2 className="oops-lesson-heading">{lesson.title}</h2>
-                </div>
-                <div className="oops-term-cloud">
-                  {keyTerms.map((term) => (
-                    <span key={term}>{term}</span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="oops-easy-summary">
-                <div>
-                  <span className="oops-summary-kicker">What it means</span>
-                  <p>{lessonSummary.plain}</p>
-                </div>
-                <div>
-                  <span className="oops-summary-kicker">Why it matters</span>
-                  <p>{lessonSummary.why}</p>
-                </div>
-                <div>
-                  <span className="oops-summary-kicker">Mental model</span>
-                  <p>{lessonSummary.analogy}</p>
-                </div>
-              </div>
-
-              <div className="oops-learning-brief">
-                <div className="oops-brief-card">
-                  <span className="oops-interactive-label">Start Here</span>
-                  <h3>Simple explanation</h3>
-                  <p>
-                    {plainLessonText(firstTextBlock?.content) ||
-                      `This lesson covers ${lesson.title}.`}
-                  </p>
-                </div>
-                <div className="oops-brief-card">
-                  <span className="oops-interactive-label">Tip</span>
-                  <h3>Remember</h3>
-                  <p>
-                    {plainLessonText(firstCallout?.content) ||
-                      "NumPy arrays are homogeneous — one dtype per array."}
-                  </p>
-                </div>
-                <div className="oops-brief-card">
-                  <span className="oops-interactive-label">Code</span>
-                  <h3>Study the examples</h3>
-                  <p>
-                    {firstCodeBlock
-                      ? `Read "${firstCodeBlock.label}" and type it yourself.`
-                      : "Run the challenge after reading the theory blocks below."}
-                  </p>
-                </div>
-                <div className="oops-brief-card">
-                  <span className="oops-interactive-label">Steps</span>
-                  <h3>How to learn it</h3>
-                  <ol>
-                    {briefStepItems.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ol>
-                </div>
-                <div className="oops-brief-card oops-brief-wide">
-                  <span className="oops-interactive-label">Practice</span>
-                  <h3>Before the challenge, verify these</h3>
-                  <ul>
-                    {practicePrompts.map((item) => (
-                      <li key={item.id}>{item.label}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              {lesson.theory.map((block, index) => (
-                <ConceptCard
-                  key={index}
-                  block={block}
-                  accentColor={LEARN_ACCENT}
-                  runnableCodeLangs={["python"]}
-                />
-              ))}
-
-              <div className="oops-confidence-panel">
-                <div>
-                  <span className="oops-interactive-label">Confidence</span>
-                  <h3>Ready for the challenge?</h3>
-                </div>
-                <div className="oops-confidence-options">
-                  {[
-                    ["review", "Need review"],
-                    ["almost", "Almost there"],
-                    ["ready", "Ready to code"],
-                  ].map(([value, label]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      className={confidence === value ? "active" : ""}
-                      onClick={() => handleConfidenceChange(value)}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="oops-theory-footer">
-                <button
-                  type="button"
-                  className="oops-cta-btn"
-                  onClick={() => setTab("challenge")}
-                >
-                  Ready? Take the Challenge →
-                </button>
-              </div>
-            </div>
-            )
+              onConfidenceChange={handleConfidenceChange}
+              markedAsRead={markedAsRead}
+              onMarkAsRead={markAsRead}
+              onGoChallenge={goToChallenge}
+            />
           ) : (
             <PythonCodeChallenge
               challenge={lesson.challenge}

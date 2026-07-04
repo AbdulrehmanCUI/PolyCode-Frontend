@@ -190,7 +190,6 @@ export default function PythonFileHandlingLessonPage() {
           {tab === "theory" ? (
             <NumpyIntroTheory
               lesson={lesson}
-              introVariant="course-start"
               quizStoragePrefix={READ_GATE_PREFIX}
               confidence={confidence}
               onConfidenceChange={handleConfidenceChange}

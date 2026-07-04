@@ -1,5 +1,7 @@
 // PolyCode — DSA in C++ curriculum (detailed)
 
+import { applyChapterEnhancements } from "./dsaLessonEnhancements";
+
 const ACCENT = "#a78b7fa";
 
 function text(content, codeBlock = null) {
@@ -19,7 +21,7 @@ function diagram(title, nodes) {
   return { type: "diagram", title, nodes };
 }
 
-export const DSA_CPP_CHAPTERS = [
+const RAW_DSA_CPP_CHAPTERS = [
   // Complexity
   {
     id: "complexity",
@@ -1251,7 +1253,323 @@ int main() {
         },
   }],
   },
+  {
+    id: "graphs-advanced-dp",
+    title: "Graphs & Advanced DP",
+    icon: "🧩",
+    color: ACCENT,
+    lessons: [
+      {
+        id: "dsa-11",
+        title: "BFS & DFS Intro",
+        xp: 18,
+        chapterTitle: "Graphs & Advanced DP",
+        theory: [
+          text("**BFS** explores layer by layer with a queue — best for shortest paths in unweighted graphs. **DFS** goes deep first with recursion or a stack — great for connectivity and cycles."),
+          text("Always mark visited nodes. On an undirected graph, track visited before enqueueing or recursing.", {
+            label: "DFS on adjacency list",
+            content: `#include <iostream>
+#include <vector>
+using namespace std;
+
+void dfs(int u, const vector<vector<int>>& g, vector<bool>& vis) {
+  vis[u] = true;
+  cout << u << " ";
+  for (int v : g[u]) {
+    if (!vis[v]) dfs(v, g, vis);
+  }
+}
+
+int main() {
+  vector<vector<int>> g = {{1, 2}, {0}, {0}};
+  vector<bool> vis(3, false);
+  dfs(0, g, vis);
+  return 0;
+}`,
+          }),
+          diagram("Traversal styles", [
+            { id: "bfs", label: "BFS", color: ACCENT, items: ["Queue", "Shortest unweighted paths"] },
+            { id: "dfs", label: "DFS", color: "#22c55e", items: ["Stack / recursion", "Deep exploration"] },
+          ]),
+          quiz("Which traversal uses a queue?", ["DFS", "BFS", "Binary search", "Merge sort"], 1, "BFS dequeues vertices level by level."),
+          callout("tip", "For unweighted shortest path, BFS is the default. DFS alone does not guarantee shortest distance."),
+        ],
+        challenge: {
+          title: "DFS visit count",
+          description: "Implement `int countReachable(int start, const vector<vector<int>>& g)` using DFS from start. Return how many vertices are visited (including start).",
+          starterCode: `#include <iostream>
+#include <vector>
+using namespace std;
+
+int countReachable(int start, const vector<vector<int>>& g) {
+  // TODO: DFS with visited vector
+  return 0;
+}
+
+int main() {
+  vector<vector<int>> g = {{1}, {2}, {0}};
+  cout << countReachable(0, g) << endl;
+  return 0;
+}`,
+          solutionCode: `#include <iostream>
+#include <vector>
+using namespace std;
+
+void dfs(int u, const vector<vector<int>>& g, vector<bool>& vis) {
+  vis[u] = true;
+  for (int v : g[u]) if (!vis[v]) dfs(v, g, vis);
+}
+
+int countReachable(int start, const vector<vector<int>>& g) {
+  vector<bool> vis(g.size(), false);
+  dfs(start, g, vis);
+  int c = 0;
+  for (bool b : vis) if (b) c++;
+  return c;
+}
+
+int main() {
+  vector<vector<int>> g = {{1}, {2}, {0}};
+  cout << countReachable(0, g) << endl;
+  return 0;
+}`,
+          tests: [
+            { id: 1, label: "Uses visited tracking", keywords: ["vis", "vector<bool>"] },
+            { id: 2, label: "DFS recursion or stack", keywords: [{ pattern: "dfs\\s*\\(" }] },
+            { id: 3, label: "Returns count", keywords: ["return"] },
+          ],
+        },
+      },
+      {
+        id: "dsa-12",
+        title: "Graph Representation",
+        xp: 16,
+        chapterTitle: "Graphs & Advanced DP",
+        theory: [
+          text("An **adjacency list** stores `vector<vector<int>>` where `g[u]` lists neighbors of u. Build it by pushing both ends for undirected edges."),
+          text("Adjacency matrix `vector<vector<int>>` costs O(V^2) memory but O(1) edge lookup — use for dense graphs only.", {
+            label: "Build adjacency list from edges",
+            content: `#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<vector<int>> buildUndirected(int n, const vector<pair<int,int>>& edges) {
+  vector<vector<int>> g(n);
+  for (auto [u, v] : edges) {
+    g[u].push_back(v);
+    g[v].push_back(u);
+  }
+  return g;
+}`,
+          }),
+          callout("info", "Sparse graphs (few edges) almost always use adjacency lists — less memory and faster iteration over neighbors."),
+          quiz("For a sparse graph with V vertices and E edges, which representation is usually better?", ["Adjacency matrix O(V^2)", "Adjacency list O(V+E)", "Sorted array only", "Hash map of strings"], 1, "Lists store only existing edges."),
+        ],
+        challenge: {
+          title: "Build undirected graph",
+          description: "Implement `buildUndirected(int n, const vector<pair<int,int>>& edges)` returning adjacency list with both directions added.",
+          starterCode: `#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<vector<int>> buildUndirected(int n, const vector<pair<int,int>>& edges) {
+  vector<vector<int>> g(n);
+  // TODO: add both directions for each edge
+  return g;
+}
+
+int main() {
+  vector<pair<int,int>> e = {{0,1},{1,2}};
+  auto g = buildUndirected(3, e);
+  cout << g[1].size() << endl;
+  return 0;
+}`,
+          solutionCode: `#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<vector<int>> buildUndirected(int n, const vector<pair<int,int>>& edges) {
+  vector<vector<int>> g(n);
+  for (auto [u, v] : edges) {
+    g[u].push_back(v);
+    g[v].push_back(u);
+  }
+  return g;
+}
+
+int main() {
+  vector<pair<int,int>> e = {{0,1},{1,2}};
+  auto g = buildUndirected(3, e);
+  cout << g[1].size() << endl;
+  return 0;
+}`,
+          tests: [
+            { id: 1, label: "Pushes to g[u]", keywords: ["g[u].push_back", "g[u].push_back(v)"] },
+            { id: 2, label: "Pushes reverse edge", keywords: ["g[v].push_back", "g[v].push_back(u)"] },
+          ],
+        },
+      },
+      {
+        id: "dsa-13",
+        title: "Coin Change DP",
+        xp: 20,
+        chapterTitle: "Graphs & Advanced DP",
+        theory: [
+          text("**Coin change (min coins)**: `dp[a]` = minimum coins to make amount `a`. For each coin c, relax `dp[a] = min(dp[a], dp[a-c]+1)` when `a >= c`."),
+          text("Initialize `dp[0]=0` and other entries to a large sentinel. Answer is `dp[amount]` if finite.", {
+            label: "Bottom-up coin change",
+            content: `#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int coinChange(const vector<int>& coins, int amount) {
+  const int INF = 1e9;
+  vector<int> dp(amount + 1, INF);
+  dp[0] = 0;
+  for (int a = 1; a <= amount; ++a) {
+    for (int c : coins) {
+      if (a >= c) dp[a] = min(dp[a], dp[a - c] + 1);
+    }
+  }
+  return dp[amount] == INF ? -1 : dp[amount];
+}`,
+          }),
+          callout("warning", "Greedy coin picking fails for some denominations (e.g. coins 1, 3, 4, amount 6). DP handles all cases."),
+          quiz("What does dp[a] usually represent in coin change?", ["Number of coins to form amount a", "Number of ways only", "Largest coin used", "Graph distance"], 0, "We minimize the coin count for each amount."),
+        ],
+        challenge: {
+          title: "Minimum coins",
+          description: "Return minimum coins to make `amount`, or -1 if impossible. Coins are unlimited supply.",
+          starterCode: `#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int coinChange(const vector<int>& coins, int amount) {
+  // TODO: 1D DP
+  return -1;
+}
+
+int main() {
+  vector<int> coins = {1, 2, 5};
+  cout << coinChange(coins, 11) << endl;
+  return 0;
+}`,
+          solutionCode: `#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int coinChange(const vector<int>& coins, int amount) {
+  const int INF = 1e9;
+  vector<int> dp(amount + 1, INF);
+  dp[0] = 0;
+  for (int a = 1; a <= amount; ++a) {
+    for (int c : coins) {
+      if (a >= c) dp[a] = min(dp[a], dp[a - c] + 1);
+    }
+  }
+  return dp[amount] == INF ? -1 : dp[amount];
+}
+
+int main() {
+  vector<int> coins = {1, 2, 5};
+  cout << coinChange(coins, 11) << endl;
+  return 0;
+}`,
+          tests: [
+            { id: 1, label: "Uses dp array", keywords: ["vector<int> dp", "dp["] },
+            { id: 2, label: "Min relaxation", keywords: ["min(", "dp[a - c]"] },
+            { id: 3, label: "Handles impossible", keywords: ["-1", "INF"] },
+          ],
+        },
+      },
+      {
+        id: "dsa-14",
+        title: "Longest Common Subsequence",
+        xp: 20,
+        chapterTitle: "Graphs & Advanced DP",
+        theory: [
+          text("**LCS**: For strings `s` and `t`, `dp[i][j]` is LCS length of prefixes `s[0..i-1]` and `t[0..j-1]`. Match: `dp[i][j]=dp[i-1][j-1]+1`. Mismatch: max of skip one char."),
+          text("Fill a `(m+1) x (n+1)` table. Answer at `dp[m][n]`.", {
+            label: "LCS table fill",
+            content: `#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int lcs(const string& s, const string& t) {
+  int m = s.size(), n = t.size();
+  vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+  for (int i = 1; i <= m; ++i) {
+    for (int j = 1; j <= n; ++j) {
+      if (s[i-1] == t[j-1]) dp[i][j] = dp[i-1][j-1] + 1;
+      else dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+    }
+  }
+  return dp[m][n];
+}`,
+          }),
+          diagram("LCS recurrence", [
+            { id: "match", label: "Chars match", color: ACCENT, items: ["Diagonal + 1", "Extend subsequence"] },
+            { id: "skip", label: "Mismatch", color: "#f59e0b", items: ["max(up, left)", "Drop one char"] },
+          ]),
+          quiz("When s[i]==t[j], which cell contributes to dp[i][j]?", ["dp[i-1][j-1]", "dp[i][j-1] only", "dp[i-1][j] only", "dp[0][0]"], 0, "Matching characters extend the diagonal subproblem."),
+        ],
+        challenge: {
+          title: "LCS length",
+          description: "Return length of longest common subsequence of two strings.",
+          starterCode: `#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int lcs(const string& s, const string& t) {
+  // TODO: 2D DP
+  return 0;
+}
+
+int main() {
+  cout << lcs("abcde", "ace") << endl;
+  return 0;
+}`,
+          solutionCode: `#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int lcs(const string& s, const string& t) {
+  int m = s.size(), n = t.size();
+  vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+  for (int i = 1; i <= m; ++i) {
+    for (int j = 1; j <= n; ++j) {
+      if (s[i-1] == t[j-1]) dp[i][j] = dp[i-1][j-1] + 1;
+      else dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+int main() {
+  cout << lcs("abcde", "ace") << endl;
+  return 0;
+}`,
+          tests: [
+            { id: 1, label: "2D dp table", keywords: ["vector<vector<int>>", "dp["] },
+            { id: 2, label: "Match branch", keywords: ["dp[i-1][j-1]", "=="] },
+            { id: 3, label: "max on mismatch", keywords: ["max("] },
+          ],
+        },
+      },
+    ],
+  },
 ];
+
+export const DSA_CPP_CHAPTERS = applyChapterEnhancements(RAW_DSA_CPP_CHAPTERS);
 
 export const DSA_CPP_LESSONS = DSA_CPP_CHAPTERS.flatMap((c) =>
   c.lessons.map((l) => ({ ...l, chapterId: c.id, chapterTitle: c.title })),

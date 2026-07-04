@@ -177,6 +177,7 @@ export default function CMemoryManagementLessonPage() {
           {tab === "theory" ? (
             <NumpyIntroTheory
               lesson={lesson}
+              autoW3={false}
               quizStoragePrefix={READ_GATE_PREFIX}
               confidence={confidence}
               onConfidenceChange={handleConfidenceChange}

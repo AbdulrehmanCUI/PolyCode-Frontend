@@ -3,6 +3,7 @@ import RunnableCodeBlock from "../../shared/RunnableCodeBlock";
 import LessonReadGate from "../../shared/LessonReadGate";
 import LessonQuizSlider from "../../shared/LessonQuizSlider";
 import LessonTopicOverview from "../../shared/LessonTopicOverview";
+import { lessonUsesW3Overview } from "../../shared/buildAutoW3TopicOverview";
 import { LEARN_ACCENT } from "../../shared/learnAccent";
 import { mapTheoryWithQuizIndices } from "../../shared/lessonQuizUtils";
 import useLessonQuizAttempts from "../../shared/useLessonQuizAttempts";
@@ -609,6 +610,7 @@ export default function NumpyIntroTheory({
   onGoChallenge,
   introVariant = "default",
   accentColor: accentColorProp,
+  autoW3 = true,
 }) {
   const {
     preparedLesson,
@@ -641,16 +643,24 @@ export default function NumpyIntroTheory({
   let stepCounter = 0;
   let quizSliderRendered = false;
 
-  const hasW3Overview =
+  const hasCustomW3 =
     activeLesson?.topicOverview?.style === "w3" ||
     Boolean(activeLesson?.topicOverview?.definition);
+  const showTopicOverview =
+    !isCourseStart && (autoW3 || hasCustomW3);
+  const hasW3Overview =
+    !isCourseStart && lessonUsesW3Overview(activeLesson, autoW3);
 
   return (
     <div
       className={`numpy-intro-theory${isCourseStart ? " numpy-intro-theory--course-start" : ""}${hasW3Overview ? " numpy-intro-theory--w3" : ""}`}
     >
-      {!isCourseStart ? (
-        <LessonTopicOverview lesson={activeLesson} accentColor={accentColor} />
+      {showTopicOverview ? (
+        <LessonTopicOverview
+          lesson={activeLesson}
+          accentColor={accentColor}
+          autoW3={autoW3}
+        />
       ) : null}
 
       {!isCourseStart && !hasW3Overview ? (

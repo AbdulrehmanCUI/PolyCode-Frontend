@@ -6,6 +6,15 @@ const LOCAL_KEY = "js_web_dev_progress";
 const LOCAL_CODE_KEY = "js_web_dev_saved_code";
 const LOCAL_BOOKMARKS_KEY = "js_web_dev_bookmarks";
 const LOCAL_LAST_KEY = "js_web_dev_last_lesson";
+const MIGRATION_KEY = "js_web_dev_progress_migrated_v2";
+
+/** Extended lessons shifted +4 when jsweb-15..18 were added (Applied Web Patterns). */
+const LEGACY_LESSON_ID_MAP = Object.fromEntries(
+  Array.from({ length: 15 }, (_, i) => {
+    const oldId = `jsweb-${15 + i}`;
+    return [oldId, `jsweb-${19 + i}`];
+  }),
+);
 
 function readJson(key, fallback) {
   try {
@@ -15,6 +24,28 @@ function readJson(key, fallback) {
   }
 }
 
+function migrateLegacyLessonIds() {
+  if (localStorage.getItem(MIGRATION_KEY) === "1") return;
+
+  for (const key of [LOCAL_KEY, LOCAL_CODE_KEY]) {
+    const raw = readJson(key, {});
+    const next = Object.fromEntries(
+      Object.entries(raw).map(([id, value]) => [
+        LEGACY_LESSON_ID_MAP[id] || id,
+        value,
+      ]),
+    );
+    localStorage.setItem(key, JSON.stringify(next));
+  }
+
+  const last = localStorage.getItem(LOCAL_LAST_KEY);
+  if (last && LEGACY_LESSON_ID_MAP[last]) {
+    localStorage.setItem(LOCAL_LAST_KEY, LEGACY_LESSON_ID_MAP[last]);
+  }
+
+  localStorage.setItem(MIGRATION_KEY, "1");
+}
+
 export default function useJsWebDevProgress() {
   const { user, isAuthenticated, token } = useAuth();
   const [localVersion, setLocalVersion] = useState(0);
@@ -22,6 +53,7 @@ export default function useJsWebDevProgress() {
 
   const localSnapshot = useMemo(() => {
     void localVersion;
+    migrateLegacyLessonIds();
     return {
       completed: readJson(LOCAL_KEY, {}),
       savedCode: readJson(LOCAL_CODE_KEY, {}),

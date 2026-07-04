@@ -1,4 +1,4 @@
-/** YouTube URLs keyed by lesson id (jsweb-0 … jsweb-29). */
+/** YouTube URLs keyed by lesson id (jsweb-0 … jsweb-33). */
 export const JS_WEB_DEV_VIDEO_LINKS = {
   "jsweb-0": "",
   "jsweb-1": "",
@@ -30,4 +30,8 @@ export const JS_WEB_DEV_VIDEO_LINKS = {
   "jsweb-27": "",
   "jsweb-28": "",
   "jsweb-29": "",
+  "jsweb-30": "",
+  "jsweb-31": "",
+  "jsweb-32": "",
+  "jsweb-33": "",
 };
