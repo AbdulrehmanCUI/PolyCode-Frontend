@@ -6902,6 +6902,25 @@ body {
   max-width: 920px;
 }
 
+/* NumPy lesson — centered content column */
+.oops-lesson-page--numpy .oops-lesson-main {
+  align-items: center;
+}
+
+.oops-lesson-page--numpy .oops-lesson-topbar,
+.oops-lesson-page--numpy .oops-tabs,
+.oops-lesson-page--numpy .oops-lesson-content,
+.oops-lesson-page--numpy .oops-lesson-nav {
+  width: 100%;
+  max-width: 1120px;
+}
+
+.oops-lesson-page--numpy .oops-theory-pane,
+.oops-lesson-page--numpy .numpy-intro-theory {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .oops-lesson-heading {
   font-size: 1.6rem;
   font-weight: 800;

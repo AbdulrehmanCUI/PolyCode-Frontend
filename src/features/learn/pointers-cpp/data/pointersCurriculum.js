@@ -4,6 +4,7 @@
 
 import { applyLessonVideoLinks } from "../../shared/applyLessonVideoLinks";
 import { POINTERS_VIDEO_LINKS } from "./pointersVideoLinks";
+import { applyChapterEnhancements } from "./pointersLessonEnhancements";
 
 const FINAL_POINTER_QUESTIONS = [
   {
@@ -218,7 +219,7 @@ const FINAL_POINTER_QUESTIONS = [
   },
 ];
 
-export const POINTER_CHAPTERS = [
+const RAW_POINTER_CHAPTERS = [
   {
     id: "foundations",
     title: "Pointer Foundations",
@@ -1506,6 +1507,322 @@ int main() {
     ],
   },
   {
+    id: "smart-pointers",
+    title: "Smart Pointers & Safety",
+    icon: "🛡️",
+    color: "#10b981",
+    lessons: [
+      {
+        id: "ptr-smart-1",
+        title: "unique_ptr Basics",
+        xp: 22,
+        theory: [
+          {
+            type: "text",
+            content:
+              "**`unique_ptr<T>`** owns exactly one heap object. When the unique_ptr goes out of scope, the object is deleted automatically. Ownership can be **moved** with `std::move` but not copied.",
+          },
+          {
+            type: "diagram",
+            title: "unique_ptr ownership",
+            nodes: [
+              {
+                id: "owner",
+                label: "unique_ptr",
+                color: "#10b981",
+                items: ["Single owner", "Automatic delete"],
+              },
+              {
+                id: "move",
+                label: "std::move",
+                color: "#00d4ff",
+                items: ["Transfer ownership", "Source becomes empty"],
+              },
+              {
+                id: "heap",
+                label: "Heap object",
+                color: "#ffe566",
+                items: ["Lives while owned", "Freed at scope end"],
+              },
+            ],
+          },
+          {
+            type: "code",
+            lang: "cpp",
+            label: "make_unique",
+            content: `#include <memory>
+#include <iostream>
+using namespace std;
+
+int main() {
+    auto p = make_unique<int>(42);
+    cout << *p << endl;
+    // no delete needed
+    return 0;
+}`,
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content: "Default to **unique_ptr** when one clear owner should free the resource.",
+          },
+          {
+            type: "quiz",
+            question: "Can you copy a unique_ptr to another unique_ptr?",
+            options: ["Yes, always", "No — only move", "Only with new", "Only for arrays"],
+            answer: 1,
+            explanation: "unique_ptr is move-only; copying would break single-ownership.",
+          },
+        ],
+        challenge: {
+          title: "Transfer unique_ptr",
+          description:
+            "Create `auto a = make_unique<int>(10);`, move it to `unique_ptr<int> b = move(a);`, print `*b`.",
+          starterCode: `#include <iostream>
+#include <memory>
+using namespace std;
+
+int main() {
+    // TODO: make_unique, move, print *b
+    return 0;
+}`,
+          solutionCode: `#include <iostream>
+#include <memory>
+using namespace std;
+
+int main() {
+    auto a = make_unique<int>(10);
+    unique_ptr<int> b = move(a);
+    cout << *b << endl;
+    return 0;
+}`,
+          tests: [
+            { id: 1, label: "make_unique used", keywords: ["make_unique<int>"] },
+            { id: 2, label: "move transfers ownership", keywords: ["move(a)", "move( a )"] },
+            { id: 3, label: "Prints dereferenced value", keywords: ["cout", "*b"] },
+          ],
+        },
+      },
+      {
+        id: "ptr-smart-2",
+        title: "shared_ptr Basics",
+        xp: 22,
+        theory: [
+          {
+            type: "text",
+            content:
+              "**`shared_ptr<T>`** uses reference counting. Each copy shares ownership; the last shared_ptr destroys the object. Create with **`make_shared<T>()`** when possible.",
+          },
+          {
+            type: "code",
+            lang: "cpp",
+            label: "Shared ownership",
+            content: `#include <memory>
+#include <iostream>
+using namespace std;
+
+int main() {
+    auto a = make_shared<int>(5);
+    auto b = a;  // two owners
+    cout << *a << " " << *b << endl;
+    return 0;
+}`,
+          },
+          {
+            type: "callout",
+            variant: "info",
+            content: "Use shared_ptr when **multiple** parts of the program must keep the same object alive.",
+          },
+          {
+            type: "quiz",
+            question: "When is the heap object deleted for shared_ptr?",
+            options: ["After first copy", "When reference count hits zero", "Never", "At main only"],
+            answer: 1,
+            explanation: "The destructor runs when the last shared_ptr releases the object.",
+          },
+        ],
+        challenge: {
+          title: "Count shared owners",
+          description:
+            "Create `shared_ptr<int>` with value 8, copy to `auto b = a`, print `a.use_count()` (should be 2).",
+          starterCode: `#include <iostream>
+#include <memory>
+using namespace std;
+
+int main() {
+    // TODO: make_shared, copy, print use_count
+    return 0;
+}`,
+          solutionCode: `#include <iostream>
+#include <memory>
+using namespace std;
+
+int main() {
+    auto a = make_shared<int>(8);
+    auto b = a;
+    cout << a.use_count() << endl;
+    return 0;
+}`,
+          tests: [
+            { id: 1, label: "make_shared", keywords: ["make_shared<int>"] },
+            { id: 2, label: "Copy shared_ptr", keywords: ["auto b = a", "shared_ptr"] },
+            { id: 3, label: "use_count printed", keywords: ["use_count()"] },
+          ],
+        },
+      },
+      {
+        id: "ptr-smart-3",
+        title: "weak_ptr Intro",
+        xp: 22,
+        theory: [
+          {
+            type: "text",
+            content:
+              "**`weak_ptr<T>`** observes a shared_ptr-managed object **without** increasing the strong reference count. Call **`lock()`** to get a temporary `shared_ptr` before use — it may be empty if the object was destroyed.",
+          },
+          {
+            type: "diagram",
+            title: "Breaking cycles",
+            nodes: [
+              {
+                id: "parent",
+                label: "Parent",
+                color: "#10b981",
+                items: ["shared_ptr → child", "Strong ownership"],
+              },
+              {
+                id: "child",
+                label: "Child",
+                color: "#00d4ff",
+                items: ["weak_ptr → parent", "No ownership cycle"],
+              },
+            ],
+          },
+          {
+            type: "code",
+            lang: "cpp",
+            label: "weak_ptr lock",
+            content: `#include <memory>
+
+shared_ptr<int> sp = make_shared<int>(3);
+weak_ptr<int> wp = sp;
+
+if (auto locked = wp.lock()) {
+    cout << *locked << endl;
+}`,
+          },
+          {
+            type: "quiz",
+            question: "Why use weak_ptr in a parent-child graph?",
+            options: ["Faster malloc", "Break shared_ptr cycles", "Replace unique_ptr", "Avoid headers"],
+            answer: 1,
+            explanation: "Parent→child shared_ptr + child→parent shared_ptr can leak; weak_ptr on the back-edge fixes it.",
+          },
+        ],
+        challenge: {
+          title: "Lock a weak_ptr",
+          description:
+            "Create `shared_ptr<int> sp = make_shared<int>(11);`, `weak_ptr<int> wp = sp;`, lock into `auto locked = wp.lock();`, if locked print `*locked`.",
+          starterCode: `#include <iostream>
+#include <memory>
+using namespace std;
+
+int main() {
+    // TODO: shared_ptr, weak_ptr, lock, print
+    return 0;
+}`,
+          solutionCode: `#include <iostream>
+#include <memory>
+using namespace std;
+
+int main() {
+    shared_ptr<int> sp = make_shared<int>(11);
+    weak_ptr<int> wp = sp;
+    if (auto locked = wp.lock()) {
+        cout << *locked << endl;
+    }
+    return 0;
+}`,
+          tests: [
+            { id: 1, label: "weak_ptr declared", keywords: ["weak_ptr<int>"] },
+            { id: 2, label: "lock() called", keywords: ["wp.lock()", ".lock()"] },
+            { id: 3, label: "Value printed", keywords: ["cout", "*locked"] },
+          ],
+        },
+      },
+      {
+        id: "ptr-smart-4",
+        title: "Pointer Safety Checklist",
+        xp: 24,
+        theory: [
+          {
+            type: "text",
+            content:
+              "Before shipping pointer code, verify: **initialization** (nullptr or valid), **lifetime** (object outlives pointer), **ownership** (who deletes), and **bounds** (array access stays in range).",
+          },
+          {
+            type: "table",
+            headers: ["Check", "Safer habit"],
+            rows: [
+              ["Uninitialized pointer", "Start with nullptr"],
+              ["Owning raw new", "Prefer unique_ptr / shared_ptr"],
+              ["Nullable parameter", "Check before *p"],
+              ["After delete", "Reset to nullptr"],
+              ["Optional access", "weak_ptr or raw + check"],
+            ],
+          },
+          {
+            type: "callout",
+            variant: "warning",
+            content: "Raw pointers are fine for **non-owning** access when lifetime is documented and null is checked.",
+          },
+          {
+            type: "quiz",
+            question: "What is the safest default for exclusive heap ownership?",
+            options: ["int*", "unique_ptr", "void*", "Global pointer"],
+            answer: 1,
+            explanation: "unique_ptr expresses single ownership and frees automatically.",
+          },
+        ],
+        challenge: {
+          title: "Safe optional print",
+          description:
+            "Write `void printIfValid(const int* p)` — if p is null print `none`, else print `*p`. In main, call with nullptr then with address of `int x = 4`.",
+          starterCode: `#include <iostream>
+using namespace std;
+
+// TODO: printIfValid and main calls
+
+int main() {
+    return 0;
+}`,
+          solutionCode: `#include <iostream>
+using namespace std;
+
+void printIfValid(const int* p) {
+    if (p == nullptr) {
+        cout << "none" << endl;
+    } else {
+        cout << *p << endl;
+    }
+}
+
+int main() {
+    printIfValid(nullptr);
+    int x = 4;
+    printIfValid(&x);
+    return 0;
+}`,
+          tests: [
+            { id: 1, label: "nullptr check", keywords: ["nullptr"] },
+            { id: 2, label: "Prints none branch", keywords: ["none"] },
+            { id: 3, label: "Dereferences when valid", keywords: ["*p"] },
+          ],
+        },
+      },
+    ],
+  },
+  {
     id: "completion",
     title: "Pointer Completion Test",
     icon: "✓",
@@ -1570,6 +1887,8 @@ int main() {
     ],
   },
 ];
+
+export const POINTER_CHAPTERS = applyChapterEnhancements(RAW_POINTER_CHAPTERS);
 
 export const POINTER_LESSONS = applyLessonVideoLinks(
   POINTER_CHAPTERS.flatMap((chapter) =>

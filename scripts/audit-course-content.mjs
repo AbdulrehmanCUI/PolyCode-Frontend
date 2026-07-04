@@ -5,6 +5,8 @@ const ROOT = path.resolve("src/features/learn");
 const PLACEHOLDER =
   /(TODO|TBD|coming soon|placeholder|lorem ipsum|fill in later|stub lesson|under construction|expand this|add content)/i;
 
+const STUB_PHRASE = "This lesson covers the essential concepts";
+
 function walk(dir, out = []) {
   for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, ent.name);
@@ -100,9 +102,11 @@ for (const file of files) {
   }
 
   const fileKb = Math.round(fs.statSync(file).size / 1024);
+  const stubLessons = (source.match(new RegExp(STUB_PHRASE, "g")) || []).length;
   results.push({
     course,
     fileKb,
+    stubLessons,
     chapters: chapterMatches.length,
     lessons: lessons.length,
     noChallenge,
@@ -121,15 +125,15 @@ results.sort((a, b) => a.lessons - b.lessons || a.avgTheoryChars - b.avgTheoryCh
 
 const score = (r) => {
   let s = 0;
-  if (r.lessons < 10) s += 3;
+  if (r.stubLessons >= 10) s += 5;
+  else if (r.stubLessons > 0) s += 2;
+  if (r.lessons < 15) s += 2;
   else if (r.lessons < 20) s += 1;
-  if (r.avgTheoryChars < 400) s += 3;
-  else if (r.avgTheoryChars < 700) s += 1;
+  if (r.fileKb < 40) s += 2;
+  else if (r.fileKb < 60) s += 1;
+  if (r.avgTheoryChars > 0 && r.avgTheoryChars < 500) s += 2;
+  if (r.thinTheory > r.lessons * 0.35) s += 2;
   if (r.noChallenge > 0) s += 2;
-  if (r.thinTheory > r.lessons * 0.3) s += 2;
-  if (r.placeholder > 0) s += 2;
-  if (r.fileKb < 80) s += 1;
-  if (r.quizCoverage < 30) s += 1;
   return s;
 };
 
@@ -139,7 +143,7 @@ for (const r of results) {
   const s = score(r);
   const flag = s >= 5 ? "LOW" : s >= 3 ? "MED" : "OK";
   console.log(
-    `[${flag}] ${r.course.padEnd(28)} lessons=${String(r.lessons).padStart(3)} ch=${String(r.chapters).padStart(2)} avgTheory=${String(r.avgTheoryChars).padStart(5)}ch file=${String(r.fileKb).padStart(4)}KB noCh=${r.noChallenge} thin=${r.thinTheory} placeholder=${r.placeholder} quiz=${r.quizCoverage}%`,
+    `[${flag}] ${r.course.padEnd(28)} lessons=${String(r.lessons).padStart(3)} ch=${String(r.chapters).padStart(2)} avgTheory=${String(r.avgTheoryChars).padStart(5)}ch file=${String(r.fileKb).padStart(4)}KB stub=${String(r.stubLessons).padStart(2)} noCh=${r.noChallenge} thin=${r.thinTheory}`,
   );
   if (s >= 3 && (r.thinIds.length || r.placeholderIds.length)) {
     if (r.thinIds.length) console.log(`      thin: ${r.thinIds.join(", ")}`);

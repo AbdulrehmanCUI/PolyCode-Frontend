@@ -1,5 +1,5 @@
 // PolyCode — Pandas (Python) full curriculum
-// 8 chapters · 20 lessons · Python coding challenges
+// 8 chapters · 28 lessons · Python coding challenges
 // YouTube links: edit pandasVideoLinks.js (not this file).
 
 import { applyLessonVideoLinks } from "../../shared/applyLessonVideoLinks";
@@ -371,6 +371,91 @@ print(colors["g"])`,
         },
       },
       {
+        id: "from-list",
+        title: "Series from a List",
+        xp: 8,
+        theory: [
+          {
+            type: "text",
+            content:
+              "Pass a plain Python **list** to `pd.Series()` — Pandas assigns a default integer index (0, 1, 2 …) and enables vectorized math on every element.",
+          },
+        ],
+        challenge: {
+          title: "List to Series",
+          description:
+            "Create `vals = [5, 10, 15]` and `s = pd.Series(vals)`, then print `s`.",
+          starterCode: `import pandas as pd
+
+`,
+          solutionCode: `import pandas as pd
+
+vals = [5, 10, 15]
+s = pd.Series(vals)
+print(s)`,
+          tests: [
+            { id: 1, label: "Uses pd.Series", keywords: [{ pattern: "pd\\.Series\\s*\\(" }] },
+            { id: 2, label: "Prints s", keywords: [{ pattern: "print\\s*\\(\\s*s\\s*\\)" }] },
+          ],
+        },
+      },
+      {
+        id: "from-dict",
+        title: "Series from a Dict",
+        xp: 8,
+        theory: [
+          {
+            type: "text",
+            content:
+              "When you pass a **dictionary** to `pd.Series()`, each **key becomes an index label** and each value becomes the data.",
+          },
+        ],
+        challenge: {
+          title: "Dict to Series",
+          description:
+            'Create `pd.Series({"x": 1, "y": 2, "z": 3})` as `s` and print `s["y"]`.',
+          starterCode: `import pandas as pd
+
+`,
+          solutionCode: `import pandas as pd
+
+s = pd.Series({"x": 1, "y": 2, "z": 3})
+print(s["y"])`,
+          tests: [
+            { id: 1, label: "Uses pd.Series", keywords: [{ pattern: "pd\\.Series\\s*\\(" }] },
+            { id: 2, label: "Accesses y", keywords: [{ pattern: 's\\s*\\[\\s*"y"\\s*\\]' }] },
+          ],
+        },
+      },
+      {
+        id: "custom-index",
+        title: "Custom Index Labels",
+        xp: 8,
+        theory: [
+          {
+            type: "text",
+            content:
+              "Pass `index=[...]` to label rows with meaningful names instead of integers — essential for readable reports and label-aligned math.",
+          },
+        ],
+        challenge: {
+          title: "Named Index",
+          description:
+            'Create `s = pd.Series([100, 200], index=["Jan", "Feb"])` and print `s["Feb"]`.',
+          starterCode: `import pandas as pd
+
+`,
+          solutionCode: `import pandas as pd
+
+s = pd.Series([100, 200], index=["Jan", "Feb"])
+print(s["Feb"])`,
+          tests: [
+            { id: 1, label: "Custom index", keywords: [{ pattern: "index\\s*=\\s*\\[" }] },
+            { id: 2, label: "Prints Feb value", keywords: [{ pattern: '"Feb"' }] },
+          ],
+        },
+      },
+      {
         id: "pandas-3",
         title: "Series Math",
         xp: 10,
@@ -458,6 +543,36 @@ print(s * 2)`,
           tests: [
             { id: 1, label: "Creates Series", keywords: ["pd.Series"] },
             { id: 2, label: "Multiplies by 2", keywords: ["s * 2", "s*2"] },
+            { id: 3, label: "Prints result", keywords: [{ pattern: "print\\s*\\(" }] },
+          ],
+        },
+      },
+      {
+        id: "series-ops",
+        title: "Series Operations",
+        xp: 8,
+        theory: [
+          {
+            type: "text",
+            content:
+              "Add, subtract, multiply, and compare **entire Series at once** — Pandas aligns by index label and runs the operation element-wise without a loop.",
+          },
+        ],
+        challenge: {
+          title: "Subtract Series",
+          description:
+            'Create `a = pd.Series([50, 30], index=["X", "Y"])` and `b = pd.Series([20, 10], index=["X", "Y"])`. Print `a - b`.',
+          starterCode: `import pandas as pd
+
+`,
+          solutionCode: `import pandas as pd
+
+a = pd.Series([50, 30], index=["X", "Y"])
+b = pd.Series([20, 10], index=["X", "Y"])
+print(a - b)`,
+          tests: [
+            { id: 1, label: "Creates two Series", keywords: [{ pattern: "pd\\.Series" }] },
+            { id: 2, label: "Subtracts Series", keywords: [{ pattern: "a\\s*-\\s*b" }] },
           ],
         },
       },
@@ -546,6 +661,7 @@ print(scores.mean())`,
           tests: [
             { id: 1, label: "pd.Series", keywords: ["pd.Series"] },
             { id: 2, label: "Uses .mean()", keywords: [".mean()"] },
+            { id: 3, label: "Prints mean", keywords: [{ pattern: "print\\s*\\(" }] },
           ],
         },
       },
@@ -649,6 +765,63 @@ print(df.shape)`,
           tests: [
             { id: 1, label: "pd.DataFrame", keywords: ["pd.DataFrame"] },
             { id: 2, label: "Prints shape", keywords: [".shape"] },
+            { id: 3, label: "Has item column", keywords: [{ pattern: '"item"' }] },
+          ],
+        },
+      },
+      {
+        id: "dict-of-lists",
+        title: "Dict of Lists",
+        xp: 8,
+        theory: [
+          {
+            type: "text",
+            content:
+              "Each **dict key** becomes a column name; each **list** is that column's values. All lists must be the same length.",
+          },
+        ],
+        challenge: {
+          title: "Build from Dict of Lists",
+          description:
+            'Create `df = pd.DataFrame({"a": [1, 2], "b": [3, 4]})` and print `df`.',
+          starterCode: `import pandas as pd
+
+`,
+          solutionCode: `import pandas as pd
+
+df = pd.DataFrame({"a": [1, 2], "b": [3, 4]})
+print(df)`,
+          tests: [
+            { id: 1, label: "pd.DataFrame", keywords: [{ pattern: "pd\\.DataFrame" }] },
+            { id: 2, label: "Prints df", keywords: [{ pattern: "print\\s*\\(\\s*df\\s*\\)" }] },
+          ],
+        },
+      },
+      {
+        id: "list-of-dicts",
+        title: "List of Dicts",
+        xp: 8,
+        theory: [
+          {
+            type: "text",
+            content:
+              "A **list of row dictionaries** matches JSON API responses — each dict is one row; Pandas infers columns from keys.",
+          },
+        ],
+        challenge: {
+          title: "Build from List of Dicts",
+          description:
+            'Create `df = pd.DataFrame([{"name": "Ann", "score": 90}, {"name": "Bob", "score": 85}])` and print `df`.',
+          starterCode: `import pandas as pd
+
+`,
+          solutionCode: `import pandas as pd
+
+df = pd.DataFrame([{"name": "Ann", "score": 90}, {"name": "Bob", "score": 85}])
+print(df)`,
+          tests: [
+            { id: 1, label: "pd.DataFrame from list", keywords: [{ pattern: "pd\\.DataFrame\\s*\\(\\s*\\[" }] },
+            { id: 2, label: "Prints df", keywords: [{ pattern: "print\\s*\\(\\s*df\\s*\\)" }] },
           ],
         },
       },
@@ -752,6 +925,16 @@ print(df.head(3))`,
               label: "Uses head(3)",
               keywords: [{ pattern: "\\.head\\s*\\(\\s*3\\s*\\)" }],
             },
+            {
+              id: 2,
+              label: "Prints result",
+              keywords: [{ pattern: "print\\s*\\(" }],
+            },
+            {
+              id: 3,
+              label: "DataFrame created",
+              keywords: [{ pattern: "pd\\.DataFrame" }],
+            },
           ],
         },
       },
@@ -848,6 +1031,11 @@ print(df["score"])`,
               id: 1,
               label: "Selects score column",
               keywords: [{ pattern: 'df\\s*\\[\\s*"score"\\s*\\]' }],
+            },
+            {
+              id: 2,
+              label: "Prints column",
+              keywords: [{ pattern: "print\\s*\\(" }],
             },
           ],
         },
@@ -946,7 +1134,10 @@ print(df.loc["Ali", "score"])`,
 
 df = pd.DataFrame({"val": [1, 2]}, index=["x", "y"])
 print(df.loc["y", "val"])`,
-          tests: [{ id: 1, label: "Uses .loc", keywords: [".loc"] }],
+          tests: [
+            { id: 1, label: "Uses .loc", keywords: [".loc"] },
+            { id: 2, label: "Prints val", keywords: [{ pattern: "print\\s*\\(" }] },
+          ],
         },
       },
       {
@@ -1040,6 +1231,11 @@ print(df.iloc[0, 0])`,
               id: 1,
               label: "Uses iloc[0, 0]",
               keywords: [{ pattern: "iloc\\s*\\[\\s*0\\s*,\\s*0\\s*\\]" }],
+            },
+            {
+              id: 2,
+              label: "Prints cell",
+              keywords: [{ pattern: "print\\s*\\(" }],
             },
           ],
         },
@@ -1233,7 +1429,9 @@ print(s.fillna(0))`,
 
 s = pd.Series([5, None, 8])
 print(s.fillna(0))`,
-          tests: [{ id: 1, label: "Uses fillna", keywords: [".fillna"] }],
+          tests: [{ id: 1, label: "Uses fillna", keywords: [".fillna"] },
+            { id: 2, label: "Prints result", keywords: [{ pattern: "print\\s*\\(" }] },
+          ],
         },
       },
       {
@@ -1321,7 +1519,65 @@ print(df.dropna())`,
 
 df = pd.DataFrame({"v": [1, None, 2]})
 print(df.dropna())`,
-          tests: [{ id: 1, label: "Uses dropna", keywords: [".dropna()"] }],
+          tests: [{ id: 1, label: "Uses dropna", keywords: [".dropna()"] },
+            { id: 2, label: "Prints result", keywords: [{ pattern: "print\\s*\\(" }] },
+          ],
+        },
+      },
+      {
+        id: "dropna-rows",
+        title: "Drop Rows with NaN",
+        xp: 8,
+        theory: [
+          {
+            type: "text",
+            content:
+              "`df.dropna()` with default `axis=0` removes **rows** that contain any missing value — use when incomplete records must be excluded.",
+          },
+        ],
+        challenge: {
+          title: "Drop Incomplete Rows",
+          description:
+            'Create `df = pd.DataFrame({"v": [1, None, 3]})` and print `df.dropna()`.',
+          starterCode: `import pandas as pd
+
+`,
+          solutionCode: `import pandas as pd
+
+df = pd.DataFrame({"v": [1, None, 3]})
+print(df.dropna())`,
+          tests: [
+            { id: 1, label: "Uses dropna", keywords: [{ pattern: "\\.dropna\\s*\\(" }] },
+            { id: 2, label: "Prints result", keywords: [{ pattern: "print\\s*\\(" }] },
+          ],
+        },
+      },
+      {
+        id: "dropna-cols",
+        title: "Drop Columns with NaN",
+        xp: 8,
+        theory: [
+          {
+            type: "text",
+            content:
+              "Pass `axis=1` to `dropna()` to remove **columns** containing any NaN — useful for wide tables with sparse optional fields.",
+          },
+        ],
+        challenge: {
+          title: "Drop Sparse Columns",
+          description:
+            'Create `df = pd.DataFrame({"a": [1, 2], "b": [None, None]})` and print `df.dropna(axis=1)`.',
+          starterCode: `import pandas as pd
+
+`,
+          solutionCode: `import pandas as pd
+
+df = pd.DataFrame({"a": [1, 2], "b": [None, None]})
+print(df.dropna(axis=1))`,
+          tests: [
+            { id: 1, label: "dropna axis=1", keywords: [{ pattern: "dropna\\s*\\(\\s*axis\\s*=\\s*1" }] },
+            { id: 2, label: "Prints result", keywords: [{ pattern: "print\\s*\\(" }] },
+          ],
         },
       },
       {
@@ -1419,6 +1675,11 @@ print(df)`,
               id: 1,
               label: "Adds double column",
               keywords: [{ pattern: 'df\\s*\\[\\s*"double"\\s*\\]' }],
+            },
+            {
+              id: 2,
+              label: "Prints df",
+              keywords: [{ pattern: "print\\s*\\(\\s*df\\s*\\)" }],
             },
           ],
         },
@@ -1715,7 +1976,10 @@ print(pd.concat([a, b], ignore_index=True))`,
 a = pd.DataFrame({"n": [1]})
 b = pd.DataFrame({"n": [2]})
 print(pd.concat([a, b]))`,
-          tests: [{ id: 1, label: "Uses pd.concat", keywords: ["pd.concat"] }],
+          tests: [
+            { id: 1, label: "Uses pd.concat", keywords: ["pd.concat"] },
+            { id: 2, label: "Prints result", keywords: [{ pattern: "print\\s*\\(" }] },
+          ],
         },
       },
       {
@@ -1998,6 +2262,8 @@ df = pd.DataFrame({
 print(df)`,
           tests: [
             { id: 1, label: "DataFrame created", keywords: ["pd.DataFrame"] },
+            { id: 2, label: "Has columns a and b", keywords: ['"a"', '"b"'] },
+            { id: 3, label: "Prints df", keywords: [{ pattern: "print\\s*\\(\\s*df\\s*\\)" }] },
           ],
         },
         // ─────────────────────────────────────────────────────────────────────

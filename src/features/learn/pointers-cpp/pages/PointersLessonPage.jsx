@@ -13,6 +13,7 @@ import useLessonQuizAttempts from "../../shared/useLessonQuizAttempts";
 import { mapTheoryWithQuizIndices } from "../../shared/lessonQuizUtils";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
 import LessonTopicOverview from "../../shared/LessonTopicOverview";
+import { lessonUsesW3Overview } from "../../shared/buildAutoW3TopicOverview";
 import {
   POINTER_CHAPTERS,
   POINTER_LESSONS,
@@ -110,6 +111,7 @@ export default function PointersLessonPage() {
     getSelection,
   } = useLessonQuizAttempts(READ_GATE_PREFIX, lessonId, lesson);
   const theoryLesson = preparedLesson || lesson;
+  const hasW3Overview = lessonUsesW3Overview(theoryLesson || lesson);
   const lessonIdx = POINTER_LESSONS.findIndex((item) => item.id === lessonId);
   const prev = POINTER_LESSONS[lessonIdx - 1];
   const next = POINTER_LESSONS[lessonIdx + 1];
@@ -267,6 +269,8 @@ export default function PointersLessonPage() {
                 accentColor={LEARN_ACCENT}
                 variant="oops"
               />
+              {!hasW3Overview ? (
+              <>
               <div className="oops-lesson-title-row">
                 <div>
                   <span className="oops-interactive-label">Plain English</span>
@@ -348,6 +352,8 @@ export default function PointersLessonPage() {
                   </ul>
                 </div>
               </div>
+              </>
+              ) : null}
 
               {(() => {
                 const theoryWithQuizMeta = mapTheoryWithQuizIndices(

@@ -1,8 +1,9 @@
 // PolyCode — JavaScript DOM course
-// 4 chapters · 12 lessons · DOM-focused browser challenges
+// 5 chapters · 15 lessons · DOM-focused browser challenges
 // Add video links in jsDomVideoLinks.js
 
 import { applyLessonVideoLinks } from "../../shared/applyLessonVideoLinks";
+import { applyChapterEnhancements } from "./jsDomLessonEnhancements";
 import { JS_DOM_VIDEO_LINKS } from "./jsDomVideoLinks";
 import {
   // eslint-disable-next-line no-unused-vars
@@ -20,7 +21,9 @@ const EVENTS_COLOR = "#3b82f6";
 const FORM_COLOR = "#6366f1";
 const PERFORMANCE_COLOR = "#f59e0b";
 
-export const JS_DOM_CHAPTERS = [
+const PROJECTS_COLOR = "#ec4899";
+
+const RAW_JS_DOM_CHAPTERS = [
   {
     id: "dom-intro",
     title: "DOM Basics",
@@ -905,7 +908,7 @@ console.log(renderCounter(5).textContent);
             {
               id: 2,
               label: "Returns mock node with count text",
-              keywords: [{ pattern: "Count: \\$\\{count}" }],
+              keywords: [{ pattern: "Count:" }, { pattern: "count" }],
             },
             {
               id: 3,
@@ -993,7 +996,258 @@ console.log(counter.textContent);
       },
     ],
   },
+  {
+    id: "dom-projects",
+    title: "DOM Projects",
+    icon: "layout",
+    color: PROJECTS_COLOR,
+    lessons: [
+      {
+        id: "jsdom-12",
+        title: "Todo List DOM",
+        xp: 18,
+        chapterTitle: "DOM Projects",
+        theory: [
+          objectives([
+            "Map todo data to list item nodes",
+            "Add todos from a form submit handler",
+            "Toggle done state and remove items",
+          ]),
+          text(
+            "A todo list is the perfect DOM capstone: **state** (array of todos), **render** (build `<li>` elements), and **events** (add, toggle, delete). Keep one source of truth and re-render or patch the list when state changes.",
+            {
+              label: "Todo state shape",
+              content: `const state = {
+  todos: [
+    { id: 1, text: "Learn querySelector", done: false },
+    { id: 2, text: "Build a modal", done: true },
+  ],
+};`,
+            },
+          ),
+          diagram("Todo app loop", [
+            { id: "state", label: "State array", color: PROJECTS_COLOR, items: ["id, text, done", "Single source of truth"] },
+            { id: "render", label: "render()", color: DOM_COLOR, items: ["Map to <li>", "classList.toggle('done')"] },
+            { id: "events", label: "User events", color: EVENTS_COLOR, items: ["Submit adds todo", "Click toggles done"] },
+          ]),
+          table("Todo DOM tasks", ["Action", "DOM technique", "State change"], [
+            ["Add todo", "createElement + appendChild", "Push to todos array"],
+            ["Toggle done", "classList on <li>", "Flip done boolean"],
+            ["Delete", "removeChild or re-render", "Filter todos array"],
+          ]),
+          callout(
+            "tip",
+            "Use `event.target.closest('li')` with delegation so new todos work without rebinding listeners.",
+          ),
+          quiz(
+            "Best place to store the list of todos?",
+            ["Only in HTML attributes", "A JavaScript state array you render from", "window.location", "CSS variables"],
+            1,
+            "State in JavaScript drives the DOM — render from data, not scattered DOM reads.",
+          ),
+        ],
+        challenge: {
+          title: "Todo Reducer",
+          description:
+            "Write `todoReducer(state, action)` supporting `{ type: 'add', text }` and `{ type: 'toggle', id }`. State: `{ todos: [{ id, text, done }] }`. Add \"Ship feature\", toggle id 1, log first todo done status.",
+          starterCode: `function todoReducer(state, action) {
+  // handle add and toggle
+}
+
+let state = { todos: [] };
+state = todoReducer(state, { type: "add", text: "Ship feature" });
+state = todoReducer(state, { type: "toggle", id: 1 });
+console.log(state.todos[0].done);
+`,
+          solutionCode: `function todoReducer(state, action) {
+  if (action.type === "add") {
+    const id = state.todos.length + 1;
+    return {
+      todos: [...state.todos, { id, text: action.text, done: false }],
+    };
+  }
+  if (action.type === "toggle") {
+    return {
+      todos: state.todos.map((t) =>
+        t.id === action.id ? { ...t, done: !t.done } : t,
+      ),
+    };
+  }
+  return state;
+}
+
+let state = { todos: [] };
+state = todoReducer(state, { type: "add", text: "Ship feature" });
+state = todoReducer(state, { type: "toggle", id: 1 });
+console.log(state.todos[0].done);`,
+          tests: [
+            { id: 1, label: "Defines todoReducer", keywords: [{ pattern: "function\\s+todoReducer" }] },
+            { id: 2, label: "Handles add action", keywords: [{ pattern: "add" }] },
+            { id: 3, label: "Logs done status", keywords: [{ pattern: "console\\.log.*done" }] },
+          ],
+        },
+      },
+      {
+        id: "jsdom-13",
+        title: "Modal Dialog",
+        xp: 18,
+        chapterTitle: "DOM Projects",
+        theory: [
+          objectives([
+            "Show and hide a modal with CSS classes",
+            "Handle open, close, and backdrop clicks",
+            "Set aria-hidden for screen readers",
+          ]),
+          text(
+            "Modals overlay the page for confirmations, forms, or detail views. JavaScript toggles an `open` class, sets `aria-hidden`, and listens for **Escape** and backdrop clicks to dismiss.",
+            {
+              label: "Modal state object",
+              content: `const modalState = { open: false, title: "Confirm delete" };
+function openModal() {
+  modalState.open = true;
+  modal.setAttribute("aria-hidden", "false");
+  modal.classList.add("open");
+}`,
+            },
+          ),
+          table("Modal events", ["Trigger", "Handler", "Result"], [
+            ["Open button click", "openModal()", "Show overlay"],
+            ["Escape key", "closeModal()", "Hide, restore focus"],
+            ["Backdrop click", "closeModal()", "Dismiss dialog"],
+          ]),
+          callout(
+            "warning",
+            "Trap focus inside the modal while open and return focus to the trigger on close — required for keyboard accessibility.",
+          ),
+          quiz(
+            "Which attribute tells assistive tech a modal is hidden?",
+            ["aria-hidden", "data-modal", "role=div", "tabindex=-1 only"],
+            0,
+            "aria-hidden=\"true\" removes the modal from the accessibility tree when closed.",
+          ),
+        ],
+        challenge: {
+          title: "Modal Controller",
+          description:
+            "Write `createModal()` returning `{ open(), close(), isOpen }`. `open` sets isOpen true; `close` sets false. Open then close; log isOpen.",
+          starterCode: `function createModal() {
+  // return { open, close, isOpen }
+}
+
+const modal = createModal();
+modal.open();
+modal.close();
+console.log(modal.isOpen);
+`,
+          solutionCode: `function createModal() {
+  return {
+    isOpen: false,
+    open() {
+      this.isOpen = true;
+    },
+    close() {
+      this.isOpen = false;
+    },
+  };
+}
+
+const modal = createModal();
+modal.open();
+modal.close();
+console.log(modal.isOpen);`,
+          tests: [
+            { id: 1, label: "Defines createModal", keywords: [{ pattern: "function\\s+createModal" }] },
+            { id: 2, label: "Has open and close", keywords: [{ pattern: "open\\s*\\(" }, { pattern: "close\\s*\\(" }] },
+            { id: 3, label: "Logs isOpen false", keywords: [{ pattern: "console\\.log.*isOpen" }] },
+          ],
+        },
+      },
+      {
+        id: "jsdom-14",
+        title: "Dynamic Table",
+        xp: 20,
+        chapterTitle: "DOM Projects",
+        theory: [
+          objectives([
+            "Render table rows from object arrays",
+            "Sort data before rendering",
+            "Update tbody when records change",
+          ]),
+          text(
+            "Data tables power admin panels and dashboards. Map each record to a `<tr>` with `<td>` cells. When data changes — new fetch, sort click — rebuild or patch the `<tbody>`.",
+            {
+              label: "Row builder",
+              content: `function rowToCells(record, columns) {
+  return columns.map((key) => record[key]);
+}
+const row = rowToCells({ name: "Ada", score: 98 }, ["name", "score"]);
+console.log(row.join(", "));`,
+            },
+          ),
+          diagram("Table render pipeline", [
+            { id: "data", label: "Records array", color: PROJECTS_COLOR, items: ["Objects with keys", "Sort/filter first"] },
+            { id: "map", label: "map → <tr>", color: DOM_COLOR, items: ["One row per record", "textContent for cells"] },
+            { id: "dom", label: "<tbody>", color: EVENTS_COLOR, items: ["Replace children", "Delegate row clicks"] },
+          ]),
+          callout(
+            "tip",
+            "Define column keys in an array `['name', 'email', 'role']` so adding a column is one config change, not dozens of copy-paste lines.",
+          ),
+          quiz(
+            "Safest way to put user names into table cells?",
+            ["innerHTML with template strings", "createElement + textContent", "document.write", "eval"],
+            1,
+            "createElement with textContent avoids HTML injection from user data.",
+          ),
+        ],
+        challenge: {
+          title: "Sort and Render Rows",
+          description:
+            "Write `sortByScore(users)` returning users sorted by `score` descending, and `renderRows(users)` returning mock rows `{ tag: 'tr', cells: [name, score] }[]`. Log renderRows(sortByScore(data)).length for two users.",
+          starterCode: `const data = [
+  { name: "Ada", score: 90 },
+  { name: "Lin", score: 95 },
 ];
+
+function sortByScore(users) {
+  // sort by score descending
+}
+
+function renderRows(users) {
+  // map to { tag: 'tr', cells: [name, score] }
+}
+
+console.log(renderRows(sortByScore(data)).length);
+`,
+          solutionCode: `const data = [
+  { name: "Ada", score: 90 },
+  { name: "Lin", score: 95 },
+];
+
+function sortByScore(users) {
+  return [...users].sort((a, b) => b.score - a.score);
+}
+
+function renderRows(users) {
+  return users.map((u) => ({
+    tag: "tr",
+    cells: [u.name, u.score],
+  }));
+}
+
+console.log(renderRows(sortByScore(data)).length);`,
+          tests: [
+            { id: 1, label: "Defines sortByScore", keywords: [{ pattern: "function\\s+sortByScore" }] },
+            { id: 2, label: "Defines renderRows", keywords: [{ pattern: "function\\s+renderRows" }] },
+            { id: 3, label: "Logs row count", keywords: [{ pattern: "console\\.log.*length" }] },
+          ],
+        },
+      },
+    ],
+  },
+];
+
+export const JS_DOM_CHAPTERS = applyChapterEnhancements(RAW_JS_DOM_CHAPTERS);
 
 export const JS_DOM_LESSONS = applyLessonVideoLinks(
   JS_DOM_CHAPTERS.flatMap((chapter) => chapter.lessons),

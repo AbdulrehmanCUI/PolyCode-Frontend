@@ -1,8 +1,9 @@
 // PolyCode — JavaScript Web Development course (beginner → advanced)
-// 11 chapters · 30 lessons · browser worker challenges (DOM simulated in code)
+// 12 chapters · 34 lessons · browser worker challenges (DOM simulated in code)
 // YouTube links: edit jsWebDevVideoLinks.js
 
 import { applyLessonVideoLinks } from "../../shared/applyLessonVideoLinks";
+import { applyChapterEnhancements } from "./jsWebDevLessonEnhancements";
 import { JS_WEB_DEV_VIDEO_LINKS } from "./jsWebDevVideoLinks";
 import { JS_WEB_DEV_EXTENDED_CHAPTERS } from "./jsWebDevChaptersExtended";
 import {
@@ -14,7 +15,9 @@ import {
   objectives,
 } from "../../js-fundamentals/data/jsCurriculumHelpers";
 
-export const JS_WEB_DEV_CHAPTERS = [
+const APPLIED_COLOR = "#0ea5e9";
+
+const RAW_JS_WEB_DEV_CHAPTERS = [
   {
     id: "dom-foundations",
     title: "DOM Foundations",
@@ -1742,8 +1745,329 @@ console.log(state.bookmarks.length);`,
       },
     ],
   },
+  {
+    id: "applied-patterns",
+    title: "Applied Web Patterns",
+    icon: "compass",
+    color: APPLIED_COLOR,
+    lessons: [
+      {
+        id: "jsweb-15",
+        title: "SPA Routing Concept",
+        xp: 18,
+        theory: [
+          objectives([
+            "Explain single-page app routing without full reloads",
+            "Compare hash routing and History API paths",
+            "Map URL paths to view names",
+          ]),
+          text(
+            "A **single-page app** swaps views inside one HTML document. The URL still changes so users can bookmark and use Back/Forward — but the browser does not reload the whole page.",
+            {
+              label: "Hash vs history paths",
+              content: `// Hash:   https://app.com/#/settings
+// History: https://app.com/settings  (needs pushState + server config)`,
+            },
+          ),
+          diagram("SPA navigation flow", [
+            { id: "link", label: "Nav click", color: APPLIED_COLOR, items: ["prevent default", "pushState or hash"] },
+            { id: "match", label: "Router", color: "#3b82f6", items: ["Match path", "Return view id"] },
+            { id: "view", label: "Render", color: "#22c55e", items: ["Update #app", "No document reload"] },
+          ]),
+          table("Routing styles", ["Style", "URL example", "Server setup"], [
+            ["Hash", "#/profile", "None — works on static hosts"],
+            ["History", "/profile", "Fallback to index.html"],
+            ["Multi-page", "/profile.html", "Traditional server routes"],
+          ]),
+          callout(
+            "tip",
+            "Framework routers (React Router, Vue Router) wrap the same ideas — learn the vanilla pattern first.",
+          ),
+          quiz(
+            "What does history.pushState change without reloading?",
+            ["Only CSS files", "The URL in the address bar", "The server database", "All cookies"],
+            1,
+            "pushState updates history and URL while staying on the same document.",
+          ),
+        ],
+        challenge: {
+          title: "Path Router",
+          description:
+            "Write `createRouter(routes)` returning `{ navigate(path), getView() }`. `routes` maps paths to view names. `navigate` sets current path; `getView` returns the view or 'not-found'. Navigate to '/dashboard', log getView().",
+          starterCode: `function createRouter(routes) {
+  // return { navigate(path), getView() }
+}
+
+const router = createRouter({ "/": "home", "/dashboard": "dashboard" });
+router.navigate("/dashboard");
+console.log(router.getView());
+`,
+          solutionCode: `function createRouter(routes) {
+  let current = "/";
+  return {
+    navigate(path) {
+      current = path;
+    },
+    getView() {
+      return routes[current] || "not-found";
+    },
+  };
+}
+
+const router = createRouter({ "/": "home", "/dashboard": "dashboard" });
+router.navigate("/dashboard");
+console.log(router.getView());`,
+          tests: [
+            { id: 1, label: "Defines createRouter", keywords: [{ pattern: "function\\s+createRouter" }] },
+            { id: 2, label: "Has navigate and getView", keywords: [{ pattern: "navigate" }, { pattern: "getView" }] },
+            { id: 3, label: "Logs dashboard", keywords: [{ pattern: "console\\.log.*dashboard" }] },
+          ],
+        },
+      },
+      {
+        id: "jsweb-16",
+        title: "Form Validation Patterns",
+        xp: 18,
+        theory: [
+          objectives([
+            "Compose small reusable validator functions",
+            "Aggregate per-field errors into one object",
+            "Block submit until validation passes",
+          ]),
+          text(
+            "Production forms use **validator pipelines**: run checks per field, collect errors, and only call fetch when `errors` is empty. Keep validators pure — same input, same output.",
+            {
+              label: "Composable validators",
+              content: `const isRequired = (v) => (v.trim() ? null : "Required");
+const minLen = (n) => (v) => (v.length >= n ? null : "Min " + n + " chars");
+const isEmail = (v) => (v.includes("@") ? null : "Invalid email");`,
+            },
+          ),
+          table("Validation layers", ["Layer", "Purpose", "Trust level"], [
+            ["HTML5 attributes", "Basic hints", "Bypassable"],
+            ["Client JS", "Fast UX feedback", "Bypassable"],
+            ["Server API", "Authoritative rules", "Required"],
+          ]),
+          callout(
+            "warning",
+            "Client validation improves UX — server validation provides security.",
+          ),
+          quiz(
+            "Best structure for multiple field errors?",
+            ["One alert('invalid')", "Object like { email: '...', password: '...' }", "console.log only", "Delete the form"],
+            1,
+            "Per-field errors let the UI highlight exactly what to fix.",
+          ),
+        ],
+        challenge: {
+          title: "Run Validators",
+          description:
+            "Write `validateFields(values, rules)` where rules is `{ field: [fn, fn] }` and each fn returns error string or null. Return `{ valid, errors }`. Validate email with isEmail and password with minLen(8). Log valid for bad input.",
+          starterCode: `const isEmail = (v) => (v.includes("@") ? null : "Invalid email");
+const minLen = (n) => (v) => (v.length >= n ? null : "Too short");
+
+function validateFields(values, rules) {
+  // return { valid, errors }
+}
+
+const result = validateFields(
+  { email: "bad", password: "123" },
+  { email: [isEmail], password: [minLen(8)] },
+);
+console.log(result.valid);
+`,
+          solutionCode: `const isEmail = (v) => (v.includes("@") ? null : "Invalid email");
+const minLen = (n) => (v) => (v.length >= n ? null : "Too short");
+
+function validateFields(values, rules) {
+  const errors = {};
+  for (const [field, checks] of Object.entries(rules)) {
+    for (const check of checks) {
+      const msg = check(values[field]);
+      if (msg) {
+        errors[field] = msg;
+        break;
+      }
+    }
+  }
+  return { valid: Object.keys(errors).length === 0, errors };
+}
+
+const result = validateFields(
+  { email: "bad", password: "123" },
+  { email: [isEmail], password: [minLen(8)] },
+);
+console.log(result.valid);`,
+          tests: [
+            { id: 1, label: "Defines validateFields", keywords: [{ pattern: "function\\s+validateFields" }] },
+            { id: 2, label: "Returns valid boolean", keywords: [{ pattern: "valid" }] },
+            { id: 3, label: "Logs valid false", keywords: [{ pattern: "console\\.log.*valid" }] },
+          ],
+        },
+      },
+      {
+        id: "jsweb-17",
+        title: "Fetch Error Handling",
+        xp: 19,
+        theory: [
+          objectives([
+            "Distinguish network errors from HTTP error status",
+            "Return structured { ok, data, error } results",
+            "Implement simple retry for flaky connections",
+          ]),
+          text(
+            "Robust fetch wrappers handle **three outcomes**: success with JSON, HTTP error (`!response.ok`), and network failure (thrown exception). Map each to UI state users understand.",
+            {
+              label: "Result object pattern",
+              content: `async function loadUsers(fetchFn) {
+  try {
+    const res = await fetchFn();
+    if (!res.ok) return { ok: false, error: "HTTP " + res.status };
+    const data = await res.json();
+    return { ok: true, data };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+}`,
+            },
+          ),
+          diagram("Fetch outcomes", [
+            { id: "net", label: "Network down", color: "#ef4444", items: ["try/catch", "Retry optional"] },
+            { id: "http", label: "HTTP 4xx/5xx", color: "#f59e0b", items: ["!response.ok", "User-friendly message"] },
+            { id: "ok", label: "Success", color: "#22c55e", items: ["Parse JSON", "Update state"] },
+          ]),
+          callout(
+            "tip",
+            "Show 'Try again' on errors — users on mobile networks appreciate retry without reloading the page.",
+          ),
+          quiz(
+            "When does fetch reject into catch without response.ok check?",
+            ["HTTP 404 response", "Network failure", "Invalid JSON after ok response", "status 200"],
+            1,
+            "Network errors reject; HTTP errors still return a Response object.",
+          ),
+        ],
+        challenge: {
+          title: "Fetch Result Helper",
+          description:
+            "Write async `toFetchResult(fetchFn)` returning `{ ok: true, data }` on success or `{ ok: false, error: 'http' }` when `!response.ok`. Use mock returning `{ ok: false, json: () => ({}) }`. Log result.ok.",
+          starterCode: `function mockFetch() {
+  return Promise.resolve({ ok: false, json: () => Promise.resolve({}) });
+}
+
+async function toFetchResult(fetchFn) {
+  // await, check ok, return result object
+}
+
+toFetchResult(mockFetch).then((r) => console.log(r.ok));
+`,
+          solutionCode: `function mockFetch() {
+  return Promise.resolve({ ok: false, json: () => Promise.resolve({}) });
+}
+
+async function toFetchResult(fetchFn) {
+  const response = await fetchFn();
+  if (!response.ok) return { ok: false, error: "http" };
+  const data = await response.json();
+  return { ok: true, data };
+}
+
+toFetchResult(mockFetch).then((r) => console.log(r.ok));`,
+          tests: [
+            { id: 1, label: "Defines toFetchResult", keywords: [{ pattern: "async\\s+function\\s+toFetchResult" }] },
+            { id: 2, label: "Checks response.ok", keywords: [{ pattern: "response\\.ok" }] },
+            { id: 3, label: "Logs ok false", keywords: [{ pattern: "console\\.log.*ok" }] },
+          ],
+        },
+      },
+      {
+        id: "jsweb-18",
+        title: "Capstone: Mini Dashboard",
+        xp: 22,
+        theory: [
+          objectives([
+            "Model dashboard state with status, items, and filter",
+            "Reduce load, success, and fail actions",
+            "Filter items for display in a table view",
+          ]),
+          text(
+            "A **mini dashboard** combines everything: fetch with error handling, immutable state updates, and filtered rendering. Stats cards read from state; the table shows `items.filter(byRole)`.",
+            {
+              label: "Dashboard state",
+              content: `const state = {
+  status: "idle",
+  items: [],
+  filter: "all",
+  error: null,
+};`,
+            },
+          ),
+          diagram("Dashboard data flow", [
+            { id: "load", label: "load action", color: APPLIED_COLOR, items: ["status: loading", "Clear error"] },
+            { id: "api", label: "fetch result", color: "#8b5cf6", items: ["success → items", "fail → error"] },
+            { id: "ui", label: "render", color: "#22c55e", items: ["Filter items", "Show table rows"] },
+          ]),
+          callout(
+            "info",
+            "Pass this challenge, then build the same dashboard in real HTML with a public JSON API — portfolio ready.",
+          ),
+          quiz(
+            "What should dashboard state include for async data?",
+            ["Only CSS colors", "status, items, error, and filter", "Every DOM node", "Server passwords"],
+            1,
+            "Central state drives loading spinners, data tables, and error banners from one place.",
+          ),
+        ],
+        challenge: {
+          title: "Dashboard Reducer",
+          description:
+            "Write `dashboardReducer(state, action)` for `{ type: 'load' }`, `{ type: 'success', items }`, `{ type: 'fail', error }`, `{ type: 'filter', value }`. Start idle. On success set status 'ready'. Filter action updates filter only. Load success with 2 items, log items.length.",
+          starterCode: `function dashboardReducer(state, action) {
+  // handle load, success, fail, filter
+}
+
+const next = dashboardReducer(
+  { status: "idle", items: [], filter: "all", error: null },
+  { type: "success", items: [{ id: 1 }, { id: 2 }] },
+);
+console.log(next.status, next.items.length);
+`,
+          solutionCode: `function dashboardReducer(state, action) {
+  if (action.type === "load") {
+    return { ...state, status: "loading", error: null };
+  }
+  if (action.type === "success") {
+    return { status: "ready", items: action.items, filter: state.filter, error: null };
+  }
+  if (action.type === "fail") {
+    return { ...state, status: "error", error: action.error };
+  }
+  if (action.type === "filter") {
+    return { ...state, filter: action.value };
+  }
+  return state;
+}
+
+const next = dashboardReducer(
+  { status: "idle", items: [], filter: "all", error: null },
+  { type: "success", items: [{ id: 1 }, { id: 2 }] },
+);
+console.log(next.status, next.items.length);`,
+          tests: [
+            { id: 1, label: "Defines dashboardReducer", keywords: [{ pattern: "function\\s+dashboardReducer" }] },
+            { id: 2, label: "Handles success", keywords: [{ pattern: "success" }] },
+            { id: 3, label: "Logs ready and length", keywords: [{ pattern: "console\\.log.*items\\.length" }] },
+          ],
+        },
+      },
+    ],
+  },
   ...JS_WEB_DEV_EXTENDED_CHAPTERS,
 ];
+
+const JS_WEB_DEV_CHAPTERS = applyChapterEnhancements(RAW_JS_WEB_DEV_CHAPTERS);
+
+export { JS_WEB_DEV_CHAPTERS };
 
 export const JS_WEB_DEV_LESSONS = applyLessonVideoLinks(
   JS_WEB_DEV_CHAPTERS.flatMap((ch) =>

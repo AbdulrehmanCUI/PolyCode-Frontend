@@ -14,6 +14,7 @@ import useLessonQuizAttempts from "../../shared/useLessonQuizAttempts";
 import { mapTheoryWithQuizIndices } from "../../shared/lessonQuizUtils";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
 import LessonTopicOverview from "../../shared/LessonTopicOverview";
+import { lessonUsesW3Overview } from "../../shared/buildAutoW3TopicOverview";
 import useOopsProgress from "../hooks/useOopsProgress";
 import { useLessonAssistantContext } from "../../../assistant/hooks/useLessonAssistantContext";
 
@@ -113,6 +114,7 @@ export default function LessonPage() {
     getSelection,
   } = useLessonQuizAttempts(READ_GATE_PREFIX, lessonId, lesson);
   const theoryLesson = preparedLesson || lesson;
+  const hasW3Overview = lessonUsesW3Overview(theoryLesson || lesson);
   const lessonIdx = ALL_LESSONS.findIndex((l) => l.id === lessonId);
   const prev = ALL_LESSONS[lessonIdx - 1];
   const next = ALL_LESSONS[lessonIdx + 1];
@@ -281,6 +283,8 @@ export default function LessonPage() {
                 accentColor={LEARN_ACCENT}
                 variant="oops"
               />
+              {!hasW3Overview ? (
+              <>
               <div className="oops-lesson-title-row">
                 <div>
                   <span className="oops-interactive-label">Plain English</span>
@@ -369,6 +373,8 @@ export default function LessonPage() {
                   </ul>
                 </div>
               </div>
+              </>
+              ) : null}
               {(() => {
                 const theoryWithQuizMeta = mapTheoryWithQuizIndices(
                   theoryLesson?.theory || [],
