@@ -337,8 +337,6 @@ export const languageCourses = {
       accent: "#179c24",
     },
   ],
-
-  // ── Java Courses ─────────────────────────────────────────────────────────────
   java: [
     {
       title: "Java Fundamentals",
@@ -406,6 +404,18 @@ export const languageCourses = {
       accent: "#9333ea",
     },
   ],
+  // ─── ADD GO TRACK DEFINITION ────────────────────────────────────────────────
+  go: [
+    {
+      title: "Go Fundamentals",
+      tag: "Core Track",
+      icon: Terminal,
+      description:
+        "From variables and short declarations to slices, maps, struct composition, implicit interfaces, and concurrent goroutines.",
+      href: "/learn/golang-fundamentals",
+      accent: "#00add8",
+    },
+  ],
 };
 
 /** Ordered stacks for navbar grouping (one row per language, sub-courses inside). */
@@ -451,6 +461,13 @@ export const courseStackGroups = [
     label: "Ruby",
     accent: "#701516",
     languagePath: "/language/Ruby",
+  },
+  // ─── ADD GO STACK GROUP ────────────────────────────────────────────────────
+  {
+    id: "go",
+    label: "Go",
+    accent: "#00add8",
+    languagePath: "/language/Go",
   },
 ];
 
@@ -507,6 +524,8 @@ export const learnNavByLanguage = {
     { label: "Ruby Basics", to: "/learn/ruby-fundamentals" },
     { label: "Ruby Gems", to: "/learn/ruby-gems" },
   ],
+  // ─── ADD GO NAVIGATION ENTRIES ─────────────────────────────────────────────
+  go: [{ label: "Go Basics", to: "/learn/golang-fundamentals" }],
 };
 
 const learnNavLanguageAliases = {
@@ -570,6 +589,10 @@ export function inferLanguageFromLearnPath(pathname = "") {
   }
   if (pathname.startsWith("/learn/c-sharp-fundamentals")) {
     return "csharp";
+  }
+  // ─── ADD GO ROUTE INFERENCE ────────────────────────────────────────────────
+  if (pathname.startsWith("/learn/golang-fundamentals")) {
+    return "go";
   }
   return null;
 }

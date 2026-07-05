@@ -139,9 +139,7 @@ const PythonFundamentalsHub = lazyWithChunkRetry(
 );
 const PythonFundamentalsLessonPage = lazyWithChunkRetry(
   () =>
-    import(
-      "./features/learn/python-fundamentals/pages/PythonFundamentalsLessonPage"
-    ),
+    import("./features/learn/python-fundamentals/pages/PythonFundamentalsLessonPage"),
 );
 const MatplotlibHub = lazyWithChunkRetry(
   () => import("./features/learn/matplotlib-py/pages/MatplotlibHub"),
@@ -156,10 +154,12 @@ const PythonOopLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/python-oop-py/pages/PythonOopLessonPage"),
 );
 const PythonFileHandlingHub = lazyWithChunkRetry(
-  () => import("./features/learn/python-file-handling-py/pages/PythonFileHandlingHub"),
+  () =>
+    import("./features/learn/python-file-handling-py/pages/PythonFileHandlingHub"),
 );
 const PythonFileHandlingLessonPage = lazyWithChunkRetry(
-  () => import("./features/learn/python-file-handling-py/pages/PythonFileHandlingLessonPage"),
+  () =>
+    import("./features/learn/python-file-handling-py/pages/PythonFileHandlingLessonPage"),
 );
 const PandasHub = lazyWithChunkRetry(
   () => import("./features/learn/pandas-py/pages/PandasHub"),
@@ -258,22 +258,26 @@ const CPointersLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/c-pointers/pages/CPointersLessonPage"),
 );
 const CMemoryManagementHub = lazyWithChunkRetry(
-  () => import("./features/learn/c-memory-management/pages/CMemoryManagementHub"),
+  () =>
+    import("./features/learn/c-memory-management/pages/CMemoryManagementHub"),
 );
 const CMemoryManagementLessonPage = lazyWithChunkRetry(
-  () => import("./features/learn/c-memory-management/pages/CMemoryManagementLessonPage"),
+  () =>
+    import("./features/learn/c-memory-management/pages/CMemoryManagementLessonPage"),
 );
 const CFileHandlingHub = lazyWithChunkRetry(
   () => import("./features/learn/c-file-handling/pages/CFileHandlingHub"),
 );
 const CFileHandlingLessonPage = lazyWithChunkRetry(
-  () => import("./features/learn/c-file-handling/pages/CFileHandlingLessonPage"),
+  () =>
+    import("./features/learn/c-file-handling/pages/CFileHandlingLessonPage"),
 );
 const CDataStructuresHub = lazyWithChunkRetry(
   () => import("./features/learn/c-data-structures/pages/CDataStructuresHub"),
 );
 const CDataStructuresLessonPage = lazyWithChunkRetry(
-  () => import("./features/learn/c-data-structures/pages/CDataStructuresLessonPage"),
+  () =>
+    import("./features/learn/c-data-structures/pages/CDataStructuresLessonPage"),
 );
 const CProjectsHub = lazyWithChunkRetry(
   () => import("./features/learn/c-projects/pages/CProjectsHub"),
@@ -281,8 +285,16 @@ const CProjectsHub = lazyWithChunkRetry(
 const CProjectsLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/c-projects/pages/CProjectsLessonPage"),
 );
-// ─────────────────────────────────────────────────────────────────────────────
 
+// ─── Go Language Courses ──────────────────────────────────────────────────────
+const GoFundamentalsHub = lazyWithChunkRetry(
+  () => import("./features/learn/golang-fundamentals/pages/GoFundamentalsHub"),
+);
+const GoFundamentalsLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/golang-fundamentals/pages/GoFundamentalsLessonPage"),
+);
+// ─────────────────────────────────────────────────────────────────────────────
 const PageFallback = () => (
   <div className="loading-overlay">
     <div className="spinner-container">
@@ -664,6 +676,8 @@ function AppRoutes() {
       path.startsWith("/learn/ruby-gems")
     ) {
       handleLanguageSelect("Ruby", { stay: true });
+    } else if (path.startsWith("/learn/go-fundamentals")) {
+      handleLanguageSelect("Go", { stay: true });
     } else if (
       path.startsWith("/learn/c-fundamentals") ||
       path.startsWith("/learn/c-functions") ||
@@ -1818,7 +1832,53 @@ function AppRoutes() {
           }
         />
         {/* ─────────────────────────────────────────────────────────────────── */}
-
+        {/* ─── Go Language Course Routes ─────────────────────────────────────── */}
+        <Route
+          path="/learn/golang-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoFundamentalsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        {/* ─────────────────────────────────────────────────────────────────── */}
       </Routes>
     </Suspense>
   );
@@ -1828,17 +1888,17 @@ function App() {
   return (
     <AuthProvider>
       <AppSettingsProvider>
-      <PlaygroundProvider>
-        <Router>
-          <AssistantProvider>
-            <SelectionPins />
-            <ScrollToTop />
-            <LastRouteTracker />
-            <AppRoutes />
-            <GlobalAssistant />
-          </AssistantProvider>
-        </Router>
-      </PlaygroundProvider>
+        <PlaygroundProvider>
+          <Router>
+            <AssistantProvider>
+              <SelectionPins />
+              <ScrollToTop />
+              <LastRouteTracker />
+              <AppRoutes />
+              <GlobalAssistant />
+            </AssistantProvider>
+          </Router>
+        </PlaygroundProvider>
       </AppSettingsProvider>
     </AuthProvider>
   );
