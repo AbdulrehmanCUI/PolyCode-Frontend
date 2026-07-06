@@ -20,7 +20,9 @@ import {
 } from "lucide-react";
 
 export function languageKey(value = "") {
-  return value.toLowerCase().replace(/\s+/g, "");
+  const normalized = value.toLowerCase().replace(/\s+/g, "");
+  if (normalized === "html&css") return "htmlcss";
+  return normalized;
 }
 
 export const generalCourses = [
@@ -304,6 +306,17 @@ export const languageCourses = {
       accent: "#339933",
     },
   ],
+  htmlcss: [
+    {
+      title: "HTML & CSS Foundation",
+      tag: "Web Foundation",
+      icon: Globe,
+      description:
+        "Short foundation course for semantic HTML, CSS styling, responsive layout, and Bootstrap utilities with runnable examples.",
+      href: "/learn/html-css-foundation",
+      accent: "#0ea5e9",
+    },
+  ],
   php: [
     {
       title: "PHP Fundamentals",
@@ -435,6 +448,12 @@ export const courseStackGroups = [
     languagePath: "/language/JavaScript",
   },
   {
+    id: "htmlcss",
+    label: "HTML & CSS",
+    accent: "#0ea5e9",
+    languagePath: "/language/HTML%20%26%20CSS",
+  },
+  {
     id: "csharp",
     label: "C#",
     accent: "#179c24",
@@ -493,6 +512,9 @@ export const learnNavByLanguage = {
     { label: "Web Dev", to: "/learn/js-web-dev" },
     { label: "Node & npm", to: "/learn/node-npm" },
   ],
+  htmlCss: [
+    { label: "HTML & CSS", to: "/learn/html-css-foundation" },
+  ],
   java: [
     { label: "Fundamentals", to: "/hub?language=Java&category=01-beginner" },
     { label: "Intermediate", to: "/hub?language=Java&category=02-intermediate" },
@@ -512,6 +534,7 @@ export const learnNavByLanguage = {
 const learnNavLanguageAliases = {
   "c++": "cpp",
   "c#": "csharp",
+  "html&css": "htmlcss",
 };
 
 function normalizeLearnNavLanguageKey(key = "") {
@@ -558,6 +581,9 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/node-npm")
   ) {
     return "javascript";
+  }
+  if (pathname.startsWith("/learn/html-css-foundation")) {
+    return "htmlcss";
   }
   if (pathname.startsWith("/learn/php-fundamentals")) {
     return "php";

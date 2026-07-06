@@ -198,6 +198,12 @@ const JsWebDevHub = lazyWithChunkRetry(
 const JsWebDevLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/js-web-dev/pages/JsWebDevLessonPage"),
 );
+const HtmlCssFoundationHub = lazyWithChunkRetry(
+  () => import("./features/learn/html-css-foundation/pages/HtmlCssFoundationHub"),
+);
+const HtmlCssFoundationLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/html-css-foundation/pages/HtmlCssFoundationLessonPage"),
+);
 const NodeNpmHub = lazyWithChunkRetry(
   () => import("./features/learn/node-npm/pages/NodeNpmHub"),
 );
@@ -1333,6 +1339,51 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <JsWebDevLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/html-css-foundation"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <HtmlCssFoundationHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/html-css-foundation/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <HtmlCssFoundationLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/html-css-foundation/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <HtmlCssFoundationLessonPage />
               </LearnShell>
             </ThemedShell>
           }
