@@ -487,19 +487,62 @@ export async function runLua(code) {
 // ─── CSS (render in preview) ──────────────────────────────────────────────────
 
 export function runCSS(code) {
-  return Promise.resolve(preview(`<html><head><style>${code}</style></head><body>
-    <div class="preview-note" style="font-family:sans-serif;padding:1rem;color:#666;font-size:.8rem;">
-      CSS Preview — add HTML elements to see styles applied:
+  // Provide a light preview container so CSS examples remain readable
+  // even when example CSS sets dark text colors. User CSS is applied
+  // after the reset so it can still override most rules if intended.
+  return Promise.resolve(
+    preview(`<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      /* Light preview reset for readability */
+      html, body { background: #ffffff; color: #111111; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, sans-serif; margin: 0; padding: 0; }
+      .preview-note { font-family: sans-serif; padding: 1rem; color: #666666; font-size: 0.9rem; }
+      .preview-wrap { padding: 1rem; }
+      #hero { padding: 2rem; border-radius: 18px; background: #eef2ff; margin-bottom: 1rem; }
+      #hero h1 { margin: 0 0 0.5rem; font-size: 2rem; }
+      #hero p { margin: 0 0 1rem; color: #334155; }
+      #hero button { padding: 0.75rem 1.25rem; border: none; border-radius: 999px; background: #0ea5e9; color: white; cursor: pointer; }
+      .container { width: 100%; max-width: 960px; margin: 0 auto; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+      .card { border: 1px solid #d1d5db; border-radius: 16px; background: #f8fafc; padding: 1rem; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
+      .box { padding: 1rem; border: 2px dashed #94a3b8; border-radius: 12px; background: #f1f5f9; }
+      .card h2 { margin-top: 0; }
+      .demo-list { margin: 0; padding-left: 1.25rem; }
+      .demo-list li { margin: 0.35rem 0; }
+      input[type="text"] { width: 100%; max-width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; }
+    </style>
+    <style id="user-css">
+${code}
+    </style>
+  </head>
+  <body>
+    <div class="preview-note">CSS Preview — add HTML elements to see styles applied:</div>
+    <div class="preview-wrap">
+      <section id="hero">
+        <h1>PolyCode CSS demo</h1>
+        <p>Use selectors like <code>#hero</code>, <code>.card</code>, and <code>.container</code> to style this preview.</p>
+        <button>Explore styles</button>
+      </section>
+      <div class="container">
+        <div class="card">
+          <h2>Card title</h2>
+          <p>This card uses <code>.card</code> styles and shows text, lists, and links.</p>
+          <ul class="demo-list">
+            <li>Item one</li>
+            <li>Item two</li>
+            <li>Item three</li>
+          </ul>
+          <a href="#">Read more</a>
+        </div>
+        <div class="box">A div.box element</div>
+      </div>
+      <p>Try styling the <code>body</code>, <code>h1</code>, and <code>.container</code> elements too.</p>
+      <input type="text" placeholder="Search PolyCode" />
     </div>
-    <div style="padding:1rem;">
-      <h1>Heading 1</h1><h2>Heading 2</h2>
-      <p>Paragraph text. <a href="#">A link</a>. <strong>Bold</strong>. <em>Italic</em>.</p>
-      <button>Button</button>
-      <ul><li>List item 1</li><li>List item 2</li></ul>
-      <div class="box">A div.box element</div>
-      <input type="text" placeholder="Input field" />
-    </div>
-  </body></html>`));
+  </body>
+</html>`),
+  );
 }
 
 // ─── XML ─────────────────────────────────────────────────────────────────────

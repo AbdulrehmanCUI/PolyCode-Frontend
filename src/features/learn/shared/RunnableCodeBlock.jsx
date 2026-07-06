@@ -29,12 +29,13 @@ import {
   formatRubyOutput,
   getRubyRuntimeError,
   runRubyCode,
-} from "./runRuby"; 
+} from "./runRuby";
 import {
   formatPhpOutput,
   getPhpRuntimeError,
   runPhpCode,
 } from "./runPhp";
+import { runHTML, runCSS } from "../../playground/services/BrowserExecutor";
 
 function normalizeLang(lang = "python") {
   const value = lang.toLowerCase();
@@ -49,6 +50,8 @@ function normalizeLang(lang = "python") {
 function monacoLanguage(lang) {
   if (lang === "cpp") return "cpp";
   if (lang === "javascript") return "javascript";
+  if (lang === "html") return "html";
+  if (lang === "css") return "css";
   if (lang === "csharp") return "csharp";
   if (lang === "ruby") return "ruby";
   if (lang === "php") return "php";
@@ -62,13 +65,19 @@ async function executeTheoryCode(source, lang) {
   if (lang === "javascript") {
     return runJavaScriptCode(source);
   }
+  if (lang === "html") {
+    return runHTML(source);
+  }
+  if (lang === "css") {
+    return runCSS(source);
+  }
   if (lang === "csharp") {
-    return runCsharpCode(source); 
+    return runCsharpCode(source);
   }
   if (lang === "ruby") {
     return runRubyCode(source, { learn: true });
   }
-  if (lang === "php"){
+  if (lang === "php") {
     return runPhpCode(source);
   }
   return runPythonCode(source);
@@ -109,12 +118,15 @@ export default function RunnableCodeBlock({
   const [copied, setCopied] = useState(false);
   const [running, setRunning] = useState(false);
   const [output, setOutput] = useState(null);
+  const [previewHTML, setPreviewHTML] = useState(null);
+  const [previewTheme, setPreviewTheme] = useState("light");
   const [isEditing, setIsEditing] = useState(false);
   const [code, setCode] = useState(block.content);
 
   useEffect(() => {
     setCode(block.content);
     setOutput(null);
+    setPreviewHTML(null);
     setIsEditing(false);
   }, [block.content]);
 
@@ -127,11 +139,13 @@ export default function RunnableCodeBlock({
 
   function clearOutput() {
     setOutput(null);
+    setPreviewHTML(null);
   }
 
   function resetCode() {
     setCode(block.content);
     setOutput(null);
+    setPreviewHTML(null);
   }
 
   async function handleRun() {
@@ -139,13 +153,20 @@ export default function RunnableCodeBlock({
 
     setRunning(true);
     setOutput({ status: "running", stdout: "Running…" });
+    setPreviewHTML(null);
 
     try {
-      const { result, runtime } = await executeTheoryCode(code, lang);
+      const { result, runtime, previewHTML: htmlPreview } = await executeTheoryCode(code, lang);
       const runtimeError = getTheoryRuntimeError(result, lang);
 
       if (runtimeError) {
         setOutput({ status: "fail", stdout: runtimeError });
+        return;
+      }
+
+      if (htmlPreview) {
+        setPreviewHTML(htmlPreview);
+        setOutput(null);
         return;
       }
 
@@ -164,6 +185,17 @@ export default function RunnableCodeBlock({
     } finally {
       setRunning(false);
     }
+  }
+
+  function themedPreviewHtml(html, theme) {
+    if (!html) return html;
+    // Inject a theme override style into the preview head.
+    const themeStyle = theme === "dark" ? `\n<style id="preview-theme">html,body{background:#0b1220!important;color:#e6eef8!important} .preview-note{color:#cbd5e1!important} a{color:#93c5fd!important} </style>\n` : `\n<style id="preview-theme">html,body{background:#ffffff!important;color:#111111!important} .preview-note{color:#666666!important} a{color:#1e3a8a!important} </style>\n`;
+
+    if (html.includes("</head>")) {
+      return html.replace(/<\/head>/i, `${themeStyle}</head>`);
+    }
+    return themeStyle + html;
   }
 
   return (
@@ -248,15 +280,17 @@ export default function RunnableCodeBlock({
       <div
         className={`oops-theory-output oops-output-panel ${
           output?.status ? `oops-output-${output.status}` : ""
-        }`}
+        } ${previewHTML ? "oops-output-preview" : ""}`}
       >
         <div className="oops-output-head">
-          <span>Output</span>
+          <span>{previewHTML ? "Preview" : "Output"}</span>
           <div className="oops-output-head-actions">
             <small>
-              {output ? "after last run" : "run the example to see output"}
+              {output || previewHTML
+                ? "after last run"
+                : "run the example to see output"}
             </small>
-            {output && (
+            {(output || previewHTML) && (
               <button
                 type="button"
                 className="oops-clear-output-btn"
@@ -267,11 +301,41 @@ export default function RunnableCodeBlock({
             )}
           </div>
         </div>
-        <PythonRunOutput
-          stdout={output?.stdout}
-          plotImages={output?.plotImages}
-          emptyHint="Output will appear here after you run the code."
-        />
+        {previewHTML ? (
+          <div className="oops-preview-frame">
+            <div style={{ display: "flex", gap: 8, alignItems: "center", padding: "0 1rem 0 1rem" }}>
+              <small style={{ color: "#666" }}>Theme:</small>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setPreviewTheme("light")}
+                  style={{ marginRight: 6, padding: "4px 8px", borderRadius: 4, border: previewTheme === "light" ? "1px solid #111" : "1px solid #ccc" }}
+                >
+                  Light
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewTheme("dark")}
+                  style={{ padding: "4px 8px", borderRadius: 4, border: previewTheme === "dark" ? "1px solid #111" : "1px solid #ccc" }}
+                >
+                  Dark
+                </button>
+              </div>
+            </div>
+            <iframe
+              title="html-preview"
+              srcDoc={themedPreviewHtml(previewHTML, previewTheme)}
+              sandbox="allow-scripts"
+              style={{ width: "100%", minHeight: 300, border: "1px solid #e5e7eb", borderRadius: 6 }}
+            />
+          </div>
+        ) : (
+          <PythonRunOutput
+            stdout={output?.stdout}
+            plotImages={output?.plotImages}
+            emptyHint="Output will appear here after you run the code."
+          />
+        )}
       </div>
     </div>
   );
