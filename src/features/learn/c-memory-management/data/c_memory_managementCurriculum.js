@@ -362,7 +362,7 @@ export const C_MEMORY_MANAGEMENT_CHAPTERS = [
             "In C, the integer type keyword is `int`. Declarations follow the pattern: type name = value;"
           ),
         ],
-        challenge: ,,{
+        challenge:{
           instructions: "Write a C program that demonstrates: Set pointer to NULL after free.",
           starterCode: `#include <stdio.h>\n\nint main() {\n    // Your code here\n    printf("Hello from Safe Free Pattern!\\n");\n    return 0;\n}`,
           solution: `#include <stdio.h>\n\nint main() {\n    printf("Hello from Safe Free Pattern!\\n");\n    return 0;\n}`,
