@@ -9,6 +9,7 @@ import useMatplotlibProgress from "../hooks/usematplotlibProgress";
 import CourseCertificate from "../../shared/CourseCertificate";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import LearnChapterIcon from "../../shared/LearnChapterIcon";
 
 const BASE_PATH = "/learn/matplotlib-py";
 
@@ -349,7 +350,9 @@ export default function MatplotlibHub() {
                 <ul className="matplotlib-path-chapters">
                   {stageChapters.map((ch) => (
                     <li key={ch.id}>
-                      <span aria-hidden>{ch.icon}</span>
+                      <span className="oops-chapter-icon-wrap" aria-hidden>
+                  <LearnChapterIcon icon={ch.icon} size={14} />
+                </span>
                       {ch.title}
                     </li>
                   ))}

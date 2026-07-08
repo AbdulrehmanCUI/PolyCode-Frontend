@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Atom, Code2, Keyboard } from "lucide-react";
 import { getLanguages } from "../../docs/services/api";
 
 const languageMeta = {
@@ -47,12 +48,12 @@ const languageMeta = {
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg",
     color: "#e38c00",
   },
-  batchfile: { icon: "⌨️", color: "#4d4d4d" },
+  batchfile: { Icon: Keyboard, color: "#4d4d4d" },
   powershell: {
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/powershell/powershell-original.svg",
     color: "#012456",
   },
-  "q#": { icon: "⚛️", color: "#0078d4" },
+  "q#": { Icon: Atom, color: "#0078d4" },
   quantum: {
     icon: "/images/logo.png",
     color: "#6366f1",
@@ -183,14 +184,15 @@ export default function LanguagePickerSection({
         ) : null}
 
         <div className="lang-grid">
-          {languages.map((language, i) => {
+          {languages.map((language) => {
             const meta = languageMeta[language.toLowerCase()] || {
-              icon: "💻",
+              Icon: Code2,
               color: "#64748b",
             };
             const rgba = meta.color.startsWith("#")
               ? hexToRgba(meta.color, 0.15)
               : "rgba(255,255,255,0.1)";
+            const FallbackIcon = meta.Icon || Code2;
 
             return (
               <div
@@ -203,10 +205,11 @@ export default function LanguagePickerSection({
                 }}
               >
                 <div className="lang-icon-wrapper">
-                  {meta.icon.startsWith("http") || meta.icon.startsWith("/") ? (
+                  {typeof meta.icon === "string" &&
+                  (meta.icon.startsWith("http") || meta.icon.startsWith("/")) ? (
                     <img src={meta.icon} alt={language} />
                   ) : (
-                    <span>{meta.icon}</span>
+                    <FallbackIcon size={28} strokeWidth={1.75} aria-hidden />
                   )}
                 </div>
                 <span className="lang-name">{language}</span>
