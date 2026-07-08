@@ -25,6 +25,7 @@ const STACK_ICONS = {
     "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg",
   php: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/php/php-original.svg",
   ruby: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/ruby/ruby-original.svg",
+  go: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/go/go-original.svg"
 };
 
 const ORBIT_CHIPS = ["python", "cpp", "javascript", "csharp"];
