@@ -4,7 +4,7 @@ import NumpyIntroTheory from "../../numpy-py/components/NumpyIntroTheory";
 import OopsSidebar from "../../oops-cpp/components/OopsSidebar";
 import LearnProfileMenu from "../../shared/LearnProfileMenu";
 import LessonContentShell from "../../shared/LessonContentShell";
-import JavaScriptCodeChallenge from "../../js-fundamentals/components/JavaScriptCodeChallenge";
+import HtmlCssCodeChallenge from "../components/HtmlCssCodeChallenge";
 import {
   HTML_CSS_FOUNDATION_CHAPTERS,
   HTML_CSS_FOUNDATION_LESSONS,
@@ -54,7 +54,7 @@ export default function HtmlCssFoundationLessonPage() {
 
   useLessonAssistantContext({
     course: "HTML & CSS Foundation",
-    language: "JavaScript",
+    language: "HTML & CSS",
     lesson,
     chapter: lesson?.chapterTitle,
     tab,
@@ -90,6 +90,9 @@ export default function HtmlCssFoundationLessonPage() {
   const isCompleted = isAuthenticated && !!progress[lessonId];
   const isBookmarked = bookmarks.includes(lessonId);
   const completedCount = Object.keys(progress).length;
+  const courseFullyDone =
+    completedCount >= HTML_CSS_FOUNDATION_LESSONS.length &&
+    HTML_CSS_FOUNDATION_LESSONS.length > 0;
   const earnedXP = HTML_CSS_FOUNDATION_LESSONS.filter((item) => progress[item.id]).reduce(
     (sum, item) => sum + item.xp,
     0,
@@ -199,7 +202,7 @@ export default function HtmlCssFoundationLessonPage() {
               onGoChallenge={goToChallenge}
             />
           ) : (
-            <JavaScriptCodeChallenge
+            <HtmlCssCodeChallenge
               challenge={lesson.challenge}
               accentColor={lesson.chapterColor}
               isCompleted={isCompleted}
@@ -234,7 +237,13 @@ export default function HtmlCssFoundationLessonPage() {
             <button
               type="button"
               className="oops-nav-btn oops-nav-next"
-              onClick={() => navigate(BASE_PATH)}
+              onClick={() =>
+                navigate(
+                  courseFullyDone
+                    ? `${BASE_PATH}#course-certificate`
+                    : BASE_PATH,
+                )
+              }
             >
               Finish Course →
             </button>

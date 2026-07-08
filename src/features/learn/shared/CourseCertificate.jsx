@@ -137,7 +137,7 @@ export default function CourseCertificate({
   if (!isComplete) return null;
 
   return (
-    <div className="certificate-wrapper">
+    <div id="course-certificate" className="certificate-wrapper">
       <div className="certificate" ref={certificateRef}>
         <div className="certificate-watermark">
           <img src="/images/polycode-logo.png" alt="" />
