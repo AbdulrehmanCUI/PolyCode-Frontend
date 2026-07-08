@@ -133,9 +133,7 @@ const PythonFundamentalsHub = lazyWithChunkRetry(
 );
 const PythonFundamentalsLessonPage = lazyWithChunkRetry(
   () =>
-    import(
-      "./features/learn/python-fundamentals/pages/PythonFundamentalsLessonPage"
-    ),
+    import("./features/learn/python-fundamentals/pages/PythonFundamentalsLessonPage"),
 );
 const MatplotlibHub = lazyWithChunkRetry(
   () => import("./features/learn/matplotlib-py/pages/MatplotlibHub"),
@@ -169,22 +167,18 @@ const JsFundamentalsLessonPage = lazyWithChunkRetry(
     import("./features/learn/js-fundamentals/pages/JsFundamentalsLessonPage"),
 );
 const JavaIntermediateHub = lazyWithChunkRetry(
-  () => import('./features/learn/java-intermediate/pages/JavaIntermediateHub'),
+  () => import("./features/learn/java-intermediate/pages/JavaIntermediateHub"),
 );
 const JavaIntermediateLessonPage = lazyWithChunkRetry(
   () =>
-    import(
-      './features/learn/java-intermediate/pages/JavaIntermediateLessonPage'
-    ),
+    import("./features/learn/java-intermediate/pages/JavaIntermediateLessonPage"),
 );
 const JavaFundamentalsHub = lazyWithChunkRetry(
   () => import("./features/learn/java-fundamentals/pages/JavaFundamentalsHub"),
 );
 const JavaFundamentalsLessonPage = lazyWithChunkRetry(
   () =>
-    import(
-      "./features/learn/java-fundamentals/pages/JavaFundamentalsLessonPage"
-    ),
+    import("./features/learn/java-fundamentals/pages/JavaFundamentalsLessonPage"),
 );
 const CsharpHub = lazyWithChunkRetry(
   () => import("./features/learn/csharp-fundamentals/pages/CsharpHub"),
@@ -198,9 +192,16 @@ const HtmlCssFoundationHub = lazyWithChunkRetry(
 );
 const HtmlCssFoundationLessonPage = lazyWithChunkRetry(
   () =>
-    import(
-      "./features/learn/html-css-foundation/pages/HtmlCssFoundationLessonPage"
-    ),
+    import("./features/learn/html-css-foundation/pages/HtmlCssFoundationLessonPage"),
+);
+
+// ─── Go Language Courses ──────────────────────────────────────────────────────
+const GoFundamentalsHub = lazyWithChunkRetry(
+  () => import("./features/learn/golang-fundamentals/pages/GoFundamentalsHub"),
+);
+const GoFundamentalsLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/golang-fundamentals/pages/GoFundamentalsLessonPage"),
 );
 
 const PageFallback = () => (
@@ -571,14 +572,18 @@ function AppRoutes() {
       handleLanguageSelect("HTML & CSS", { stay: true });
     } else if (path.startsWith("/learn/c-sharp-fundamentals")) {
       handleLanguageSelect("C#", { stay: true });
-    } else if (path.startsWith("/learn/java-fundamentals") ||
-               path.startsWith("/learn/java-intermediate")) {
+    } else if (
+      path.startsWith("/learn/java-fundamentals") ||
+      path.startsWith("/learn/java-intermediate")
+    ) {
       handleLanguageSelect("Java", { stay: true });
     } else if (
       path.startsWith("/learn/oops-cpp") ||
       path.startsWith("/learn/pointers-cpp")
     ) {
       handleLanguageSelect("C++", { stay: true });
+    } else if (path.startsWith("/learn/golang-fundamentals")) {
+      handleLanguageSelect("Go", { stay: true });
     }
   }, [location.pathname, handleLanguageSelect]);
 
@@ -632,7 +637,10 @@ function AppRoutes() {
         <Route
           path="/select-language"
           element={
-            <StackPickerShell savedTheme={theme} onThemeChange={handleThemeChange}>
+            <StackPickerShell
+              savedTheme={theme}
+              onThemeChange={handleThemeChange}
+            >
               <LandingPage
                 onLanguageSelect={handleLanguageSelect}
                 continueLanguage={selectedLanguage}
@@ -1250,6 +1258,52 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <CsharpLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        {/* ─── Go Language Course Routes ─────────────────────────────────────── */}
+        <Route
+          path="/learn/golang-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoFundamentalsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoFundamentalsLessonPage />
               </LearnShell>
             </ThemedShell>
           }

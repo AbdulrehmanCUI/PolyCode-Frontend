@@ -2,10 +2,12 @@ import { useCallback, useMemo, useState } from "react";
 import { useAuth } from "../../../auth/context/AuthContext";
 import { recordLessonXp } from "../../shared/recordLessonXp";
 
-const LOCAL_KEY = "c_fundamentals_progress";
-const LOCAL_CODE_KEY = "c_fundamentals_saved_code";
-const LOCAL_BOOKMARKS_KEY = "c_fundamentals_bookmarks";
-const LOCAL_LAST_KEY = "c_fundamentals_last_lesson";
+// Changed prefixes to match 'go_fundamentals' to keep it isolated from C fundamentals
+const LOCAL_KEY = "go_fundamentals_progress";
+const LOCAL_CODE_KEY = "go_fundamentals_saved_code";
+const LOCAL_BOOKMARKS_KEY = "go_fundamentals_bookmarks";
+const LOCAL_NOTES_KEY = "go_fundamentals_notes"; 
+const LOCAL_LAST_KEY = "go_fundamentals_last_lesson";
 
 function readJson(key, fallback) {
   try {
@@ -15,7 +17,7 @@ function readJson(key, fallback) {
   }
 }
 
-export default function useCFundamentalsProgress() {
+export default function useGoFundamentalsProgress() {
   const { user, isAuthenticated, token } = useAuth();
   const [localVersion, setLocalVersion] = useState(0);
   const refreshLocal = useCallback(() => setLocalVersion((v) => v + 1), []);
@@ -26,6 +28,7 @@ export default function useCFundamentalsProgress() {
       completed: readJson(LOCAL_KEY, {}),
       savedCode: readJson(LOCAL_CODE_KEY, {}),
       bookmarks: readJson(LOCAL_BOOKMARKS_KEY, []),
+      notes: readJson(LOCAL_NOTES_KEY, {}), // Added notes to snapshot
     };
   }, [localVersion]);
 
@@ -33,6 +36,27 @@ export default function useCFundamentalsProgress() {
   const savedCodeMap = isAuthenticated ? localSnapshot.savedCode : {};
   const bookmarks = localSnapshot.bookmarks;
   const lastLessonId = localStorage.getItem(LOCAL_LAST_KEY);
+
+  // 1. Added function to fetch a lesson's note safely
+  const getLessonNote = useCallback(
+    (lessonId) => {
+      if (!lessonId) return "";
+      return localSnapshot.notes[lessonId] || "";
+    },
+    [localSnapshot.notes]
+  );
+
+  // 2. Added function to save/update a lesson's note
+  const saveNote = useCallback(
+    async (lessonId, noteText) => {
+      if (!isAuthenticated || !lessonId) return;
+      const current = readJson(LOCAL_NOTES_KEY, {});
+      current[lessonId] = noteText;
+      localStorage.setItem(LOCAL_NOTES_KEY, JSON.stringify(current));
+      refreshLocal();
+    },
+    [isAuthenticated, refreshLocal]
+  );
 
   const completeLesson = useCallback(
     async (lesson) => {
@@ -42,7 +66,7 @@ export default function useCFundamentalsProgress() {
       localStorage.setItem(LOCAL_KEY, JSON.stringify(current));
       localStorage.setItem(LOCAL_LAST_KEY, lesson.id);
       refreshLocal();
-      recordLessonXp(token, "c-fundamentals", lesson);
+      recordLessonXp(token, "go-fundamentals", lesson);
     },
     [isAuthenticated, refreshLocal, token],
   );
@@ -94,5 +118,7 @@ export default function useCFundamentalsProgress() {
     saveCode,
     toggleBookmark,
     addTime,
+    getLessonNote, // Exposed to match your LessonPage requirements
+    saveNote,       // Exposed to match your LessonPage requirements
   };
 }

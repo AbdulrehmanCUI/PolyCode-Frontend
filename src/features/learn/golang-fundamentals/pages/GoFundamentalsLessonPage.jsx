@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import NumpyIntroTheory from "../../numpy-py/components/NumpyIntroTheory";
+import NumpyIntroTheory from "../../numpy-py/components/NumpyIntroTheory"; // <-- RESTORED NATIVE THEORY LAYOUT
 import OopsSidebar from "../../oops-cpp/components/OopsSidebar";
 import LearnProfileMenu from "../../shared/LearnProfileMenu";
 import LessonContentShell from "../../shared/LessonContentShell";
