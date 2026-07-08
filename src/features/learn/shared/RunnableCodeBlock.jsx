@@ -57,10 +57,12 @@ async function executeTheoryCode(source, lang) {
     return runJavaScriptCode(source);
   }
   if (lang === "html") {
-    return runHTML(source);
+    const result = await runHTML(source);
+    return { result, runtime: "preview", previewHTML: result?.previewHTML || null };
   }
   if (lang === "css") {
-    return runCSS(source);
+    const result = await runCSS(source);
+    return { result, runtime: "preview", previewHTML: result?.previewHTML || null };
   }
   if (lang === "csharp") {
     return runCsharpCode(source);
@@ -92,6 +94,9 @@ ${source
 }
 
 function formatTheoryOutput(result, lang) {
+  if (lang === "html" || lang === "css") {
+    return result?.error || result?.stderr || "Preview ready.";
+  }
   if (lang === "cpp") return formatCppOutput(result);
   if (lang === "javascript") return formatJavaScriptOutput(result);
   if (lang === "csharp") return formatCsharpOutput(result);
@@ -102,6 +107,9 @@ function formatTheoryOutput(result, lang) {
 }
 
 function getTheoryRuntimeError(result, lang) {
+  if (lang === "html" || lang === "css") {
+    return result?.error || result?.stderr || "";
+  }
   if (lang === "cpp") return getCppRuntimeError(result);
   if (lang === "javascript") return getJavaScriptRuntimeError(result);
   if (lang === "csharp") return getCsharpRuntimeError(result);
@@ -364,13 +372,9 @@ export default function RunnableCodeBlock({
             <iframe
               title="html-preview"
               srcDoc={themedPreviewHtml(previewHTML, previewTheme)}
-              sandbox="allow-scripts"
-              style={{
-                width: "100%",
-                minHeight: 300,
-                border: "1px solid #e5e7eb",
-                borderRadius: 6,
-              }}
+              sandbox=""
+              referrerPolicy="no-referrer"
+              style={{ width: "100%", minHeight: 300, border: "1px solid #e5e7eb", borderRadius: 6 }}
             />
           </div>
         ) : (

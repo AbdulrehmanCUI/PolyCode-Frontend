@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   HTML_CSS_FOUNDATION_CHAPTERS,
   HTML_CSS_FOUNDATION_LESSONS,
@@ -8,6 +8,7 @@ import {
 import useHtmlCssFoundationProgress from "../hooks/useHtmlCssFoundationProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/html-css-foundation";
 
@@ -20,12 +21,31 @@ function lessonPlainText(lesson) {
 
 export default function HtmlCssFoundationHub() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
-  const { isAuthenticated, completedMap: progress, bookmarks, lastLessonId } =
-    useHtmlCssFoundationProgress();
+  const {
+    isAuthenticated,
+    completedMap: progress,
+    bookmarks,
+    lastLessonId,
+  } = useHtmlCssFoundationProgress();
 
   const completedCount = Object.keys(progress).length;
+  const courseComplete =
+    completedCount >= HTML_CSS_FOUNDATION_LESSONS.length &&
+    HTML_CSS_FOUNDATION_LESSONS.length > 0;
+
+  useEffect(() => {
+    if (location.hash !== "#course-certificate" || !courseComplete) return;
+    const timer = window.setTimeout(() => {
+      document
+        .getElementById("course-certificate")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [location.hash, courseComplete, completedCount]);
+
   const earnedXP = HTML_CSS_FOUNDATION_LESSONS.filter((lesson) => progress[lesson.id]).reduce(
     (sum, lesson) => sum + lesson.xp,
     0,
@@ -65,13 +85,13 @@ export default function HtmlCssFoundationHub() {
     <div className="oops-hub html-css-foundation-hub">
       <div className="oops-hero html-css-foundation-hero">
         <Link
-          to="/language/JavaScript"
+          to="/language/HTML%20%26%20CSS"
           className="oops-back-btn"
           style={{ marginBottom: "0.75rem", display: "inline-flex" }}
         >
-          ← JavaScript courses
+          ← HTML &amp; CSS courses
         </Link>
-        <div className="oops-hero-badge">JAVASCRIPT · WEB FUNDAMENTALS</div>
+        <div className="oops-hero-badge">HTML &amp; CSS · WEB FOUNDATION</div>
         <h1 className="oops-hero-title">
           HTML &amp; CSS
           <br />
@@ -260,6 +280,14 @@ export default function HtmlCssFoundationHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+
+      <CourseCertificate
+        courseName="HTML & CSS Foundation"
+        totalLessons={HTML_CSS_FOUNDATION_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={HTML_CSS_FOUNDATION_TOTAL_XP}
       />
     </div>
   );
