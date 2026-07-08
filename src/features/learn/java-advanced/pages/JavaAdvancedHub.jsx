@@ -1,15 +1,15 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  JAVA_INTERMEDIATE_CHAPTERS,
-  JAVA_INTERMEDIATE_LESSONS,
-  JAVA_INTERMEDIATE_TOTAL_XP,
-} from "../data/javaIntermediateCurriculum";
-import useJavaIntermediateProgress from "../hooks/useJavaIntermediateProgress";
+  JAVA_ADVANCED_CHAPTERS,
+  JAVA_ADVANCED_LESSONS,
+  JAVA_ADVANCED_TOTAL_XP,
+} from "../data/javaAdvancedCurriculum";
+import useJavaAdvancedProgress from "../hooks/useJavaAdvancedProgress";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
 import { CheckCircle2 } from "lucide-react";
 
-const BASE_PATH = "/learn/java-intermediate";
+const BASE_PATH = "/learn/java-advanced";
 
 function lessonPlainText(lesson) {
   return lesson.theory
@@ -18,7 +18,7 @@ function lessonPlainText(lesson) {
     .join(" ");
 }
 
-export default function JavaIntermediateHub() {
+export default function JavaAdvancedHub() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -27,30 +27,30 @@ export default function JavaIntermediateHub() {
     completedMap: progress,
     bookmarks,
     lastLessonId,
-  } = useJavaIntermediateProgress();
+  } = useJavaAdvancedProgress();
 
   const completedCount = Object.keys(progress).length;
-  const earnedXP = JAVA_INTERMEDIATE_LESSONS.filter(
+  const earnedXP = JAVA_ADVANCED_LESSONS.filter(
     (l) => progress[l.id],
   ).reduce((sum, l) => sum + l.xp, 0);
   const pct =
-    Math.round((completedCount / JAVA_INTERMEDIATE_LESSONS.length) * 100) || 0;
+    Math.round((completedCount / JAVA_ADVANCED_LESSONS.length) * 100) || 0;
 
   const nextLesson =
-    JAVA_INTERMEDIATE_LESSONS.find((l) => !progress[l.id]) ||
-    JAVA_INTERMEDIATE_LESSONS[0];
+    JAVA_ADVANCED_LESSONS.find((l) => !progress[l.id]) ||
+    JAVA_ADVANCED_LESSONS[0];
   const resumeLesson =
-    JAVA_INTERMEDIATE_LESSONS.find((l) => l.id === lastLessonId) || nextLesson;
-  const completedChapters = JAVA_INTERMEDIATE_CHAPTERS.filter((ch) =>
+    JAVA_ADVANCED_LESSONS.find((l) => l.id === lastLessonId) || nextLesson;
+  const completedChapters = JAVA_ADVANCED_CHAPTERS.filter((ch) =>
     ch.lessons.every((l) => progress[l.id]),
   ).length;
   const bookmarkedLessons = bookmarks
-    .map((id) => JAVA_INTERMEDIATE_LESSONS.find((l) => l.id === id))
+    .map((id) => JAVA_ADVANCED_LESSONS.find((l) => l.id === id))
     .filter(Boolean);
 
   const filteredLessons = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return JAVA_INTERMEDIATE_LESSONS.filter((lesson) => {
+    return JAVA_ADVANCED_LESSONS.filter((lesson) => {
       const matchesQuery =
         !query ||
         lesson.title.toLowerCase().includes(query) ||
@@ -76,18 +76,18 @@ export default function JavaIntermediateHub() {
         >
           ← Java courses
         </Link>
-        <div className="oops-hero-badge">JAVA · INTERMEDIATE TRACK</div>
+        <div className="oops-hero-badge">JAVA · ADVANCED TRACK</div>
         <h1 className="oops-hero-title">
           Java
           <br />
-          <span className="oops-hero-accent" style={{ color: "#f59e0b" }}>
-            Intermediate
+          <span className="oops-hero-accent" style={{ color: "#3b82f6" }}>
+            Advanced
           </span>
         </h1>
         <p className="oops-hero-sub">
-          OOP depth, interfaces, generics, collections, exceptions, File I/O,
-          Streams, Optional, and Records — with theory, quizzes, and coding
-          challenges compiled by <code>javac</code>.
+          Streams API, lambda expressions, multithreading, Optional, JDBC, and
+          modern Java patterns — with theory, quizzes, and coding challenges
+          compiled by <code>javac</code>.
         </p>
 
         <div className="oops-hero-grid">
@@ -95,8 +95,8 @@ export default function JavaIntermediateHub() {
             <div className="oops-xp-meta">
               <span>
                 {isAuthenticated
-                  ? `${completedCount}/${JAVA_INTERMEDIATE_LESSONS.length} lessons · ${earnedXP}/${JAVA_INTERMEDIATE_TOTAL_XP} XP`
-                  : `Sign in to track progress · ${JAVA_INTERMEDIATE_LESSONS.length} lessons`}
+                  ? `${completedCount}/${JAVA_ADVANCED_LESSONS.length} lessons · ${earnedXP}/${JAVA_ADVANCED_TOTAL_XP} XP`
+                  : `Sign in to track progress · ${JAVA_ADVANCED_LESSONS.length} lessons`}
               </span>
               <span>{isAuthenticated ? `${pct}%` : "—"}</span>
             </div>
@@ -105,7 +105,7 @@ export default function JavaIntermediateHub() {
                 className="oops-xp-fill"
                 style={{
                   width: isAuthenticated ? `${pct}%` : "0%",
-                  background: "#f59e0b",
+                  background: "#3b82f6",
                 }}
               />
             </div>
@@ -249,19 +249,19 @@ export default function JavaIntermediateHub() {
         <div className="oops-stat-tile">
           <span>Lessons</span>
           <strong>
-            {completedCount}/{JAVA_INTERMEDIATE_LESSONS.length}
+            {completedCount}/{JAVA_ADVANCED_LESSONS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>Chapters</span>
           <strong>
-            {completedChapters}/{JAVA_INTERMEDIATE_CHAPTERS.length}
+            {completedChapters}/{JAVA_ADVANCED_CHAPTERS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>XP</span>
           <strong>
-            {earnedXP}/{JAVA_INTERMEDIATE_TOTAL_XP}
+            {earnedXP}/{JAVA_ADVANCED_TOTAL_XP}
           </strong>
         </div>
         <div className="oops-stat-tile">
@@ -272,7 +272,7 @@ export default function JavaIntermediateHub() {
 
       {/* ── Path overview ── */}
       <div className="oops-path-overview">
-        {JAVA_INTERMEDIATE_CHAPTERS.map((chapter, index) => {
+        {JAVA_ADVANCED_CHAPTERS.map((chapter, index) => {
           const done = chapter.lessons.filter((l) => progress[l.id]).length;
           const active = done > 0 && done < chapter.lessons.length;
           return (
@@ -299,7 +299,7 @@ export default function JavaIntermediateHub() {
 
       {/* ── Chapter cards ── */}
       <div className="oops-chapters">
-        {JAVA_INTERMEDIATE_CHAPTERS.map((chapter, index) => {
+        {JAVA_ADVANCED_CHAPTERS.map((chapter, index) => {
           const done = chapter.lessons.filter((l) => progress[l.id]).length;
           const chapterPct =
             Math.round((done / chapter.lessons.length) * 100) || 0;
