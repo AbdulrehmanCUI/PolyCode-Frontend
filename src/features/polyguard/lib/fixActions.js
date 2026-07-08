@@ -97,14 +97,46 @@ function parseRuntimeFixes(errorText = "", code = "") {
       /AttributeError:\s*(?:module\s+'([^']+)'\s+has no attribute\s+'([^']+)'|'([^']+)'\s+object has no attribute\s+'([^']+)')/i,
     );
     if (attrErr) {
-      if (attrErr[1]) {
+      const moduleName = attrErr[1];
+      const moduleAttr = attrErr[2];
+      const objectType = attrErr[3];
+      const objectAttr = attrErr[4];
+
+      if (moduleAttr === "dataFrame" || objectAttr === "dataFrame") {
         fixes.push(
-          `${linePrefix}'${attrErr[2]}' is not on '${attrErr[1]}' — use it on an instance (e.g. df.${attrErr[2]}).`,
+          `${linePrefix}Use \`pd.DataFrame({...})\` to create a DataFrame — \`dataFrame\` is not a valid attribute (capital D: \`DataFrame\`).`,
         );
+        continue;
+      }
+
+      if (moduleName === "pandas" && moduleAttr === "shape") {
+        fixes.push(
+          `${linePrefix}\`pd.shape\` does not exist — use \`df.shape\` on your DataFrame variable.`,
+        );
+        continue;
+      }
+
+      if (moduleName) {
+        if (moduleAttr === "DataFrame" && moduleName === "pandas") {
+          fixes.push(
+            `${linePrefix}Use \`pd.DataFrame({...})\` — you imported pandas as \`pd\`, not \`pandas\`.`,
+          );
+        } else {
+          fixes.push(
+            `${linePrefix}'${moduleAttr}' is not on '${moduleName}' — use it on an instance (e.g. df.${moduleAttr}).`,
+          );
+        }
       } else {
-        fixes.push(
-          `${linePrefix}Object has no attribute '${attrErr[4]}' — check the variable type and spelling.`,
-        );
+        const attr = objectAttr;
+        if (/dataframe/i.test(attr) && /module/i.test(objectType || "")) {
+          fixes.push(
+            `${linePrefix}Use \`pd.DataFrame({...})\` to create a table — check spelling and capitalization.`,
+          );
+        } else {
+          fixes.push(
+            `${linePrefix}Object has no attribute '${attr}' — check the variable type and spelling.`,
+          );
+        }
       }
       continue;
     }

@@ -401,6 +401,8 @@ export default function PythonCodeChallenge({
             autoRunKey={submitGeneration || null}
             hideManualTrigger
             analysisContext={{
+              coachMode: true,
+              lessonTitle: challenge.title,
               testResults: results,
               runtimeError:
                 output?.status === "fail" ? output?.stdout : "",

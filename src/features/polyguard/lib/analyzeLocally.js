@@ -131,6 +131,7 @@ export function analyzeCodeLocally(code, language = "python", context = {}) {
       (test) => (test.id === "runtime" || test.id === "compile") && test.passed === false,
     );
 
+  const coachMode = Boolean(context.coachMode);
   const actions = buildFixActions(ruleFindings, { ...context, code: trimmed, language });
   let score = computeScore(ruleFindings, context);
   if (actions.length >= 3) {
@@ -158,8 +159,13 @@ export function analyzeCodeLocally(code, language = "python", context = {}) {
           ? "GOOD"
           : verdict;
 
-  const securityLabel =
-    hasExecutionFailure
+  const securityLabel = coachMode
+    ? actions.length > 0 || hasExecutionFailure
+      ? "NEEDS FIX"
+      : score >= 8
+        ? "LOOKS GOOD"
+        : "ALMOST THERE"
+    : hasExecutionFailure
       ? score >= 5
         ? "REVIEW"
         : "AT RISK"
@@ -178,7 +184,8 @@ export function analyzeCodeLocally(code, language = "python", context = {}) {
     verdict,
     language: String(language || "python").toLowerCase(),
     lines_analyzed: lines.length,
-    analyzer: "polyguard-hybrid",
+    analyzer: coachMode ? "polyguard-coach" : "polyguard-hybrid",
+    analysisMode: coachMode ? "code-coach" : "local-rules",
     enriched: {
       headline,
       summary: headline,

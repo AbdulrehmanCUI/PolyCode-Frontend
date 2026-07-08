@@ -40,6 +40,24 @@ function scanPythonIssues(code = "") {
         );
       }
 
+      if (/\bpd\.dataFrame\s*\(/i.test(line)) {
+        issues.push(
+          `Line ${n}: Use \`pd.DataFrame(...)\` — the constructor is \`DataFrame\` with a capital D.`,
+        );
+      }
+
+      if (assigned.has("df") && /\bdf\.DataFrame\s*\(/i.test(line)) {
+        issues.push(
+          `Line ${n}: Create a new table with \`pd.DataFrame({...})\` — \`df\` is your existing DataFrame, not the constructor.`,
+        );
+      }
+
+      if (assigned.has("df") && /\bdf\.dataFrame\b/i.test(line)) {
+        issues.push(
+          `Line ${n}: \`dataFrame\` is not a method on \`df\` — use \`pd.DataFrame({...})\` to create a DataFrame.`,
+        );
+      }
+
       if (/\bpandas\.(DataFrame|Series)\s*\(/i.test(line)) {
         issues.push(
           `Line ${n}: Use \`pd.${line.match(/pandas\.(DataFrame|Series)/i)[1]}(...)\` — you imported pandas as \`pd\`.`,

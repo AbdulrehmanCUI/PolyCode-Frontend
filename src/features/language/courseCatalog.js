@@ -534,7 +534,7 @@ export const learnNavByLanguage = {
     { label: "Web Dev", to: "/learn/js-web-dev" },
     { label: "Node & npm", to: "/learn/node-npm" },
   ],
-  htmlCss: [
+  htmlcss: [
     { label: "HTML & CSS", to: "/learn/html-css-foundation" },
   ],
   java: [
