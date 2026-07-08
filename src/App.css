@@ -11339,11 +11339,18 @@ body {
   text-align: center;
 }
 
+.certificate-footer-right {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex: 0 0 auto;
+}
+
 .official-stamp {
   width: 100px;
   height: 100px;
   object-fit: contain;
-  margin-right: 50px;
+  margin-right: 0;
 }
 
 /* =========================
@@ -11438,6 +11445,10 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
+  }
+
+  .certificate-footer-right {
+    gap: 12px;
   }
 
   .official-stamp {
