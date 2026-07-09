@@ -1,4 +1,5 @@
 import React from "react";
+import { Info, Lightbulb, Zap } from "lucide-react";
 import { buildAutoW3TopicOverview } from "./buildAutoW3TopicOverview";
 import { buildLessonTopicOverview } from "./lessonTopicOverviewUtils";
 import { THEME_OVERVIEW_ACCENT } from "./learnAccent";
@@ -70,7 +71,10 @@ function W3StyleOverview({ overview, codeClass }) {
           </h2>
         </div>
         {overview.xp ? (
-          <span className="lesson-topic-w3-xp">{overview.xp} XP</span>
+          <span className="lesson-topic-w3-xp">
+            <Zap size={13} strokeWidth={2.4} aria-hidden />
+            {overview.xp} XP
+          </span>
         ) : null}
       </header>
 
@@ -122,15 +126,25 @@ function W3StyleOverview({ overview, codeClass }) {
 
       {overview.note ? (
         <aside className="lesson-topic-w3-note" role="note">
-          <strong>Note:</strong>{" "}
-          <InlineText text={overview.note} codeClassName={codeClass} />
+          <span className="lesson-topic-w3-callout-icon" aria-hidden>
+            <Info size={15} strokeWidth={2.25} />
+          </span>
+          <div>
+            <strong>Note:</strong>{" "}
+            <InlineText text={overview.note} codeClassName={codeClass} />
+          </div>
         </aside>
       ) : null}
 
       {overview.tip ? (
         <aside className="lesson-topic-w3-tip" role="note">
-          <strong>Tip:</strong>{" "}
-          <InlineText text={overview.tip} codeClassName={codeClass} />
+          <span className="lesson-topic-w3-callout-icon" aria-hidden>
+            <Lightbulb size={15} strokeWidth={2.25} />
+          </span>
+          <div>
+            <strong>Tip:</strong>{" "}
+            <InlineText text={overview.tip} codeClassName={codeClass} />
+          </div>
         </aside>
       ) : null}
 
@@ -199,7 +213,10 @@ export default function LessonTopicOverview({
           ) : null}
         </div>
         {overview.xp ? (
-          <span className="lesson-topic-overview-xp">{overview.xp} XP</span>
+          <span className="lesson-topic-overview-xp">
+            <Zap size={13} strokeWidth={2.4} aria-hidden />
+            {overview.xp} XP
+          </span>
         ) : null}
       </div>
 

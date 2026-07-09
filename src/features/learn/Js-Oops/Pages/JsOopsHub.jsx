@@ -1,16 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React, { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
-  HTML_CSS_FOUNDATION_CHAPTERS,
-  HTML_CSS_FOUNDATION_LESSONS,
-  HTML_CSS_FOUNDATION_TOTAL_XP,
-} from "../data/htmlCssFoundationCurriculum";
-import useHtmlCssFoundationProgress from "../hooks/useHtmlCssFoundationProgress";
-import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
-import LearnChapterGrid from "../../shared/LearnChapterGrid";
-import CourseCertificate from "../../shared/CourseCertificate";
+  JS_OOPS_CHAPTERS,
+  JS_OOPS_LESSONS,
+  JS_OOPS_TOTAL_XP,
+} from "../data/jsOopsCurriculum";
+import useJsOopsProgress from "../hooks/useJsOopsProgress";
 
-const BASE_PATH = "/learn/html-css-foundation";
+const BASE_PATH = "/learn/js-oops";
 
 function lessonPlainText(lesson) {
   return lesson.theory
@@ -19,9 +16,8 @@ function lessonPlainText(lesson) {
     .join(" ");
 }
 
-export default function HtmlCssFoundationHub() {
+export default function JsOopsHub() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const {
@@ -29,44 +25,31 @@ export default function HtmlCssFoundationHub() {
     completedMap: progress,
     bookmarks,
     lastLessonId,
-  } = useHtmlCssFoundationProgress();
+  } = useJsOopsProgress();
 
   const completedCount = Object.keys(progress).length;
-  const courseComplete =
-    completedCount >= HTML_CSS_FOUNDATION_LESSONS.length &&
-    HTML_CSS_FOUNDATION_LESSONS.length > 0;
-
-  useEffect(() => {
-    if (location.hash !== "#course-certificate" || !courseComplete) return;
-    const timer = window.setTimeout(() => {
-      document
-        .getElementById("course-certificate")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 250);
-    return () => window.clearTimeout(timer);
-  }, [location.hash, courseComplete, completedCount]);
-
-  const earnedXP = HTML_CSS_FOUNDATION_LESSONS.filter((lesson) => progress[lesson.id]).reduce(
+  const earnedXP = JS_OOPS_LESSONS.filter((lesson) => progress[lesson.id]).reduce(
     (sum, lesson) => sum + lesson.xp,
     0,
   );
-  const pct = Math.round((completedCount / HTML_CSS_FOUNDATION_LESSONS.length) * 100) || 0;
+  const pct =
+    Math.round((completedCount / JS_OOPS_LESSONS.length) * 100) || 0;
   const nextLesson =
-    HTML_CSS_FOUNDATION_LESSONS.find((lesson) => !progress[lesson.id]) ||
-    HTML_CSS_FOUNDATION_LESSONS[0];
+    JS_OOPS_LESSONS.find((lesson) => !progress[lesson.id]) ||
+    JS_OOPS_LESSONS[0];
   const resumeLesson =
-    HTML_CSS_FOUNDATION_LESSONS.find((lesson) => lesson.id === lastLessonId) ||
+    JS_OOPS_LESSONS.find((lesson) => lesson.id === lastLessonId) ||
     nextLesson;
-  const completedChapters = HTML_CSS_FOUNDATION_CHAPTERS.filter((chapter) =>
+  const completedChapters = JS_OOPS_CHAPTERS.filter((chapter) =>
     chapter.lessons.every((lesson) => progress[lesson.id]),
   ).length;
   const bookmarkedLessons = bookmarks
-    .map((id) => HTML_CSS_FOUNDATION_LESSONS.find((lesson) => lesson.id === id))
+    .map((id) => JS_OOPS_LESSONS.find((lesson) => lesson.id === id))
     .filter(Boolean);
 
   const filteredLessons = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return HTML_CSS_FOUNDATION_LESSONS.filter((lesson) => {
+    return JS_OOPS_LESSONS.filter((lesson) => {
       const matchesQuery =
         !query ||
         lesson.title.toLowerCase().includes(query) ||
@@ -82,24 +65,24 @@ export default function HtmlCssFoundationHub() {
   }, [bookmarks, filter, progress, search]);
 
   return (
-    <div className="oops-hub html-css-foundation-hub">
-      <div className="oops-hero html-css-foundation-hero">
+    <div className="oops-hub js-oops-hub">
+      <div className="oops-hero js-oops-hero">
         <Link
-          to="/language/HTML%20%26%20CSS"
+          to="/language/JavaScript"
           className="oops-back-btn"
           style={{ marginBottom: "0.75rem", display: "inline-flex" }}
         >
-          ← HTML &amp; CSS courses
+          ← JavaScript courses
         </Link>
-        <div className="oops-hero-badge">HTML &amp; CSS · WEB FOUNDATION</div>
+        <div className="oops-hero-badge">JAVASCRIPT · OOP MASTERY</div>
         <h1 className="oops-hero-title">
-          HTML &amp; CSS
+          JavaScript
           <br />
-          <span className="oops-hero-accent">Foundation</span>
+          <span className="oops-hero-accent">OOP</span>
         </h1>
         <p className="oops-hero-sub">
-          Short foundation course for HTML, CSS, and Bootstrap with beginner-friendly theory,
-          strong examples, quick checks, and runnable challenges.
+          Master classes, inheritance, encapsulation, and design patterns with
+          hands-on OOP challenges and real-world applications.
         </p>
 
         <div className="oops-hero-grid">
@@ -107,8 +90,8 @@ export default function HtmlCssFoundationHub() {
             <div className="oops-xp-meta">
               <span>
                 {isAuthenticated
-                  ? `${completedCount}/${HTML_CSS_FOUNDATION_LESSONS.length} lessons · ${earnedXP}/${HTML_CSS_FOUNDATION_TOTAL_XP} XP`
-                  : `Sign in to track progress · ${HTML_CSS_FOUNDATION_LESSONS.length} lessons`}
+                  ? `${completedCount}/${JS_OOPS_LESSONS.length} lessons · ${earnedXP}/${JS_OOPS_TOTAL_XP} XP`
+                  : `Sign in to track progress · ${JS_OOPS_LESSONS.length} lessons`}
               </span>
               <span>{isAuthenticated ? `${pct}%` : "—"}</span>
             </div>
@@ -123,7 +106,8 @@ export default function HtmlCssFoundationHub() {
           {!isAuthenticated && (
             <div className="oops-auth-gate oops-auth-gate-hub">
               <p>
-                Create a free account to run challenges, earn XP, and save your place in the course.
+                Create a free account to run challenges, earn XP, and save your
+                place in the course.
               </p>
               <div className="oops-auth-gate-actions">
                 <Link to="/login" className="oops-auth-gate-btn">
@@ -153,7 +137,7 @@ export default function HtmlCssFoundationHub() {
               type="button"
               onClick={() => navigate(`${BASE_PATH}/lesson/${resumeLesson.id}`)}
             >
-              {completedCount > 0 ? "Resume HTML & CSS" : "Start HTML & CSS"}
+              {completedCount > 0 ? "Resume OOP" : "Start OOP"}
             </button>
           </div>
         </div>
@@ -161,16 +145,19 @@ export default function HtmlCssFoundationHub() {
 
       <div className="oops-guide-tools">
         <div className="oops-tool-panel oops-tool-panel-main">
-          <span className="oops-interactive-label">Search topics</span>
+          <span className="oops-interactive-label">Find an OOP concept</span>
           <div className="oops-search-row">
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search HTML, CSS, Bootstrap..."
-              aria-label="Search HTML and CSS lessons"
+              placeholder="Search classes, inheritance, patterns..."
+              aria-label="Search OOP lessons"
             />
-            <div className="oops-filter-tabs" aria-label="Filter lessons">
+            <div
+              className="oops-filter-tabs"
+              aria-label="Filter OOP lessons"
+            >
               {[
                 ["all", "All"],
                 ["todo", "To do"],
@@ -194,6 +181,7 @@ export default function HtmlCssFoundationHub() {
                 key={lesson.id}
                 type="button"
                 className="oops-search-result"
+                style={{ "--ch-color": lesson.chapterColor }}
                 onClick={() => navigate(`${BASE_PATH}/lesson/${lesson.id}`)}
               >
                 <span>{progress[lesson.id] ? "✓" : "○"}</span>
@@ -246,19 +234,19 @@ export default function HtmlCssFoundationHub() {
         <div className="oops-stat-tile">
           <span>Lessons</span>
           <strong>
-            {completedCount}/{HTML_CSS_FOUNDATION_LESSONS.length}
+            {completedCount}/{JS_OOPS_LESSONS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>Chapters</span>
           <strong>
-            {completedChapters}/{HTML_CSS_FOUNDATION_CHAPTERS.length}
+            {completedChapters}/{JS_OOPS_CHAPTERS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>XP</span>
           <strong>
-            {earnedXP}/{HTML_CSS_FOUNDATION_TOTAL_XP}
+            {earnedXP}/{JS_OOPS_TOTAL_XP}
           </strong>
         </div>
         <div className="oops-stat-tile">
@@ -267,28 +255,95 @@ export default function HtmlCssFoundationHub() {
         </div>
       </div>
 
-      <LearnChapterPathOverview
-        chapters={HTML_CSS_FOUNDATION_CHAPTERS}
-        progress={progress}
-        onChapterSelect={(chapter) =>
-          navigate(`${BASE_PATH}/lesson/${chapter.lessons[0].id}`)
-        }
-      />
+      <div className="oops-path-overview">
+        {JS_OOPS_CHAPTERS.map((chapter, index) => {
+          const done = chapter.lessons.filter((l) => progress[l.id]).length;
+          const active = done > 0 && done < chapter.lessons.length;
+          return (
+            <button
+              key={chapter.id}
+              type="button"
+              className={`oops-path-step ${active ? "active" : ""} ${
+                done === chapter.lessons.length ? "done" : ""
+              }`}
+              style={{ "--ch-color": chapter.color }}
+              onClick={() =>
+                navigate(`${BASE_PATH}/lesson/${chapter.lessons[0].id}`)
+              }
+            >
+              <span>{index + 1}</span>
+              <strong>{chapter.title}</strong>
+              <small>
+                {done}/{chapter.lessons.length}
+              </small>
+            </button>
+          );
+        })}
+      </div>
 
-      <LearnChapterGrid
-        chapters={HTML_CSS_FOUNDATION_CHAPTERS}
-        progress={progress}
-        basePath={BASE_PATH}
-        navigate={navigate}
-      />
+      <div className="oops-chapters">
+        {JS_OOPS_CHAPTERS.map((chapter, index) => {
+          const done = chapter.lessons.filter((l) => progress[l.id]).length;
+          const chapterPct =
+            Math.round((done / chapter.lessons.length) * 100) || 0;
+          const firstUnfinished = chapter.lessons.find((l) => !progress[l.id]);
+          const allDone = done === chapter.lessons.length;
 
-      <CourseCertificate
-        courseName="HTML & CSS Foundation"
-        totalLessons={HTML_CSS_FOUNDATION_LESSONS.length}
-        completedCount={completedCount}
-        earnedXP={earnedXP}
-        totalXP={HTML_CSS_FOUNDATION_TOTAL_XP}
-      />
+          return (
+            <div
+              key={chapter.id}
+              className={`oops-chapter-card ${allDone ? "oops-chapter-done" : ""}`}
+              style={{ "--ch-color": chapter.color }}
+            >
+              <div className="oops-chapter-header">
+                <span className="oops-chapter-icon">{chapter.icon}</span>
+                <div>
+                  <div className="oops-chapter-num">Chapter {index + 1}</div>
+                  <div className="oops-chapter-title">{chapter.title}</div>
+                </div>
+                {allDone && <span className="oops-done-badge">✓ Done</span>}
+              </div>
+              <div className="oops-chapter-progress-track">
+                <div
+                  className="oops-chapter-progress-fill"
+                  style={{ width: `${chapterPct}%` }}
+                />
+              </div>
+              <div className="oops-chapter-meta">
+                {done}/{chapter.lessons.length} lessons · {chapterPct}%
+              </div>
+              <ul className="oops-lesson-list">
+                {chapter.lessons.map((lesson) => (
+                  <li
+                    key={lesson.id}
+                    className={`oops-lesson-item ${progress[lesson.id] ? "done" : ""}`}
+                    onClick={() => navigate(`${BASE_PATH}/lesson/${lesson.id}`)}
+                  >
+                    <span className="oops-lesson-status">
+                      {progress[lesson.id] ? "✓" : "○"}
+                    </span>
+                    <span className="oops-lesson-name">{lesson.title}</span>
+                    <span className="oops-lesson-xp">+{lesson.xp} XP</span>
+                  </li>
+                ))}
+              </ul>
+              <button
+                type="button"
+                className="oops-chapter-cta"
+                onClick={() =>
+                  navigate(
+                    `${BASE_PATH}/lesson/${
+                      firstUnfinished ? firstUnfinished.id : chapter.lessons[0].id
+                    }`,
+                  )
+                }
+              >
+                {allDone ? "Review Chapter →" : done > 0 ? "Continue →" : "Start →"}
+              </button>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

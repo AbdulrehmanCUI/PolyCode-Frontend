@@ -145,7 +145,7 @@ NAVBAR
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 1200;
   min-height: var(--landing-nav-h, 5.5rem);
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -415,6 +415,11 @@ NAVBAR
 
 .ln-dropdown-wrap {
   position: relative;
+  z-index: 1;
+}
+
+.ln-dropdown-wrap:has(.ln-dropdown) {
+  z-index: 2;
 }
 
 .ln-dropdown-trigger {
@@ -712,6 +717,10 @@ NAVBAR
   font-family: inherit;
   font-size: 0.8125rem;
   font-weight: 700;
+  text-decoration: none;
+  position: relative;
+  z-index: 3;
+  pointer-events: auto;
   transition:
     background 0.15s,
     border-color 0.15s,
@@ -2657,18 +2666,27 @@ NAVBAR
   min-height: 132px;
   padding: 1.375rem 1rem 1.25rem;
   border-radius: 16px;
-  border: 1px solid var(--v2-border);
-  background: var(--v2-bg2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--lang-color) 12%, transparent),
+      rgba(255, 255, 255, 0.04) 46%,
+      rgba(13, 17, 23, 0.42)
+    );
   cursor: pointer;
   overflow: hidden;
-  backdrop-filter: none;
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
   text-align: center;
   transition:
     border-color 0.2s ease,
     background 0.2s ease,
     box-shadow 0.2s ease,
     transform 0.18s ease;
-  box-shadow: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 12px 30px rgba(0, 0, 0, 0.18);
 }
 
 .polycode-landing .landing-get-started .lang-card::before {
@@ -2680,9 +2698,17 @@ NAVBAR
 
 .polycode-landing .landing-get-started .lang-card:hover {
   transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--lang-color) 42%, var(--v2-border));
-  background: color-mix(in srgb, var(--lang-color) 7%, var(--v2-bg2));
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  border-color: color-mix(in srgb, var(--lang-color) 48%, rgba(255, 255, 255, 0.14));
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--lang-color) 18%, transparent),
+      rgba(255, 255, 255, 0.06) 46%,
+      rgba(13, 17, 23, 0.35)
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 16px 40px rgba(0, 0, 0, 0.22);
 }
 
 .polycode-landing .landing-get-started .lang-card.selected {
@@ -4236,9 +4262,20 @@ NAVBAR
   scroll-snap-align: start;
   position: relative;
   margin-top: 8px;
-  border: 1px solid var(--border, #1e2433);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
-  background: rgba(13, 17, 23, 0.85);
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--accent, #ffe566) 14%, transparent),
+      rgba(255, 255, 255, 0.04) 42%,
+      rgba(13, 17, 23, 0.4)
+    );
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 14px 36px rgba(0, 0, 0, 0.22);
   padding: 1.75rem;
   cursor: pointer;
   overflow: hidden;
@@ -4254,21 +4291,9 @@ NAVBAR
   isolation: isolate;
 }
 
-/* top accent line */
+/* top accent line removed for clean glass cards */
 .cs-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--accent, #ffe566);
-  opacity: 0.5;
-  transition:
-    opacity 0.3s,
-    height 0.3s;
-  pointer-events: none;
-  z-index: 1;
+  content: none;
 }
 
 /* background glow fill on hover */
@@ -4296,12 +4321,6 @@ NAVBAR
     0 20px 60px rgba(0, 0, 0, 0.5),
     0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent),
     0 0 40px color-mix(in srgb, var(--accent) 10%, transparent);
-}
-
-.cs-card:hover::before,
-.cs-card:focus-visible::before {
-  opacity: 1;
-  height: 3px;
 }
 
 .cs-card:hover::after,
@@ -5120,6 +5139,7 @@ NAVBAR
   font: inherit;
   font-size: 0.84rem;
   font-weight: 700;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -5902,4 +5922,56 @@ NAVBAR
   border-color: #e2e8f0;
   background: #ffffff;
   color: #111827;
+}
+
+/* ── Glass cards (overrides legacy solid card styles) ── */
+.polycode-landing .landing-feat-card {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.07),
+      rgba(255, 255, 255, 0.02) 48%,
+      rgba(13, 17, 23, 0.4)
+    );
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 14px 36px rgba(0, 0, 0, 0.2);
+}
+
+.polycode-landing .landing-feat-card:hover {
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.03) 48%,
+      rgba(13, 17, 23, 0.35)
+    );
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 44px rgba(0, 0, 0, 0.28);
+}
+
+.polycode-landing .landing-feat-bar {
+  display: none;
+}
+
+.polycode-landing .landing-course-card {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--course-accent, #ffe566) 14%, transparent),
+      rgba(255, 255, 255, 0.04) 45%,
+      rgba(13, 17, 23, 0.4)
+    );
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 14px 36px rgba(0, 0, 0, 0.2);
 }

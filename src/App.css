@@ -4679,19 +4679,38 @@ body {
 }
 
 .oops-chapter-card {
-  background: var(--learn-card-bg, var(--vscode-panel, #252526));
-  border: 1px solid var(--learn-card-border, var(--vscode-border, #3c3c3c));
-  border-radius: 12px;
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.06),
+      rgba(255, 255, 255, 0.02) 48%,
+      rgba(13, 17, 23, 0.35)
+    ),
+    color-mix(in srgb, var(--learn-card-bg, var(--vscode-panel, #252526)) 78%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(14px) saturate(1.12);
+  -webkit-backdrop-filter: blur(14px) saturate(1.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 16px 34px rgba(0, 0, 0, 0.16);
   transition:
     border-color 0.2s,
-    transform 0.2s;
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .oops-chapter-card:hover {
-  border-color: var(--learn-pill-border, var(--learn-card-border));
+  border-color: color-mix(
+    in srgb,
+    var(--learn-pill-border, var(--learn-card-border, rgba(255, 255, 255, 0.18))) 70%,
+    rgba(255, 255, 255, 0.16)
+  );
   transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
 .oops-chapter-card.oops-chapter-done {
@@ -6768,15 +6787,20 @@ body {
   flex-direction: column;
   min-height: 245px;
   padding: 18px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
   background:
     linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--course-accent) 8%, transparent),
-      transparent 46%
-    ),
-    var(--ink-2);
+      160deg,
+      color-mix(in srgb, var(--course-accent) 14%, transparent),
+      rgba(255, 255, 255, 0.03) 42%,
+      rgba(13, 17, 23, 0.45)
+    );
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 14px 36px rgba(0, 0, 0, 0.2);
   color: inherit;
   text-decoration: none;
   transition:
@@ -7007,11 +7031,21 @@ body {
 .oops-callout {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  border-left: 3px solid var(--callout-color, var(--acid, #ffe566));
-  background: rgba(255, 255, 255, 0.03);
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--callout-color, var(--acid, #ffe566)) 32%, rgba(255, 255, 255, 0.1));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--callout-color, var(--acid, #ffe566)) 12%, transparent),
+      rgba(255, 255, 255, 0.03)
+    );
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 10px 28px rgba(0, 0, 0, 0.18);
   margin: 0 0 16px;
   font-size: 0.88rem;
   line-height: 1.6;
@@ -7020,7 +7054,14 @@ body {
 
 .oops-callout-icon {
   flex-shrink: 0;
-  font-size: 1rem;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: var(--callout-color, var(--acid, #ffe566));
+  background: color-mix(in srgb, var(--callout-color, var(--acid, #ffe566)) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--callout-color, var(--acid, #ffe566)) 28%, transparent);
 }
 
 /* Code block */
@@ -7520,16 +7561,22 @@ body {
 .oops-quiz-feedback {
   margin-top: 12px;
   color: var(--txt-1, #c0c8e0);
-  background: rgba(255, 255, 255, 0.03);
-  border-left: 3px solid var(--acid, #ffe566);
-  border-radius: 8px;
-  padding: 10px 12px;
+  background:
+    linear-gradient(135deg, rgba(255, 229, 102, 0.1), rgba(255, 255, 255, 0.03));
+  border: 1px solid rgba(255, 229, 102, 0.28);
+  border-radius: 12px;
+  padding: 12px 14px;
   font-size: 0.86rem;
   line-height: 1.6;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .oops-quiz-card.incorrect .oops-quiz-feedback {
-  border-left-color: var(--red, #ff4d6d);
+  border-color: rgba(255, 77, 109, 0.35);
+  background:
+    linear-gradient(135deg, rgba(255, 77, 109, 0.12), rgba(255, 255, 255, 0.03));
 }
 
 .oops-learning-brief {
@@ -8505,15 +8552,20 @@ body {
   flex-direction: column;
   gap: 0.65rem;
   padding: 1rem 1.05rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background:
     linear-gradient(
       160deg,
-      color-mix(in srgb, var(--stage-color) 12%, transparent),
-      transparent 55%
-    ),
-    rgba(255, 255, 255, 0.025);
+      color-mix(in srgb, var(--stage-color) 14%, transparent),
+      rgba(255, 255, 255, 0.04) 48%,
+      rgba(13, 17, 23, 0.35)
+    );
+  backdrop-filter: blur(12px) saturate(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 10px 24px rgba(0, 0, 0, 0.14);
 }
 
 .matplotlib-path-card-head {
@@ -8560,6 +8612,12 @@ body {
   gap: 0.45rem;
   font-size: 0.78rem;
   color: var(--txt-2, #9aa3bc);
+}
+
+.matplotlib-path-chapters .oops-chapter-icon-wrap {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
 }
 
 .matplotlib-path-cta {
@@ -8865,18 +8923,20 @@ body {
 .lesson-topic-overview {
   margin: 0 0 24px;
   padding: 22px 24px;
-  border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--lesson-overview-accent, #4f46e5) 38%, transparent);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background:
     linear-gradient(
-      145deg,
+      160deg,
       color-mix(in srgb, var(--lesson-overview-accent, #4f46e5) 14%, transparent),
-      transparent 58%
-    ),
-    color-mix(in srgb, var(--vscode-panel, #12141c) 92%, transparent);
+      rgba(255, 255, 255, 0.04) 46%,
+      rgba(13, 17, 23, 0.42)
+    );
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
   box-shadow:
-    inset 4px 0 0 var(--lesson-overview-accent, #4f46e5),
-    0 8px 28px rgba(0, 0, 0, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 14px 36px rgba(0, 0, 0, 0.2);
 }
 
 .lesson-topic-overview-head {
@@ -8916,6 +8976,9 @@ body {
 
 .lesson-topic-overview-xp {
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -8948,9 +9011,13 @@ body {
 .lesson-topic-overview-essentials {
   margin: 0 0 16px;
   padding: 16px 18px;
-  border-radius: 10px;
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
-  background: rgba(0, 0, 0, 0.14);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .lesson-topic-overview-essentials-title {
@@ -8981,11 +9048,15 @@ body {
 }
 
 .lesson-topic-overview-essentials-list li::before {
-  content: "◆";
+  content: "";
   flex-shrink: 0;
-  margin-top: 0.15em;
-  font-size: 0.55rem;
-  color: var(--lesson-overview-accent, #818cf8);
+  width: 6px;
+  height: 6px;
+  margin-top: 0.45em;
+  border-radius: 50%;
+  background: var(--lesson-overview-accent, #818cf8);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--lesson-overview-accent, #818cf8) 22%, transparent);
 }
 
 .lesson-topic-overview-practice {
@@ -9009,27 +9080,25 @@ body {
 /* ── W3Schools-style topic reference (Node/npm & similar) ── */
 .lesson-topic-overview--w3 {
   margin: 0 0 28px;
-  padding: 24px 26px 26px 30px;
-  border-radius: 16px;
-  border: 1px solid
-    color-mix(
-      in srgb,
-      var(--lesson-overview-accent, var(--accent, var(--acid))) 24%,
-      var(--border, rgba(255, 255, 255, 0.12))
-    );
-  border-left: 4px solid var(--lesson-overview-accent, var(--accent, var(--acid)));
+  padding: 24px 26px 26px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background:
     linear-gradient(
-      145deg,
+      160deg,
       color-mix(
         in srgb,
-        var(--lesson-overview-accent, var(--accent, var(--acid))) 7%,
+        var(--lesson-overview-accent, var(--accent, var(--acid))) 14%,
         transparent
       ),
-      transparent 52%
-    ),
-    color-mix(in srgb, var(--vscode-panel, #12141c) 94%, transparent);
-  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.1);
+      rgba(255, 255, 255, 0.04) 46%,
+      rgba(13, 17, 23, 0.42)
+    );
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 14px 36px rgba(0, 0, 0, 0.18);
   overflow: hidden;
 }
 
@@ -9114,11 +9183,15 @@ body {
 
 .lesson-topic-w3-syntax {
   margin: 0;
-  padding: 14px 16px 14px 18px;
-  border-radius: 10px;
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
-  border-left: 4px solid var(--lesson-overview-accent, var(--accent, var(--acid)));
-  background: var(--vscode-editor-bg, #1e1e1e);
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.2)),
+    var(--vscode-editor-bg, #1e1e1e);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   overflow-x: auto;
 }
 
@@ -9261,18 +9334,38 @@ body {
 
 .lesson-topic-w3-note,
 .lesson-topic-w3-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   margin: 0 0 16px;
-  padding: 14px 16px 14px 18px;
-  border-radius: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
   font-size: 0.93rem;
   line-height: 1.62;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.lesson-topic-w3-callout-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
 }
 
 .lesson-topic-w3-note {
-  background: color-mix(in srgb, #eab308 14%, transparent);
-  border: 1px solid color-mix(in srgb, #eab308 35%, transparent);
-  border-left: 4px solid #eab308;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.14), rgba(255, 255, 255, 0.03));
+  border: 1px solid color-mix(in srgb, #eab308 32%, transparent);
   color: color-mix(in srgb, #fef3c7 88%, var(--txt-1, #e2e8f0));
+}
+
+.lesson-topic-w3-note .lesson-topic-w3-callout-icon {
+  color: #fde047;
+  background: rgba(234, 179, 8, 0.14);
+  border: 1px solid rgba(234, 179, 8, 0.3);
 }
 
 .lesson-topic-w3-note strong {
@@ -9280,10 +9373,21 @@ body {
 }
 
 .lesson-topic-w3-tip {
-  background: color-mix(in srgb, #22c55e 12%, transparent);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(255, 255, 255, 0.03));
   border: 1px solid color-mix(in srgb, #22c55e 30%, transparent);
-  border-left: 4px solid #22c55e;
   color: color-mix(in srgb, #dcfce7 85%, var(--txt-1, #e2e8f0));
+}
+
+.lesson-topic-w3-tip .lesson-topic-w3-callout-icon {
+  color: #4ade80;
+  background: rgba(34, 197, 94, 0.14);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.lesson-topic-w3-xp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .lesson-topic-w3-practice {
@@ -9474,24 +9578,52 @@ body {
   display: flex;
   gap: 14px;
   padding: 16px 18px;
-  border-radius: 12px;
-  border: 1px solid rgba(184, 255, 0, 0.25);
-  background: rgba(184, 255, 0, 0.06);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 10px 28px rgba(0, 0, 0, 0.18);
 }
 
 .numpy-tip-info {
-  border-color: rgba(0, 212, 255, 0.3);
-  background: rgba(0, 212, 255, 0.06);
+  border-color: rgba(0, 212, 255, 0.28);
+  background:
+    linear-gradient(135deg, rgba(0, 212, 255, 0.12), rgba(255, 255, 255, 0.02));
 }
 
 .numpy-tip-warning {
-  border-color: rgba(245, 158, 11, 0.35);
-  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.32);
+  background:
+    linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(255, 255, 255, 0.02));
 }
 
 .numpy-tip-icon {
-  font-size: 1.4rem;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: var(--acid, #ffe566);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   line-height: 1;
+}
+
+.numpy-tip-info .numpy-tip-icon {
+  color: #00d4ff;
+  background: rgba(0, 212, 255, 0.12);
+  border-color: rgba(0, 212, 255, 0.24);
+}
+
+.numpy-tip-warning .numpy-tip-icon {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.24);
 }
 
 .numpy-tip-box strong {
@@ -11339,11 +11471,18 @@ body {
   text-align: center;
 }
 
+.certificate-footer-right {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex: 0 0 auto;
+}
+
 .official-stamp {
   width: 100px;
   height: 100px;
   object-fit: contain;
-  margin-right: 50px;
+  margin-right: 0;
 }
 
 /* =========================
@@ -11438,6 +11577,10 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
+  }
+
+  .certificate-footer-right {
+    gap: 12px;
   }
 
   .official-stamp {

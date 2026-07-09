@@ -4,21 +4,21 @@ import NumpyIntroTheory from "../../numpy-py/components/NumpyIntroTheory";
 import OopsSidebar from "../../oops-cpp/components/OopsSidebar";
 import LearnProfileMenu from "../../shared/LearnProfileMenu";
 import LessonContentShell from "../../shared/LessonContentShell";
-import HtmlCssCodeChallenge from "../components/HtmlCssCodeChallenge";
+import JavaScriptCodeChallenge from "../components/JavaScriptCodeChallenge";
 import {
-  HTML_CSS_FOUNDATION_CHAPTERS,
-  HTML_CSS_FOUNDATION_LESSONS,
-  HTML_CSS_FOUNDATION_TOTAL_XP,
-} from "../data/htmlCssFoundationCurriculum";
-import useHtmlCssFoundationProgress from "../hooks/useHtmlCssFoundationProgress";
+  JS_OOPS_CHAPTERS,
+  JS_OOPS_LESSONS,
+  JS_OOPS_TOTAL_XP,
+} from "../data/jsOopsCurriculum";
+import useJsOopsProgress from "../hooks/useJsOopsProgress";
 import useLessonReadGate from "../../shared/useLessonReadGate";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
 import { useLessonAssistantContext } from "../../../assistant/hooks/useLessonAssistantContext";
 
-const BASE_PATH = "/learn/html-css-foundation";
-const READ_GATE_PREFIX = "html_css_foundation";
+const BASE_PATH = "/learn/js-oops";
+const READ_GATE_PREFIX = "js_oops";
 
-export default function HtmlCssFoundationLessonPage() {
+export default function JsOopsLessonPage() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState("theory");
@@ -37,24 +37,27 @@ export default function HtmlCssFoundationLessonPage() {
     isAuthenticated,
     completedMap: progress,
     savedCodeMap,
+    getLessonNote,
     bookmarks,
     completeLesson,
     rememberLesson,
     saveCode,
+    saveNote,
     toggleBookmark,
-  } = useHtmlCssFoundationProgress();
+  } = useJsOopsProgress();
+  const [noteDraft, setNoteDraft] = useState("");
   const codeSaveTimer = useRef(null);
 
-  const lesson = HTML_CSS_FOUNDATION_LESSONS.find((item) => item.id === lessonId);
-  const lessonIdx = HTML_CSS_FOUNDATION_LESSONS.findIndex(
+  const lesson = JS_OOPS_LESSONS.find((item) => item.id === lessonId);
+  const lessonIdx = JS_OOPS_LESSONS.findIndex(
     (item) => item.id === lessonId,
   );
-  const prev = HTML_CSS_FOUNDATION_LESSONS[lessonIdx - 1];
-  const next = HTML_CSS_FOUNDATION_LESSONS[lessonIdx + 1];
+  const prev = JS_OOPS_LESSONS[lessonIdx - 1];
+  const next = JS_OOPS_LESSONS[lessonIdx + 1];
 
   useLessonAssistantContext({
-    course: "HTML & CSS Foundation",
-    language: "HTML & CSS",
+    course: "JavaScript OOP",
+    language: "JavaScript",
     lesson,
     chapter: lesson?.chapterTitle,
     tab,
@@ -69,6 +72,10 @@ export default function HtmlCssFoundationLessonPage() {
     if (lessonId) rememberLesson(lessonId);
   }, [lessonId, rememberLesson]);
 
+  useEffect(() => {
+    setNoteDraft(getLessonNote(lessonId));
+  }, [lessonId, getLessonNote]);
+
   useEffect(
     () => () => {
       window.clearTimeout(codeSaveTimer.current);
@@ -79,9 +86,9 @@ export default function HtmlCssFoundationLessonPage() {
   if (!lesson) {
     return (
       <div className="oops-not-found">
-        <p>HTML & CSS lesson not found.</p>
+        <p>JavaScript OOP lesson not found.</p>
         <button type="button" onClick={() => navigate(BASE_PATH)}>
-          ← Back to HTML & CSS Foundation
+          ← Back to JavaScript OOP
         </button>
       </div>
     );
@@ -90,16 +97,17 @@ export default function HtmlCssFoundationLessonPage() {
   const isCompleted = isAuthenticated && !!progress[lessonId];
   const isBookmarked = bookmarks.includes(lessonId);
   const completedCount = Object.keys(progress).length;
-  const courseFullyDone =
-    completedCount >= HTML_CSS_FOUNDATION_LESSONS.length &&
-    HTML_CSS_FOUNDATION_LESSONS.length > 0;
-  const earnedXP = HTML_CSS_FOUNDATION_LESSONS.filter((item) => progress[item.id]).reduce(
+  const earnedXP = JS_OOPS_LESSONS.filter((item) => progress[item.id]).reduce(
     (sum, item) => sum + item.xp,
     0,
   );
 
   async function handleChallengeComplete() {
     await completeLesson(lesson);
+  }
+
+  function handleSaveNote() {
+    saveNote(lessonId, noteDraft);
   }
 
   function handleCodeChange(code) {
@@ -114,9 +122,9 @@ export default function HtmlCssFoundationLessonPage() {
       <OopsSidebar
         currentLessonId={lessonId}
         progress={progress}
-        chapters={HTML_CSS_FOUNDATION_CHAPTERS}
+        chapters={JS_OOPS_CHAPTERS}
         basePath={BASE_PATH}
-        title="HTML & CSS"
+        title="JavaScript OOP"
       />
 
       <div className="oops-lesson-main">
@@ -126,7 +134,7 @@ export default function HtmlCssFoundationLessonPage() {
             className="oops-back-btn"
             onClick={() => navigate(BASE_PATH)}
           >
-            ← HTML & CSS Foundation
+            ← JavaScript OOP
           </button>
           <div className="oops-lesson-breadcrumb">
             <span style={{ color: lesson.chapterColor }}>
@@ -154,16 +162,16 @@ export default function HtmlCssFoundationLessonPage() {
           </button>
           <LearnProfileMenu
             user={user}
-            trackTitle="HTML & CSS"
+            trackTitle="JavaScript OOP"
             syncLabel={
               isAuthenticated
-                ? "Progress saved to your account"
+                ? "OOP progress saved to your account"
                 : "Sign in to save progress"
             }
             completedCount={completedCount}
-            totalLessons={HTML_CSS_FOUNDATION_LESSONS.length}
+            totalLessons={JS_OOPS_LESSONS.length}
             earnedXP={earnedXP}
-            totalXP={HTML_CSS_FOUNDATION_TOTAL_XP}
+            totalXP={JS_OOPS_TOTAL_XP}
             bookmarksCount={bookmarks.length}
             streak={0}
           />
@@ -186,15 +194,16 @@ export default function HtmlCssFoundationLessonPage() {
         </div>
 
         <LessonContentShell
-          tab={tab}
-          storageKey={`html-css-foundation:${lessonId}`}
+          storageKey={`js-oops:${lessonId}`}
           videoUrl={lesson.videoUrl}
-          videoTitle={`${lesson.title} — HTML & CSS Foundation`}
+          videoTitle={`${lesson.title} — JavaScript OOP`}
         >
           {tab === "theory" ? (
             <NumpyIntroTheory
               lesson={lesson}
-              quizStoragePrefix={READ_GATE_PREFIX}
+              noteDraft={noteDraft}
+              onNoteChange={setNoteDraft}
+              onSaveNote={handleSaveNote}
               confidence={confidence}
               onConfidenceChange={handleConfidenceChange}
               markedAsRead={markedAsRead}
@@ -202,7 +211,7 @@ export default function HtmlCssFoundationLessonPage() {
               onGoChallenge={goToChallenge}
             />
           ) : (
-            <HtmlCssCodeChallenge
+            <JavaScriptCodeChallenge
               challenge={lesson.challenge}
               accentColor={lesson.chapterColor}
               isCompleted={isCompleted}
@@ -237,13 +246,7 @@ export default function HtmlCssFoundationLessonPage() {
             <button
               type="button"
               className="oops-nav-btn oops-nav-next"
-              onClick={() =>
-                navigate(
-                  courseFullyDone
-                    ? `${BASE_PATH}#course-certificate`
-                    : BASE_PATH,
-                )
-              }
+              onClick={() => navigate(BASE_PATH)}
             >
               Finish Course →
             </button>

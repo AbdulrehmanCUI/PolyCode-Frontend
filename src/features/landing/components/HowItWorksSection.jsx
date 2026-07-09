@@ -76,7 +76,6 @@ export default function FeaturesSection() {
             const Icon = feature.icon;
             const inner = (
               <>
-                <div className={`landing-feat-bar ${feature.barClass}`} />
                 <div className={`landing-feat-icon ${feature.iconClass}`}>
                   <Icon size={22} aria-hidden />
                 </div>

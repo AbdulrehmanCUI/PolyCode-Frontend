@@ -137,7 +137,7 @@ export default function CourseCertificate({
   if (!isComplete) return null;
 
   return (
-    <div className="certificate-wrapper">
+    <div id="course-certificate" className="certificate-wrapper">
       <div className="certificate" ref={certificateRef}>
         <div className="certificate-watermark">
           <img src="/images/polycode-logo.png" alt="" />
@@ -204,23 +204,25 @@ export default function CourseCertificate({
             <p className="signature-role">Course Instructor</p>
           </div>
 
-          {qrDataUrl && (
-            <div className="certificate-qr-footer">
-              <img
-                src={qrDataUrl}
-                alt="Scan to verify"
-                width={80}
-                height={80}
-              />
-              <p>Scan to verify</p>
-            </div>
-          )}
+          <div className="certificate-footer-right">
+            {qrDataUrl && (
+              <div className="certificate-qr-footer">
+                <img
+                  src={qrDataUrl}
+                  alt="Scan to verify"
+                  width={80}
+                  height={80}
+                />
+                <p>Scan to verify</p>
+              </div>
+            )}
 
-          <img
-            src="/images/stamp.png"
-            alt="Official Stamp"
-            className="official-stamp"
-          />
+            <img
+              src="/images/stamp.png"
+              alt="Official Stamp"
+              className="official-stamp"
+            />
+          </div>
         </div>
       </div>
 

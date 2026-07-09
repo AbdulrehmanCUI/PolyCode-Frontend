@@ -3,25 +3,25 @@ import { Link } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import { useAuth } from "../../../auth/context/AuthContext";
 import {
+  definePolycodeMonacoTheme,
   getVSCodeEditorOptions,
+  POLYCODE_VSCODE_THEME,
 } from "../../../../shared/utils/monacoTheme";
-import { useSiteMonacoTheme } from "../../../../shared/hooks/useSiteMonacoTheme";
 import {
-  formatRubyOutput,
-  getRubyRuntimeError,
-  runRubyCode,
-} from "../../shared/runRuby";
+  formatJavaScriptOutput,
+  getJavaScriptRuntimeError,
+  runJavaScriptCode,
+} from "../../shared/runJavaScript";
 import ChallengeCompleteCelebration from "../../shared/ChallengeCompleteCelebration";
 import { useChallengeCelebration } from "../../shared/useChallengeCelebration";
-import PolyGuardPanel from "../../../polyguard/components/PolyGuardPanel";
-import { buildRuntimeFailureResults } from "../../shared/buildRuntimeTestResults";
 
 function normalizeWhitespace(value = "") {
   return value.replace(/\s+/g, "");
 }
 
-function testPasses(test, code) {
-  const keywords = test.keywords || [];
+function testPasses(test, code, solutionCode) {
+  const keywords =
+    test.keywords || extractKeywords(solutionCode, test.id, [test]);
   if (!keywords.length) return true;
 
   return keywords.every((keyword) => {
@@ -38,7 +38,16 @@ function testPasses(test, code) {
   });
 }
 
-export default function RubyFundamentalsCodeChallenge({
+function extractKeywords(solutionCode, testId) {
+  const lines = solutionCode
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("//"));
+
+  return lines[testId - 1] ? [lines[testId - 1]] : [];
+}
+
+export default function JsOopsCodeChallenge({
   challenge,
   accentColor,
   isCompleted,
@@ -54,23 +63,19 @@ export default function RubyFundamentalsCodeChallenge({
   const [output, setOutput] = useState(null);
   const [showSolution, setShowSolution] = useState(false);
   const [running, setRunning] = useState(false);
-  const [submitGeneration, setSubmitGeneration] = useState(0);
-  const activeChallengeId = useRef(challenge.id ?? challenge.starterCode);
+  const activeChallengeId = useRef(challenge.id);
   const runTestsRef = useRef(null);
   const { showCelebration, triggerCelebration, dismissCelebration } =
-    useChallengeCelebration(challenge.id ?? challenge.starterCode);
-  const { monacoTheme, beforeMount } = useSiteMonacoTheme();
+    useChallengeCelebration(challenge.id);
 
   useEffect(() => {
-    const challengeKey = challenge.id ?? challenge.starterCode;
-    const challengeChanged = activeChallengeId.current !== challengeKey;
+    const challengeChanged = activeChallengeId.current !== challenge.id;
     if (challengeChanged) {
-      activeChallengeId.current = challengeKey;
+      activeChallengeId.current = challenge.id;
       setCode(initialCode || challenge.starterCode);
       setResults(null);
       setOutput(null);
       setShowSolution(false);
-      setSubmitGeneration(0);
       return;
     }
 
@@ -88,84 +93,81 @@ export default function RubyFundamentalsCodeChallenge({
     setResults(null);
     setOutput({
       status: "running",
-      stdout: "Running Ruby checks…",
+      stdout: "Running OOP checks…",
     });
 
     window.setTimeout(async () => {
       let expectedOutput = "";
       try {
-        const expectedRun = await runRubyCode(challenge.solutionCode, {
-          learn: true,
-        });
-        expectedOutput = formatRubyOutput(expectedRun.result);
+        const expectedRun = await runJavaScriptCode(challenge.solutionCode);
+        expectedOutput = formatJavaScriptOutput(expectedRun.result);
       } catch {
         expectedOutput = "";
       }
 
       let runPayload;
       try {
-        runPayload = await runRubyCode(code, { learn: true });
+        runPayload = await runJavaScriptCode(code);
       } catch (error) {
-        setResults(
-          buildRuntimeFailureResults(
-            challenge,
-            code,
-            challenge.solutionCode,
-            testPasses,
+        setResults({
+          passed: false,
+          tests: [
             {
-              runtimeLabel: "Ruby runs without syntax errors",
-              runtimeHint: error.message || "Could not run Ruby script.",
+              id: "runtime",
+              label: "Code runs without errors",
+              passed: false,
+              hint: error.message || "Could not run code.",
             },
-          ),
-        );
+            ...challenge.tests.map((test) => ({ ...test, passed: false })),
+          ],
+        });
         setOutput({
           status: "fail",
           stdout: error.message || "Run failed",
           expected: expectedOutput,
         });
         setRunning(false);
-        setSubmitGeneration((value) => value + 1);
         return;
       }
 
       const { result: runResult } = runPayload;
-      const runtimeError = getRubyRuntimeError(runResult);
-      const stdout = formatRubyOutput(runResult);
+      const runtimeError = getJavaScriptRuntimeError(runResult);
+      const stdout = formatJavaScriptOutput(runResult);
 
       if (runtimeError) {
-        setResults(
-          buildRuntimeFailureResults(
-            challenge,
-            code,
-            challenge.solutionCode,
-            testPasses,
+        setResults({
+          passed: false,
+          tests: [
             {
-              runtimeLabel: "Ruby runs without exceptions",
-              runtimeHint: "Fix the error in Output, then run again.",
+              id: "runtime",
+              label: "Code runs without errors",
+              passed: false,
+              hint: "Fix the error in Output, then run again.",
             },
-          ),
-        );
+            ...challenge.tests.map((test) => ({ ...test, passed: false })),
+          ],
+        });
         setOutput({
           status: "fail",
           stdout: runtimeError,
           expected: expectedOutput,
         });
         setRunning(false);
-        setSubmitGeneration((value) => value + 1);
         return;
       }
 
       const testResults = challenge.tests.map((test) => ({
         ...test,
-        passed: testPasses(test, code),
+        passed: testPasses(test, code, challenge.solutionCode),
       }));
 
-      const allPassed = testResults.every((test) => test.passed);
+      const acceptanceTests = testResults.filter((test) => test.id !== "runtime");
+      const allPassed = acceptanceTests.every((test) => test.passed);
 
       setResults({ passed: allPassed, tests: testResults });
       setOutput({
         status: allPassed ? "pass" : "fail",
-        stdout: stdout || "Script ran (no printed output).",
+        stdout: stdout || "Program ran (no printed output).",
         expected: expectedOutput,
       });
 
@@ -179,7 +181,6 @@ export default function RubyFundamentalsCodeChallenge({
       }
 
       setRunning(false);
-      setSubmitGeneration((value) => value + 1);
     }, 600);
   }
 
@@ -244,6 +245,49 @@ export default function RubyFundamentalsCodeChallenge({
                     <code>{block.content}</code>
                   </pre>
                 );
+              if (block.type === "callout")
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      borderLeft: "3px solid #ffe566",
+                      padding: "8px 12px",
+                      background: "rgba(184,255,0,0.06)",
+                      borderRadius: "6px",
+                      margin: "8px 0",
+                      fontSize: "0.86rem",
+                    }}
+                  >
+                    {block.content}
+                  </div>
+                );
+              if (block.type === "expected")
+                return (
+                  <div key={i} style={{ marginTop: "10px" }}>
+                    <span
+                      style={{
+                        fontSize: "0.7rem",
+                        color: "#6e7891",
+                        textTransform: "uppercase",
+                        fontWeight: 700,
+                        letterSpacing: "0.08em",
+                      }}
+                    >
+                      {block.label}
+                    </span>
+                    <pre
+                      style={{
+                        background: "rgba(0,0,0,0.3)",
+                        padding: "8px 12px",
+                        borderRadius: "6px",
+                        fontSize: "0.82rem",
+                        marginTop: "5px",
+                      }}
+                    >
+                      <code>{block.content}</code>
+                    </pre>
+                  </div>
+                );
               return null;
             })}
           </div>
@@ -303,26 +347,12 @@ export default function RubyFundamentalsCodeChallenge({
           <pre className="oops-output-body">
             {output?.stdout || "Run your code to see output here."}
           </pre>
-          <PolyGuardPanel
-            code={showSolution ? challenge.solutionCode : code}
-            language="ruby"
-            variant="learn"
-            disabled={!canRun || showSolution}
-            resetKey={`${challenge.id}:${showSolution ? "solution" : "code"}`}
-            autoRunKey={submitGeneration || null}
-            hideManualTrigger
-            analysisContext={{
-              testResults: results,
-              runtimeError:
-                output?.status === "fail" ? output?.stdout : "",
-            }}
-          />
         </div>
       </div>
 
       <div className="oops-editor-panel">
         <div className="oops-editor-topbar">
-          <span className="oops-editor-lang">Ruby · script.rb</span>
+          <span className="oops-editor-lang">JavaScript · lesson.js</span>
           <div className="oops-editor-actions">
             <button
               type="button"
@@ -337,7 +367,7 @@ export default function RubyFundamentalsCodeChallenge({
               onClick={() => setShowSolution(!showSolution)}
               disabled={!canRun}
             >
-              {showSolution ? "Hide Solution" : "Solution"}
+              {showSolution ? "Hide Solution" : "💡 Solution"}
             </button>
           </div>
         </div>
@@ -345,11 +375,11 @@ export default function RubyFundamentalsCodeChallenge({
         <div className="oops-editor">
           <Editor
             height="100%"
-            language="ruby"
+            language="javascript"
             value={showSolution ? challenge.solutionCode : code}
-            beforeMount={beforeMount}
+            beforeMount={definePolycodeMonacoTheme}
             onMount={handleEditorMount}
-            theme={monacoTheme}
+            theme={POLYCODE_VSCODE_THEME}
             onChange={(value) => {
               if (!showSolution) {
                 const next = value || "";
@@ -371,7 +401,7 @@ export default function RubyFundamentalsCodeChallenge({
             >
               {results.passed
                 ? "✓ All tests passed!"
-                : `${results.tests.filter((t) => t.passed).length}/${challenge.tests.length} tests passed`}
+                : `${results.tests.filter((t) => t.passed && t.id !== "runtime").length}/${challenge.tests.length} tests passed`}
             </div>
           )}
           <button

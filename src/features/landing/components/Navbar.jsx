@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
 import { getLanguages } from "../../docs/services/api";
 import { COURSE_GROUPS, COURSE_PANEL_LIMIT, STACK_NAV_LIMIT, getAllCoursesPath } from "../../learn/shared/allCourses";
@@ -43,11 +43,19 @@ export default function Navbar({ theme = "dark", onThemeChange }) {
 
   useEffect(() => {
     const handler = (e) => {
-      if (!coursesRef.current?.contains(e.target)) setCoursesOpen(false);
-      if (!langRef.current?.contains(e.target)) setLangOpen(false);
+      const target = e.target;
+      if (!(target instanceof Node)) return;
+      if (coursesRef.current && !coursesRef.current.contains(target)) {
+        setCoursesOpen(false);
+      }
+      if (langRef.current && !langRef.current.contains(target)) {
+        setLangOpen(false);
+      }
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    // Use click (not mousedown) so in-dropdown links/buttons receive the
+    // activating event before menus close due to document outside-click.
+    document.addEventListener("click", handler);
+    return () => document.removeEventListener("click", handler);
   }, []);
 
   useEffect(() => {
@@ -93,10 +101,14 @@ export default function Navbar({ theme = "dark", onThemeChange }) {
     }
   }, [coursesOpen, activeCourseGroup]);
 
-  const handleNav = (href) => {
+  const closeMenus = () => {
     setCoursesOpen(false);
     setLangOpen(false);
     closeMobile();
+  };
+
+  const handleNav = (href) => {
+    closeMenus();
     if (href.startsWith("#")) {
       document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
     } else {
@@ -261,16 +273,17 @@ export default function Navbar({ theme = "dark", onThemeChange }) {
                         ) : null}
                       </div>
 
-                      {hasMoreStacks ? (
-                        <button
-                          type="button"
-                          className="ln-course-groups-view-all"
-                          onClick={() => handleNav(getAllCoursesPath())}
-                        >
-                          View all courses
-                          <ArrowRight size={14} />
-                        </button>
-                      ) : null}
+                      <Link
+                        to={getAllCoursesPath()}
+                        className="ln-course-groups-view-all"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          closeMenus();
+                        }}
+                      >
+                        View all courses
+                        <ArrowRight size={14} />
+                      </Link>
                     </div>
                   </div>
                 )}
@@ -452,16 +465,17 @@ export default function Navbar({ theme = "dark", onThemeChange }) {
                   </div>
                 );
               })}
-              {hasMoreStacks ? (
-                <button
-                  type="button"
-                  className="landing-mobile-course-groups-view-all"
-                  onClick={() => handleNav(getAllCoursesPath())}
-                >
-                  View all courses
-                  <ArrowRight size={14} />
-                </button>
-              ) : null}
+              <Link
+                to={getAllCoursesPath()}
+                className="landing-mobile-course-groups-view-all"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  closeMenus();
+                }}
+              >
+                View all courses
+                <ArrowRight size={14} />
+              </Link>
             </div>
           ) : null}
 

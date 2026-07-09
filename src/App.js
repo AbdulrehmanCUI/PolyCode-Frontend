@@ -121,6 +121,12 @@ const DsaHub = lazyWithChunkRetry(
 const DsaLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/dsa-cpp/pages/DsaLessonPage"),
 );
+const CppFundamentalsHub = lazyWithChunkRetry(
+  () => import("./features/learn/cpp-fundamentals/pages/CppFundamentalsHub"),
+);
+const CppFundamentalsLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/cpp-fundamentals/pages/CppFundamentalsLessonPage"),
+);
 const NumpyHub = lazyWithChunkRetry(
   () => import("./features/learn/numpy-py/pages/NumpyHub"),
 );
@@ -621,7 +627,9 @@ function AppRoutes() {
       handleLanguageSelect("Java", { stay: true });
     } else if (
       path.startsWith("/learn/oops-cpp") ||
-      path.startsWith("/learn/pointers-cpp")
+      path.startsWith("/learn/pointers-cpp") ||
+      path.startsWith("/learn/dsa-cpp") ||
+      path.startsWith("/learn/cpp-fundamentals")
     ) {
       handleLanguageSelect("C++", { stay: true });
     } else if (
@@ -844,6 +852,51 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <DsaLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/cpp-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <CppFundamentalsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/cpp-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <CppFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/cpp-fundamentals/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <CppFundamentalsLessonPage />
               </LearnShell>
             </ThemedShell>
           }

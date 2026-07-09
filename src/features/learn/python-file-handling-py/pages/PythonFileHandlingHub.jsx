@@ -9,6 +9,7 @@ import usePythonFileHandlingProgress from "../hooks/usePythonFileHandlingProgres
 import CourseCertificate from "../../shared/CourseCertificate";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import LearnChapterIcon from "../../shared/LearnChapterIcon";
 
 const BASE_PATH = "/learn/python-file-handling-py";
 
@@ -347,7 +348,9 @@ export default function PythonFileHandlingHub() {
                 <ul className="matplotlib-path-chapters">
                   {stageChapters.map((ch) => (
                     <li key={ch.id}>
-                      <span aria-hidden>{ch.icon}</span>
+                      <span className="oops-chapter-icon-wrap" aria-hidden>
+                  <LearnChapterIcon icon={ch.icon} size={14} />
+                </span>
                       {ch.title}
                     </li>
                   ))}
