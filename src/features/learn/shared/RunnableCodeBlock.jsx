@@ -21,6 +21,7 @@ import {
   getCsharpRuntimeError,
   runCsharpCode,
 } from "./runCsharp";
+import { formatRustOutput, getRustRuntimeError, runRustCode } from "./runRust";
 import { formatRubyOutput, getRubyRuntimeError, runRubyCode } from "./runRuby";
 import { formatPhpOutput, getPhpRuntimeError, runPhpCode } from "./runPhp";
 import { formatGoOutput, getGoRuntimeError, runGoCode } from "./runGo";
@@ -34,6 +35,7 @@ function normalizeLang(lang = "python") {
   if (value === "ruby") return "ruby";
   if (value === "php") return "php";
   if (value === "go") return "go";
+  if (value === "rust" || value === "rs") return "rust";
   return value;
 }
 
@@ -46,6 +48,7 @@ function monacoLanguage(lang) {
   if (lang === "ruby") return "ruby";
   if (lang === "php") return "php";
   if (lang === "go") return "go";
+  if (lang === "rust") return "rust";
   return "python";
 }
 
@@ -58,11 +61,19 @@ async function executeTheoryCode(source, lang) {
   }
   if (lang === "html") {
     const result = await runHTML(source);
-    return { result, runtime: "preview", previewHTML: result?.previewHTML || null };
+    return {
+      result,
+      runtime: "preview",
+      previewHTML: result?.previewHTML || null,
+    };
   }
   if (lang === "css") {
     const result = await runCSS(source);
-    return { result, runtime: "preview", previewHTML: result?.previewHTML || null };
+    return {
+      result,
+      runtime: "preview",
+      previewHTML: result?.previewHTML || null,
+    };
   }
   if (lang === "csharp") {
     return runCsharpCode(source);
@@ -90,6 +101,14 @@ ${source
     }
     return runGoCode(finalCode);
   }
+  if (lang === "rust") {
+    let finalCode = source;
+    // Auto-wrap bare snippet logs cleanly inside an implicit main function
+    if (!source.includes("fn main(")) {
+      finalCode = `fn main() {\n${source.split("\n").map((line) => "    " + line).join("\n")}\n}`;
+    }
+    return runRustCode(finalCode);
+  }
   return runPythonCode(source);
 }
 
@@ -103,6 +122,7 @@ function formatTheoryOutput(result, lang) {
   if (lang === "ruby") return formatRubyOutput(result);
   if (lang === "php") return formatPhpOutput(result);
   if (lang === "go") return formatGoOutput(result);
+  if (lang === "rust") return formatRustOutput(result);
   return formatPythonOutput(result);
 }
 
@@ -116,6 +136,7 @@ function getTheoryRuntimeError(result, lang) {
   if (lang === "ruby") return getRubyRuntimeError(result);
   if (lang === "php") return getPhpRuntimeError(result);
   if (lang === "go") return getGoRuntimeError(result);
+  if (lang === "rust") return getRustRuntimeError(result);
 
   return getPythonRuntimeError(result);
 }
@@ -374,7 +395,12 @@ export default function RunnableCodeBlock({
               srcDoc={themedPreviewHtml(previewHTML, previewTheme)}
               sandbox=""
               referrerPolicy="no-referrer"
-              style={{ width: "100%", minHeight: 300, border: "1px solid #e5e7eb", borderRadius: 6 }}
+              style={{
+                width: "100%",
+                minHeight: 300,
+                border: "1px solid #e5e7eb",
+                borderRadius: 6,
+              }}
             />
           </div>
         ) : (

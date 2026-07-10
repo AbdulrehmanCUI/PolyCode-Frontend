@@ -269,6 +269,14 @@ const GoLangLessonPage = lazyWithChunkRetry(
   () =>
     import("./features/learn/golang-fundamentals/pages/GoFundamentalsLessonPage"),
 );
+// ──── Rust Language ───────────────────────────────────────────────────────────────────────
+const RustFundamentalsHub = lazyWithChunkRetry(
+  () => import("./features/learn/rust-fundamentals/pages/RustFundamentalsHub"),
+);
+const RustFundamentalsLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/rust-fundamentals/pages/RustFundamentalsLessonPage"),
+);
 
 const PageFallback = () => (
   <div className="loading">
@@ -652,6 +660,8 @@ function AppRoutes() {
       handleLanguageSelect("C++", { stay: true });
     } else if (path.startsWith("/learn/golang-fundamentals")) {
       handleLanguageSelect("go", { stay: true });
+    } else if (path.startsWith("/learn/rust-fundamentals")) {
+      handleLanguageSelect("Rust", { stay: true }); 
     } else if (
       path.startsWith("/learn/c-fundamentals") ||
       path.startsWith("/learn/c-functions") ||
@@ -1686,7 +1696,101 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
-      {/* ─────────────────────────────────────────────────────────────── */}
+        {/* ─── Go Language Course Routes ─────────────────────────────────────── */}
+        <Route
+          path="/learn/golang-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        {/* ─── Rust Language Course Routes ─────────────────────────────────────── */}
+        <Route
+          path="/learn/rust-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RustFundamentalsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/rust-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RustFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/rust-fundamentals/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RustFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        {/* ─────────────────────────────────────────────────────────────── */}
+
         <Route path="/profile" element={<ProfileRedirect />} />
         <Route
           path="/*"
