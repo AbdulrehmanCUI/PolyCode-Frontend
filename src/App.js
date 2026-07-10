@@ -125,7 +125,8 @@ const CppFundamentalsHub = lazyWithChunkRetry(
   () => import("./features/learn/cpp-fundamentals/pages/CppFundamentalsHub"),
 );
 const CppFundamentalsLessonPage = lazyWithChunkRetry(
-  () => import("./features/learn/cpp-fundamentals/pages/CppFundamentalsLessonPage"),
+  () =>
+    import("./features/learn/cpp-fundamentals/pages/CppFundamentalsLessonPage"),
 );
 const NumpyHub = lazyWithChunkRetry(
   () => import("./features/learn/numpy-py/pages/NumpyHub"),
@@ -139,9 +140,7 @@ const PythonFundamentalsHub = lazyWithChunkRetry(
 );
 const PythonFundamentalsLessonPage = lazyWithChunkRetry(
   () =>
-    import(
-      "./features/learn/python-fundamentals/pages/PythonFundamentalsLessonPage"
-    ),
+    import("./features/learn/python-fundamentals/pages/PythonFundamentalsLessonPage"),
 );
 const MatplotlibHub = lazyWithChunkRetry(
   () => import("./features/learn/matplotlib-py/pages/MatplotlibHub"),
@@ -175,32 +174,27 @@ const JsFundamentalsLessonPage = lazyWithChunkRetry(
     import("./features/learn/js-fundamentals/pages/JsFundamentalsLessonPage"),
 );
 const JavaIntermediateHub = lazyWithChunkRetry(
-  () => import('./features/learn/java-intermediate/pages/JavaIntermediateHub'),
+  () => import("./features/learn/java-intermediate/pages/JavaIntermediateHub"),
 );
 const JavaIntermediateLessonPage = lazyWithChunkRetry(
   () =>
-    import(
-      './features/learn/java-intermediate/pages/JavaIntermediateLessonPage'
-    ),
+    import("./features/learn/java-intermediate/pages/JavaIntermediateLessonPage"),
 );
 // ── CONFLICT RESOLVED: kept JavaCollections from PR #193 (main) ──
 const JavaCollectionsHub = lazyWithChunkRetry(
-  () => import('./features/learn/java-collections/pages/JavaCollectionsHub'),
+  () => import("./features/learn/java-collections/pages/JavaCollectionsHub"),
 );
 const JavaCollectionsLessonPage = lazyWithChunkRetry(
   () =>
-    import(
-      './features/learn/java-collections/pages/JavaCollectionsLessonPage'
-    ),
+    import("./features/learn/java-intermediate/pages/JavaIntermediateLessonPage"),
 );
+
 const JavaFundamentalsHub = lazyWithChunkRetry(
   () => import("./features/learn/java-fundamentals/pages/JavaFundamentalsHub"),
 );
 const JavaFundamentalsLessonPage = lazyWithChunkRetry(
   () =>
-    import(
-      "./features/learn/java-fundamentals/pages/JavaFundamentalsLessonPage"
-    ),
+    import("./features/learn/java-fundamentals/pages/JavaFundamentalsLessonPage"),
 );
 const CsharpHub = lazyWithChunkRetry(
   () => import("./features/learn/csharp-fundamentals/pages/CsharpHub"),
@@ -215,9 +209,7 @@ const HtmlCssFoundationHub = lazyWithChunkRetry(
 );
 const HtmlCssFoundationLessonPage = lazyWithChunkRetry(
   () =>
-    import(
-      "./features/learn/html-css-foundation/pages/HtmlCssFoundationLessonPage"
-    ),
+    import("./features/learn/html-css-foundation/pages/HtmlCssFoundationLessonPage"),
 );
 
 // ─── C Language Courses ───────────────────────────────────────────────────────
@@ -240,22 +232,26 @@ const CPointersLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/c-pointers/pages/CPointersLessonPage"),
 );
 const CMemoryManagementHub = lazyWithChunkRetry(
-  () => import("./features/learn/c-memory-management/pages/CMemoryManagementHub"),
+  () =>
+    import("./features/learn/c-memory-management/pages/CMemoryManagementHub"),
 );
 const CMemoryManagementLessonPage = lazyWithChunkRetry(
-  () => import("./features/learn/c-memory-management/pages/CMemoryManagementLessonPage"),
+  () =>
+    import("./features/learn/c-memory-management/pages/CMemoryManagementLessonPage"),
 );
 const CFileHandlingHub = lazyWithChunkRetry(
   () => import("./features/learn/c-file-handling/pages/CFileHandlingHub"),
 );
 const CFileHandlingLessonPage = lazyWithChunkRetry(
-  () => import("./features/learn/c-file-handling/pages/CFileHandlingLessonPage"),
+  () =>
+    import("./features/learn/c-file-handling/pages/CFileHandlingLessonPage"),
 );
 const CDataStructuresHub = lazyWithChunkRetry(
   () => import("./features/learn/c-data-structures/pages/CDataStructuresHub"),
 );
 const CDataStructuresLessonPage = lazyWithChunkRetry(
-  () => import("./features/learn/c-data-structures/pages/CDataStructuresLessonPage"),
+  () =>
+    import("./features/learn/c-data-structures/pages/CDataStructuresLessonPage"),
 );
 const CProjectsHub = lazyWithChunkRetry(
   () => import("./features/learn/c-projects/pages/CProjectsHub"),
@@ -263,7 +259,24 @@ const CProjectsHub = lazyWithChunkRetry(
 const CProjectsLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/c-projects/pages/CProjectsLessonPage"),
 );
-// ─────────────────────────────────────────────────────────────────────────────
+// ──── Go Language ─────────────────────────────────────────────────────────────────────────
+
+const GoLangHub = lazyWithChunkRetry(
+  () => import("./features/learn/golang-fundamentals/pages/GoFundamentalsHub"),
+);
+
+const GoLangLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/golang-fundamentals/pages/GoFundamentalsLessonPage"),
+);
+// ──── Rust Language ───────────────────────────────────────────────────────────────────────
+const RustFundamentalsHub = lazyWithChunkRetry(
+  () => import("./features/learn/rust-fundamentals/pages/RustFundamentalsHub"),
+);
+const RustFundamentalsLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/rust-fundamentals/pages/RustFundamentalsLessonPage"),
+);
 
 const PageFallback = () => (
   <div className="loading">
@@ -645,6 +658,10 @@ function AppRoutes() {
       path.startsWith("/learn/cpp-fundamentals")
     ) {
       handleLanguageSelect("C++", { stay: true });
+    } else if (path.startsWith("/learn/golang-fundamentals")) {
+      handleLanguageSelect("go", { stay: true });
+    } else if (path.startsWith("/learn/rust-fundamentals")) {
+      handleLanguageSelect("Rust", { stay: true }); 
     } else if (
       path.startsWith("/learn/c-fundamentals") ||
       path.startsWith("/learn/c-functions") ||
@@ -707,7 +724,10 @@ function AppRoutes() {
         <Route
           path="/select-language"
           element={
-            <StackPickerShell savedTheme={theme} onThemeChange={handleThemeChange}>
+            <StackPickerShell
+              savedTheme={theme}
+              onThemeChange={handleThemeChange}
+            >
               <LandingPage
                 onLanguageSelect={handleLanguageSelect}
                 continueLanguage={selectedLanguage}
@@ -1629,6 +1649,146 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
+        {/* ─────────────────────────────────────────────────────────────── */}
+        {/* ─── Go Language Course Routes ─────────────────────────────────────── */}
+        <Route
+          path="/learn/golang-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        {/* ─── Go Language Course Routes ─────────────────────────────────────── */}
+        <Route
+          path="/learn/golang-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        {/* ─── Rust Language Course Routes ─────────────────────────────────────── */}
+        <Route
+          path="/learn/rust-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RustFundamentalsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/rust-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RustFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/rust-fundamentals/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RustFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
         {/* ─────────────────────────────────────────────────────────────── */}
 
         <Route path="/profile" element={<ProfileRedirect />} />

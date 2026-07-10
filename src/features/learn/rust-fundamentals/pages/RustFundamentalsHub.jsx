@@ -1,15 +1,15 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  GO_FUNDAMENTALS_CHAPTERS,
-  GO_FUNDAMENTALS_LESSONS,
-  GO_FUNDAMENTALS_TOTAL_XP,
-} from "../data/Go_fundamentalsCurriculum";
-import useGoFundamentalsProgress from "../hooks/useGoFundamentalsProgress";
+  RUST_FUNDAMENTALS_CHAPTERS,
+  RUST_FUNDAMENTALS_LESSONS,
+  RUST_FUNDAMENTALS_TOTAL_XP,
+} from "../data/rustCurriculum";
+import useRustFundamentalsProgress from "../hooks/useRustFundamentalsProgress";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
 import { CheckCircle2 } from "lucide-react";
 
-const BASE_PATH = "/learn/golang-fundamentals";
+const BASE_PATH = "/learn/rust-fundamentals";
 
 function lessonPlainText(lesson) {
   return lesson.theory
@@ -18,7 +18,7 @@ function lessonPlainText(lesson) {
     .join(" ");
 }
 
-export default function GoFundamentalsHub() {
+export default function RustFundamentalsHub() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -27,31 +27,31 @@ export default function GoFundamentalsHub() {
     completedMap: progress,
     bookmarks,
     lastLessonId,
-  } = useGoFundamentalsProgress();
+  } = useRustFundamentalsProgress();
 
   const completedCount = Object.keys(progress).length;
-  const earnedXP = GO_FUNDAMENTALS_LESSONS.filter((lesson) => progress[lesson.id]).reduce(
+  const earnedXP = RUST_FUNDAMENTALS_LESSONS.filter((lesson) => progress[lesson.id]).reduce(
     (sum, lesson) => sum + lesson.xp,
     0,
   );
   const pct =
-    Math.round((completedCount / GO_FUNDAMENTALS_LESSONS.length) * 100) || 0;
+    Math.round((completedCount / RUST_FUNDAMENTALS_LESSONS.length) * 100) || 0;
   const nextLesson =
-    GO_FUNDAMENTALS_LESSONS.find((lesson) => !progress[lesson.id]) ||
-    GO_FUNDAMENTALS_LESSONS[0];
+    RUST_FUNDAMENTALS_LESSONS.find((lesson) => !progress[lesson.id]) ||
+    RUST_FUNDAMENTALS_LESSONS[0];
   const resumeLesson =
-    GO_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === lastLessonId) ||
+    RUST_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === lastLessonId) ||
     nextLesson;
-  const completedChapters = GO_FUNDAMENTALS_CHAPTERS.filter((chapter) =>
+  const completedChapters = RUST_FUNDAMENTALS_CHAPTERS.filter((chapter) =>
     chapter.lessons.every((lesson) => progress[lesson.id]),
   ).length;
   const bookmarkedLessons = bookmarks
-    .map((id) => GO_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === id))
+    .map((id) => RUST_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === id))
     .filter(Boolean);
 
   const filteredLessons = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return GO_FUNDAMENTALS_LESSONS.filter((lesson) => {
+    return RUST_FUNDAMENTALS_LESSONS.filter((lesson) => {
       const matchesQuery =
         !query ||
         lesson.title.toLowerCase().includes(query) ||
@@ -67,24 +67,24 @@ export default function GoFundamentalsHub() {
   }, [bookmarks, filter, progress, search]);
 
   return (
-    <div className="oops-hub go-fundamentals-hub">
-      <div className="oops-hero go-fundamentals-hero">
+    <div className="oops-hub rust-fundamentals-hub">
+      <div className="oops-hero rust-fundamentals-hero">
         <Link
-          to="/language/Go"
+          to="/language/Rust"
           className="oops-back-btn"
           style={{ marginBottom: "0.75rem", display: "inline-flex" }}
         >
-          ← Go courses
+          ← Rust courses
         </Link>
-        <div className="oops-hero-badge">Go · CORE TRACK</div>
+        <div className="oops-hero-badge">Rust · CORE TRACK</div>
         <h1 className="oops-hero-title">
-          Go
+          Rust
           <br />
           <span className="oops-hero-accent">Fundamentals</span>
         </h1>
         <p className="oops-hero-sub">
-          From your first `fmt.Println` to slices, structs, implicit interfaces,
-          and goroutines — simple theory, diagrams, and hands-on Go challenges.
+          From your first `println!` macro to ownership, structs, the borrow checker, 
+          and exhaustive pattern matching — simple theory, diagrams, and hands-on Rust challenges.
         </p>
 
         <div className="oops-hero-grid">
@@ -92,8 +92,8 @@ export default function GoFundamentalsHub() {
             <div className="oops-xp-meta">
               <span>
                 {isAuthenticated
-                  ? `${completedCount}/${GO_FUNDAMENTALS_LESSONS.length} lessons · ${earnedXP}/${GO_FUNDAMENTALS_TOTAL_XP} XP`
-                  : `Sign in to track progress · ${GO_FUNDAMENTALS_LESSONS.length} lessons`}
+                  ? `${completedCount}/${RUST_FUNDAMENTALS_LESSONS.length} lessons · ${earnedXP}/${RUST_FUNDAMENTALS_TOTAL_XP} XP`
+                  : `Sign in to track progress · ${RUST_FUNDAMENTALS_LESSONS.length} lessons`}
               </span>
               <span>{isAuthenticated ? `${pct}%` : "—"}</span>
             </div>
@@ -108,7 +108,7 @@ export default function GoFundamentalsHub() {
           {!isAuthenticated && (
             <div className="oops-auth-gate oops-auth-gate-hub">
               <p>
-                Create a free account to run Go challenges, earn XP, and save
+                Create a free account to run Rust challenges, earn XP, and save
                 your place in the course.
               </p>
               <div className="oops-auth-gate-actions">
@@ -139,7 +139,7 @@ export default function GoFundamentalsHub() {
               type="button"
               onClick={() => navigate(`${BASE_PATH}/lesson/${resumeLesson.id}`)}
             >
-              {completedCount > 0 ? "Resume Go" : "Start Go"}
+              {completedCount > 0 ? "Resume Rust" : "Start Rust"}
             </button>
           </div>
         </div>
@@ -147,18 +147,18 @@ export default function GoFundamentalsHub() {
 
       <div className="oops-guide-tools">
         <div className="oops-tool-panel oops-tool-panel-main">
-          <span className="oops-interactive-label">Find a Go topic</span>
+          <span className="oops-interactive-label">Find a Rust topic</span>
           <div className="oops-search-row">
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search slices, maps, goroutines..."
-              aria-label="Search Go lessons"
+              placeholder="Search ownership, structs, match, borrowing..."
+              aria-label="Search Rust lessons"
             />
             <div
               className="oops-filter-tabs"
-              aria-label="Filter Go lessons"
+              aria-label="Filter Rust lessons"
             >
               {[
                 ["all", "All"],
@@ -235,19 +235,19 @@ export default function GoFundamentalsHub() {
         <div className="oops-stat-tile">
           <span>Lessons</span>
           <strong>
-            {completedCount}/{GO_FUNDAMENTALS_LESSONS.length}
+            {completedCount}/{RUST_FUNDAMENTALS_LESSONS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>Chapters</span>
           <strong>
-            {completedChapters}/{GO_FUNDAMENTALS_CHAPTERS.length}
+            {completedChapters}/{RUST_FUNDAMENTALS_CHAPTERS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>XP</span>
           <strong>
-            {earnedXP}/{GO_FUNDAMENTALS_TOTAL_XP}
+            {earnedXP}/{RUST_FUNDAMENTALS_TOTAL_XP}
           </strong>
         </div>
         <div className="oops-stat-tile">
@@ -257,7 +257,7 @@ export default function GoFundamentalsHub() {
       </div>
 
       <div className="oops-path-overview">
-        {GO_FUNDAMENTALS_CHAPTERS.map((chapter, index) => {
+        {RUST_FUNDAMENTALS_CHAPTERS.map((chapter, index) => {
           const done = chapter.lessons.filter((l) => progress[l.id]).length;
           const active = done > 0 && done < chapter.lessons.length;
           return (
@@ -283,7 +283,7 @@ export default function GoFundamentalsHub() {
       </div>
 
       <div className="oops-chapters">
-        {GO_FUNDAMENTALS_CHAPTERS.map((chapter, index) => {
+        {RUST_FUNDAMENTALS_CHAPTERS.map((chapter, index) => {
           const done = chapter.lessons.filter((l) => progress[l.id]).length;
           const chapterPct =
             Math.round((done / chapter.lessons.length) * 100) || 0;

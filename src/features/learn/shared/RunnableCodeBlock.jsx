@@ -4,11 +4,7 @@ import Editor from "@monaco-editor/react";
 import { useAuth } from "../../auth/context/AuthContext";
 import { useSiteMonacoTheme } from "../../../shared/hooks/useSiteMonacoTheme";
 import { getVSCodeEditorOptions } from "../../../shared/utils/monacoTheme";
-import {
-  formatCppOutput,
-  getCppRuntimeError,
-  runCppCode,
-} from "./runCpp";
+import { formatCppOutput, getCppRuntimeError, runCppCode } from "./runCpp";
 import {
   formatJavaScriptOutput,
   getJavaScriptRuntimeError,
@@ -25,16 +21,10 @@ import {
   getCsharpRuntimeError,
   runCsharpCode,
 } from "./runCsharp";
-import {
-  formatRubyOutput,
-  getRubyRuntimeError,
-  runRubyCode,
-} from "./runRuby";
-import {
-  formatPhpOutput,
-  getPhpRuntimeError,
-  runPhpCode,
-} from "./runPhp";
+import { formatRustOutput, getRustRuntimeError, runRustCode } from "./runRust";
+import { formatRubyOutput, getRubyRuntimeError, runRubyCode } from "./runRuby";
+import { formatPhpOutput, getPhpRuntimeError, runPhpCode } from "./runPhp";
+import { formatGoOutput, getGoRuntimeError, runGoCode } from "./runGo";
 import { runHTML, runCSS } from "../../playground/services/BrowserExecutor";
 
 function normalizeLang(lang = "python") {
@@ -44,6 +34,8 @@ function normalizeLang(lang = "python") {
   if (value === "csharp" || value === "c#") return "csharp";
   if (value === "ruby") return "ruby";
   if (value === "php") return "php";
+  if (value === "go") return "go";
+  if (value === "rust" || value === "rs") return "rust";
   return value;
 }
 
@@ -55,6 +47,8 @@ function monacoLanguage(lang) {
   if (lang === "csharp") return "csharp";
   if (lang === "ruby") return "ruby";
   if (lang === "php") return "php";
+  if (lang === "go") return "go";
+  if (lang === "rust") return "rust";
   return "python";
 }
 
@@ -67,11 +61,19 @@ async function executeTheoryCode(source, lang) {
   }
   if (lang === "html") {
     const result = await runHTML(source);
-    return { result, runtime: "preview", previewHTML: result?.previewHTML || null };
+    return {
+      result,
+      runtime: "preview",
+      previewHTML: result?.previewHTML || null,
+    };
   }
   if (lang === "css") {
     const result = await runCSS(source);
-    return { result, runtime: "preview", previewHTML: result?.previewHTML || null };
+    return {
+      result,
+      runtime: "preview",
+      previewHTML: result?.previewHTML || null,
+    };
   }
   if (lang === "csharp") {
     return runCsharpCode(source);
@@ -81,6 +83,31 @@ async function executeTheoryCode(source, lang) {
   }
   if (lang === "php") {
     return runPhpCode(source);
+  }
+  if (lang === "go") {
+    let finalCode = source;
+    // If the snippet is just raw code logic without a package header, wrap it up cleanly
+    if (!source.includes("package main")) {
+      finalCode = `package main
+
+import "fmt"
+
+func main() {
+${source
+  .split("\n")
+  .map((line) => "    " + line)
+  .join("\n")}
+}`;
+    }
+    return runGoCode(finalCode);
+  }
+  if (lang === "rust") {
+    let finalCode = source;
+    // Auto-wrap bare snippet logs cleanly inside an implicit main function
+    if (!source.includes("fn main(")) {
+      finalCode = `fn main() {\n${source.split("\n").map((line) => "    " + line).join("\n")}\n}`;
+    }
+    return runRustCode(finalCode);
   }
   return runPythonCode(source);
 }
@@ -94,6 +121,8 @@ function formatTheoryOutput(result, lang) {
   if (lang === "csharp") return formatCsharpOutput(result);
   if (lang === "ruby") return formatRubyOutput(result);
   if (lang === "php") return formatPhpOutput(result);
+  if (lang === "go") return formatGoOutput(result);
+  if (lang === "rust") return formatRustOutput(result);
   return formatPythonOutput(result);
 }
 
@@ -106,6 +135,8 @@ function getTheoryRuntimeError(result, lang) {
   if (lang === "csharp") return getCsharpRuntimeError(result);
   if (lang === "ruby") return getRubyRuntimeError(result);
   if (lang === "php") return getPhpRuntimeError(result);
+  if (lang === "go") return getGoRuntimeError(result);
+  if (lang === "rust") return getRustRuntimeError(result);
 
   return getPythonRuntimeError(result);
 }
@@ -164,7 +195,11 @@ export default function RunnableCodeBlock({
     setPreviewHTML(null);
 
     try {
-      const { result, runtime, previewHTML: htmlPreview } = await executeTheoryCode(code, lang);
+      const {
+        result,
+        runtime,
+        previewHTML: htmlPreview,
+      } = await executeTheoryCode(code, lang);
       const runtimeError = getTheoryRuntimeError(result, lang);
 
       if (runtimeError) {
@@ -198,7 +233,10 @@ export default function RunnableCodeBlock({
   function themedPreviewHtml(html, theme) {
     if (!html) return html;
     // Inject a theme override style into the preview head.
-    const themeStyle = theme === "dark" ? `\n<style id="preview-theme">html,body{background:#0b1220!important;color:#e6eef8!important} .preview-note{color:#cbd5e1!important} a{color:#93c5fd!important} </style>\n` : `\n<style id="preview-theme">html,body{background:#ffffff!important;color:#111111!important} .preview-note{color:#666666!important} a{color:#1e3a8a!important} </style>\n`;
+    const themeStyle =
+      theme === "dark"
+        ? `\n<style id="preview-theme">html,body{background:#0b1220!important;color:#e6eef8!important} .preview-note{color:#cbd5e1!important} a{color:#93c5fd!important} </style>\n`
+        : `\n<style id="preview-theme">html,body{background:#ffffff!important;color:#111111!important} .preview-note{color:#666666!important} a{color:#1e3a8a!important} </style>\n`;
 
     if (html.includes("</head>")) {
       return html.replace(/<\/head>/i, `${themeStyle}</head>`);
@@ -311,20 +349,42 @@ export default function RunnableCodeBlock({
         </div>
         {previewHTML ? (
           <div className="oops-preview-frame">
-            <div style={{ display: "flex", gap: 8, alignItems: "center", padding: "0 1rem 0 1rem" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: 8,
+                alignItems: "center",
+                padding: "0 1rem 0 1rem",
+              }}
+            >
               <small style={{ color: "#666" }}>Theme:</small>
               <div>
                 <button
                   type="button"
                   onClick={() => setPreviewTheme("light")}
-                  style={{ marginRight: 6, padding: "4px 8px", borderRadius: 4, border: previewTheme === "light" ? "1px solid #111" : "1px solid #ccc" }}
+                  style={{
+                    marginRight: 6,
+                    padding: "4px 8px",
+                    borderRadius: 4,
+                    border:
+                      previewTheme === "light"
+                        ? "1px solid #111"
+                        : "1px solid #ccc",
+                  }}
                 >
                   Light
                 </button>
                 <button
                   type="button"
                   onClick={() => setPreviewTheme("dark")}
-                  style={{ padding: "4px 8px", borderRadius: 4, border: previewTheme === "dark" ? "1px solid #111" : "1px solid #ccc" }}
+                  style={{
+                    padding: "4px 8px",
+                    borderRadius: 4,
+                    border:
+                      previewTheme === "dark"
+                        ? "1px solid #111"
+                        : "1px solid #ccc",
+                  }}
                 >
                   Dark
                 </button>
@@ -335,7 +395,12 @@ export default function RunnableCodeBlock({
               srcDoc={themedPreviewHtml(previewHTML, previewTheme)}
               sandbox=""
               referrerPolicy="no-referrer"
-              style={{ width: "100%", minHeight: 300, border: "1px solid #e5e7eb", borderRadius: 6 }}
+              style={{
+                width: "100%",
+                minHeight: 300,
+                border: "1px solid #e5e7eb",
+                borderRadius: 6,
+              }}
             />
           </div>
         ) : (

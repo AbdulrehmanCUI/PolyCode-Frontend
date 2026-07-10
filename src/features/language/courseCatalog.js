@@ -426,7 +426,7 @@ export const languageCourses = {
       accent: "#9333ea",
     },
   ],
-  // ─── ADD GO TRACK DEFINITION ────────────────────────────────────────────────
+  // ─── GO TRACK DEFINITION ────────────────────────────────────────────────
   go: [
     {
       title: "Go Fundamentals",
@@ -438,6 +438,19 @@ export const languageCourses = {
       accent: "#00add8",
     },
   ],
+  // ─── RUST TRACK DEFINITION ──────────────────────────────────────────────
+  rust: [
+    {
+      title: "Rust Fundamentals",
+      tag: "Core Track",
+      icon: Terminal,
+      description:
+        "Master zero-cost abstractions, strict default immutability, ownership move semantics, borrow-checker rules, and exhaustive pattern matching.",
+      href: "/learn/rust-fundamentals",
+      accent: "#ce412b",
+    },
+  ],
+
 };
 
 /** Ordered stacks for navbar grouping (one row per language, sub-courses inside). */
@@ -502,6 +515,12 @@ export const courseStackGroups = [
     accent: "#00add8",
     languagePath: "/language/Go",
   },
+  {
+    id: "rust",
+    label: "Rust",
+    accent: "#ce412b",
+    languagePath: "/language/Rust",
+  },
 ];
 
 /** Navbar learn links per language (mirrors languageCourses). */
@@ -563,8 +582,8 @@ export const learnNavByLanguage = {
     { label: "Ruby Basics", to: "/learn/ruby-fundamentals" },
     { label: "Ruby Gems", to: "/learn/ruby-gems" },
   ],
-  // ─── ADD GO NAVIGATION ENTRIES ─────────────────────────────────────────────
   go: [{ label: "Go Basics", to: "/learn/golang-fundamentals" }],
+  rust: [{ label: "Rust Basics", to: "/learn/rust-fundamentals" }],
 };
 
 const learnNavLanguageAliases = {
@@ -633,9 +652,11 @@ export function inferLanguageFromLearnPath(pathname = "") {
   if (pathname.startsWith("/learn/c-sharp-fundamentals")) {
     return "csharp";
   }
-  // ─── ADD GO ROUTE INFERENCE ────────────────────────────────────────────────
   if (pathname.startsWith("/learn/golang-fundamentals")) {
     return "go";
+  }
+  if (pathname.startsWith("/learn/rust-fundamentals")){
+    return "rust";
   }
   if (
     pathname.startsWith("/learn/java-fundamentals") ||
