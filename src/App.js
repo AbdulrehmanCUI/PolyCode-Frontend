@@ -189,16 +189,7 @@ const JavaCollectionsLessonPage = lazyWithChunkRetry(
       './features/learn/java-intermediate/pages/JavaIntermediateLessonPage'
     ),
 );
-// ── CONFLICT RESOLVED: kept JavaCollections from PR #193 (main) ──
-const JavaCollectionsHub = lazyWithChunkRetry(
-  () => import('./features/learn/java-collections/pages/JavaCollectionsHub'),
-);
-const JavaCollectionsLessonPage = lazyWithChunkRetry(
-  () =>
-    import(
-      './features/learn/java-collections/pages/JavaCollectionsLessonPage'
-    ),
-);
+
 const JavaFundamentalsHub = lazyWithChunkRetry(
   () => import("./features/learn/java-fundamentals/pages/JavaFundamentalsHub"),
 );
