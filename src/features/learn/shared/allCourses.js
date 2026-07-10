@@ -28,6 +28,9 @@ export const STACK_NAV_LIMIT = 6;
 export const COURSE_PANEL_LIMIT = 5;
 
 export function getAllCoursesPath(stackId = null) {
-  if (!stackId) return "/courses";
-  return `/courses?stack=${encodeURIComponent(stackId)}`;
+  if (!stackId) return "/language";
+  // Find the languagePath from courseStackGroups for this stack id
+  const group = courseStackGroups.find((g) => g.id === stackId);
+  if (group?.languagePath) return group.languagePath;
+  return `/language/${encodeURIComponent(stackId)}`;
 }
