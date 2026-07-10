@@ -384,7 +384,7 @@ export const languageCourses = {
       icon: Layers3,
       description:
         "Streams API, lambda expressions, multithreading, Optional, and JDBC — write fast, modern, production-ready Java.",
-      href: "/hub?language=Java&category=03-advanced",
+      href: "/learn/java-advanced",
       accent: "#3b82f6",
     },
     {
@@ -393,7 +393,7 @@ export const languageCourses = {
       icon: Grid3x3,
       description:
         "Build REST APIs with Spring Boot, Spring Data JPA, Maven, request validation, and unit testing with JUnit and Mockito.",
-      href: "/hub?language=Java&category=04-professional",
+      href: "/category/04-professional?language=Java",
       accent: "#22c55e",
     },
     {
@@ -402,7 +402,7 @@ export const languageCourses = {
       icon: Brain,
       description:
         "Algorithms, data structures, design patterns, Big-O analysis, and full interview preparation to become a confident Java developer.",
-      href: "/hub?language=Java&category=05-mastery",
+      href: "/category/05-mastery?language=Java",
       accent: "#a855f7",
     },
   ],
@@ -562,18 +562,16 @@ export const learnNavByLanguage = {
     { label: "Web Dev", to: "/learn/js-web-dev" },
     { label: "Node & npm", to: "/learn/node-npm" },
   ],
-  htmlCss: [
+  htmlcss: [
     { label: "HTML & CSS", to: "/learn/html-css-foundation" },
   ],
   java: [
     { label: "Java Fundamentals", to: "/learn/java-fundamentals" },
     { label: "Java OOP", to: "/learn/java-intermediate" },
     { label: "Java Collections", to: "/learn/java-collections" },
-    { label: "Java Exception Handling", to: "/learn/java-exception-handling" },
-    { label: "Java Multithreading", to: "/learn/java-multithreading" },
-    { label: "Java JDBC", to: "/learn/java-jdbc" },
-    { label: "Java Spring Boot", to: "/hub?language=Java&category=04-professional" },
-    { label: "Java Projects", to: "/hub?language=Java&category=05-mastery" },
+    { label: "Java Advanced", to: "/learn/java-advanced" },
+    { label: "Spring Boot", to: "/category/04-professional?language=Java" },
+    { label: "Mastery", to: "/category/05-mastery?language=Java" },
   ],
   php: [{ label: "PHP Basics", to: "/learn/php-fundamentals" }],
   csharp: [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
@@ -590,6 +588,7 @@ const learnNavLanguageAliases = {
   "c++": "cpp",
   "c#": "csharp",
   "html&css": "htmlcss",
+  htmlCss: "htmlcss",
 };
 
 function normalizeLearnNavLanguageKey(key = "") {
@@ -661,7 +660,8 @@ export function inferLanguageFromLearnPath(pathname = "") {
   if (
     pathname.startsWith("/learn/java-fundamentals") ||
     pathname.startsWith("/learn/java-intermediate") ||
-    pathname.startsWith("/learn/java-collections")
+    pathname.startsWith("/learn/java-collections") ||
+    pathname.startsWith("/learn/java-advanced")
   ) {
     return "java";
   }

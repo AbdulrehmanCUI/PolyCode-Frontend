@@ -18,7 +18,7 @@ const languageMeta = {
   batchfile: { Icon: Keyboard, color: '#4d4d4d' },
   powershell: { icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/powershell/powershell-original.svg', color: '#012456' },
   'q#': { Icon: Atom, color: '#0078d4' },
-  quantum: { icon: '/images/logo.png', color: '#6366f1' },
+  quantum: { icon: '/images/quantum-lang-icon.png', color: '#6366f1' },
   r: { icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/r/r-original.svg', color: '#276dc3' },
   csharp: { icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg', color: '#239120' },
   'c#': { icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg', color: '#239120' },

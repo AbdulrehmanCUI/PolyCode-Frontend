@@ -15,7 +15,7 @@ import useLessonReadGate from "../../shared/useLessonReadGate";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
 import { useLessonAssistantContext } from "../../../assistant/hooks/useLessonAssistantContext";
 
-const BASE_PATH = "/learn/go-fundamentals";
+const BASE_PATH = "/learn/golang-fundamentals";
 const READ_GATE_PREFIX = "go_fundamentals";
 
 export default function GoFundamentalsLessonPage() {

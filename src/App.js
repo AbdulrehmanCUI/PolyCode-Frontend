@@ -186,7 +186,13 @@ const JavaCollectionsHub = lazyWithChunkRetry(
 );
 const JavaCollectionsLessonPage = lazyWithChunkRetry(
   () =>
-    import("./features/learn/java-intermediate/pages/JavaIntermediateLessonPage"),
+    import("./features/learn/java-collections/pages/JavaCollectionsLessonPage"),
+);
+const JavaAdvancedHub = lazyWithChunkRetry(
+  () => import("./features/learn/java-advanced/pages/JavaAdvancedHub"),
+);
+const JavaAdvancedLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/java-advanced/pages/JavaAdvancedLessonPage"),
 );
 
 const JavaFundamentalsHub = lazyWithChunkRetry(
@@ -195,6 +201,63 @@ const JavaFundamentalsHub = lazyWithChunkRetry(
 const JavaFundamentalsLessonPage = lazyWithChunkRetry(
   () =>
     import("./features/learn/java-fundamentals/pages/JavaFundamentalsLessonPage"),
+);
+const PythonOopHub = lazyWithChunkRetry(
+  () => import("./features/learn/python-oop-py/pages/PythonOopHub"),
+);
+const PythonOopLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/python-oop-py/pages/PythonOopLessonPage"),
+);
+const PythonFileHandlingHub = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/python-file-handling-py/pages/PythonFileHandlingHub"),
+);
+const PythonFileHandlingLessonPage = lazyWithChunkRetry(
+  () =>
+    import(
+      "./features/learn/python-file-handling-py/pages/PythonFileHandlingLessonPage"
+    ),
+);
+const JsDomHub = lazyWithChunkRetry(
+  () => import("./features/learn/js-dom/pages/JsDomHub"),
+);
+const JsDomLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/js-dom/pages/JsDomLessonPage"),
+);
+const JsWebDevHub = lazyWithChunkRetry(
+  () => import("./features/learn/js-web-dev/pages/JsWebDevHub"),
+);
+const JsWebDevLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/js-web-dev/pages/JsWebDevLessonPage"),
+);
+const NodeNpmHub = lazyWithChunkRetry(
+  () => import("./features/learn/node-npm/pages/NodeNpmHub"),
+);
+const NodeNpmLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/node-npm/pages/NodeNpmLessonPage"),
+);
+const PhpFundamentalsHub = lazyWithChunkRetry(
+  () => import("./features/learn/php-fundamentals/pages/phpFundamentalsHub"),
+);
+const PhpFundamentalsLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/php-fundamentals/pages/phpFundamentalsLessonPage"),
+);
+const RubyFundamentalsHub = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-fundamentals/pages/rubyFundamentalsHub"),
+);
+const RubyFundamentalsLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/ruby-fundamentals/pages/rubyFundamentalsLessonPage"),
+);
+const RubyGemsHub = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-gems/pages/RubyGemsHub"),
+);
+const RubyGemsLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-gems/pages/RubyGemsLessonPage"),
+);
+const AllCoursesPage = lazyWithChunkRetry(
+  () => import("./features/courses/pages/AllCoursesPage"),
 );
 const CsharpHub = lazyWithChunkRetry(
   () => import("./features/learn/csharp-fundamentals/pages/CsharpHub"),
@@ -500,6 +563,51 @@ function LearnShell({
   );
 }
 
+function learnCourseRoutes({
+  basePath,
+  Hub,
+  Lesson,
+  theme,
+  onThemeChange,
+  onGoToStackPicker,
+  selectedLanguage,
+  includeLegacyLessonPath = false,
+}) {
+  const wrap = (page) => (
+    <ThemedShell theme={theme}>
+      <LearnShell
+        theme={theme}
+        onThemeChange={onThemeChange}
+        onGoToStackPicker={onGoToStackPicker}
+        selectedLanguage={selectedLanguage}
+      >
+        {page}
+      </LearnShell>
+    </ThemedShell>
+  );
+
+  const routes = [
+    <Route key={basePath} path={basePath} element={wrap(<Hub />)} />,
+    <Route
+      key={`${basePath}/lesson`}
+      path={`${basePath}/lesson/:lessonId`}
+      element={wrap(<Lesson />)}
+    />,
+  ];
+
+  if (includeLegacyLessonPath) {
+    routes.push(
+      <Route
+        key={`${basePath}/:lessonId`}
+        path={`${basePath}/:lessonId`}
+        element={wrap(<Lesson />)}
+      />,
+    );
+  }
+
+  return routes;
+}
+
 function ProfileOrMainFallback({
   theme,
   onThemeChange,
@@ -508,6 +616,12 @@ function ProfileOrMainFallback({
   onLanguageSelect,
 }) {
   const location = useLocation();
+  const languageFromQuery = new URLSearchParams(location.search).get(
+    "language",
+  );
+  const effectiveLanguage =
+    selectedLanguage ||
+    (languageFromQuery ? decodeURIComponent(languageFromQuery) : null);
 
   if (/^\/@[^/]+(?:\/certificates\/[^/]+)?$/.test(location.pathname)) {
     return (
@@ -516,7 +630,7 @@ function ProfileOrMainFallback({
           theme={theme}
           onThemeChange={onThemeChange}
           onGoToStackPicker={onGoToStackPicker}
-          selectedLanguage={selectedLanguage}
+          selectedLanguage={effectiveLanguage || selectedLanguage}
         >
           <ProfilePage />
         </LearnShell>
@@ -526,9 +640,9 @@ function ProfileOrMainFallback({
 
   return (
     <ThemedShell theme={theme}>
-      {selectedLanguage ? (
+      {effectiveLanguage ? (
         <MainApp
-          selectedLanguage={selectedLanguage}
+          selectedLanguage={effectiveLanguage}
           onLanguageSelect={onLanguageSelect}
           onGoToStackPicker={onGoToStackPicker}
           theme={theme}
@@ -628,8 +742,23 @@ function AppRoutes() {
 
   React.useEffect(() => {
     const path = location.pathname;
+    const params = new URLSearchParams(location.search);
+    const languageParam = params.get("language");
+    const categoryParam = params.get("category");
+
+    if ((path === "/hub" || path.startsWith("/category/")) && languageParam) {
+      const language = decodeURIComponent(languageParam);
+      handleLanguageSelect(language, { stay: true });
+      if (path === "/hub" && categoryParam) {
+        navigate(`/category/${categoryParam}`, { replace: true });
+        return;
+      }
+    }
+
     if (
       path.startsWith("/learn/python-fundamentals") ||
+      path.startsWith("/learn/python-oop-py") ||
+      path.startsWith("/learn/python-file-handling-py") ||
       path.startsWith("/learn/numpy-py") ||
       path.startsWith("/learn/pandas-py") ||
       path.startsWith("/learn/matplotlib-py") ||
@@ -637,31 +766,42 @@ function AppRoutes() {
       path.startsWith("/learn/ai_ml-py")
     ) {
       handleLanguageSelect("Python", { stay: true });
-    } else if (path.startsWith("/learn/js-fundamentals")) {
+    } else if (
+      path.startsWith("/learn/js-fundamentals") ||
+      path.startsWith("/learn/js-dom") ||
+      path.startsWith("/learn/js-web-dev") ||
+      path.startsWith("/learn/node-npm")
+    ) {
       handleLanguageSelect("JavaScript", { stay: true });
     } else if (path.startsWith("/learn/html-css-foundation")) {
       handleLanguageSelect("HTML & CSS", { stay: true });
     } else if (path.startsWith("/learn/c-sharp-fundamentals")) {
       handleLanguageSelect("C#", { stay: true });
     } else if (
-      // ── CONFLICT RESOLVED: kept java-collections from PR #193 ──
       path.startsWith("/learn/java-fundamentals") ||
       path.startsWith("/learn/java-intermediate") ||
-      path.startsWith("/learn/java-collections")
+      path.startsWith("/learn/java-collections") ||
+      path.startsWith("/learn/java-advanced")
     ) {
       handleLanguageSelect("Java", { stay: true });
     } else if (
-      // ── CONFLICT RESOLVED: kept dsa-cpp + cpp-fundamentals from your branch ──
       path.startsWith("/learn/oops-cpp") ||
       path.startsWith("/learn/pointers-cpp") ||
       path.startsWith("/learn/dsa-cpp") ||
       path.startsWith("/learn/cpp-fundamentals")
     ) {
       handleLanguageSelect("C++", { stay: true });
+    } else if (path.startsWith("/learn/php-fundamentals")) {
+      handleLanguageSelect("PHP", { stay: true });
+    } else if (
+      path.startsWith("/learn/ruby-fundamentals") ||
+      path.startsWith("/learn/ruby-gems")
+    ) {
+      handleLanguageSelect("Ruby", { stay: true });
     } else if (path.startsWith("/learn/golang-fundamentals")) {
-      handleLanguageSelect("go", { stay: true });
+      handleLanguageSelect("Go", { stay: true });
     } else if (path.startsWith("/learn/rust-fundamentals")) {
-      handleLanguageSelect("Rust", { stay: true }); 
+      handleLanguageSelect("Rust", { stay: true });
     } else if (
       path.startsWith("/learn/c-fundamentals") ||
       path.startsWith("/learn/c-functions") ||
@@ -673,7 +813,7 @@ function AppRoutes() {
     ) {
       handleLanguageSelect("C", { stay: true });
     }
-  }, [location.pathname, handleLanguageSelect]);
+  }, [location.pathname, location.search, handleLanguageSelect, navigate]);
 
   React.useEffect(() => {
     localStorage.setItem("theme", theme);
@@ -703,6 +843,14 @@ function AppRoutes() {
               onLanguageSelect={handleLanguageSelect}
               continueLanguage={selectedLanguage}
             />
+          }
+        />
+        <Route
+          path="/courses"
+          element={
+            <ThemedShell theme={theme}>
+              <AllCoursesPage />
+            </ThemedShell>
           }
         />
         <Route
@@ -1696,52 +1844,90 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
-        {/* ─── Go Language Course Routes ─────────────────────────────────────── */}
-        <Route
-          path="/learn/golang-fundamentals"
-          element={
-            <ThemedShell theme={theme}>
-              <LearnShell
-                theme={theme}
-                onThemeChange={handleThemeChange}
-                onGoToStackPicker={goToStackPicker}
-                selectedLanguage={selectedLanguage}
-              >
-                <GoLangHub />
-              </LearnShell>
-            </ThemedShell>
-          }
-        />
-        <Route
-          path="/learn/golang-fundamentals/lesson/:lessonId"
-          element={
-            <ThemedShell theme={theme}>
-              <LearnShell
-                theme={theme}
-                onThemeChange={handleThemeChange}
-                onGoToStackPicker={goToStackPicker}
-                selectedLanguage={selectedLanguage}
-              >
-                <GoLangLessonPage />
-              </LearnShell>
-            </ThemedShell>
-          }
-        />
-        <Route
-          path="/learn/golang-fundamentals/:lessonId"
-          element={
-            <ThemedShell theme={theme}>
-              <LearnShell
-                theme={theme}
-                onThemeChange={handleThemeChange}
-                onGoToStackPicker={goToStackPicker}
-                selectedLanguage={selectedLanguage}
-              >
-                <GoLangLessonPage />
-              </LearnShell>
-            </ThemedShell>
-          }
-        />
+
+        {learnCourseRoutes({
+          basePath: "/learn/python-oop-py",
+          Hub: PythonOopHub,
+          Lesson: PythonOopLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/python-file-handling-py",
+          Hub: PythonFileHandlingHub,
+          Lesson: PythonFileHandlingLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/js-dom",
+          Hub: JsDomHub,
+          Lesson: JsDomLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/js-web-dev",
+          Hub: JsWebDevHub,
+          Lesson: JsWebDevLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/node-npm",
+          Hub: NodeNpmHub,
+          Lesson: NodeNpmLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/php-fundamentals",
+          Hub: PhpFundamentalsHub,
+          Lesson: PhpFundamentalsLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/ruby-fundamentals",
+          Hub: RubyFundamentalsHub,
+          Lesson: RubyFundamentalsLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/ruby-gems",
+          Hub: RubyGemsHub,
+          Lesson: RubyGemsLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/java-advanced",
+          Hub: JavaAdvancedHub,
+          Lesson: JavaAdvancedLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+          includeLegacyLessonPath: true,
+        })}
+
         {/* ─── Rust Language Course Routes ─────────────────────────────────────── */}
         <Route
           path="/learn/rust-fundamentals"

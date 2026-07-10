@@ -44,6 +44,7 @@ const languageLogos = {
   r: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/r/r-original.svg",
   csharp: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg",
   "c#": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg",
+  quantum: "/images/quantum-lang-icon.png",
 };
 
 function getFileIcon(ext) {

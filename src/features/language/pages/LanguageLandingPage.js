@@ -79,7 +79,7 @@ const languageMeta = {
   },
   quantum: {
     name: "Quantum",
-    icon: "/images/logo.png",
+    icon: "/images/quantum-lang-icon.png",
     color: "#6366f1",
     description:
       "Explore quantum computing concepts, circuits, gates, simulators, and hybrid classical-quantum workflows.",

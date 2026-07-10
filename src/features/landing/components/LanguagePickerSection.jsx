@@ -55,7 +55,7 @@ const languageMeta = {
   },
   "q#": { Icon: Atom, color: "#0078d4" },
   quantum: {
-    icon: "/images/logo.png",
+    icon: "/images/quantum-lang-icon.png",
     color: "#6366f1",
   },
   r: {
