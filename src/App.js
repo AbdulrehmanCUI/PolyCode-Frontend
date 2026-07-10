@@ -183,6 +183,7 @@ const JavaIntermediateLessonPage = lazyWithChunkRetry(
       './features/learn/java-intermediate/pages/JavaIntermediateLessonPage'
     ),
 );
+// ── CONFLICT RESOLVED: kept JavaCollections from PR #193 (main) ──
 const JavaCollectionsHub = lazyWithChunkRetry(
   () => import('./features/learn/java-collections/pages/JavaCollectionsHub'),
 );
@@ -207,6 +208,7 @@ const CsharpHub = lazyWithChunkRetry(
 const CsharpLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/csharp-fundamentals/pages/CsharpLessonPage"),
 );
+// ── CONFLICT RESOLVED: kept HtmlCssFoundation + C courses from your branch ──
 const HtmlCssFoundationHub = lazyWithChunkRetry(
   () =>
     import("./features/learn/html-css-foundation/pages/HtmlCssFoundationHub"),
@@ -408,7 +410,6 @@ function MainApp({
                   />
                 }
               />
-
               <Route
                 path="/daily-challenge"
                 element={<DailyChallenge theme={theme} />}
@@ -555,7 +556,6 @@ function ProfileRedirect() {
   return <Navigate to="/hub" replace />;
 }
 
-/** Language picker respects global theme (dark styling only when theme is dark). */
 function StackPickerShell({ children, savedTheme, onThemeChange }) {
   React.useLayoutEffect(() => {
     applyDocumentTheme(savedTheme);
@@ -621,18 +621,24 @@ function AppRoutes() {
       path.startsWith("/learn/pandas-py") ||
       path.startsWith("/learn/matplotlib-py") ||
       path.startsWith("/learn/fastapi-py") ||
-      path.startsWith("/learn/matplotlib-py") ||
       path.startsWith("/learn/ai_ml-py")
     ) {
       handleLanguageSelect("Python", { stay: true });
     } else if (path.startsWith("/learn/js-fundamentals")) {
       handleLanguageSelect("JavaScript", { stay: true });
+    } else if (path.startsWith("/learn/html-css-foundation")) {
+      handleLanguageSelect("HTML & CSS", { stay: true });
     } else if (path.startsWith("/learn/c-sharp-fundamentals")) {
       handleLanguageSelect("C#", { stay: true });
-    } else if (path.startsWith("/learn/java-fundamentals") ||
-               path.startsWith("/learn/java-intermediate")) {
+    } else if (
+      // ── CONFLICT RESOLVED: kept java-collections from PR #193 ──
+      path.startsWith("/learn/java-fundamentals") ||
+      path.startsWith("/learn/java-intermediate") ||
+      path.startsWith("/learn/java-collections")
+    ) {
       handleLanguageSelect("Java", { stay: true });
     } else if (
+      // ── CONFLICT RESOLVED: kept dsa-cpp + cpp-fundamentals from your branch ──
       path.startsWith("/learn/oops-cpp") ||
       path.startsWith("/learn/pointers-cpp") ||
       path.startsWith("/learn/dsa-cpp") ||
@@ -654,7 +660,6 @@ function AppRoutes() {
 
   React.useEffect(() => {
     localStorage.setItem("theme", theme);
-    // LandingShell and StackPickerShell manage document theme while mounted.
     if (location.pathname === "/" || location.pathname === "/select-language") {
       return;
     }
@@ -1028,7 +1033,6 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
-        {/* FastAPI Python Course Routes */}
         <Route
           path="/learn/fastapi-py"
           element={
@@ -1074,7 +1078,6 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
-        {/* AI/ML Python Course Routes */}
         <Route
           path="/learn/ai_ml-py"
           element={
@@ -1120,7 +1123,6 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
-        {/* ✅ CORRECT: Route is the direct child, ThemedShell is inside the element prop */}
         <Route
           path="/learn/matplotlib-py"
           element={
@@ -1136,7 +1138,6 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
-
         <Route
           path="/learn/matplotlib-py/lesson/:lessonId"
           element={
@@ -1245,7 +1246,7 @@ function AppRoutes() {
           }
         />
 
-        {/* ── Java Collections ── */}
+        {/* ── Java Collections (from PR #193) ── */}
         <Route
           path="/learn/java-collections"
           element={
@@ -1339,53 +1340,6 @@ function AppRoutes() {
           }
         />
 
-        {/* ── Java Fundamentals ── */}
-        <Route
-          path="/learn/java-fundamentals"
-          element={
-            <ThemedShell theme={theme}>
-              <LearnShell
-                theme={theme}
-                onThemeChange={handleThemeChange}
-                onGoToStackPicker={goToStackPicker}
-                selectedLanguage={selectedLanguage}
-              >
-                <JavaFundamentalsHub />
-              </LearnShell>
-            </ThemedShell>
-          }
-        />
-        <Route
-          path="/learn/java-fundamentals/lesson/:lessonId"
-          element={
-            <ThemedShell theme={theme}>
-              <LearnShell
-                theme={theme}
-                onThemeChange={handleThemeChange}
-                onGoToStackPicker={goToStackPicker}
-                selectedLanguage={selectedLanguage}
-              >
-                <JavaFundamentalsLessonPage />
-              </LearnShell>
-            </ThemedShell>
-          }
-        />
-        <Route
-          path="/learn/java-fundamentals/:lessonId"
-          element={
-            <ThemedShell theme={theme}>
-              <LearnShell
-                theme={theme}
-                onThemeChange={handleThemeChange}
-                onGoToStackPicker={goToStackPicker}
-                selectedLanguage={selectedLanguage}
-              >
-                <JavaFundamentalsLessonPage />
-              </LearnShell>
-            </ThemedShell>
-          }
-        />
-
         <Route
           path="/learn/c-sharp-fundamentals"
           element={
@@ -1416,6 +1370,54 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
+
+        {/* ── HTML & CSS Foundation ── */}
+        <Route
+          path="/learn/html-css-foundation"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <HtmlCssFoundationHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/html-css-foundation/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <HtmlCssFoundationLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/html-css-foundation/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <HtmlCssFoundationLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
         {/* ─── C Language Course Routes ─────────────────────────────────── */}
         <Route
           path="/learn/c-fundamentals"

@@ -67,16 +67,14 @@ const LESSON_HTML_0 = {
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>HTML & CSS Foundation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introduction to HTML</title>
   </head>
   <body>
-    <header>
-      <h1>Welcome to PolyCode</h1>
-    </header>
-    <main>
-      <p>Learn HTML, CSS, and Bootstrap in a compact course.</p>
-    </main>
-    <footer>© 2026 PolyCode</footer>
+    <h1>Welcome to HTML</h1>
+    <p>
+      HTML builds the structure of your page before CSS styles and JavaScript behavior.
+    </p>
   </body>
 </html>`,
       },
@@ -197,7 +195,7 @@ const LESSON_HTML_1 = {
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Common HTML Elements</title>
+    <title>Lists and Tables</title>
   </head>
   <body>
     <h2>Section title</h2>
@@ -340,32 +338,6 @@ const LESSON_HTML_2 = {
     ),
     text(
       "The CSS box model controls how space is calculated. `margin` sits outside the element, `border` wraps the element, `padding` sits inside, and the `width`/`height` control the content area.",
-      {
-        lang: "html",
-        label: "Box model anatomy",
-        content: `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Box Model Anatomy</title>
-    <style>
-      .box {
-        margin: 16px;
-        border: 2px solid #333;
-        padding: 12px;
-        width: 320px;
-        background: #f8fafc;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="box">
-      <h2>Box model example</h2>
-      <p>Margin puts space outside this element. Padding adds space inside its border.</p>
-    </div>
-  </body>
-</html>`,
-      },
     ),
     diagram("CSS box model", [
       {
@@ -409,7 +381,7 @@ const LESSON_HTML_2 = {
     language: "css",
     title: "Style a .card rule",
     description:
-      "Write CSS for a `.card` class with `padding: 16px;` and `border-radius: 8px;`. The preview page already has a `.card` element so you can see your styles applied.",
+      "Write CSS for a `.card` class with `padding: 16px;` and `border-radius: 8px;`.",
     starterCode: `/* Style the .card class */
 .card {
   /* padding and border-radius go here */
@@ -459,39 +431,6 @@ const LESSON_HTML_3 = {
       "Good typography starts with readable line height and font sizes. Color contrast, spacing, and responsive widths make pages easy to scan on any device.",
       {
         lang: "html",
-        label: "Typography example",
-        content: `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Typography Example</title>
-    <style>
-      body {
-        font-family: Inter, sans-serif;
-        line-height: 1.6;
-        color: #111;
-        margin: 0;
-        padding: 2rem;
-        background: #f8fafc;
-      }
-      h1 {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-      }
-      p { max-width: 720px; }
-    </style>
-  </head>
-  <body>
-    <h1>Readable typography</h1>
-    <p>Use font family, line height, and color contrast to make text easy to scan across devices.</p>
-  </body>
-</html>`,
-      },
-    ),
-    text(
-      "Responsive design means the page adapts to different screen sizes. Use max-width and percentage-based widths so content remains comfortable on mobile and desktop.",
-      {
-        lang: "html",
         label: "Responsive container",
         content: `<!DOCTYPE html>
 <html lang="en">
@@ -516,8 +455,8 @@ const LESSON_HTML_3 = {
   </head>
   <body style="background: #f1f5f9; margin: 0; padding: 2rem;">
     <div class="container">
-      <div class="panel"><h2>Panel 1</h2><p>Responsive panels shrink and grow with the viewport.</p></div>
-      <div class="panel"><h2>Panel 2</h2><p>This layout demonstrates container and card spacing on any screen.</p></div>
+      <div class="panel"><h2>Panel 1</h2><p>Responsive panels shrink and grow.</p></div>
+      <div class="panel"><h2>Panel 2</h2><p>This layout works on any screen.</p></div>
     </div>
   </body>
 </html>`,
@@ -539,7 +478,7 @@ const LESSON_HTML_3 = {
     language: "css",
     title: "Build a responsive .container rule",
     description:
-      "Style `.container` with `width: 100%;`, `max-width: 960px;`, and `margin: 0 auto;` so the preview container stays centered and responsive.",
+      "Style `.container` with `width: 100%;`, `max-width: 960px;`, and `margin: 0 auto;`.",
     starterCode: `/* Make .container responsive and centered */
 .container {
   /* width, max-width, margin */
@@ -593,29 +532,12 @@ const LESSON_HTML_4 = {
       "Bootstrap is a CSS framework that uses ready-made utility classes for spacing, layout, and components. It helps you build polished pages quickly without writing every rule from scratch.",
       {
         lang: "html",
-        label: "Bootstrap button example",
-        content: withBootstrapPreviewStyles(`<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Bootstrap Button Example</title>
-  </head>
-  <body class="p-4">
-    <button class="btn btn-primary">Get started</button>
-  </body>
-</html>`),
-      },
-    ),
-    text(
-      "The Bootstrap grid uses containers, rows, and columns. A common pattern is `row` with children like `col-md-6`, which creates two columns on medium screens and above.",
-      {
-        lang: "html",
         label: "Bootstrap grid skeleton",
         content: withBootstrapPreviewStyles(`<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Bootstrap Grid Skeleton</title>
+    <title>Bootstrap Grid</title>
   </head>
   <body class="p-4">
     <div class="container">
@@ -657,7 +579,7 @@ const LESSON_HTML_4 = {
     language: "html",
     title: "Build a Bootstrap card",
     description:
-      "Complete a Bootstrap-style card using classes `card`, `card-body`, `card-title`, and `card-text`. Keep the included preview stylesheet so the live preview stays styled.",
+      "Complete a Bootstrap-style card using classes `card`, `card-body`, `card-title`, and `card-text`. Keep the included preview stylesheet.",
     starterCode: `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -695,12 +617,7 @@ ${BOOTSTRAP_PREVIEW_CSS}
       {
         id: 1,
         label: "Keeps the Bootstrap preview stylesheet",
-        keywords: [
-          {
-            pattern: "polycode-bootstrap-preview",
-            flags: "i",
-          },
-        ],
+        keywords: [{ pattern: "polycode-bootstrap-preview", flags: "i" }],
         hint: "Keep the <style> block in <head> so classes render",
       },
       {
