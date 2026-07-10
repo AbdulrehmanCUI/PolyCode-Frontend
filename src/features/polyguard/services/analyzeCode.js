@@ -1,11 +1,18 @@
 import { analyzeCodeLocally } from "../lib/analyzeLocally";
 import { enrichPolyGuardAnalysis } from "../lib/enrichAnalysis";
-import { getPolyGuardAnalyzeUrl } from "../config";
+import { getPolyGuardAnalyzeUrl, isPolyGuardRemoteEnabled } from "../config";
 import { toPolyGuardLanguage } from "../lib/mapLanguage";
 
+function isCodeCoachContext(context = {}) {
+  if (context.coachMode === true) return true;
+  if (context.testResults?.tests?.length) return true;
+  if (context.lessonTitle || context.lessonObjective) return true;
+  return false;
+}
+
 /**
- * Primary analyzer: local rules engine + lesson context (accurate for learning code).
- * Optional remote ML augment when REACT_APP_POLYGUARD_REMOTE_AUGMENT=true.
+ * Lesson-aware code coach: static checks, runtime errors, and test hints.
+ * ML security scan only runs outside lesson/challenge context.
  */
 export async function analyzeCodeWithPolyGuard(
   code,
@@ -18,15 +25,27 @@ export async function analyzeCodeWithPolyGuard(
   }
 
   const lang = toPolyGuardLanguage(language);
-  const local = analyzeCodeLocally(trimmed, lang, options.context || {});
+  const context = options.context || {};
+  const coachMode = isCodeCoachContext(context);
+  const local = analyzeCodeLocally(trimmed, lang, {
+    ...context,
+    coachMode,
+  });
 
-  const useRemote = process.env.REACT_APP_POLYGUARD_REMOTE_AUGMENT === "true";
-  if (!useRemote) {
-    return local;
+  if (coachMode || !isPolyGuardRemoteEnabled()) {
+    return {
+      ...local,
+      analysisMode: coachMode ? "code-coach" : "local-rules",
+      analysisSource: coachMode
+        ? "Code coach — lesson checks + fix suggestions"
+        : "Browser rules + lesson context",
+    };
   }
 
+  const remoteUrl = getPolyGuardAnalyzeUrl();
+
   try {
-    const response = await fetch(getPolyGuardAnalyzeUrl(), {
+    const response = await fetch(remoteUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code: trimmed, language: lang }),
@@ -40,16 +59,27 @@ export async function analyzeCodeWithPolyGuard(
     }
 
     if (!response.ok || !payload) {
-      return local;
+      return {
+        ...local,
+        analysisMode: "local-rules",
+        analysisSource: "Browser rules (ML API unavailable)",
+        analysisFallback: true,
+      };
     }
 
     return enrichPolyGuardAnalysis(payload, {
       code: trimmed,
       language: lang,
-      context: options.context || {},
+      context,
       baseLocal: local,
+      remoteUrl,
     });
   } catch {
-    return local;
+    return {
+      ...local,
+      analysisMode: "local-rules",
+      analysisSource: "Browser rules (ML API unreachable)",
+      analysisFallback: true,
+    };
   }
 }

@@ -20,6 +20,7 @@ export default function PolyGuardPanel({
   const { analyze, result, error, loading, reset } = usePolyGuardAnalyze();
   const lastAutoRunRef = useRef(null);
   const contextRef = useRef(analysisContext);
+  const isLearn = variant === "learn";
 
   contextRef.current = analysisContext;
 
@@ -34,16 +35,23 @@ export default function PolyGuardPanel({
     if (!String(code || "").trim()) return;
 
     lastAutoRunRef.current = autoRunKey;
-    analyze(code, language, { context: contextRef.current || {} });
-  }, [autoRunKey, analyze, code, disabled, language]);
+    const ctx = {
+      ...(contextRef.current || {}),
+      coachMode: isLearn || contextRef.current?.coachMode,
+    };
+    analyze(code, language, { context: ctx });
+  }, [autoRunKey, analyze, code, disabled, isLearn, language]);
 
   function handleAnalyze() {
     if (disabled || !String(code || "").trim()) return;
-    analyze(code, language, { context: analysisContext || {} });
+    const ctx = {
+      ...(analysisContext || {}),
+      coachMode: isLearn || analysisContext?.coachMode,
+    };
+    analyze(code, language, { context: ctx });
   }
 
   const hasReport = loading || result || error;
-  const isLearn = variant === "learn";
 
   return (
     <section
@@ -70,7 +78,7 @@ export default function PolyGuardPanel({
           compact={isLearn}
         />
       ) : isLearn && autoRunKey == null ? (
-        <div className="pg-panel-idle">Submit to see what to fix.</div>
+        <div className="pg-panel-idle">Submit your code to see how to fix it.</div>
       ) : !isLearn && !hasReport ? (
         <div className="pg-panel-idle">Run analysis to see fixes.</div>
       ) : null}

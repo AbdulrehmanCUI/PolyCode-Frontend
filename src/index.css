@@ -199,6 +199,10 @@ textarea {
   gap: 12px;
 }
 
+.auth-field-row .auth-field {
+  min-width: 0;
+}
+
 .auth-field label {
   font-size: 0.78rem;
   font-weight: 600;

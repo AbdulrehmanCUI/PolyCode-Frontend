@@ -6,6 +6,8 @@ import {
   GO_FUNDAMENTALS_TOTAL_XP,
 } from "../data/Go_fundamentalsCurriculum";
 import useGoFundamentalsProgress from "../hooks/useGoFundamentalsProgress";
+import LearnChapterIcon from "../../shared/LearnChapterIcon";
+import { CheckCircle2 } from "lucide-react";
 
 const BASE_PATH = "/learn/golang-fundamentals";
 
@@ -296,12 +298,17 @@ export default function GoFundamentalsHub() {
               style={{ "--ch-color": chapter.color }}
             >
               <div className="oops-chapter-header">
-                <span className="oops-chapter-icon">{chapter.icon}</span>
+                <span className="oops-chapter-icon-wrap" aria-hidden>
+                  <LearnChapterIcon icon={chapter.icon} size={22} />
+                </span>
                 <div>
                   <div className="oops-chapter-num">Chapter {index + 1}</div>
                   <div className="oops-chapter-title">{chapter.title}</div>
                 </div>
-                {allDone && <span className="oops-done-badge">✓ Done</span>}
+                {allDone && <span className="oops-done-badge">
+                    <CheckCircle2 size={14} strokeWidth={2.5} aria-hidden />
+                    Done
+                  </span>}
               </div>
               <div className="oops-chapter-progress-track">
                 <div

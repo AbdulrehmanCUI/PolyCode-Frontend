@@ -401,6 +401,8 @@ export default function PythonCodeChallenge({
             autoRunKey={submitGeneration || null}
             hideManualTrigger
             analysisContext={{
+              coachMode: true,
+              lessonTitle: challenge.title,
               testResults: results,
               runtimeError:
                 output?.status === "fail" ? output?.stdout : "",
@@ -426,7 +428,7 @@ export default function PythonCodeChallenge({
               onClick={() => setShowSolution(!showSolution)}
               disabled={!canRun}
             >
-              {showSolution ? "Hide Solution" : "💡 Solution"}
+              {showSolution ? "Hide Solution" : "Solution"}
             </button>
           </div>
         </div>

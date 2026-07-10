@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { getPolyGuardAnalysisModeLabel } from "../config";
 import "../polyguard.css";
 
 function scoreTone(score) {
@@ -140,9 +141,10 @@ function LoadingState({ compact = false }) {
   );
 }
 
-function TipsSection({ passed, actions, headline, compact = false }) {
+function TipsSection({ passed, actions, headline, compact = false, coachMode = false }) {
   const [open, setOpen] = useState(true);
   const count = passed ? 0 : actions.length;
+  const sectionTitle = coachMode ? "HOW TO FIX" : "IMPROVEMENT TIPS";
 
   return (
     <div className={`pg-tips-card${compact ? " is-compact" : ""}`}>
@@ -154,7 +156,7 @@ function TipsSection({ passed, actions, headline, compact = false }) {
       >
         <span className="pg-tips-header-left">
           <span className="pg-tips-icon" aria-hidden="true" />
-          <span>IMPROVEMENT TIPS</span>
+          <span>{sectionTitle}</span>
           {count > 0 ? <span className="pg-tips-count">{count}</span> : null}
         </span>
         <span className={`pg-tips-chevron${open ? " is-open" : ""}`} />
@@ -163,7 +165,11 @@ function TipsSection({ passed, actions, headline, compact = false }) {
         passed ? (
           <div className="pg-tip-item pg-tip-item-pass">
             <span className="pg-tip-arrow" aria-hidden="true" />
-            <p>No fixes needed — your code meets the lesson requirements.</p>
+            <p>
+              {coachMode
+                ? "Your code meets the lesson requirements — nice work."
+                : "No fixes needed — your code meets the lesson requirements."}
+            </p>
           </div>
         ) : actions.length > 0 ? (
           <div className="pg-tips-list">
@@ -210,9 +216,33 @@ export default function PolyGuardReport({
   const tone = scoreTone(metrics.score);
   const passed = metrics.score >= 8 && actions.length === 0;
   const securityLabel = enriched.securityLabel || "REVIEW";
+  const modeLabel = getPolyGuardAnalysisModeLabel(
+    result.analysisMode,
+    result.analysisFallback,
+  );
+  const coachMode = result.analysisMode === "code-coach";
+  const modeClass =
+    result.analysisMode === "code-coach"
+      ? "pg-mode-coach"
+      : result.analysisMode === "hybrid-ml"
+        ? "pg-mode-ml"
+        : "pg-mode-local";
 
   return (
     <div className={`pg-report pg-report-dashboard${compact ? " is-compact" : ""}`}>
+      <div
+        className={`pg-analysis-mode ${modeClass}`}
+        title={result.analysisSource || modeLabel}
+      >
+        <span className="pg-analysis-mode-dot" aria-hidden="true" />
+        <span>{modeLabel}</span>
+        {result.analysisFallback && result.analysisSource ? (
+          <span className="pg-analysis-mode-hint">{result.analysisSource}</span>
+        ) : null}
+        {result.mlSecurityNote ? (
+          <span className="pg-analysis-mode-hint">{result.mlSecurityNote}</span>
+        ) : null}
+      </div>
       <div className="pg-overview-card">
         <ScoreRing
           score={metrics.score}
@@ -233,7 +263,7 @@ export default function PolyGuardReport({
               {metrics.riskLevel || enriched.risk || "—"}
             </span>
           </div>
-          {!compact ? (
+          {!compact && !coachMode ? (
             <>
               <MetricBar
                 label="CLEAN CONFIDENCE"
@@ -255,6 +285,7 @@ export default function PolyGuardReport({
         actions={actions}
         headline={enriched.headline || enriched.summary}
         compact={compact}
+        coachMode={coachMode}
       />
 
       {showRawJson ? <RawJsonSection data={result} /> : null}

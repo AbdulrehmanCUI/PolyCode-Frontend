@@ -1,7 +1,14 @@
 import React, { useState } from "react";
+import { AlertTriangle, Info, Lightbulb, Sparkles } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import RunnableCodeBlock from "../../shared/RunnableCodeBlock";
+
+const CALLOUT_ICONS = {
+  info: Info,
+  tip: Sparkles,
+  warning: AlertTriangle,
+};
 
 // Minimal markdown bold + inline code renderer
 function InlineText({ text }) {
@@ -92,15 +99,15 @@ export default function ConceptCard({
 
   // ── Callout block ────────────────────────────────────────
   if (block.type === "callout") {
-    const icons = { info: "💡", tip: "✨", warning: "⚠️" };
     const colors = { info: "#00d4ff", tip: "#ffe566", warning: "#f59e0b" };
+    const Icon = CALLOUT_ICONS[block.variant] || Lightbulb;
     return (
       <div
         className={`oops-callout oops-callout-${block.variant}`}
         style={{ "--callout-color": colors[block.variant] || accentColor }}
       >
-        <span className="oops-callout-icon">
-          {icons[block.variant] || "💡"}
+        <span className="oops-callout-icon" aria-hidden="true">
+          <Icon size={15} strokeWidth={2.25} />
         </span>
         <span>
           <InlineText text={block.content} />

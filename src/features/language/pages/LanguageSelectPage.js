@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Atom, BookOpen, Code2, Keyboard } from 'lucide-react';
 import { getLanguages } from '../../docs/services/api';
 
 const languageMeta = {
@@ -14,9 +15,9 @@ const languageMeta = {
   php: { icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/php/php-original.svg', color: '#777bb4' },
   ruby: { icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/ruby/ruby-original.svg', color: '#701516' },
   sql: { icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg', color: '#e38c00' },
-  batchfile: { icon: '⌨️', color: '#4d4d4d' },
+  batchfile: { Icon: Keyboard, color: '#4d4d4d' },
   powershell: { icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/powershell/powershell-original.svg', color: '#012456' },
-  'q#': { icon: '⚛️', color: '#0078d4' },
+  'q#': { Icon: Atom, color: '#0078d4' },
   quantum: { icon: '/images/logo.png', color: '#6366f1' },
   r: { icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/r/r-original.svg', color: '#276dc3' },
   csharp: { icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg', color: '#239120' },
@@ -91,7 +92,10 @@ export default function LanguageSelectPage({ onLanguageSelect, continueLanguage 
       {/* ── Hero ── */}
       <section className="hero fade-up" style={{ textAlign: 'center' }}>
         <div className="hero-eyebrow">
-          <span>📚 Welcome to PolyCode</span>
+          <span className="stack-picker-eyebrow">
+            <BookOpen size={14} strokeWidth={2.25} aria-hidden />
+            Welcome to PolyCode
+          </span>
         </div>
 
         <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
@@ -124,10 +128,11 @@ export default function LanguageSelectPage({ onLanguageSelect, continueLanguage 
 
         <div className="lang-grid">
           {languages.map((language, i) => {
-            const meta = languageMeta[language.toLowerCase()] || { icon: '💻', color: '#64748b' };
+            const meta = languageMeta[language.toLowerCase()] || { Icon: Code2, color: '#64748b' };
             const rgba = meta.color.startsWith('#') ? hexToRgba(meta.color, 0.2) : 'rgba(255,255,255,0.1)';
             const isHovered = hoveredLanguage === language;
             const isSelected = selectedLanguage === language;
+            const FallbackIcon = meta.Icon || Code2;
             
             return (
               <div
@@ -154,10 +159,11 @@ export default function LanguageSelectPage({ onLanguageSelect, continueLanguage 
                 <div className="lang-icon-wrapper" style={{
                   transform: isHovered ? 'scale(1.15) rotate(8deg)' : 'scale(1) rotate(0deg)'
                 }}>
-                  {meta.icon.startsWith('http') || meta.icon.startsWith('/') ? (
+                  {typeof meta.icon === 'string' &&
+                  (meta.icon.startsWith('http') || meta.icon.startsWith('/')) ? (
                     <img src={meta.icon} alt={language} />
                   ) : (
-                    <span style={{ fontSize: '2.5rem' }}>{meta.icon}</span>
+                    <FallbackIcon size={40} strokeWidth={1.75} aria-hidden />
                   )}
                 </div>
                 <span className="lang-name" style={{

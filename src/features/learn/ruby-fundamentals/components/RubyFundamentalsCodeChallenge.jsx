@@ -337,7 +337,7 @@ export default function RubyFundamentalsCodeChallenge({
               onClick={() => setShowSolution(!showSolution)}
               disabled={!canRun}
             >
-              {showSolution ? "Hide Solution" : "💡 Solution"}
+              {showSolution ? "Hide Solution" : "Solution"}
             </button>
           </div>
         </div>

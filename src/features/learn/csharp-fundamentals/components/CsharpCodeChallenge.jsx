@@ -357,7 +357,7 @@ export default function CsharpCodeChallenge({
               onClick={() => setShowSolution(!showSolution)}
               disabled={!canRun}
             >
-              {showSolution ? "Hide Solution" : "💡 Solution"}
+              {showSolution ? "Hide Solution" : "Solution"}
             </button>
           </div>
         </div>

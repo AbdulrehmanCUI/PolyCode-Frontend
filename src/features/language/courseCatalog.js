@@ -353,7 +353,7 @@ export const languageCourses = {
   java: [
     {
       title: "Java Fundamentals",
-      tag: "Interactive Course",
+      tag: "Core Course",
       icon: Coffee,
       description:
         "Variables, control flow, OOP, collections, and modern Java — with theory, quizzes, and real challenges compiled by javac in your browser.",
@@ -361,13 +361,22 @@ export const languageCourses = {
       accent: "#e76f00",
     },
     {
-      title: "Java Intermediate",
-      tag: "Interactive Course",
+      title: "Java OOP",
+      tag: "Core Course",
       icon: Boxes,
       description:
         "OOP, interfaces, generics, collections, exceptions, File I/O, Streams, Optional, Records — the core pillars of professional Java.",
       href: "/learn/java-intermediate",
       accent: "#f59e0b",
+    },
+    {
+      title: "Java Collections",
+      tag: "Core Course",
+      icon: Database,
+      description:
+        "Lists, Sets, Maps, TreeMap/TreeSet, sorting with Comparable and Comparator, and the Stream API — with real challenges compiled by javac.",
+      href: "/learn/java-collections",
+      accent: "#06b6d4",
     },
     {
       title: "Java Advanced",
@@ -539,10 +548,13 @@ export const learnNavByLanguage = {
   ],
   java: [
     { label: "Java Fundamentals", to: "/learn/java-fundamentals" },
-    { label: "Intermediate", to: "/learn/java-intermediate" },
-    { label: "Advanced", to: "/hub?language=Java&category=03-advanced" },
-    { label: "Spring Boot", to: "/hub?language=Java&category=04-professional" },
-    { label: "Mastery", to: "/hub?language=Java&category=05-mastery" },
+    { label: "Java OOP", to: "/learn/java-intermediate" },
+    { label: "Java Collections", to: "/learn/java-collections" },
+    { label: "Java Exception Handling", to: "/learn/java-exception-handling" },
+    { label: "Java Multithreading", to: "/learn/java-multithreading" },
+    { label: "Java JDBC", to: "/learn/java-jdbc" },
+    { label: "Java Spring Boot", to: "/hub?language=Java&category=04-professional" },
+    { label: "Java Projects", to: "/hub?language=Java&category=05-mastery" },
   ],
   php: [{ label: "PHP Basics", to: "/learn/php-fundamentals" }],
   csharp: [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
@@ -627,7 +639,8 @@ export function inferLanguageFromLearnPath(pathname = "") {
   }
   if (
     pathname.startsWith("/learn/java-fundamentals") ||
-    pathname.startsWith("/learn/java-intermediate")
+    pathname.startsWith("/learn/java-intermediate") ||
+    pathname.startsWith("/learn/java-collections")
   ) {
     return "java";
   }
