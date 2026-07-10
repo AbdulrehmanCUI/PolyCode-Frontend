@@ -73,8 +73,20 @@
 
 .stack-picker-dark .hero-eyebrow {
   color: var(--acid) !important;
-  background: var(--acid-dim) !important;
-  border-color: rgba(255, 229, 102, 0.2) !important;
+  background: rgba(255, 229, 102, 0.1) !important;
+  border-color: rgba(255, 229, 102, 0.22) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.stack-picker-dark .hero-eyebrow:has(svg)::before {
+  content: none;
+}
+
+.stack-picker-dark .stack-picker-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .stack-picker-dark .section-title,
@@ -83,12 +95,30 @@
 }
 
 .stack-picker-dark .lang-card {
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--lang-color, #ffe566) 12%, transparent),
+      rgba(255, 255, 255, 0.04) 46%,
+      rgba(13, 17, 23, 0.4)
+    ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(16px) saturate(1.15) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.15) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 12px 30px rgba(0, 0, 0, 0.18) !important;
 }
 
 .stack-picker-dark .lang-card:hover {
-  background: rgba(255, 255, 255, 0.06) !important;
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--lang-color, #ffe566) 18%, transparent),
+      rgba(255, 255, 255, 0.06) 46%,
+      rgba(13, 17, 23, 0.35)
+    ) !important;
+  border-color: color-mix(in srgb, var(--lang-color, #ffe566) 45%, rgba(255, 255, 255, 0.14)) !important;
 }
 
 .stack-picker-dark .lang-card .lang-name {

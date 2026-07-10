@@ -6,8 +6,38 @@ import {
   JAVA_TOTAL_XP,
 } from "../data/javaFundamentalsCurriculum";
 import useJavaFundamentalsProgress from "../hooks/useJavaFundamentalsProgress";
+import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
+import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/java-fundamentals";
+
+const LEARNING_PATH = [
+  {
+    level: "Beginner",
+    chapters: ["intro"],
+    color: "#e76f00",
+    summary: "What Java is, how it runs, variables, operators, and String methods.",
+  },
+  {
+    level: "Intermediate",
+    chapters: ["control-flow"],
+    color: "#f59e0b",
+    summary: "if/else, switch, for/while loops, arrays, and methods.",
+  },
+  {
+    level: "Advanced",
+    chapters: ["oop"],
+    color: "#3b82f6",
+    summary: "Classes, objects, inheritance, interfaces, and exception handling.",
+  },
+  {
+    level: "Pro",
+    chapters: ["collections"],
+    color: "#8b5cf6",
+    summary: "ArrayList, HashMap, Streams, lambdas, generics, and modern Java.",
+  },
+];
 
 function lessonPlainText(lesson) {
   return lesson.theory
@@ -295,80 +325,109 @@ export default function JavaFundamentalsHub() {
         })}
       </div>
 
-      {/* ── Chapter cards ── */}
-      <div className="oops-chapters">
-        {JAVA_FUNDAMENTALS_CHAPTERS.map((chapter, index) => {
-          const done = chapter.lessons.filter((l) => progress[l.id]).length;
-          const chapterPct =
-            Math.round((done / chapter.lessons.length) * 100) || 0;
-          const firstUnfinished = chapter.lessons.find((l) => !progress[l.id]);
-          const allDone = done === chapter.lessons.length;
+      {/* ── Beginner → Pro path ── */}
+      <section className="matplotlib-learn-path" aria-label="Learning path">
+        <div className="matplotlib-path-label">
+          <span>Your path · Beginner to Pro</span>
+          <small>
+            {JAVA_FUNDAMENTALS_CHAPTERS.length} chapters ·{" "}
+            {JAVA_FUNDAMENTALS_LESSONS.length} lessons
+          </small>
+        </div>
+        <div className="matplotlib-path-grid">
+          {LEARNING_PATH.map((stage) => {
+            const stageChapters = JAVA_FUNDAMENTALS_CHAPTERS.filter((ch) =>
+              stage.chapters.includes(ch.id),
+            );
+            const stageLessons = stageChapters.flatMap((ch) => ch.lessons);
+            const stageDone = stageLessons.filter((l) => progress[l.id]).length;
+            const stagePct =
+              stageLessons.length > 0
+                ? Math.round((stageDone / stageLessons.length) * 100)
+                : 0;
 
-          return (
-            <div
-              key={chapter.id}
-              className={`oops-chapter-card ${allDone ? "oops-chapter-done" : ""}`}
-              style={{ "--ch-color": chapter.color }}
-            >
-              <div className="oops-chapter-header">
-                <span className="oops-chapter-icon">{chapter.icon}</span>
-                <div>
-                  <div className="oops-chapter-num">Chapter {index + 1}</div>
-                  <div className="oops-chapter-title">{chapter.title}</div>
-                </div>
-                {allDone && (
-                  <span className="oops-done-badge">✓ Done</span>
-                )}
-              </div>
-              <div className="oops-chapter-progress-track">
-                <div
-                  className="oops-chapter-progress-fill"
-                  style={{ width: `${chapterPct}%` }}
-                />
-              </div>
-              <div className="oops-chapter-meta">
-                {done}/{chapter.lessons.length} lessons · {chapterPct}%
-              </div>
-              <ul className="oops-lesson-list">
-                {chapter.lessons.map((lesson) => (
-                  <li
-                    key={lesson.id}
-                    className={`oops-lesson-item ${progress[lesson.id] ? "done" : ""}`}
-                    onClick={() =>
-                      navigate(`${BASE_PATH}/lesson/${lesson.id}`)
-                    }
-                  >
-                    <span className="oops-lesson-status">
-                      {progress[lesson.id] ? "✓" : "○"}
-                    </span>
-                    <span className="oops-lesson-name">{lesson.title}</span>
-                    <span className="oops-lesson-xp">+{lesson.xp} XP</span>
-                  </li>
-                ))}
-              </ul>
-              <button
-                type="button"
-                className="oops-chapter-cta"
-                onClick={() =>
-                  navigate(
-                    `${BASE_PATH}/lesson/${
-                      firstUnfinished
-                        ? firstUnfinished.id
-                        : chapter.lessons[0].id
-                    }`,
-                  )
-                }
+            return (
+              <article
+                key={stage.level}
+                className="matplotlib-path-card"
+                style={{ "--stage-color": stage.color }}
               >
-                {allDone
-                  ? "Review Chapter →"
-                  : done > 0
-                    ? "Continue →"
-                    : "Start →"}
-              </button>
+                <header className="matplotlib-path-card-head">
+                  <span className="matplotlib-path-level">{stage.level}</span>
+                  <span className="matplotlib-path-pct">{stagePct}%</span>
+                </header>
+                <p className="matplotlib-path-summary">{stage.summary}</p>
+                <ul className="matplotlib-path-chapters">
+                  {stageChapters.map((ch) => (
+                    <li key={ch.id}>
+                      <span aria-hidden>{ch.icon}</span>
+                      {ch.title}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  className="matplotlib-path-cta"
+                  onClick={() => {
+                    const firstOpen =
+                      stageLessons.find((l) => !progress[l.id]) ||
+                      stageLessons[0];
+                    if (firstOpen) navigate(`${BASE_PATH}/lesson/${firstOpen.id}`);
+                  }}
+                >
+                  {stageDone === stageLessons.length && stageLessons.length > 0
+                    ? "Review stage →"
+                    : stageDone > 0
+                      ? "Continue stage →"
+                      : "Start stage →"}
+                </button>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <LearnChapterPathOverview
+        chapters={JAVA_FUNDAMENTALS_CHAPTERS}
+        progress={progress}
+        onChapterSelect={(chapter) =>
+          navigate(`${BASE_PATH}/lesson/${chapter.lessons[0].id}`)
+        }
+      />
+
+      <LearnChapterGrid
+        chapters={JAVA_FUNDAMENTALS_CHAPTERS}
+        progress={progress}
+        basePath={BASE_PATH}
+        navigate={navigate}
+      />
+
+      <CourseCertificate
+        courseName="Java Fundamentals"
+        totalLessons={JAVA_FUNDAMENTALS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={JAVA_TOTAL_XP}
+      />
+      {/* ── Next Course Banner ── */}
+      {completedCount === JAVA_FUNDAMENTALS_LESSONS.length && (
+        <div className="oops-next-course-banner">
+          <div className="oops-next-course-content">
+            <span className="oops-next-course-emoji">🎉</span>
+            <div>
+              <h3>Java Fundamentals Complete!</h3>
+              <p>You have mastered the fundamentals. Ready for the next level?</p>
             </div>
-          );
-        })}
-      </div>
+          </div>
+          <button
+            type="button"
+            className="oops-next-course-btn"
+            onClick={() => navigate("/learn/java-intermediate")}
+          >
+            Start Java OOP →
+          </button>
+        </div>
+      )}
     </div>
   );
 }

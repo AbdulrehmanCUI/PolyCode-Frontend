@@ -334,7 +334,7 @@ export default function CppFundamentalsCodeChallenge({
               onClick={() => setShowSolution(!showSolution)}
               disabled={!canRun}
             >
-              {showSolution ? "Hide Solution" : "💡 Solution"}
+              {showSolution ? "Hide Solution" : "Solution"}
             </button>
           </div>
         </div>

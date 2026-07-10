@@ -1,4 +1,5 @@
 import React from "react";
+import { AlertTriangle, Info, Lightbulb, Sparkles } from "lucide-react";
 import RunnableCodeBlock from "../../shared/RunnableCodeBlock";
 import LessonReadGate from "../../shared/LessonReadGate";
 import LessonQuizSlider from "../../shared/LessonQuizSlider";
@@ -7,6 +8,12 @@ import { lessonUsesW3Overview } from "../../shared/buildAutoW3TopicOverview";
 import { LEARN_ACCENT } from "../../shared/learnAccent";
 import { mapTheoryWithQuizIndices } from "../../shared/lessonQuizUtils";
 import useLessonQuizAttempts from "../../shared/useLessonQuizAttempts";
+
+const CALLOUT_ICONS = {
+  info: Info,
+  tip: Sparkles,
+  warning: AlertTriangle,
+};
 
 function InlineText({ text }) {
   const parts = String(text ?? "").split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
@@ -500,10 +507,12 @@ function NumpyTheoryBlock({ block, step, accentColor }) {
       warning: "Watch out",
       success: "Learning outcome check",
     };
-    const icons = { info: "💡", tip: "✨", warning: "⚠️" };
+    const Icon = CALLOUT_ICONS[block.variant] || Lightbulb;
     return (
       <aside className={`numpy-tip-box numpy-tip-${block.variant}`}>
-        <span className="numpy-tip-icon">{icons[block.variant] || "💡"}</span>
+        <span className="numpy-tip-icon" aria-hidden="true">
+          <Icon size={15} strokeWidth={2.25} />
+        </span>
         <div>
           <strong>{labels[block.variant] || "Note"}</strong>
           <p>
