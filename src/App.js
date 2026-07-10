@@ -183,6 +183,15 @@ const JavaIntermediateLessonPage = lazyWithChunkRetry(
       './features/learn/java-intermediate/pages/JavaIntermediateLessonPage'
     ),
 );
+const JavaCollectionsHub = lazyWithChunkRetry(
+  () => import('./features/learn/java-collections/pages/JavaCollectionsHub'),
+);
+const JavaCollectionsLessonPage = lazyWithChunkRetry(
+  () =>
+    import(
+      './features/learn/java-collections/pages/JavaCollectionsLessonPage'
+    ),
+);
 const JavaFundamentalsHub = lazyWithChunkRetry(
   () => import("./features/learn/java-fundamentals/pages/JavaFundamentalsHub"),
 );
@@ -618,8 +627,6 @@ function AppRoutes() {
       handleLanguageSelect("Python", { stay: true });
     } else if (path.startsWith("/learn/js-fundamentals")) {
       handleLanguageSelect("JavaScript", { stay: true });
-    } else if (path.startsWith("/learn/html-css-foundation")) {
-      handleLanguageSelect("HTML & CSS", { stay: true });
     } else if (path.startsWith("/learn/c-sharp-fundamentals")) {
       handleLanguageSelect("C#", { stay: true });
     } else if (path.startsWith("/learn/java-fundamentals") ||
@@ -1238,9 +1245,9 @@ function AppRoutes() {
           }
         />
 
-        {/* ── HTML & CSS Foundation ── */}
+        {/* ── Java Collections ── */}
         <Route
-          path="/learn/html-css-foundation"
+          path="/learn/java-collections"
           element={
             <ThemedShell theme={theme}>
               <LearnShell
@@ -1249,13 +1256,13 @@ function AppRoutes() {
                 onGoToStackPicker={goToStackPicker}
                 selectedLanguage={selectedLanguage}
               >
-                <HtmlCssFoundationHub />
+                <JavaCollectionsHub />
               </LearnShell>
             </ThemedShell>
           }
         />
         <Route
-          path="/learn/html-css-foundation/lesson/:lessonId"
+          path="/learn/java-collections/lesson/:lessonId"
           element={
             <ThemedShell theme={theme}>
               <LearnShell
@@ -1264,13 +1271,13 @@ function AppRoutes() {
                 onGoToStackPicker={goToStackPicker}
                 selectedLanguage={selectedLanguage}
               >
-                <HtmlCssFoundationLessonPage />
+                <JavaCollectionsLessonPage />
               </LearnShell>
             </ThemedShell>
           }
         />
         <Route
-          path="/learn/html-css-foundation/:lessonId"
+          path="/learn/java-collections/:lessonId"
           element={
             <ThemedShell theme={theme}>
               <LearnShell
@@ -1279,7 +1286,54 @@ function AppRoutes() {
                 onGoToStackPicker={goToStackPicker}
                 selectedLanguage={selectedLanguage}
               >
-                <HtmlCssFoundationLessonPage />
+                <JavaCollectionsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        {/* ── Java Fundamentals ── */}
+        <Route
+          path="/learn/java-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <JavaFundamentalsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/java-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <JavaFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/java-fundamentals/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <JavaFundamentalsLessonPage />
               </LearnShell>
             </ThemedShell>
           }

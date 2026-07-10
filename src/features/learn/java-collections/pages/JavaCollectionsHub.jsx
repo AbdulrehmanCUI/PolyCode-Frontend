@@ -1,41 +1,41 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  JAVA_FUNDAMENTALS_CHAPTERS,
-  JAVA_FUNDAMENTALS_LESSONS,
-  JAVA_TOTAL_XP,
-} from "../data/javaFundamentalsCurriculum";
-import useJavaFundamentalsProgress from "../hooks/useJavaFundamentalsProgress";
+  JAVA_COLLECTIONS_CHAPTERS,
+  JAVA_COLLECTIONS_LESSONS,
+  JAVA_COLLECTIONS_TOTAL_XP,
+} from "../data/javaCollectionsCurriculum";
+import useJavaCollectionsProgress from "../hooks/useJavaCollectionsProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
 import CourseCertificate from "../../shared/CourseCertificate";
 
-const BASE_PATH = "/learn/java-fundamentals";
+const BASE_PATH = "/learn/java-collections";
 
 const LEARNING_PATH = [
   {
     level: "Beginner",
-    chapters: ["intro"],
-    color: "#e76f00",
-    summary: "What Java is, how it runs, variables, operators, and String methods.",
+    chapters: ["lists"],
+    color: "#06b6d4",
+    summary: "ArrayList, LinkedList, iteration, and array conversion.",
   },
   {
     level: "Intermediate",
-    chapters: ["control-flow"],
-    color: "#f59e0b",
-    summary: "if/else, switch, for/while loops, arrays, and methods.",
+    chapters: ["sets-maps"],
+    color: "#3b82f6",
+    summary: "HashSet, HashMap, TreeMap/TreeSet, and LinkedHashMap ordering.",
   },
   {
     level: "Advanced",
-    chapters: ["oop"],
-    color: "#3b82f6",
-    summary: "Classes, objects, inheritance, interfaces, and exception handling.",
+    chapters: ["sorting"],
+    color: "#ef4444",
+    summary: "Comparable, Comparator, Collections utilities, and multi-level sorting.",
   },
   {
     level: "Pro",
-    chapters: ["collections"],
+    chapters: ["streams-collections"],
     color: "#8b5cf6",
-    summary: "ArrayList, HashMap, Streams, lambdas, generics, and modern Java.",
+    summary: "Streams: filter, map, collectors, grouping, and reduce.",
   },
 ];
 
@@ -46,7 +46,7 @@ function lessonPlainText(lesson) {
     .join(" ");
 }
 
-export default function JavaFundamentalsHub() {
+export default function JavaCollectionsHub() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -55,30 +55,30 @@ export default function JavaFundamentalsHub() {
     completedMap: progress,
     bookmarks,
     lastLessonId,
-  } = useJavaFundamentalsProgress();
+  } = useJavaCollectionsProgress();
 
   const completedCount = Object.keys(progress).length;
-  const earnedXP = JAVA_FUNDAMENTALS_LESSONS.filter(
+  const earnedXP = JAVA_COLLECTIONS_LESSONS.filter(
     (l) => progress[l.id],
   ).reduce((sum, l) => sum + l.xp, 0);
   const pct =
-    Math.round((completedCount / JAVA_FUNDAMENTALS_LESSONS.length) * 100) || 0;
+    Math.round((completedCount / JAVA_COLLECTIONS_LESSONS.length) * 100) || 0;
 
   const nextLesson =
-    JAVA_FUNDAMENTALS_LESSONS.find((l) => !progress[l.id]) ||
-    JAVA_FUNDAMENTALS_LESSONS[0];
+    JAVA_COLLECTIONS_LESSONS.find((l) => !progress[l.id]) ||
+    JAVA_COLLECTIONS_LESSONS[0];
   const resumeLesson =
-    JAVA_FUNDAMENTALS_LESSONS.find((l) => l.id === lastLessonId) || nextLesson;
-  const completedChapters = JAVA_FUNDAMENTALS_CHAPTERS.filter((ch) =>
+    JAVA_COLLECTIONS_LESSONS.find((l) => l.id === lastLessonId) || nextLesson;
+  const completedChapters = JAVA_COLLECTIONS_CHAPTERS.filter((ch) =>
     ch.lessons.every((l) => progress[l.id]),
   ).length;
   const bookmarkedLessons = bookmarks
-    .map((id) => JAVA_FUNDAMENTALS_LESSONS.find((l) => l.id === id))
+    .map((id) => JAVA_COLLECTIONS_LESSONS.find((l) => l.id === id))
     .filter(Boolean);
 
   const filteredLessons = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return JAVA_FUNDAMENTALS_LESSONS.filter((lesson) => {
+    return JAVA_COLLECTIONS_LESSONS.filter((lesson) => {
       const matchesQuery =
         !query ||
         lesson.title.toLowerCase().includes(query) ||
@@ -104,18 +104,17 @@ export default function JavaFundamentalsHub() {
         >
           ← Java courses
         </Link>
-        <div className="oops-hero-badge">JAVA · CORE TRACK</div>
+        <div className="oops-hero-badge">JAVA · COLLECTIONS TRACK</div>
         <h1 className="oops-hero-title">
           Java
           <br />
-          <span className="oops-hero-accent" style={{ color: "#e76f00" }}>
-            Fundamentals
+          <span className="oops-hero-accent" style={{ color: "#06b6d4" }}>
+            Collections
           </span>
         </h1>
         <p className="oops-hero-sub">
-          Master variables, control flow, OOP, collections, and modern Java
-          with theory, quizzes, and real coding challenges compiled by{" "}
-          <code>javac</code>.
+          Master Lists, Sets, Maps, sorting, and the Stream API with theory,
+          quizzes, and real coding challenges compiled by <code>javac</code>.
         </p>
 
         <div className="oops-hero-grid">
@@ -123,8 +122,8 @@ export default function JavaFundamentalsHub() {
             <div className="oops-xp-meta">
               <span>
                 {isAuthenticated
-                  ? `${completedCount}/${JAVA_FUNDAMENTALS_LESSONS.length} lessons · ${earnedXP}/${JAVA_TOTAL_XP} XP`
-                  : `Sign in to track progress · ${JAVA_FUNDAMENTALS_LESSONS.length} lessons`}
+                  ? `${completedCount}/${JAVA_COLLECTIONS_LESSONS.length} lessons · ${earnedXP}/${JAVA_COLLECTIONS_TOTAL_XP} XP`
+                  : `Sign in to track progress · ${JAVA_COLLECTIONS_LESSONS.length} lessons`}
               </span>
               <span>{isAuthenticated ? `${pct}%` : "—"}</span>
             </div>
@@ -133,7 +132,7 @@ export default function JavaFundamentalsHub() {
                 className="oops-xp-fill"
                 style={{
                   width: isAuthenticated ? `${pct}%` : "0%",
-                  background: "#e76f00",
+                  background: "#06b6d4",
                 }}
               />
             </div>
@@ -190,7 +189,7 @@ export default function JavaFundamentalsHub() {
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search loops, classes, streams..."
+              placeholder="Search lists, maps, streams..."
               aria-label="Search Java lessons"
             />
             <div className="oops-filter-tabs" aria-label="Filter Java lessons">
@@ -277,19 +276,19 @@ export default function JavaFundamentalsHub() {
         <div className="oops-stat-tile">
           <span>Lessons</span>
           <strong>
-            {completedCount}/{JAVA_FUNDAMENTALS_LESSONS.length}
+            {completedCount}/{JAVA_COLLECTIONS_LESSONS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>Chapters</span>
           <strong>
-            {completedChapters}/{JAVA_FUNDAMENTALS_CHAPTERS.length}
+            {completedChapters}/{JAVA_COLLECTIONS_CHAPTERS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>XP</span>
           <strong>
-            {earnedXP}/{JAVA_TOTAL_XP}
+            {earnedXP}/{JAVA_COLLECTIONS_TOTAL_XP}
           </strong>
         </div>
         <div className="oops-stat-tile">
@@ -300,7 +299,7 @@ export default function JavaFundamentalsHub() {
 
       {/* ── Path overview ── */}
       <div className="oops-path-overview">
-        {JAVA_FUNDAMENTALS_CHAPTERS.map((chapter, index) => {
+        {JAVA_COLLECTIONS_CHAPTERS.map((chapter, index) => {
           const done = chapter.lessons.filter((l) => progress[l.id]).length;
           const active = done > 0 && done < chapter.lessons.length;
           return (
@@ -330,13 +329,13 @@ export default function JavaFundamentalsHub() {
         <div className="matplotlib-path-label">
           <span>Your path · Beginner to Pro</span>
           <small>
-            {JAVA_FUNDAMENTALS_CHAPTERS.length} chapters ·{" "}
-            {JAVA_FUNDAMENTALS_LESSONS.length} lessons
+            {JAVA_COLLECTIONS_CHAPTERS.length} chapters ·{" "}
+            {JAVA_COLLECTIONS_LESSONS.length} lessons
           </small>
         </div>
         <div className="matplotlib-path-grid">
           {LEARNING_PATH.map((stage) => {
-            const stageChapters = JAVA_FUNDAMENTALS_CHAPTERS.filter((ch) =>
+            const stageChapters = JAVA_COLLECTIONS_CHAPTERS.filter((ch) =>
               stage.chapters.includes(ch.id),
             );
             const stageLessons = stageChapters.flatMap((ch) => ch.lessons);
@@ -388,7 +387,7 @@ export default function JavaFundamentalsHub() {
       </section>
 
       <LearnChapterPathOverview
-        chapters={JAVA_FUNDAMENTALS_CHAPTERS}
+        chapters={JAVA_COLLECTIONS_CHAPTERS}
         progress={progress}
         onChapterSelect={(chapter) =>
           navigate(`${BASE_PATH}/lesson/${chapter.lessons[0].id}`)
@@ -396,35 +395,36 @@ export default function JavaFundamentalsHub() {
       />
 
       <LearnChapterGrid
-        chapters={JAVA_FUNDAMENTALS_CHAPTERS}
+        chapters={JAVA_COLLECTIONS_CHAPTERS}
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
       />
 
       <CourseCertificate
-        courseName="Java Fundamentals"
-        totalLessons={JAVA_FUNDAMENTALS_LESSONS.length}
+        courseName="Java Collections"
+        totalLessons={JAVA_COLLECTIONS_LESSONS.length}
         completedCount={completedCount}
         earnedXP={earnedXP}
-        totalXP={JAVA_TOTAL_XP}
+        totalXP={JAVA_COLLECTIONS_TOTAL_XP}
       />
+
       {/* ── Next Course Banner ── */}
-      {completedCount === JAVA_FUNDAMENTALS_LESSONS.length && (
+      {completedCount === JAVA_COLLECTIONS_LESSONS.length && (
         <div className="oops-next-course-banner">
           <div className="oops-next-course-content">
-            <span className="oops-next-course-emoji">🎉</span>
+            <span className="oops-next-course-emoji">🚀</span>
             <div>
-              <h3>Java Fundamentals Complete!</h3>
-              <p>You have mastered the fundamentals. Ready for the next level?</p>
+              <h3>Java Collections Complete!</h3>
+              <p>Great work. Take on exception handling next.</p>
             </div>
           </div>
           <button
             type="button"
             className="oops-next-course-btn"
-            onClick={() => navigate("/learn/java-intermediate")}
+            onClick={() => navigate("/learn/java-exception-handling")}
           >
-            Start Java OOP →
+            Start Java Exception Handling →
           </button>
         </div>
       )}
