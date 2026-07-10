@@ -353,20 +353,20 @@ export const languageCourses = {
   java: [
     {
       title: "Java Fundamentals",
-      tag: "Beginner Course",
+      tag: "Interactive Course",
       icon: Coffee,
       description:
-        "Java syntax, variables, control flow, methods, arrays, classes, strings, and user input — everything to write real Java from scratch.",
-      href: "/hub?language=Java&category=01-beginner",
+        "Variables, control flow, OOP, collections, and modern Java — with theory, quizzes, and real challenges compiled by javac in your browser.",
+      href: "/learn/java-fundamentals",
       accent: "#e76f00",
     },
     {
       title: "Java Intermediate",
-      tag: "OOP Course",
+      tag: "Interactive Course",
       icon: Boxes,
       description:
-        "Inheritance, interfaces, collections, exception handling, generics, and file I/O — the core pillars of professional Java.",
-      href: "/hub?language=Java&category=02-intermediate",
+        "OOP, interfaces, generics, collections, exceptions, File I/O, Streams, Optional, Records — the core pillars of professional Java.",
+      href: "/learn/java-intermediate",
       accent: "#f59e0b",
     },
     {
@@ -452,6 +452,12 @@ export const courseStackGroups = [
     languagePath: "/language/Python",
   },
   {
+    id: "java",
+    label: "Java",
+    accent: "#e76f00",
+    languagePath: "/language/Java",
+  },
+  {
     id: "javascript",
     label: "JavaScript",
     accent: "#f7df1e",
@@ -481,7 +487,6 @@ export const courseStackGroups = [
     accent: "#701516",
     languagePath: "/language/Ruby",
   },
-  // ─── ADD GO STACK GROUP ────────────────────────────────────────────────────
   {
     id: "go",
     label: "Go",
@@ -533,8 +538,8 @@ export const learnNavByLanguage = {
     { label: "HTML & CSS", to: "/learn/html-css-foundation" },
   ],
   java: [
-    { label: "Fundamentals", to: "/hub?language=Java&category=01-beginner" },
-    { label: "Intermediate", to: "/hub?language=Java&category=02-intermediate" },
+    { label: "Java Fundamentals", to: "/learn/java-fundamentals" },
+    { label: "Intermediate", to: "/learn/java-intermediate" },
     { label: "Advanced", to: "/hub?language=Java&category=03-advanced" },
     { label: "Spring Boot", to: "/hub?language=Java&category=04-professional" },
     { label: "Mastery", to: "/hub?language=Java&category=05-mastery" },
@@ -619,6 +624,12 @@ export function inferLanguageFromLearnPath(pathname = "") {
   // ─── ADD GO ROUTE INFERENCE ────────────────────────────────────────────────
   if (pathname.startsWith("/learn/golang-fundamentals")) {
     return "go";
+  }
+  if (
+    pathname.startsWith("/learn/java-fundamentals") ||
+    pathname.startsWith("/learn/java-intermediate")
+  ) {
+    return "java";
   }
   return null;
 }
