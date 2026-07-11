@@ -108,7 +108,20 @@ export const getStats = (params) => dedupGet("/documents/stats", params);
 
 export const getTree = (params) => dedupGet("/documents/tree", params);
 
-export const getLanguages = () => dedupGet("/documents/languages", undefined);
+export const getLanguages = async () => {
+  const response = await dedupGet("/documents/languages", undefined);
+  if (response && response.data) {
+    let list = Array.isArray(response.data.languages) ? response.data.languages : (Array.isArray(response.data) ? response.data : null);
+    if (list && !list.some(l => l.toLowerCase() === 'sql')) {
+      if (Array.isArray(response.data.languages)) {
+        response.data.languages.push('SQL');
+      } else if (Array.isArray(response.data)) {
+        response.data.push('SQL');
+      }
+    }
+  }
+  return response;
+};
 
 export const runPythonCode = async (code, stdin = "") => {
   const response = await api.post("/documents/run-python", { code, stdin });

@@ -450,6 +450,81 @@ export const languageCourses = {
       accent: "#ce412b",
     },
   ],
+  // ─── SQL TRACK DEFINITION ──────────────────────────────────────────────
+  sql: [
+    {
+      title: "SQL Fundamentals",
+      tag: "Core Course",
+      icon: Database,
+      description: "Learn database basics, tables, and simple queries.",
+      href: "/learn/sql-fundamentals",
+      accent: "#f29111",
+    },
+    {
+      title: "SQL Queries",
+      tag: "Core Course",
+      icon: FileText,
+      description: "Master SELECT, WHERE, ORDER BY, and limiting results.",
+      href: "/learn/sql-queries",
+      accent: "#f29111",
+    },
+    {
+      title: "SQL Joins",
+      tag: "Intermediate",
+      icon: Layers3,
+      description: "INNER, OUTER, LEFT, RIGHT joins and linking tables.",
+      href: "/learn/sql-joins",
+      accent: "#f29111",
+    },
+    {
+      title: "SQL Aggregate Functions",
+      tag: "Intermediate",
+      icon: Grid3x3,
+      description: "COUNT, SUM, AVG, GROUP BY, and HAVING clauses.",
+      href: "/learn/sql-aggregate-functions",
+      accent: "#f29111",
+    },
+    {
+      title: "SQL Subqueries",
+      tag: "Intermediate",
+      icon: Boxes,
+      description: "Nested queries, IN, EXISTS, and complex filtering.",
+      href: "/learn/sql-subqueries",
+      accent: "#f29111",
+    },
+    {
+      title: "SQL Views",
+      tag: "Advanced",
+      icon: Globe,
+      description: "Create, update, and manage virtual tables.",
+      href: "/learn/sql-views",
+      accent: "#f29111",
+    },
+    {
+      title: "SQL Indexes",
+      tag: "Advanced",
+      icon: HardDrive,
+      description: "Optimize database performance with indexing strategies.",
+      href: "/learn/sql-indexes",
+      accent: "#f29111",
+    },
+    {
+      title: "SQL Stored Procedures",
+      tag: "Advanced",
+      icon: Server,
+      description: "Write reusable logic with procedures and triggers.",
+      href: "/learn/sql-stored-procedures",
+      accent: "#f29111",
+    },
+    {
+      title: "SQL Projects",
+      tag: "Projects",
+      icon: Wrench,
+      description: "Build full database schemas for real-world scenarios.",
+      href: "/learn/sql-projects",
+      accent: "#f29111",
+    },
+  ],
 
 };
 
@@ -521,6 +596,12 @@ export const courseStackGroups = [
     accent: "#ce412b",
     languagePath: "/language/Rust",
   },
+  {
+    id: "sql",
+    label: "SQL",
+    accent: "#f29111",
+    languagePath: "/language/SQL",
+  },
 ];
 
 /** Navbar learn links per language (mirrors languageCourses). */
@@ -582,6 +663,17 @@ export const learnNavByLanguage = {
   ],
   go: [{ label: "Go Basics", to: "/learn/golang-fundamentals" }],
   rust: [{ label: "Rust Basics", to: "/learn/rust-fundamentals" }],
+  sql: [
+    { label: "Fundamentals", to: "/learn/sql-fundamentals" },
+    { label: "Queries", to: "/learn/sql-queries" },
+    { label: "Joins", to: "/learn/sql-joins" },
+    { label: "Aggregates", to: "/learn/sql-aggregate-functions" },
+    { label: "Subqueries", to: "/learn/sql-subqueries" },
+    { label: "Views", to: "/learn/sql-views" },
+    { label: "Indexes", to: "/learn/sql-indexes" },
+    { label: "Procedures", to: "/learn/sql-stored-procedures" },
+    { label: "Projects", to: "/learn/sql-projects" },
+  ],
 };
 
 const learnNavLanguageAliases = {
@@ -656,6 +748,19 @@ export function inferLanguageFromLearnPath(pathname = "") {
   }
   if (pathname.startsWith("/learn/rust-fundamentals")){
     return "rust";
+  }
+  if (
+    pathname.startsWith("/learn/sql-fundamentals") ||
+    pathname.startsWith("/learn/sql-queries") ||
+    pathname.startsWith("/learn/sql-joins") ||
+    pathname.startsWith("/learn/sql-aggregate-functions") ||
+    pathname.startsWith("/learn/sql-subqueries") ||
+    pathname.startsWith("/learn/sql-views") ||
+    pathname.startsWith("/learn/sql-indexes") ||
+    pathname.startsWith("/learn/sql-stored-procedures") ||
+    pathname.startsWith("/learn/sql-projects")
+  ) {
+    return "sql";
   }
   if (
     pathname.startsWith("/learn/java-fundamentals") ||
