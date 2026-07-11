@@ -8,8 +8,35 @@ import {
 import useSqlViewsProgress from "../hooks/useSqlViewsProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import LearnChapterIcon from "../../shared/LearnChapterIcon";
 
 const BASE_PATH = "/learn/sql-views";
+const LEARNING_PATH = [
+  {
+    level: "Beginner",
+    chapters: ["ch-1"],
+    color: "#27ae60",
+    summary: "Basic syntax and fundamental concepts.",
+  },
+  {
+    level: "Intermediate",
+    chapters: ["ch-2"],
+    color: "#2ecc71",
+    summary: "Building on the basics with practical application.",
+  },
+  {
+    level: "Advanced",
+    chapters: ["ch-3"],
+    color: "#f39c12",
+    summary: "Complex techniques and performance strategies.",
+  },
+  {
+    level: "Pro",
+    chapters: ["ch-4"],
+    color: "#d35400",
+    summary: "Mastery through advanced scenarios and real-world projects.",
+  },
+];
 
 function lessonPlainText(lesson) {
   return lesson.theory
@@ -253,6 +280,68 @@ export default function SqlViewsHub() {
         </div>
       </div>
 
+            <section className="matplotlib-learn-path" aria-label="Learning path">
+  <div className="matplotlib-path-label">
+    <span>Your path · Beginner to Pro</span>
+    <small>
+      {SQLVIEWS_CHAPTERS.length} chapters · {" "}
+      {SQLVIEWS_LESSONS.length} lessons
+    </small>
+  </div>
+  <div className="matplotlib-path-grid">
+    {LEARNING_PATH.map((stage) => {
+      const stageChapters = SQLVIEWS_CHAPTERS.filter((ch) =>
+        stage.chapters.includes(ch.id),
+      );
+      const stageLessons = stageChapters.flatMap((ch) => ch.lessons);
+      const stageDone = stageLessons.filter((l) => progress[l.id]).length;
+      const stagePct =
+        stageLessons.length > 0
+          ? Math.round((stageDone / stageLessons.length) * 100)
+          : 0;
+      return (
+        <article
+          key={stage.level}
+          className="matplotlib-path-card"
+          style={{ "--stage-color": stage.color }}
+        >
+          <header className="matplotlib-path-card-head">
+            <span className="matplotlib-path-level">{stage.level}</span>
+            <span className="matplotlib-path-pct">{stagePct}%</span>
+          </header>
+          <p className="matplotlib-path-summary">{stage.summary}</p>
+          <ul className="matplotlib-path-chapters">
+            {stageChapters.map((ch) => (
+              <li key={ch.id}>
+                <span className="oops-chapter-icon-wrap" aria-hidden>
+                  <LearnChapterIcon icon={ch.icon} size={14} />
+                </span>
+                {ch.title}
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            className="matplotlib-path-cta"
+            onClick={() => {
+              const firstOpen =
+                stageLessons.find((l) => !progress[l.id]) || stageLessons[0];
+              if (firstOpen) {
+                navigate(`${BASE_PATH}/lesson/${firstOpen.id}`);
+              }
+            }}
+          >
+            {stageDone === stageLessons.length && stageLessons.length > 0
+              ? "Review stage →"
+              : stageDone > 0
+                ? "Continue stage →"
+                : "Start stage →"}
+          </button>
+        </article>
+      );
+    })}
+  </div>
+</section>
       <LearnChapterPathOverview
         chapters={SQLVIEWS_CHAPTERS}
         progress={progress}
