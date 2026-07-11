@@ -95,6 +95,61 @@ const LoginPage = lazyWithChunkRetry(
 const SignupPage = lazyWithChunkRetry(
   () => import("./features/auth/pages/SignupPage"),
 );
+const SqlFundamentalsHub = lazyWithChunkRetry(
+  () => import("./features/learn/sql-fundamentals/pages/SqlFundamentalsHub"),
+);
+const SqlFundamentalsLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/sql-fundamentals/pages/SqlFundamentalsLessonPage"),
+);
+const SqlQueriesHub = lazyWithChunkRetry(
+  () => import("./features/learn/sql-queries/pages/SqlQueriesHub"),
+);
+const SqlQueriesLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/sql-queries/pages/SqlQueriesLessonPage"),
+);
+const SqlJoinsHub = lazyWithChunkRetry(
+  () => import("./features/learn/sql-joins/pages/SqlJoinsHub"),
+);
+const SqlJoinsLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/sql-joins/pages/SqlJoinsLessonPage"),
+);
+const SqlAggregateFunctionsHub = lazyWithChunkRetry(
+  () => import("./features/learn/sql-aggregate-functions/pages/SqlAggregateFunctionsHub"),
+);
+const SqlAggregateFunctionsLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/sql-aggregate-functions/pages/SqlAggregateFunctionsLessonPage"),
+);
+const SqlSubqueriesHub = lazyWithChunkRetry(
+  () => import("./features/learn/sql-subqueries/pages/SqlSubqueriesHub"),
+);
+const SqlSubqueriesLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/sql-subqueries/pages/SqlSubqueriesLessonPage"),
+);
+const SqlViewsHub = lazyWithChunkRetry(
+  () => import("./features/learn/sql-views/pages/SqlViewsHub"),
+);
+const SqlViewsLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/sql-views/pages/SqlViewsLessonPage"),
+);
+const SqlIndexesHub = lazyWithChunkRetry(
+  () => import("./features/learn/sql-indexes/pages/SqlIndexesHub"),
+);
+const SqlIndexesLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/sql-indexes/pages/SqlIndexesLessonPage"),
+);
+const SqlStoredProceduresHub = lazyWithChunkRetry(
+  () => import("./features/learn/sql-stored-procedures/pages/SqlStoredProceduresHub"),
+);
+const SqlStoredProceduresLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/sql-stored-procedures/pages/SqlStoredProceduresLessonPage"),
+);
+const SqlProjectsHub = lazyWithChunkRetry(
+  () => import("./features/learn/sql-projects/pages/SqlProjectsHub"),
+);
+const SqlProjectsLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/sql-projects/pages/SqlProjectsLessonPage"),
+);
+
 const DailyChallenge = lazyWithChunkRetry(
   () => import("./pages/DailyChallenges"),
 );
@@ -812,6 +867,18 @@ function AppRoutes() {
       path.startsWith("/learn/c-projects")
     ) {
       handleLanguageSelect("C", { stay: true });
+    } else if (
+      path.startsWith("/learn/sql-fundamentals") ||
+      path.startsWith("/learn/sql-queries") ||
+      path.startsWith("/learn/sql-joins") ||
+      path.startsWith("/learn/sql-aggregate-functions") ||
+      path.startsWith("/learn/sql-subqueries") ||
+      path.startsWith("/learn/sql-views") ||
+      path.startsWith("/learn/sql-indexes") ||
+      path.startsWith("/learn/sql-stored-procedures") ||
+      path.startsWith("/learn/sql-projects")
+    ) {
+      handleLanguageSelect("SQL", { stay: true });
     }
   }, [location.pathname, location.search, handleLanguageSelect, navigate]);
 
@@ -1798,6 +1865,277 @@ function AppRoutes() {
           }
         />
         {/* ─────────────────────────────────────────────────────────────── */}
+        {/* ─── SQL Language Course Routes ─────────────────────────────────────── */}
+        <Route
+          path="/learn/sql-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlFundamentalsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-queries"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlQueriesHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-queries/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlQueriesLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-joins"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlJoinsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-joins/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlJoinsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-aggregate-functions"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlAggregateFunctionsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-aggregate-functions/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlAggregateFunctionsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-subqueries"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlSubqueriesHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-subqueries/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlSubqueriesLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-views"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlViewsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-views/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlViewsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-indexes"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlIndexesHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-indexes/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlIndexesLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-stored-procedures"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlStoredProceduresHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-stored-procedures/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlStoredProceduresLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-projects"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlProjectsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-projects/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlProjectsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
         {/* ─── Go Language Course Routes ─────────────────────────────────────── */}
         <Route
           path="/learn/golang-fundamentals"
@@ -1844,6 +2182,7 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
+<<<<<<< HEAD
 
         {learnCourseRoutes({
           basePath: "/learn/python-oop-py",
@@ -1928,6 +2267,325 @@ function AppRoutes() {
           includeLegacyLessonPath: true,
         })}
 
+=======
+        {/* ─── SQL Language Course Routes ─────────────────────────────────────── */}
+        <Route
+          path="/learn/sql-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlFundamentalsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-queries"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlQueriesHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-queries/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlQueriesLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-joins"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlJoinsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-joins/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlJoinsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-aggregate-functions"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlAggregateFunctionsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-aggregate-functions/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlAggregateFunctionsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-subqueries"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlSubqueriesHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-subqueries/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlSubqueriesLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-views"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlViewsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-views/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlViewsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-indexes"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlIndexesHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-indexes/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlIndexesLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-stored-procedures"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlStoredProceduresHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-stored-procedures/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlStoredProceduresLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-projects"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlProjectsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/sql-projects/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <SqlProjectsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        {/* ─── Go Language Course Routes ─────────────────────────────────────── */}
+        <Route
+          path="/learn/golang-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+>>>>>>> 8a0f23e (Course Addition: added 9 SQL Courses)
         {/* ─── Rust Language Course Routes ─────────────────────────────────────── */}
         <Route
           path="/learn/rust-fundamentals"

@@ -22,7 +22,7 @@ export const COURSE_GROUPS = courseStackGroups
   .filter((group) => group.courses.length > 0);
 
 /** Max stacks shown in navbar left column before "view all courses" CTA. */
-export const STACK_NAV_LIMIT = 6;
+export const STACK_NAV_LIMIT = 15;
 
 /** Max courses shown in navbar stack panel before "see all" CTA. */
 export const COURSE_PANEL_LIMIT = 5;
