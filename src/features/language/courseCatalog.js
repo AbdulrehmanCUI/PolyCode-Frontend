@@ -388,22 +388,31 @@ export const languageCourses = {
       accent: "#3b82f6",
     },
     {
+      title: "Java JDBC",
+      tag: "Interactive Course",
+      icon: Database,
+      description:
+        "Connect to databases with JDBC, PreparedStatement, transactions, batch updates, and the DAO pattern — with real, runnable challenges compiled by javac.",
+      href: "/learn/java-jdbc",
+      accent: "#0ea5e9",
+    },
+    {
       title: "Java Spring Boot",
-      tag: "Professional Course",
+      tag: "Interactive Course",
       icon: Grid3x3,
       description:
-        "Build REST APIs with Spring Boot, Spring Data JPA, Maven, request validation, and unit testing with JUnit and Mockito.",
-      href: "/hub?language=Java&category=04-professional",
+        "Build REST APIs with Spring Boot: controllers, dependency injection, services, Spring Data JPA, and DTOs — with theory, quizzes, and real coding challenges.",
+      href: "/learn/java-spring-boot",
       accent: "#22c55e",
     },
     {
       title: "Java Projects",
-      tag: "Projects",
+      tag: "Interactive Course",
       icon: Brain,
       description:
-        "Build real-world Java projects applying everything you have learned — REST APIs, CLI tools, and data pipelines.",
-      href: "/hub?language=Java&category=05-mastery",
-      accent: "#a855f7",
+        "Build 4 real, growing projects — a task manager, a library system, a bank system, and an e-commerce backend — applying everything from Fundamentals to Spring Boot.",
+      href: "/learn/java-projects",
+      accent: "#f97316",
     },
   ],
   ruby: [
@@ -551,7 +560,9 @@ export const learnNavByLanguage = {
     { label: "Java OOP", to: "/learn/java-intermediate" },
     { label: "Exception Handling", to: "/learn/java-exception" },
     { label: "Multithreading", to: "/learn/java-multithreading" },
-    { label: "Spring Boot", to: "/hub?language=Java&category=04-professional" },
+    { label: "JDBC", to: "/learn/java-jdbc" },
+    { label: "Spring Boot", to: "/learn/java-spring-boot" },
+    { label: "Projects", to: "/learn/java-projects" },
   ],
   php: [{ label: "PHP Basics", to: "/learn/php-fundamentals" }],
   csharp: [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
@@ -638,7 +649,10 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/java-fundamentals") ||
     pathname.startsWith("/learn/java-intermediate") ||
     pathname.startsWith("/learn/java-exception") ||
-    pathname.startsWith("/learn/java-multithreading")
+    pathname.startsWith("/learn/java-multithreading") ||
+    pathname.startsWith("/learn/java-jdbc") ||
+    pathname.startsWith("/learn/java-spring-boot") ||
+    pathname.startsWith("/learn/java-projects")
   ) {
     return "java";
   }
