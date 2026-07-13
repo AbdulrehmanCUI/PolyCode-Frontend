@@ -2136,7 +2136,137 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
-                {/* ─── Rust Language Course Routes ─────────────────────────────────────── */}
+        {/* ─── Go Language Course Routes ─────────────────────────────────────── */}
+        <Route
+          path="/learn/golang-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/golang-fundamentals/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <GoLangLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        {learnCourseRoutes({
+          basePath: "/learn/python-oop-py",
+          Hub: PythonOopHub,
+          Lesson: PythonOopLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/python-file-handling-py",
+          Hub: PythonFileHandlingHub,
+          Lesson: PythonFileHandlingLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/js-dom",
+          Hub: JsDomHub,
+          Lesson: JsDomLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/js-web-dev",
+          Hub: JsWebDevHub,
+          Lesson: JsWebDevLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/node-npm",
+          Hub: NodeNpmHub,
+          Lesson: NodeNpmLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/php-fundamentals",
+          Hub: PhpFundamentalsHub,
+          Lesson: PhpFundamentalsLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/ruby-fundamentals",
+          Hub: RubyFundamentalsHub,
+          Lesson: RubyFundamentalsLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/ruby-gems",
+          Hub: RubyGemsHub,
+          Lesson: RubyGemsLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/java-advanced",
+          Hub: JavaAdvancedHub,
+          Lesson: JavaAdvancedLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+          includeLegacyLessonPath: true,
+        })}
+
+        {/* ─── Rust Language Course Routes ─────────────────────────────────────── */}
         <Route
           path="/learn/rust-fundamentals"
           element={
