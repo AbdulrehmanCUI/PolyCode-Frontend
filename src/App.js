@@ -311,6 +311,12 @@ const RubyGemsHub = lazyWithChunkRetry(
 const RubyGemsLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/ruby-gems/pages/RubyGemsLessonPage"),
 );
+const RubyOopHub = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-oop/pages/rubyOopHub.jsx"),
+);
+const RubyOopLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-oop/pages/rubyOopLessonPage.jsx"),
+);
 const AllCoursesPage = lazyWithChunkRetry(
   () => import("./features/courses/pages/AllCoursesPage"),
 );
@@ -850,7 +856,8 @@ function AppRoutes() {
       handleLanguageSelect("PHP", { stay: true });
     } else if (
       path.startsWith("/learn/ruby-fundamentals") ||
-      path.startsWith("/learn/ruby-gems")
+      path.startsWith("/learn/ruby-gems") ||
+      path.startsWith("/learn/ruby-oop")
     ) {
       handleLanguageSelect("Ruby", { stay: true });
     } else if (path.startsWith("/learn/golang-fundamentals")) {
@@ -2167,6 +2174,7 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
+        
         <Route
           path="/learn/golang-fundamentals/:lessonId"
           element={
@@ -2182,7 +2190,6 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
-<<<<<<< HEAD
 
         {learnCourseRoutes({
           basePath: "/learn/python-oop-py",
@@ -2257,6 +2264,15 @@ function AppRoutes() {
           selectedLanguage,
         })}
         {learnCourseRoutes({
+          basePath: "/learn/ruby-oop",
+          Hub: RubyOopHub,
+          Lesson: RubyOopLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
           basePath: "/learn/java-advanced",
           Hub: JavaAdvancedHub,
           Lesson: JavaAdvancedLessonPage,
@@ -2267,7 +2283,8 @@ function AppRoutes() {
           includeLegacyLessonPath: true,
         })}
 
-=======
+        {/* ─── Rust Language Course Routes ─────────────────────────────────────── */}
+        
         {/* ─── SQL Language Course Routes ─────────────────────────────────────── */}
         <Route
           path="/learn/sql-fundamentals"
@@ -2585,7 +2602,7 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
->>>>>>> 8a0f23e (Course Addition: added 9 SQL Courses)
+ 8a0f23e (Course Addition: added 9 SQL Courses)
         {/* ─── Rust Language Course Routes ─────────────────────────────────────── */}
         <Route
           path="/learn/rust-fundamentals"

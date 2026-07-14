@@ -425,6 +425,15 @@ export const languageCourses = {
       href: "/learn/ruby-gems",
       accent: "#9333ea",
     },
+    {
+      title: "Ruby OOP",
+      tag: "Interactive Course",
+      icon: BrainCircuit,
+      description:
+        "Deep dive into Ruby object‑oriented programming: classes, inheritance, modules, mixins, encapsulation, and design patterns with hands‑on challenges.",
+      href: "/learn/ruby-oop",
+      accent: "#b91c1c",
+    },
   ],
   // ─── GO TRACK DEFINITION ────────────────────────────────────────────────
   go: [
@@ -660,6 +669,7 @@ export const learnNavByLanguage = {
   ruby: [
     { label: "Ruby Basics", to: "/learn/ruby-fundamentals" },
     { label: "Ruby Gems", to: "/learn/ruby-gems" },
+    { label: "Ruby OOP", to: "/learn/ruby-oop" },
   ],
   go: [{ label: "Go Basics", to: "/learn/golang-fundamentals" }],
   rust: [{ label: "Rust Basics", to: "/learn/rust-fundamentals" }],
