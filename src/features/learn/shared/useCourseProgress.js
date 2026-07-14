@@ -251,23 +251,120 @@ export default function useCourseProgress({
       if (!lessonId) return;
 
       if (token) {
-        const progress = await completeCourseLesson(token, courseId, {
-          lessonId,
-          title: lesson.title || "",
-          chapterId: lesson.chapterId || "",
-          chapterTitle: lesson.chapterTitle || "",
-          xp: lesson.xp || 0,
-        });
-        setRemoteProgress(progress);
-        mirrorRemoteToLocal(progress);
-        setSyncState("synced");
-        recordLessonXp(token, courseId, lesson);
-        upsertLessonEngagement(token, courseId, {
-          lessonId,
-          challengeLastResult: "pass",
+        // #region agent log
+        fetch("http://127.0.0.1:7715/ingest/7db3ce00-8987-41d1-83fe-f090f7ed3b4c", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Debug-Session-Id": "807e54",
+          },
+          body: JSON.stringify({
+            sessionId: "807e54",
+            location: "useCourseProgress.js:completeLesson",
+            message: "completeLesson api start",
+            data: {
+              courseId,
+              lessonId,
+              lessonXp: Number(lesson.xp) || 0,
+              hasToken: Boolean(token),
+            },
+            hypothesisId: "H1",
+            runId: "pre-fix",
+            timestamp: Date.now(),
+          }),
         }).catch(() => {});
+        // #endregion
+        try {
+          const progress = await completeCourseLesson(token, courseId, {
+            lessonId,
+            title: lesson.title || "",
+            chapterId: lesson.chapterId || "",
+            chapterTitle: lesson.chapterTitle || "",
+            xp: lesson.xp || 0,
+          });
+          // #region agent log
+          fetch("http://127.0.0.1:7715/ingest/7db3ce00-8987-41d1-83fe-f090f7ed3b4c", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Debug-Session-Id": "807e54",
+            },
+            body: JSON.stringify({
+              sessionId: "807e54",
+              location: "useCourseProgress.js:completeLesson",
+              message: "completeLesson api ok",
+              data: {
+                courseId,
+                lessonId,
+                totalXp: progress?.totalXp,
+                completedCount: progress?.completedLessons?.length,
+              },
+              hypothesisId: "H1",
+              runId: "pre-fix",
+              timestamp: Date.now(),
+            }),
+          }).catch(() => {});
+          // #endregion
+          setRemoteProgress(progress);
+          mirrorRemoteToLocal(progress);
+          setSyncState("synced");
+          recordLessonXp(token, courseId, lesson);
+          upsertLessonEngagement(token, courseId, {
+            lessonId,
+            challengeLastResult: "pass",
+          }).catch(() => {});
+        } catch (error) {
+          // #region agent log
+          fetch("http://127.0.0.1:7715/ingest/7db3ce00-8987-41d1-83fe-f090f7ed3b4c", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Debug-Session-Id": "807e54",
+            },
+            body: JSON.stringify({
+              sessionId: "807e54",
+              location: "useCourseProgress.js:completeLesson",
+              message: "completeLesson api error",
+              data: {
+                courseId,
+                lessonId,
+                error: error?.message || String(error),
+              },
+              hypothesisId: "H1",
+              runId: "pre-fix",
+              timestamp: Date.now(),
+            }),
+          }).catch(() => {});
+          // #endregion
+          throw error;
+        }
         return;
       }
+
+      // #region agent log
+      fetch("http://127.0.0.1:7715/ingest/7db3ce00-8987-41d1-83fe-f090f7ed3b4c", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Debug-Session-Id": "807e54",
+        },
+        body: JSON.stringify({
+          sessionId: "807e54",
+          location: "useCourseProgress.js:completeLesson",
+          message: "completeLesson local only",
+          data: {
+            courseId,
+            lessonId,
+            scoped,
+            scopeReady,
+            isAuthenticated,
+          },
+          hypothesisId: "H4",
+          runId: "pre-fix",
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
 
       if (scoped && !scopeReady) return;
       if (!isAuthenticated && !token) {
