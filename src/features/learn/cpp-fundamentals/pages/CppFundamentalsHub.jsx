@@ -8,6 +8,7 @@ import {
 import useCppFundamentalsProgress from "../hooks/useCppFundamentalsProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/cpp-fundamentals";
 
@@ -269,6 +270,13 @@ export default function CppFundamentalsHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="C++ Fundamentals"
+        totalLessons={CPP_FUNDAMENTALS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={CPP_FUNDAMENTALS_TOTAL_XP}
       />
     </div>
   );

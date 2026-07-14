@@ -8,6 +8,7 @@ import {
 import useRubyFundamentalsProgress from "../hooks/useRubyFundamentalsProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/ruby-fundamentals";
 
@@ -269,6 +270,13 @@ export default function RubyFundamentalsHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="Ruby Fundamentals"
+        totalLessons={RUBY_FUNDAMENTALS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={RUBY_FUNDAMENTALS_TOTAL_XP}
       />
     </div>
   );

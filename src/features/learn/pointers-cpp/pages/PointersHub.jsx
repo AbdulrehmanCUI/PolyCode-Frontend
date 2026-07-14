@@ -8,6 +8,7 @@ import {
 import usePointersProgress from "../hooks/usePointersProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/pointers-cpp";
 
@@ -230,6 +231,13 @@ export default function PointersHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="C++ Pointers"
+        totalLessons={POINTER_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={POINTER_TOTAL_XP}
       />
     </div>
   );

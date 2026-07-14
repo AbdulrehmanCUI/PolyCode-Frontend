@@ -98,7 +98,6 @@ export default function PointersLessonPage() {
     rememberLesson,
     saveCode,
     toggleBookmark,
-    addTime,
   } = usePointersProgress();
   const codeSaveTimer = useRef(null);
 
@@ -146,12 +145,6 @@ export default function PointersLessonPage() {
   useEffect(() => {
     if (lessonId) rememberLesson(lessonId);
   }, [lessonId, rememberLesson]);
-
-  useEffect(() => {
-    if (!lessonId) return undefined;
-    const id = setInterval(() => addTime(1), 60000);
-    return () => clearInterval(id);
-  }, [addTime, lessonId]);
 
   useEffect(
     () => () => {

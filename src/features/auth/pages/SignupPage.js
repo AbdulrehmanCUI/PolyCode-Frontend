@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getProfilePathForUser } from "../../../lib/authSession";
+import ContinueWithGoogle from "../components/ContinueWithGoogle";
 
 export default function SignupPage() {
-  const { register } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -12,6 +13,7 @@ export default function SignupPage() {
     username: "",
     password: "",
     firstName: "",
+    middleName: "",
     lastName: "",
   });
   const [error, setError] = useState("");
@@ -39,10 +41,22 @@ export default function SignupPage() {
     }
   }
 
+  async function handleGoogleCredential(idToken) {
+    setError("");
+    setLoading(true);
+    try {
+      const user = await loginWithGoogle(idToken);
+      navigate(getProfilePathForUser(user));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="auth-page">
       <div className="auth-card fade-up">
-        {/* Brand */}
         <div className="auth-brand">
           <img src="/images/polycode-logo.png" alt="PolyCode" className="auth-logo" />
           <span className="auth-brand-name">PolyCode</span>
@@ -53,17 +67,37 @@ export default function SignupPage() {
 
         {error && <div className="auth-error">{error}</div>}
 
+        <ContinueWithGoogle
+          onCredential={handleGoogleCredential}
+          disabled={loading}
+        />
+
+        <div className="auth-divider" role="separator">
+          <span>or</span>
+        </div>
+
         <form onSubmit={handleSubmit} className="auth-form">
+          <div className="auth-field">
+            <label htmlFor="firstName">First name</label>
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              value={form.firstName}
+              onChange={handleChange}
+              placeholder="Muhammad"
+            />
+          </div>
           <div className="auth-field-row">
             <div className="auth-field">
-              <label htmlFor="firstName">First name</label>
+              <label htmlFor="middleName">Middle name</label>
               <input
-                id="firstName"
-                name="firstName"
+                id="middleName"
+                name="middleName"
                 type="text"
-                value={form.firstName}
+                value={form.middleName}
                 onChange={handleChange}
-                placeholder="Ada"
+                placeholder="Saad"
               />
             </div>
             <div className="auth-field">
@@ -74,7 +108,7 @@ export default function SignupPage() {
                 type="text"
                 value={form.lastName}
                 onChange={handleChange}
-                placeholder="Lovelace"
+                placeholder="Amin"
               />
             </div>
           </div>
@@ -87,7 +121,7 @@ export default function SignupPage() {
               type="text"
               value={form.username}
               onChange={handleChange}
-              placeholder="ada_lovelace"
+              placeholder="senodroom"
               required
               minLength={3}
               maxLength={30}

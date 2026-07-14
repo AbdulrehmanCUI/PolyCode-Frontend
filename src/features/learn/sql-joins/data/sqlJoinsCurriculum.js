@@ -256,8 +256,8 @@ export const SQLJOINS_CHAPTERS = [
                 ]
               },
               expected: [
-                { name: "Project Alpha", name: "Dave" },
-                { name: "Project Beta", name: null }
+                { project: "Project Alpha", employee: "Dave" },
+                { project: "Project Beta", employee: null }
               ]
             }
           ],
@@ -294,8 +294,8 @@ export const SQLJOINS_CHAPTERS = [
                 ]
               },
               expected: [
-                { name: "Project Alpha", name: "Dave" },
-                { name: null, name: "Eve" }
+                { project: "Project Alpha", employee: "Dave" },
+                { project: null, employee: "Eve" }
               ]
             }
           ],

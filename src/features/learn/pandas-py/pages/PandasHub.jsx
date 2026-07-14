@@ -8,6 +8,7 @@ import {
 import usePandasProgress from "../hooks/usePandasProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/pandas-py";
 
@@ -264,6 +265,13 @@ export default function PandasHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="Pandas"
+        totalLessons={PANDAS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={PANDAS_TOTAL_XP}
       />
     </div>
   );

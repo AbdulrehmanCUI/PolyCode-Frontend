@@ -22,12 +22,15 @@ import {
   uploadProfileAvatar,
 } from "../../profile/services/profileApi";
 import { isolateLearnProgressForUser } from "../../learn/shared/scopedProgressStorage";
+import { mergeLearnProgressOnLogin } from "../../learn/shared/mergeLearnProgressOnLogin";
 
 const AuthContext = createContext(null);
 
-function applySession(setToken, setUser, token, user) {
+async function applySession(setToken, setUser, token, user) {
   setStoredToken(token);
   rememberSignedInUser(user);
+  // Upload browser progress to Mongo before clearing legacy/guest keys.
+  await mergeLearnProgressOnLogin(token, user);
   const userId = user?._id || user?.id;
   if (userId) {
     isolateLearnProgressForUser(String(userId));
@@ -68,6 +71,7 @@ export function AuthProvider({ children }) {
       if (requestId !== bootstrapRequestId.current) return;
 
       rememberSignedInUser(data.user);
+      await mergeLearnProgressOnLogin(storedToken, data.user);
       const userId = data.user?._id || data.user?.id;
       if (userId) {
         isolateLearnProgressForUser(String(userId));
@@ -102,7 +106,25 @@ export function AuthProvider({ children }) {
       });
 
       bootstrapRequestId.current += 1;
-      applySession(setToken, setUser, data.token, data.user);
+      await applySession(setToken, setUser, data.token, data.user);
+      setLoading(false);
+      return data.user;
+    } catch (error) {
+      throw new Error(networkErrorMessage(error));
+    }
+  }, []);
+
+  const loginWithGoogle = useCallback(async (idToken) => {
+    try {
+      const data = await apiFetch("/auth/google", {
+        method: "POST",
+        auth: false,
+        body: JSON.stringify({ idToken }),
+        fallbackMessage: "Google sign-in failed",
+      });
+
+      bootstrapRequestId.current += 1;
+      await applySession(setToken, setUser, data.token, data.user);
       setLoading(false);
       return data.user;
     } catch (error) {
@@ -111,7 +133,15 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = useCallback(
-    async ({ email, username, password, firstName, lastName }) => {
+    async ({
+      email,
+      username,
+      password,
+      name,
+      firstName,
+      middleName,
+      lastName,
+    }) => {
       try {
         const data = await apiFetch("/auth/register", {
           method: "POST",
@@ -120,14 +150,16 @@ export function AuthProvider({ children }) {
             email,
             username,
             password,
+            name,
             firstName,
+            middleName,
             lastName,
           }),
           fallbackMessage: "Registration failed",
         });
 
         bootstrapRequestId.current += 1;
-        applySession(setToken, setUser, data.token, data.user);
+        await applySession(setToken, setUser, data.token, data.user);
         setLoading(false);
         return data.user;
       } catch (error) {
@@ -186,6 +218,7 @@ export function AuthProvider({ children }) {
         loading,
         isAuthenticated,
         login,
+        loginWithGoogle,
         register,
         logout,
         updateProfile,

@@ -8,6 +8,7 @@ import {
 import useJsWebDevProgress from "../hooks/useJsWebDevProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/js-web-dev";
 
@@ -267,6 +268,13 @@ export default function JsWebDevHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="JavaScript Web Dev"
+        totalLessons={JS_WEB_DEV_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={JS_WEB_DEV_TOTAL_XP}
       />
     </div>
   );

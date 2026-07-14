@@ -9,6 +9,7 @@ import useCFunctionsProgress from "../hooks/useCFunctionsProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/c-functions";
 const LEARNING_PATH = [
@@ -334,6 +335,13 @@ export default function CFunctionsHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="C Functions"
+        totalLessons={C_FUNCTIONS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={C_FUNCTIONS_TOTAL_XP}
       />
     </div>
   );

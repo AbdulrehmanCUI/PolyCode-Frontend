@@ -8,6 +8,7 @@ import {
 import useFastapiProgress from "../hooks/useFastapiProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/fastapi-py";
 
@@ -269,6 +270,13 @@ export default function FastapiHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="FastAPI"
+        totalLessons={FASTAPI_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={FASTAPI_TOTAL_XP}
       />
     </div>
   );

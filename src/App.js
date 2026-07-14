@@ -249,6 +249,38 @@ const JavaAdvancedHub = lazyWithChunkRetry(
 const JavaAdvancedLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/java-advanced/pages/JavaAdvancedLessonPage"),
 );
+// ── Added from PR: Java Exception / Multithreading / JDBC / Spring Boot / Projects ──
+const JavaExceptionHub = lazyWithChunkRetry(
+  () => import("./features/learn/java-exception/pages/JavaExceptionHub"),
+);
+const JavaExceptionLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/java-exception/pages/JavaExceptionLessonPage"),
+);
+const JavaMultithreadingHub = lazyWithChunkRetry(
+  () => import("./features/learn/java-multithreading/pages/JavaMultithreadingHub"),
+);
+const JavaMultithreadingLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/java-multithreading/pages/JavaMultithreadingLessonPage"),
+);
+const JavaJdbcHub = lazyWithChunkRetry(
+  () => import("./features/learn/java-jdbc/pages/JavaJdbcHub"),
+);
+const JavaJdbcLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/java-jdbc/pages/JavaJdbcLessonPage"),
+);
+const JavaSpringBootHub = lazyWithChunkRetry(
+  () => import("./features/learn/java-spring-boot/pages/JavaSpringBootHub"),
+);
+const JavaSpringBootLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/java-spring-boot/pages/JavaSpringBootLessonPage"),
+);
+const JavaProjectsHub = lazyWithChunkRetry(
+  () => import("./features/learn/java-projects/pages/JavaProjectsHub"),
+);
+const JavaProjectsLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/java-projects/pages/JavaProjectsLessonPage"),
+);
 
 const JavaFundamentalsHub = lazyWithChunkRetry(
   () => import("./features/learn/java-fundamentals/pages/JavaFundamentalsHub"),
@@ -842,7 +874,12 @@ function AppRoutes() {
       path.startsWith("/learn/java-fundamentals") ||
       path.startsWith("/learn/java-intermediate") ||
       path.startsWith("/learn/java-collections") ||
-      path.startsWith("/learn/java-advanced")
+      path.startsWith("/learn/java-advanced") ||
+      path.startsWith("/learn/java-exception") ||
+      path.startsWith("/learn/java-multithreading") ||
+      path.startsWith("/learn/java-jdbc") ||
+      path.startsWith("/learn/java-spring-boot") ||
+      path.startsWith("/learn/java-projects")
     ) {
       handleLanguageSelect("Java", { stay: true });
     } else if (
@@ -1530,6 +1567,166 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <JavaCollectionsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        {/* ── Java Exception Handling ── */}
+        <Route
+          path="/learn/java-exception"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaExceptionHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/java-exception/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaExceptionLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/java-exception/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaExceptionLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        {/* ── Java Multithreading ── */}
+        <Route
+          path="/learn/java-multithreading"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaMultithreadingHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/java-multithreading/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaMultithreadingLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/java-multithreading/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaMultithreadingLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        {/* ── Java JDBC ── */}
+        <Route
+          path="/learn/java-jdbc"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaJdbcHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/java-jdbc/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaJdbcLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/java-jdbc/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaJdbcLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        {/* ── Java Spring Boot ── */}
+        <Route
+          path="/learn/java-spring-boot"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaSpringBootHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/java-spring-boot/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaSpringBootLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/java-spring-boot/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaSpringBootLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        {/* ── Java Projects ── */}
+        <Route
+          path="/learn/java-projects"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaProjectsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/java-projects/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaProjectsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/java-projects/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <JavaProjectsLessonPage />
               </LearnShell>
             </ThemedShell>
           }

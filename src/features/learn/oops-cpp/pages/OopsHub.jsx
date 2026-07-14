@@ -4,6 +4,7 @@ import { CHAPTERS, TOTAL_XP, ALL_LESSONS } from "../data/oopsCurriculum";
 import useOopsProgress from "../hooks/useOopsProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/oops-cpp";
 
@@ -239,6 +240,13 @@ export default function OopsHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="C++ OOP"
+        totalLessons={ALL_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={TOTAL_XP}
       />
     </div>
   );

@@ -1,6 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../auth/context/AuthContext";
 
+function stableHash(input) {
+  let hash = 2166136261;
+  const str = String(input || "");
+  for (let i = 0; i < str.length; i += 1) {
+    hash ^= str.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(36).toUpperCase().padStart(8, "0").slice(0, 8);
+}
+
 function generateLocalCertId(userId, courseName) {
   const slug = courseName
     .toUpperCase()
@@ -9,7 +19,8 @@ function generateLocalCertId(userId, courseName) {
   const suffix = String(userId || "guest")
     .slice(-6)
     .toUpperCase();
-  return `PC-${slug}-${suffix}-${Date.now().toString(36).toUpperCase()}`;
+  const stable = stableHash(`${userId || "guest"}:${courseName}`);
+  return `PC-${slug}-${suffix}-${stable}`;
 }
 
 export default function CourseCertificate({
@@ -60,7 +71,7 @@ export default function CourseCertificate({
       xp: earnedXP.toString(),
     }).toString();
 
-    const qrUrl = `https://poly-code-frontend-tau.vercel.app//verify-certificate?${queryParams}`;
+    const qrUrl = `https://poly-code-frontend-tau.vercel.app/verify-certificate?${queryParams}`;
 
     async function generateQrCode() {
       try {

@@ -8,6 +8,7 @@ import {
 import useRustFundamentalsProgress from "../hooks/useRustFundamentalsProgress";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
 import { CheckCircle2 } from "lucide-react";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/rust-fundamentals";
 
@@ -350,6 +351,13 @@ export default function RustFundamentalsHub() {
           );
         })}
       </div>
+      <CourseCertificate
+        courseName="Rust Fundamentals"
+        totalLessons={RUST_FUNDAMENTALS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={RUST_FUNDAMENTALS_TOTAL_XP}
+      />
     </div>
   );
 }

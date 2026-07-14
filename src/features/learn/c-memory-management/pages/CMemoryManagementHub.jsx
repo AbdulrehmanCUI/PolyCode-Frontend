@@ -9,6 +9,7 @@ import useCMemoryManagementProgress from "../hooks/useCMemoryManagementProgress"
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/c-memory-management";
 const LEARNING_PATH = [
@@ -333,6 +334,13 @@ export default function CMemoryManagementHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="C Memory Management"
+        totalLessons={C_MEMORY_MANAGEMENT_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={C_MEMORY_MANAGEMENT_TOTAL_XP}
       />
     </div>
   );

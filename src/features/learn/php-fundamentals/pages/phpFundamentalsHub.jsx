@@ -8,6 +8,7 @@ import {
 import usePhpFundamentalsProgress from "../hooks/usePhpFundamentalsProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/php-fundamentals";
 
@@ -268,6 +269,13 @@ export default function PhpFundamentalsHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="PHP Fundamentals"
+        totalLessons={PHP_FUNDAMENTALS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={PHP_FUNDAMENTALS_TOTAL_XP}
       />
     </div>
   );

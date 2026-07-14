@@ -9,6 +9,7 @@ import useCFundamentalsProgress from "../hooks/useCFundamentalsProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/c-fundamentals";
 const LEARNING_PATH = [
@@ -333,6 +334,13 @@ export default function CFundamentalsHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="C Fundamentals"
+        totalLessons={C_FUNDAMENTALS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={C_FUNDAMENTALS_TOTAL_XP}
       />
     </div>
   );

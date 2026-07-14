@@ -15,12 +15,14 @@ import {
   X,
 } from "lucide-react";
 import { getApiBase } from "../config/apiBase";
+import { useAuth } from "../features/auth/context/AuthContext";
 import ChallengeCompleteCelebration from "../features/learn/shared/ChallengeCompleteCelebration";
 import { useChallengeCelebration } from "../features/learn/shared/useChallengeCelebration";
 import PolyGuardPanel from "../features/polyguard/components/PolyGuardPanel";
 import "./DailyChallenges.css";
 
 export default function DailyChallenge({ theme }) {
+  const { token, isAuthenticated } = useAuth();
   const [challenge, setChallenge] = useState(null);
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("python");
@@ -57,22 +59,32 @@ export default function DailyChallenge({ theme }) {
 
   const handleSubmit = async () => {
     if (!challenge) return;
+    if (!isAuthenticated || !token) {
+      setResultData({
+        status: "ERROR",
+        message: "Sign in to submit the daily challenge and keep your streak.",
+      });
+      return;
+    }
     setIsSubmitting(true);
     setResultData({ status: "PENDING" });
-
-    const userId = localStorage.getItem("userId") || crypto.randomUUID();
-    localStorage.setItem("userId", userId);
 
     try {
       const res = await fetch(
         `${getApiBase()}/challenges/${challenge._id}/submit`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId, language, code }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ language, code }),
         },
       );
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || data.error || "Submission failed");
+      }
       setResultData(data);
       if (data.streak !== undefined) setStreak(data.streak);
     } catch (err) {

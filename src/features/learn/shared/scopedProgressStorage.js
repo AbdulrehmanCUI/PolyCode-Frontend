@@ -1,25 +1,16 @@
-const LEARN_PROGRESS_BASE_KEYS = [
-  "oops_progress",
-  "oops_saved_code",
-  "oops_bookmarks",
-  "oops_last_lesson",
-  "pointers_cpp_progress",
-  "pointers_cpp_saved_code",
-  "pointers_cpp_bookmarks",
-  "pointers_cpp_last_lesson",
-  "numpy_py_progress",
-  "numpy_py_saved_code",
-  "numpy_py_bookmarks",
-  "numpy_py_last_lesson",
-  "pandas_py_progress",
-  "pandas_py_saved_code",
-  "pandas_py_bookmarks",
-  "pandas_py_last_lesson",
-  "fastapi_py_progress",
-  "fastapi_py_saved_code",
-  "fastapi_py_bookmarks",
-  "fastapi_py_last_lesson",
-];
+import { COURSE_PROGRESS_REGISTRY, storageKeysForPrefix } from "./courseRegistry";
+
+const LEARN_PROGRESS_BASE_KEYS = COURSE_PROGRESS_REGISTRY.flatMap((entry) => {
+  const keys = storageKeysForPrefix(entry.storagePrefix);
+  const list = [
+    keys.progress,
+    keys.savedCode,
+    keys.bookmarks,
+    keys.lastLesson,
+  ];
+  if (entry.notes) list.push(keys.notes);
+  return list;
+});
 
 function decodeUserIdFromToken(token) {
   if (!token || typeof token !== "string") return null;

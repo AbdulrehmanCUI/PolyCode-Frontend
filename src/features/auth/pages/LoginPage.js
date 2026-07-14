@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getProfilePathForUser } from "../../../lib/authSession";
+import ContinueWithGoogle from "../components/ContinueWithGoogle";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -26,10 +27,22 @@ export default function LoginPage() {
     }
   }
 
+  async function handleGoogleCredential(idToken) {
+    setError("");
+    setLoading(true);
+    try {
+      const user = await loginWithGoogle(idToken);
+      navigate(getProfilePathForUser(user));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="auth-page">
       <div className="auth-card fade-up">
-        {/* Brand */}
         <div className="auth-brand">
           <img src="/images/polycode-logo.png" alt="PolyCode" className="auth-logo" />
           <span className="auth-brand-name">PolyCode</span>
@@ -39,6 +52,15 @@ export default function LoginPage() {
         <p className="auth-subtitle">Sign in to continue your learning journey</p>
 
         {error && <div className="auth-error">{error}</div>}
+
+        <ContinueWithGoogle
+          onCredential={handleGoogleCredential}
+          disabled={loading}
+        />
+
+        <div className="auth-divider" role="separator">
+          <span>or</span>
+        </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="auth-field">

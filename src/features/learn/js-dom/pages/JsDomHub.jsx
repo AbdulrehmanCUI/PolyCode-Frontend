@@ -8,6 +8,7 @@ import {
 import useJsDomProgress from "../hooks/useJsDomProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/js-dom";
 
@@ -261,6 +262,13 @@ export default function JsDomHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="JavaScript DOM"
+        totalLessons={JS_DOM_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={JS_DOM_TOTAL_XP}
       />
     </div>
   );

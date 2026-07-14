@@ -5,7 +5,8 @@ import {
   JS_OOPS_LESSONS,
   JS_OOPS_TOTAL_XP,
 } from "../data/jsOopsCurriculum";
-import useJsOopsProgress from "../hooks/useJsOopsProgress";
+import useJsOopsProgress from "../Hooks/useJsOopsProgress";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/js-oops";
 
@@ -344,6 +345,13 @@ export default function JsOopsHub() {
           );
         })}
       </div>
+      <CourseCertificate
+        courseName="JavaScript OOP"
+        totalLessons={JS_OOPS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={JS_OOPS_TOTAL_XP}
+      />
     </div>
   );
 }

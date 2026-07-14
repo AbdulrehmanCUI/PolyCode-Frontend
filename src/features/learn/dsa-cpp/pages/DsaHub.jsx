@@ -8,6 +8,7 @@ import {
 import useDsaCppProgress from "../hooks/useDsaCppProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/dsa-cpp";
 
@@ -195,6 +196,13 @@ export default function DsaHub() {
       <LearnChapterPathOverview chapters={DSA_CPP_CHAPTERS} progress={progress} onChapterSelect={(chapter) => navigate(`${BASE_PATH}/lesson/${chapter.lessons[0].id}`)} />
 
       <LearnChapterGrid chapters={DSA_CPP_CHAPTERS} progress={progress} basePath={BASE_PATH} navigate={navigate} />
+      <CourseCertificate
+        courseName="DSA with C++"
+        totalLessons={DSA_CPP_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={DSA_CPP_TOTAL_XP}
+      />
     </div>
   );
 }

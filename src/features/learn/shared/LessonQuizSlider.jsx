@@ -43,8 +43,9 @@ function QuizSlide({
   const feedbackClass = isNumpy ? "numpy-quiz-feedback" : "oops-quiz-feedback";
 
   function handleSelect(index) {
+    const isCorrect = index === block.answer;
     if (typeof onQuizAnswer === "function" && quizIndex !== null) {
-      onQuizAnswer(quizIndex, index);
+      onQuizAnswer(quizIndex, index, isCorrect);
     } else {
       setLocalSelection(index);
     }

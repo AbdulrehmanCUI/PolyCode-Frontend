@@ -8,6 +8,7 @@ import {
 import useJsFundamentalsProgress from "../hooks/useJsFundamentalsProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/js-fundamentals";
 
@@ -268,6 +269,13 @@ export default function JsFundamentalsHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="JavaScript Fundamentals"
+        totalLessons={JS_FUNDAMENTALS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={JS_FUNDAMENTALS_TOTAL_XP}
       />
     </div>
   );

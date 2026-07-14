@@ -5,7 +5,7 @@ import {
   MATPLOTLIB_LESSONS,
   MATPLOTLIB_TOTAL_XP,
 } from "../data/matplotlibCurriculum";
-import useMatplotlibProgress from "../hooks/usematplotlibProgress";
+import useMatplotlibProgress from "../hooks/useMatplotlibProgress";
 import CourseCertificate from "../../shared/CourseCertificate";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";

@@ -5,9 +5,10 @@ import {
   AI_LESSONS,
   AI_TOTAL_XP,
 } from "../data/aiCurriculum";
-import useAiProgress from "../hooks/useaiProgress";
+import useAiProgress from "../hooks/useAiProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/ai_ml-py";
 
@@ -265,6 +266,13 @@ export default function AiHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="AI & ML with Python"
+        totalLessons={AI_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={AI_TOTAL_XP}
       />
     </div>
   );

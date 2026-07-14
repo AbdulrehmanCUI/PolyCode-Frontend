@@ -4907,7 +4907,8 @@ NAVBAR
   display: none;
   position: fixed;
   inset: 0;
-  z-index: 200;
+  /* Above fixed landing navbar (z-index: 1200) so menu isn't covered */
+  z-index: 1300;
   border: none;
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(3px);
@@ -4918,17 +4919,20 @@ NAVBAR
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 210;
+  z-index: 1310;
   width: min(320px, 88vw);
   height: 100vh;
   height: 100dvh;
+  max-height: 100dvh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   background: var(--v2-bg2);
   border-right: 1px solid var(--v2-border);
   box-shadow: 16px 0 48px rgba(0, 0, 0, 0.45);
   transform: translateX(-105%);
   transition: transform 0.28s ease;
+  padding-top: env(safe-area-inset-top, 0);
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
@@ -4940,39 +4944,73 @@ NAVBAR
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1rem 0.75rem;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  padding: 1rem 1rem 0.85rem;
   border-bottom: 1px solid var(--v2-border);
 }
 
+.landing-mobile-drawer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.landing-mobile-drawer-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .landing-mobile-drawer-title {
-  font-family: var(--v2-mono);
-  font-size: 0.75rem;
+  font-family: inherit;
+  font-size: 1rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--v2-txt2);
+  letter-spacing: -0.02em;
+  text-transform: none;
+  color: var(--v2-txt0);
 }
 
 .landing-mobile-drawer-close {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 10px;
   border: 1px solid var(--v2-border);
-  background: transparent;
+  background: rgba(255, 255, 255, 0.04);
   color: var(--v2-txt1);
   cursor: pointer;
+}
+
+.landing-mobile-drawer-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--v2-txt0);
 }
 
 .landing-mobile-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.75rem;
+  gap: 0.2rem;
+  padding: 0.85rem 0.75rem;
+  overflow-x: hidden;
   overflow-y: auto;
-  flex: 1;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.landing-mobile-drawer-foot {
+  flex-shrink: 0;
+  padding: 0.75rem 0.85rem 1rem;
+  border-top: 1px solid var(--v2-border);
+  background: inherit;
 }
 
 .landing-mobile-nav-link {
@@ -5152,9 +5190,9 @@ NAVBAR
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-top: 0.75rem;
+  margin: 0;
   width: 100%;
-  padding: 0.8125rem 1rem;
+  padding: 0.875rem 1rem;
   border: none;
   border-radius: 999px;
   background: var(--acid, #ffe566);
@@ -5190,6 +5228,11 @@ NAVBAR
   .landing-brand {
     min-width: 0;
     flex: 1;
+  }
+
+  .landing-mobile-nav-link {
+    padding: 0.8rem 0.75rem;
+    font-size: 0.95rem;
   }
 }
 
@@ -5898,6 +5941,25 @@ NAVBAR
   background: #ffffff;
   border-right-color: #e2e8f0;
   box-shadow: 16px 0 40px rgba(15, 23, 42, 0.08);
+}
+
+.app.theme-light .polycode-landing .landing-mobile-drawer-title,
+.polycode-landing.polycode-landing--light .landing-mobile-drawer-title {
+  color: #111827;
+}
+
+.app.theme-light .polycode-landing .landing-mobile-drawer-close,
+.polycode-landing.polycode-landing--light .landing-mobile-drawer-close {
+  border-color: #e2e8f0;
+  background: #ffffff;
+  color: #111827;
+}
+
+.app.theme-light .polycode-landing .landing-mobile-drawer-head,
+.app.theme-light .polycode-landing .landing-mobile-drawer-foot,
+.polycode-landing.polycode-landing--light .landing-mobile-drawer-head,
+.polycode-landing.polycode-landing--light .landing-mobile-drawer-foot {
+  border-color: #e2e8f0;
 }
 
 .app.theme-light .polycode-landing .landing-mobile-nav-link,

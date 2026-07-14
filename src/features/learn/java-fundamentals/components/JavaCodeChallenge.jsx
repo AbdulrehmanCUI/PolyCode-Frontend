@@ -14,6 +14,7 @@ import {
 } from "../../shared/runJava";
 import ChallengeCompleteCelebration from "../../shared/ChallengeCompleteCelebration";
 import { useChallengeCelebration } from "../../shared/useChallengeCelebration";
+import { useChallengeTelemetry } from "../../shared/challengeTelemetry";
 
 function normalizeWhitespace(value = "") {
   return value.replace(/\s+/g, "");
@@ -57,6 +58,7 @@ export default function JavaCodeChallenge({
 }) {
   const { loading: authLoading, isAuthenticated } = useAuth();
   const canRun = isAuthenticated && !authLoading;
+  const reportChallengeResult = useChallengeTelemetry();
 
   const [code, setCode] = useState(initialCode || challenge.starterCode);
   const [results, setResults] = useState(null);
@@ -175,12 +177,15 @@ export default function JavaCodeChallenge({
       });
 
       if (allPassed) {
+        reportChallengeResult?.(true);
         triggerCelebration();
         if (!isCompleted) {
           Promise.resolve(onComplete()).catch((error) => {
             console.error("Unable to save lesson progress:", error);
           });
         }
+      } else {
+        reportChallengeResult?.(false);
       }
 
       setRunning(false);

@@ -8,6 +8,7 @@ import {
 import useJavaAdvancedProgress from "../hooks/useJavaAdvancedProgress";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
 import { CheckCircle2 } from "lucide-react";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/java-advanced";
 
@@ -376,6 +377,13 @@ export default function JavaAdvancedHub() {
           );
         })}
       </div>
+      <CourseCertificate
+        courseName="Java Advanced"
+        totalLessons={JAVA_ADVANCED_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={JAVA_ADVANCED_TOTAL_XP}
+      />
     </div>
   );
 }

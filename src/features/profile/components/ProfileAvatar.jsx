@@ -5,6 +5,12 @@ import { capitalizeNamePart } from "../utils/profileDisplayUtils";
 
 export function getProfileInitials(user) {
   if (!user) return "G";
+  if (user.name?.trim()) {
+    const parts = user.name.trim().split(/\s+/).filter(Boolean);
+    if (parts[0]) {
+      return `${parts[0][0]}${parts[1]?.[0] || ""}`.toUpperCase();
+    }
+  }
   const first = capitalizeNamePart(user.firstName);
   const last = capitalizeNamePart(user.lastName);
   if (first) {

@@ -8,6 +8,7 @@ import {
 import useNumpyProgress from "../hooks/useNumpyProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/numpy-py";
 
@@ -262,6 +263,13 @@ export default function NumpyHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="NumPy"
+        totalLessons={NUMPY_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={NUMPY_TOTAL_XP}
       />
     </div>
   );

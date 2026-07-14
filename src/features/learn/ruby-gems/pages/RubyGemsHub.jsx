@@ -8,6 +8,7 @@ import {
 import useRubyGemsProgress from "../hooks/useRubyGemsProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/ruby-gems";
 
@@ -269,6 +270,13 @@ export default function RubyGemsHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="Ruby Gems"
+        totalLessons={RUBY_GEMS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={RUBY_GEMS_TOTAL_XP}
       />
     </div>
   );

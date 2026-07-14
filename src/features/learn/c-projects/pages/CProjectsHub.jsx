@@ -9,6 +9,7 @@ import useCProjectsProgress from "../hooks/useCProjectsProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/c-projects";
 const LEARNING_PATH = [
@@ -334,6 +335,13 @@ export default function CProjectsHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="C Projects"
+        totalLessons={C_PROJECTS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={C_PROJECTS_TOTAL_XP}
       />
     </div>
   );

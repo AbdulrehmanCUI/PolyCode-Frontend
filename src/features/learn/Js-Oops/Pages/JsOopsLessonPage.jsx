@@ -10,7 +10,7 @@ import {
   JS_OOPS_LESSONS,
   JS_OOPS_TOTAL_XP,
 } from "../data/jsOopsCurriculum";
-import useJsOopsProgress from "../hooks/useJsOopsProgress";
+import useJsOopsProgress from "../Hooks/useJsOopsProgress";
 import useLessonReadGate from "../../shared/useLessonReadGate";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
 import { useLessonAssistantContext } from "../../../assistant/hooks/useLessonAssistantContext";

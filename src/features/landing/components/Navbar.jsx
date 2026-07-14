@@ -358,7 +358,14 @@ export default function Navbar({ theme = "dark", onThemeChange }) {
         aria-hidden={!mobileOpen}
       >
         <div className="landing-mobile-drawer-head">
-          <span className="landing-mobile-drawer-title">Menu</span>
+          <div className="landing-mobile-drawer-brand">
+            <img
+              src="/images/polycode-logo.png"
+              alt=""
+              className="landing-mobile-drawer-logo"
+            />
+            <span className="landing-mobile-drawer-title">PolyCode</span>
+          </div>
           <button
             type="button"
             className="landing-mobile-drawer-close"
@@ -511,7 +518,9 @@ export default function Navbar({ theme = "dark", onThemeChange }) {
               )}
             </div>
           ) : null}
+        </nav>
 
+        <div className="landing-mobile-drawer-foot">
           <button
             type="button"
             className="landing-mobile-cta"
@@ -520,7 +529,7 @@ export default function Navbar({ theme = "dark", onThemeChange }) {
             Start Learning
             <ArrowRight size={16} />
           </button>
-        </nav>
+        </div>
       </aside>
     </>
   );

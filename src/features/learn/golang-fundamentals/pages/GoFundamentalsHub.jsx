@@ -8,6 +8,7 @@ import {
 import useGoFundamentalsProgress from "../hooks/useGoFundamentalsProgress";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
 import { CheckCircle2 } from "lucide-react";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/golang-fundamentals";
 
@@ -350,6 +351,13 @@ export default function GoFundamentalsHub() {
           );
         })}
       </div>
+      <CourseCertificate
+        courseName="Go Fundamentals"
+        totalLessons={GO_FUNDAMENTALS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={GO_FUNDAMENTALS_TOTAL_XP}
+      />
     </div>
   );
 }

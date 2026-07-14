@@ -9,6 +9,7 @@ import useCDataStructuresProgress from "../hooks/useCDataStructuresProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/c-data-structures";
 const LEARNING_PATH = [
@@ -334,6 +335,13 @@ export default function CDataStructuresHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="C Data Structures"
+        totalLessons={C_DATA_STRUCTURES_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={C_DATA_STRUCTURES_TOTAL_XP}
       />
     </div>
   );

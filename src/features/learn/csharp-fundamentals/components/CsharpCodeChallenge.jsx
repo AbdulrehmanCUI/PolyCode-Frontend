@@ -8,6 +8,7 @@ import {
 import { useSiteMonacoTheme } from "../../../../shared/hooks/useSiteMonacoTheme";
 import ChallengeCompleteCelebration from "../../shared/ChallengeCompleteCelebration";
 import { useChallengeCelebration } from "../../shared/useChallengeCelebration";
+import { useChallengeTelemetry } from "../../shared/challengeTelemetry";
 import PolyGuardPanel from "../../../polyguard/components/PolyGuardPanel";
 
 function normalizeWhitespace(value = "") {
@@ -52,6 +53,7 @@ export default function CsharpCodeChallenge({
 }) {
   const { loading: authLoading, isAuthenticated } = useAuth();
   const canRun = isAuthenticated && !authLoading;
+  const reportChallengeResult = useChallengeTelemetry();
 
   const [code, setCode] = useState(initialCode || challenge.starterCode);
   const [results, setResults] = useState(null);
@@ -147,6 +149,7 @@ export default function CsharpCodeChallenge({
       });
 
       if (allPassed) {
+        reportChallengeResult?.(true);
         triggerCelebration();
         if (!isCompleted) {
           Promise.resolve(onComplete()).catch((error) => {

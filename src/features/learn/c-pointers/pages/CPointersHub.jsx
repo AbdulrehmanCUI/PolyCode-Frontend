@@ -9,6 +9,7 @@ import useCPointersProgress from "../hooks/useCPointersProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/c-pointers";
 const LEARNING_PATH = [
@@ -334,6 +335,13 @@ export default function CPointersHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="C Pointers"
+        totalLessons={C_POINTERS_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={C_POINTERS_TOTAL_XP}
       />
     </div>
   );

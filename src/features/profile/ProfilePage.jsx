@@ -4,31 +4,27 @@ import { useAuth } from "../auth/context/AuthContext";
 import { rememberSignedInUser } from "../../lib/authSession";
 import ProfileEditSection from "./components/ProfileEditSection";
 import ProfileHero from "./components/ProfileHero";
+import LearnerStatsRow from "./components/LearnerStatsRow";
+import AllCoursesList from "./components/AllCoursesList";
 import DailyXpProgressSection from "./components/DailyXpProgressSection";
 import useDailyXpProgress from "./hooks/useDailyXpProgress";
-import { ALL_LESSONS, TOTAL_XP } from "../learn/oops-cpp/data/oopsCurriculum";
+import useLearnDashboard from "./hooks/useLearnDashboard";
+import { ALL_LESSONS } from "../learn/oops-cpp/data/oopsCurriculum";
 import useOopsProgress from "../learn/oops-cpp/hooks/useOopsProgress";
-import {
-  POINTER_LESSONS,
-  POINTER_TOTAL_XP,
-} from "../learn/pointers-cpp/data/pointersCurriculum";
+import { POINTER_LESSONS } from "../learn/pointers-cpp/data/pointersCurriculum";
 import usePointersProgress from "../learn/pointers-cpp/hooks/usePointersProgress";
-import {
-  NUMPY_LESSONS,
-  NUMPY_TOTAL_XP,
-} from "../learn/numpy-py/data/numpyCurriculum";
+import { NUMPY_LESSONS } from "../learn/numpy-py/data/numpyCurriculum";
 import useNumpyProgress from "../learn/numpy-py/hooks/useNumpyProgress";
-import {
-  PANDAS_LESSONS,
-  PANDAS_TOTAL_XP,
-} from "../learn/pandas-py/data/pandasCurriculum";
+import { PANDAS_LESSONS } from "../learn/pandas-py/data/pandasCurriculum";
 import usePandasProgress from "../learn/pandas-py/hooks/usePandasProgress";
-import {
-  FASTAPI_LESSONS,
-  FASTAPI_TOTAL_XP,
-} from "../learn/fastapi-py/data/fastapiCurriculum";
+import { FASTAPI_LESSONS } from "../learn/fastapi-py/data/fastapiCurriculum";
 import useFastapiProgress from "../learn/fastapi-py/hooks/useFastapiProgress";
 import CourseCertificate from "../learn/shared/CourseCertificate";
+import useProfileLearnProgress from "./hooks/useProfileLearnProgress";
+import {
+  PROFILE_FEATURED_TRACKS,
+  slugifyCourseName,
+} from "./profileCourseCatalog";
 import {
   getFollowStatus,
   getProfileConnections,
@@ -61,8 +57,10 @@ function buildActivityDaysFromDailyXp(dayCount, dailyXpDays = []) {
 }
 
 function buildActivityDaysFromCounts(dayCount, counts = new Map()) {
+  // Anchor to UTC days: the backend keys xp events by UTC date, so the
+  // grid keys must be UTC too or completions never match in UTC+ timezones.
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setUTCHours(0, 0, 0, 0);
   const start = new Date(today.getTime() - (dayCount - 1) * DAY_MS);
 
   return Array.from({ length: dayCount }, (_, index) => {
@@ -75,6 +73,7 @@ function buildActivityDaysFromCounts(dayCount, counts = new Map()) {
       label: date.toLocaleDateString(undefined, {
         month: "short",
         day: "numeric",
+        timeZone: "UTC",
       }),
     };
   });
@@ -226,7 +225,9 @@ function TrackProgressCard({
 
 function getCompletedTrackCertificate(track) {
   const completedCount = Object.keys(track.progress).length;
-  if (completedCount < track.lessons.length) return null;
+  if (completedCount < track.lessons.length || track.lessons.length === 0) {
+    return null;
+  }
 
   const earnedXP = track.lessons
     .filter((lesson) => track.progress[lesson.id])
@@ -234,10 +235,7 @@ function getCompletedTrackCertificate(track) {
 
   return {
     ...track,
-    slug: track.courseName
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, ""),
+    slug: slugifyCourseName(track.courseName),
     completedCount,
     earnedXP,
   };
@@ -278,12 +276,49 @@ export default function ProfilePage() {
   const numpy = useNumpyProgress();
   const pandas = usePandasProgress();
   const fastapi = useFastapiProgress();
-  const totalCompleted =
-    Object.keys(oops.completedMap).length +
-    Object.keys(pointers.completedMap).length +
-    Object.keys(numpy.completedMap).length +
-    Object.keys(pandas.completedMap).length +
-    Object.keys(fastapi.completedMap).length;
+  const remoteLearn = useProfileLearnProgress({
+    enabled: Boolean(profileUser?.username || isOwnProfile),
+    isOwnProfile,
+    username: routeUsername || profileUser?.username || "",
+    token,
+  });
+  const learnDashboard = useLearnDashboard({
+    enabled: Boolean(profileUser?.username || isOwnProfile),
+    isOwnProfile,
+    username: routeUsername || profileUser?.username || "",
+    token,
+  });
+
+  const trackMaps = {
+    "oops-cpp":
+      remoteLearn.byCourseId["oops-cpp"]?.completedMap || oops.completedMap,
+    "pointers-cpp":
+      remoteLearn.byCourseId["pointers-cpp"]?.completedMap ||
+      pointers.completedMap,
+    "numpy-py":
+      remoteLearn.byCourseId["numpy-py"]?.completedMap || numpy.completedMap,
+    "pandas-py":
+      remoteLearn.byCourseId["pandas-py"]?.completedMap || pandas.completedMap,
+    "fastapi-py":
+      remoteLearn.byCourseId["fastapi-py"]?.completedMap || fastapi.completedMap,
+  };
+  const trackBookmarks = {
+    "oops-cpp":
+      remoteLearn.byCourseId["oops-cpp"]?.bookmarks || oops.bookmarks,
+    "pointers-cpp":
+      remoteLearn.byCourseId["pointers-cpp"]?.bookmarks || pointers.bookmarks,
+    "numpy-py":
+      remoteLearn.byCourseId["numpy-py"]?.bookmarks || numpy.bookmarks,
+    "pandas-py":
+      remoteLearn.byCourseId["pandas-py"]?.bookmarks || pandas.bookmarks,
+    "fastapi-py":
+      remoteLearn.byCourseId["fastapi-py"]?.bookmarks || fastapi.bookmarks,
+  };
+
+  const totalCompleted = Object.values(trackMaps).reduce(
+    (sum, map) => sum + Object.keys(map || {}).length,
+    0,
+  );
   const totalLessons =
     ALL_LESSONS.length +
     POINTER_LESSONS.length +
@@ -291,7 +326,13 @@ export default function ProfilePage() {
     PANDAS_LESSONS.length +
     FASTAPI_LESSONS.length;
   const totalPct = Math.round((totalCompleted / totalLessons) * 100) || 0;
-  const totalStreak = oops.remoteProgress?.currentStreak || 0;
+  const totalStreak = Math.max(
+    learnDashboard.overview?.activeStreak || 0,
+    learnDashboard.overview?.bestStreak || 0,
+    remoteLearn.byCourseId["oops-cpp"]?.currentStreak || 0,
+    oops.remoteProgress?.currentStreak || 0,
+    0,
+  );
   const [activityWidth, setActivityWidth] = React.useState(0);
   const activityWrapRef = React.useRef(null);
   const activityDayCount = getResponsiveActivityDays(activityWidth);
@@ -309,38 +350,14 @@ export default function ProfilePage() {
     isAuthenticated,
     isOwnProfile,
   ]);
-  const completedCertificates = [
+  const completedCertificates = PROFILE_FEATURED_TRACKS.map((track) =>
     getCompletedTrackCertificate({
-      courseName: "OOPs C++",
-      lessons: ALL_LESSONS,
-      totalXP: TOTAL_XP,
-      progress: oops.completedMap,
+      courseName: track.courseName,
+      lessons: track.lessons,
+      totalXP: track.totalXP,
+      progress: trackMaps[track.courseId] || {},
     }),
-    getCompletedTrackCertificate({
-      courseName: "Pointers C++",
-      lessons: POINTER_LESSONS,
-      totalXP: POINTER_TOTAL_XP,
-      progress: pointers.completedMap,
-    }),
-    getCompletedTrackCertificate({
-      courseName: "NumPy for Python",
-      lessons: NUMPY_LESSONS,
-      totalXP: NUMPY_TOTAL_XP,
-      progress: numpy.completedMap,
-    }),
-    getCompletedTrackCertificate({
-      courseName: "Pandas for Python",
-      lessons: PANDAS_LESSONS,
-      totalXP: PANDAS_TOTAL_XP,
-      progress: pandas.completedMap,
-    }),
-    getCompletedTrackCertificate({
-      courseName: "FastAPI for Python",
-      lessons: FASTAPI_LESSONS,
-      totalXP: FASTAPI_TOTAL_XP,
-      progress: fastapi.completedMap,
-    }),
-  ].filter(Boolean);
+  ).filter(Boolean);
   const certificateOwnerPath = `/@${routeUsername || signedInUsername || profileUser?.username}`;
   const routeCertificate = certificateSlug
     ? completedCertificates.find((certificate) => certificate.slug === certificateSlug)
@@ -551,26 +568,18 @@ export default function ProfilePage() {
         />
       )}
 
-      <section className="profile-overview-grid">
-        <div>
-          <span>Total Lessons</span>
-          <strong>
-            {totalCompleted}/{totalLessons}
-          </strong>
-        </div>
-        <div>
-          <span>OOPs Bookmarks</span>
-          <strong>{oops.bookmarks.length}</strong>
-        </div>
-        <div>
-          <span>Pointers Bookmarks</span>
-          <strong>{pointers.bookmarks.length}</strong>
-        </div>
-        <div>
-          <span>Total Progress</span>
-          <strong>{totalPct}%</strong>
-        </div>
-      </section>
+      <LearnerStatsRow
+        overview={learnDashboard.overview}
+        showEngagement={isOwnProfile}
+        featuredCompleted={totalCompleted}
+        featuredTotal={totalLessons}
+        featuredPct={totalPct}
+      />
+
+      <AllCoursesList
+        courses={learnDashboard.courses}
+        showEngagement={isOwnProfile}
+      />
 
       {isOwnProfile ? (
         <DailyXpProgressSection
@@ -590,57 +599,29 @@ export default function ProfilePage() {
       ) : null}
 
       <div className="profile-track-grid">
-        <TrackProgressCard
-          title="OOPs C++"
-          subtitle={oops.syncState === "synced" ? "Synced track" : "Learning track"}
-          lessons={ALL_LESSONS}
-          totalXP={TOTAL_XP}
-          progress={oops.completedMap}
-          bookmarks={oops.bookmarks}
-          href="/learn/oops-cpp"
-          accent="#ffe566"
-          streak={oops.remoteProgress?.currentStreak || 0}
-        />
-        <TrackProgressCard
-          title="Pointers C++"
-          subtitle="Memory track"
-          lessons={POINTER_LESSONS}
-          totalXP={POINTER_TOTAL_XP}
-          progress={pointers.completedMap}
-          bookmarks={pointers.bookmarks}
-          href="/learn/pointers-cpp"
-          accent="#00d4ff"
-        />
-        <TrackProgressCard
-          title="NumPy · py"
-          subtitle="Python data track"
-          lessons={NUMPY_LESSONS}
-          totalXP={NUMPY_TOTAL_XP}
-          progress={numpy.completedMap}
-          bookmarks={numpy.bookmarks}
-          href="/learn/numpy-py"
-          accent="#4dabcf"
-        />
-        <TrackProgressCard
-          title="Pandas · py"
-          subtitle="Python data track"
-          lessons={PANDAS_LESSONS}
-          totalXP={PANDAS_TOTAL_XP}
-          progress={pandas.completedMap}
-          bookmarks={pandas.bookmarks}
-          href="/learn/pandas-py"
-          accent="#059669"
-        />
-        <TrackProgressCard
-          title="FastAPI · py"
-          subtitle="Python API track"
-          lessons={FASTAPI_LESSONS}
-          totalXP={FASTAPI_TOTAL_XP}
-          progress={fastapi.completedMap}
-          bookmarks={fastapi.bookmarks}
-          href="/learn/fastapi-py"
-          accent="#009688"
-        />
+        {PROFILE_FEATURED_TRACKS.map((track) => (
+          <TrackProgressCard
+            key={track.courseId}
+            title={track.hubTitle || track.courseName}
+            subtitle={
+              track.courseId === "oops-cpp" && oops.syncState === "synced"
+                ? "Synced track"
+                : track.subtitle
+            }
+            lessons={track.lessons}
+            totalXP={track.totalXP}
+            progress={trackMaps[track.courseId] || {}}
+            bookmarks={trackBookmarks[track.courseId] || []}
+            href={track.href}
+            accent={track.accent}
+            streak={
+              remoteLearn.byCourseId[track.courseId]?.currentStreak ||
+              (track.courseId === "oops-cpp"
+                ? oops.remoteProgress?.currentStreak || 0
+                : 0)
+            }
+          />
+        ))}
       </div>
 
       {completedCertificates.length > 0 && (

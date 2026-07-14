@@ -9,6 +9,7 @@ import useCFileHandlingProgress from "../hooks/useCFileHandlingProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
+import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/c-file-handling";
 const LEARNING_PATH = [
@@ -334,6 +335,13 @@ export default function CFileHandlingHub() {
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
+      />
+      <CourseCertificate
+        courseName="C File Handling"
+        totalLessons={C_FILE_HANDLING_LESSONS.length}
+        completedCount={completedCount}
+        earnedXP={earnedXP}
+        totalXP={C_FILE_HANDLING_TOTAL_XP}
       />
     </div>
   );

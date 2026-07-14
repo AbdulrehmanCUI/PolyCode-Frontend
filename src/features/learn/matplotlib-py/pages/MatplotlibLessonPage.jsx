@@ -11,7 +11,7 @@ import {
   MATPLOTLIB_LESSONS,
   MATPLOTLIB_TOTAL_XP,
 } from "../data/matplotlibCurriculum";
-import useMatplotlibProgress from "../hooks/usematplotlibProgress";
+import useMatplotlibProgress from "../hooks/useMatplotlibProgress";
 import useLessonReadGate from "../../shared/useLessonReadGate";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
 import { useLessonAssistantContext } from "../../../assistant/hooks/useLessonAssistantContext";
