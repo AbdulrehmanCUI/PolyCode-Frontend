@@ -14,6 +14,7 @@ import {
 } from "../../shared/runGo";
 import ChallengeCompleteCelebration from "../../shared/ChallengeCompleteCelebration";
 import { useChallengeCelebration } from "../../shared/useChallengeCelebration";
+import { useChallengeTelemetry } from "../../shared/challengeTelemetry";
 
 function normalizeWhitespace(value = "") {
   return value.replace(/\s+/g, "");
@@ -47,6 +48,7 @@ export default function GoFundamentalsCodeChallenge({
 }) {
   const { loading: authLoading, isAuthenticated } = useAuth();
   const canRun = isAuthenticated && !authLoading;
+  const reportChallengeResult = useChallengeTelemetry();
 
   const [code, setCode] = useState(initialCode || challenge.starterCode);
   const [results, setResults] = useState(null);
@@ -161,12 +163,15 @@ export default function GoFundamentalsCodeChallenge({
       });
 
       if (allPassed) {
+        reportChallengeResult?.(true);
         triggerCelebration();
         if (!isCompleted) {
           Promise.resolve(onComplete()).catch((error) => {
             console.error("Unable to save Go lesson progress:", error);
           });
         }
+      } else {
+        reportChallengeResult?.(false);
       }
 
       setRunning(false);

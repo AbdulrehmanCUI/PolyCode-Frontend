@@ -7,6 +7,15 @@ export function quizAttemptsKey(storagePrefix, lessonId) {
   return `${storagePrefix}_quiz_attempts_${lessonId}`;
 }
 
+export function getSelectedIndex(value) {
+  if (value === null || value === undefined) return null;
+  if (typeof value === "number") return value;
+  if (typeof value === "object" && value.selectedIndex !== undefined) {
+    return value.selectedIndex;
+  }
+  return null;
+}
+
 export function loadQuizAttempts(storagePrefix, lessonId) {
   if (!storagePrefix || !lessonId) return {};
   try {
@@ -17,18 +26,31 @@ export function loadQuizAttempts(storagePrefix, lessonId) {
   }
 }
 
-export function recordQuizAttempt(storagePrefix, lessonId, quizIndex, selectedIndex) {
+export function recordQuizAttempt(
+  storagePrefix,
+  lessonId,
+  quizIndex,
+  selectedOrPayload,
+) {
   if (!storagePrefix || !lessonId) return;
   const key = quizAttemptsKey(storagePrefix, lessonId);
   const current = loadQuizAttempts(storagePrefix, lessonId);
-  current[String(quizIndex)] = selectedIndex;
+  const payload =
+    typeof selectedOrPayload === "object" && selectedOrPayload !== null
+      ? selectedOrPayload
+      : {
+          selectedIndex: selectedOrPayload,
+          correct: null,
+          answeredAt: new Date().toISOString(),
+        };
+  current[String(quizIndex)] = payload;
   localStorage.setItem(key, JSON.stringify(current));
 }
 
 export function countAttemptedQuizzes(attempts = {}, quizCount = REQUIRED_QUIZ_COUNT) {
   let count = 0;
   for (let index = 0; index < quizCount; index += 1) {
-    if (attempts[String(index)] !== undefined) count += 1;
+    if (getSelectedIndex(attempts[String(index)]) !== null) count += 1;
   }
   return count;
 }

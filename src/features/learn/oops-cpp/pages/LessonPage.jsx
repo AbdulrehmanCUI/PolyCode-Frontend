@@ -101,7 +101,6 @@ export default function LessonPage() {
     rememberLesson,
     saveCode,
     toggleBookmark,
-    addTime,
   } = useOopsProgress();
   const codeSaveTimer = useRef(null);
 
@@ -149,12 +148,6 @@ export default function LessonPage() {
   useEffect(() => {
     if (lessonId) rememberLesson(lessonId);
   }, [lessonId, rememberLesson]);
-
-  useEffect(() => {
-    if (!lessonId) return undefined;
-    const id = setInterval(() => addTime(1), 60000);
-    return () => clearInterval(id);
-  }, [addTime, lessonId]);
 
   useEffect(
     () => () => {

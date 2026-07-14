@@ -25,6 +25,11 @@ import {
   saveAnnotationPrefs,
   TOOL_CURSORS,
 } from "./annotationCursors";
+import { useAuth } from "../../auth/context/AuthContext";
+import {
+  getLessonAnnotation,
+  putLessonAnnotation,
+} from "./courseProgressApi";
 
 const STAGE_INTERACTIVE_SELECTOR =
   ".lesson-annotator-text-input, .lesson-annotator-label, .lesson-annotator-fab-wrap, .numpy-lesson-outcomes, .numpy-confidence-panel, .numpy-mark-read-panel, .numpy-theory-actions, .lesson-read-gate, .lesson-confidence-panel, .lesson-read-actions, textarea, input, select, button, a";
@@ -407,7 +412,14 @@ function AnnotationLabel({
   );
 }
 
-export default function LessonAnnotator({ storageKey, children }) {
+export default function LessonAnnotator({
+  storageKey,
+  children,
+  courseId = null,
+  lessonId = null,
+  tab = "theory",
+}) {
+  const { token, isAuthenticated } = useAuth();
   const stageRef = useRef(null);
   const contentRef = useRef(null);
   const canvasRef = useRef(null);
@@ -420,6 +432,8 @@ export default function LessonAnnotator({ storageKey, children }) {
   const loadedKeyRef = useRef(storageKey);
   /** Skip one save after loading a tab so we never write the previous tab's notes. */
   const skipNextSaveRef = useRef(true);
+  const syncTimerRef = useRef(null);
+  const remoteUpdatedAtRef = useRef(null);
 
   const [tool, setTool] = useState(TOOLS.POINTER);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -499,6 +513,7 @@ export default function LessonAnnotator({ storageKey, children }) {
     const saved = loadAnnotations(storageKey);
     skipNextSaveRef.current = true;
     loadedKeyRef.current = storageKey;
+    remoteUpdatedAtRef.current = null;
     setStrokes(saved.strokes);
     setLabels(saved.labels);
     setPendingTextPoint(null);
@@ -507,7 +522,34 @@ export default function LessonAnnotator({ storageKey, children }) {
     setEditingLabelId(null);
     drawingRef.current = false;
     currentStrokeRef.current = null;
-  }, [storageKey]);
+
+    if (!isAuthenticated || !token || !courseId || !lessonId) return undefined;
+
+    let cancelled = false;
+    getLessonAnnotation(token, courseId, lessonId, tab || "theory")
+      .then((annotation) => {
+        if (cancelled || loadedKeyRef.current !== storageKey) return;
+        const remoteStrokes = annotation?.strokes || [];
+        const remoteLabels = annotation?.labels || [];
+        const hasRemote = remoteStrokes.length > 0 || remoteLabels.length > 0;
+        if (!hasRemote) return;
+        remoteUpdatedAtRef.current = annotation?.updatedAt || null;
+        skipNextSaveRef.current = true;
+        setStrokes(remoteStrokes);
+        setLabels(remoteLabels);
+        saveAnnotations(storageKey, {
+          strokes: remoteStrokes,
+          labels: remoteLabels,
+        });
+      })
+      .catch(() => {
+        /* keep local */
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [storageKey, isAuthenticated, token, courseId, lessonId, tab]);
 
   useEffect(() => {
     // Avoid writing theory notes into the challenge key (and vice versa)
@@ -518,7 +560,32 @@ export default function LessonAnnotator({ storageKey, children }) {
       return;
     }
     saveAnnotations(storageKey, { strokes, labels });
-  }, [storageKey, strokes, labels]);
+
+    if (!isAuthenticated || !token || !courseId || !lessonId) return undefined;
+
+    window.clearTimeout(syncTimerRef.current);
+    syncTimerRef.current = window.setTimeout(() => {
+      putLessonAnnotation(token, courseId, lessonId, tab || "theory", {
+        strokes,
+        labels,
+      }).catch((error) => {
+        console.warn("Annotation sync failed:", error.message);
+      });
+    }, 1500);
+
+    return () => {
+      window.clearTimeout(syncTimerRef.current);
+    };
+  }, [
+    storageKey,
+    strokes,
+    labels,
+    isAuthenticated,
+    token,
+    courseId,
+    lessonId,
+    tab,
+  ]);
 
   useEffect(() => {
     saveAnnotationPrefs({ pencilColor, laserColor });

@@ -13,6 +13,7 @@ import {
   prepareLessonQuizzes,
   quizAttemptsKey,
   recordQuizAttempt,
+  getSelectedIndex,
 } from "./lessonQuizUtils";
 
 /**
@@ -67,18 +68,23 @@ export default function useLessonQuizAttempts(storagePrefix, lessonId, lesson) {
   }, [storagePrefix, lessonId, isAuthenticated, token, courseId]);
 
   const recordAttempt = useCallback(
-    (quizIndex, selectedIndex) => {
+    (quizIndex, selectedIndex, correct = null) => {
       if (!storagePrefix || !lessonId) return;
-      recordQuizAttempt(storagePrefix, lessonId, quizIndex, selectedIndex);
+      const payload = {
+        selectedIndex,
+        correct: correct === null || correct === undefined ? null : Boolean(correct),
+        answeredAt: new Date().toISOString(),
+      };
+      recordQuizAttempt(storagePrefix, lessonId, quizIndex, payload);
       setAttempts((prev) => {
         const next = {
           ...prev,
-          [String(quizIndex)]: selectedIndex,
+          [String(quizIndex)]: payload,
         };
         if (token && courseId) {
           upsertLessonEngagement(token, courseId, {
             lessonId,
-            quizAttempts: { [String(quizIndex)]: selectedIndex },
+            quizAttempts: { [String(quizIndex)]: payload },
           }).catch((error) => {
             console.warn("Quiz engagement sync failed:", error.message);
           });
@@ -93,10 +99,7 @@ export default function useLessonQuizAttempts(storagePrefix, lessonId, lesson) {
   const allQuizzesAttempted = attemptedCount >= quizCount;
 
   const getSelection = useCallback(
-    (quizIndex) => {
-      const value = attempts[String(quizIndex)];
-      return value === undefined ? null : value;
-    },
+    (quizIndex) => getSelectedIndex(attempts[String(quizIndex)]),
     [attempts],
   );
 

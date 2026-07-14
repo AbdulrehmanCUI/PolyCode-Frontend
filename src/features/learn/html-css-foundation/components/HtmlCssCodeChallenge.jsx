@@ -7,6 +7,7 @@ import { useSiteMonacoTheme } from "../../../../shared/hooks/useSiteMonacoTheme"
 import { runHTML, runCSS } from "../../../playground/services/BrowserExecutor";
 import ChallengeCompleteCelebration from "../../shared/ChallengeCompleteCelebration";
 import { useChallengeCelebration } from "../../shared/useChallengeCelebration";
+import { useChallengeTelemetry } from "../../shared/challengeTelemetry";
 import PolyGuardPanel from "../../../polyguard/components/PolyGuardPanel";
 
 function normalizeWhitespace(value = "") {
@@ -49,6 +50,7 @@ export default function HtmlCssCodeChallenge({
 }) {
   const { loading: authLoading, isAuthenticated } = useAuth();
   const canRun = isAuthenticated && !authLoading;
+  const reportChallengeResult = useChallengeTelemetry();
   const editorLanguage =
     String(challenge.language || "html").toLowerCase() === "css"
       ? "css"
@@ -174,12 +176,15 @@ export default function HtmlCssCodeChallenge({
       });
 
       if (allPassed) {
+        reportChallengeResult?.(true);
         triggerCelebration();
         if (!isCompleted) {
           Promise.resolve(onComplete()).catch((error) => {
             console.error("Unable to save lesson progress:", error);
           });
         }
+      } else {
+        reportChallengeResult?.(false);
       }
 
       setRunning(false);

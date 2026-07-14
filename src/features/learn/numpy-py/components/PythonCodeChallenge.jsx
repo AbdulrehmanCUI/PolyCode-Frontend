@@ -11,6 +11,7 @@ import {
 } from "../../shared/runPython";
 import ChallengeCompleteCelebration from "../../shared/ChallengeCompleteCelebration";
 import { useChallengeCelebration } from "../../shared/useChallengeCelebration";
+import { useChallengeTelemetry } from "../../shared/challengeTelemetry";
 import PythonRunOutput from "../../shared/PythonRunOutput";
 import PolyGuardPanel from "../../../polyguard/components/PolyGuardPanel";
 import { buildRuntimeFailureResults } from "../../shared/buildRuntimeTestResults";
@@ -76,6 +77,7 @@ export default function PythonCodeChallenge({
   const { loading: authLoading, isAuthenticated } = useAuth();
   const { monacoTheme, beforeMount } = useSiteMonacoTheme();
   const canRun = isAuthenticated && !authLoading;
+  const reportChallengeResult = useChallengeTelemetry();
 
   const [code, setCode] = useState(initialCode || challenge.starterCode);
   const [results, setResults] = useState(null);
@@ -205,12 +207,15 @@ export default function PythonCodeChallenge({
       });
 
       if (allPassed) {
+        reportChallengeResult?.(true);
         triggerCelebration();
         if (!isCompleted) {
           Promise.resolve(onComplete()).catch((error) => {
             console.error("Unable to save lesson progress:", error);
           });
         }
+      } else {
+        reportChallengeResult?.(false);
       }
 
       setRunning(false);

@@ -60,6 +60,14 @@ export default function LearnerStatsRow({
         label: "Quizzes answered",
         value: overview.quizAnswered ?? 0,
       },
+      {
+        label: "Quiz correct",
+        value: overview.quizCorrect ?? 0,
+      },
+      {
+        label: "Challenge fails",
+        value: overview.challengeFails ?? 0,
+      },
     );
   } else {
     cells.push({

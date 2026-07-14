@@ -19,8 +19,10 @@ import {
   savedCodeToMap,
   setLastCourseLesson,
   toggleCourseBookmark,
+  upsertLessonEngagement,
 } from "./courseProgressApi";
 import { storageKeysForPrefix } from "./courseRegistry";
+import useLessonTimeTracking from "./useLessonTimeTracking";
 
 function readUnscopedJson(key, fallback) {
   try {
@@ -48,6 +50,7 @@ export default function useCourseProgress({
   const [remoteProgress, setRemoteProgress] = useState(null);
   const [syncState, setSyncState] = useState(token ? "syncing" : "local");
   const [localVersion, setLocalVersion] = useState(0);
+  const [activeLessonId, setActiveLessonId] = useState(null);
   const refreshLocal = useCallback(() => setLocalVersion((v) => v + 1), []);
   const scopeReady = scoped
     ? Boolean(resolveLearnUserScope(user, token))
@@ -259,6 +262,10 @@ export default function useCourseProgress({
         mirrorRemoteToLocal(progress);
         setSyncState("synced");
         recordLessonXp(token, courseId, lesson);
+        upsertLessonEngagement(token, courseId, {
+          lessonId,
+          challengeLastResult: "pass",
+        }).catch(() => {});
         return;
       }
 
@@ -289,6 +296,7 @@ export default function useCourseProgress({
 
   const rememberLesson = useCallback(
     async (lessonId) => {
+      setActiveLessonId(lessonId || null);
       if (token) {
         try {
           const progress = await setLastCourseLesson(token, courseId, lessonId);
@@ -425,6 +433,45 @@ export default function useCourseProgress({
     [courseId, mirrorRemoteToLocal, token],
   );
 
+  useLessonTimeTracking(addTime, activeLessonId);
+
+  const recordChallengeResult = useCallback(
+    async (lessonId, passed) => {
+      if (!lessonId) return;
+      if (!token) return;
+      try {
+        const progress = await upsertLessonEngagement(token, courseId, {
+          lessonId,
+          challengeLastResult: passed ? "pass" : "fail",
+          incrementChallengeAttempts: !passed,
+        });
+        setRemoteProgress(progress);
+        mirrorRemoteToLocal(progress);
+        setSyncState("synced");
+      } catch (error) {
+        console.warn("Challenge engagement sync failed:", error.message);
+      }
+    },
+    [courseId, mirrorRemoteToLocal, token],
+  );
+
+  const recordLastTab = useCallback(
+    async (lessonId, lastTab) => {
+      if (!lessonId || !lastTab || !token) return;
+      try {
+        const progress = await upsertLessonEngagement(token, courseId, {
+          lessonId,
+          lastTab,
+        });
+        setRemoteProgress(progress);
+        mirrorRemoteToLocal(progress);
+      } catch {
+        /* non-blocking */
+      }
+    },
+    [courseId, mirrorRemoteToLocal, token],
+  );
+
   return {
     user,
     isAuthenticated,
@@ -442,5 +489,7 @@ export default function useCourseProgress({
     getLessonNote,
     toggleBookmark,
     addTime,
+    recordChallengeResult,
+    recordLastTab,
   };
 }

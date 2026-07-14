@@ -152,7 +152,54 @@ export function engagementToMap(progress) {
         item.quizAttempts && typeof item.quizAttempts === "object"
           ? item.quizAttempts
           : {},
+      challengeAttempts: Number(item.challengeAttempts) || 0,
+      challengeLastResult: item.challengeLastResult || "",
+      lastTab: item.lastTab || "",
     };
     return acc;
   }, {});
+}
+
+export async function getLessonAnnotation(token, courseId, lessonId, tab = "theory") {
+  const data = await apiFetch(
+    `/auth/learn/${encodeURIComponent(courseId)}/annotations/${encodeURIComponent(lessonId)}?tab=${encodeURIComponent(tab || "theory")}`,
+    {
+      token,
+      fallbackMessage: "Unable to load lesson annotations",
+    },
+  );
+  return data.annotation;
+}
+
+export async function putLessonAnnotation(
+  token,
+  courseId,
+  lessonId,
+  tab,
+  payload,
+) {
+  const data = await apiFetch(
+    `/auth/learn/${encodeURIComponent(courseId)}/annotations/${encodeURIComponent(lessonId)}`,
+    {
+      token,
+      method: "PUT",
+      body: JSON.stringify({
+        tab: tab || "theory",
+        strokes: payload?.strokes || [],
+        labels: payload?.labels || [],
+      }),
+      fallbackMessage: "Unable to save lesson annotations",
+    },
+  );
+  return data.annotation;
+}
+
+export async function mergeLocalAnnotations(token, annotations) {
+  const data = await apiFetch("/auth/learn/annotations/merge", {
+    token,
+    method: "POST",
+    body: JSON.stringify({ annotations }),
+    fallbackMessage: "Unable to merge lesson annotations",
+  });
+  return data.results || [];
 }
