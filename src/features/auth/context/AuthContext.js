@@ -114,8 +114,34 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  const loginWithGoogle = useCallback(async (idToken) => {
+    try {
+      const data = await apiFetch("/auth/google", {
+        method: "POST",
+        auth: false,
+        body: JSON.stringify({ idToken }),
+        fallbackMessage: "Google sign-in failed",
+      });
+
+      bootstrapRequestId.current += 1;
+      await applySession(setToken, setUser, data.token, data.user);
+      setLoading(false);
+      return data.user;
+    } catch (error) {
+      throw new Error(networkErrorMessage(error));
+    }
+  }, []);
+
   const register = useCallback(
-    async ({ email, username, password, firstName, lastName }) => {
+    async ({
+      email,
+      username,
+      password,
+      name,
+      firstName,
+      middleName,
+      lastName,
+    }) => {
       try {
         const data = await apiFetch("/auth/register", {
           method: "POST",
@@ -124,7 +150,9 @@ export function AuthProvider({ children }) {
             email,
             username,
             password,
+            name,
             firstName,
+            middleName,
             lastName,
           }),
           fallbackMessage: "Registration failed",
@@ -190,6 +218,7 @@ export function AuthProvider({ children }) {
         loading,
         isAuthenticated,
         login,
+        loginWithGoogle,
         register,
         logout,
         updateProfile,

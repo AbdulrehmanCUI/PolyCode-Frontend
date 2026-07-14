@@ -6,6 +6,7 @@ export function capitalizeNamePart(value = "") {
 
 export function getDisplayName(user) {
   if (!user) return "Guest";
+  if (user.name?.trim()) return user.name.trim();
   const first = capitalizeNamePart(user.firstName);
   const last = capitalizeNamePart(user.lastName);
   if (first && last) return `${first} ${last}`;
