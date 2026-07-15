@@ -306,7 +306,11 @@ export default function RubyFundamentalsCodeChallenge({
             <small>{output ? "after last run" : "waiting for run"}</small>
           </div>
           <pre className="oops-output-body">
-            {output?.stdout || "Run your code to see output here."}
+            {output?.stdout
+              ? output.stdout
+              : output?.expected
+                ? `Expected output: ${output.expected}`
+                : "Run your code to see output here."}
           </pre>
           <PolyGuardPanel
             code={showSolution ? challenge.solutionCode : code}
