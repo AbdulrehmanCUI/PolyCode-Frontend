@@ -349,6 +349,12 @@ const RubyOopHub = lazyWithChunkRetry(
 const RubyOopLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/ruby-oop/pages/rubyOopLessonPage.jsx"),
 );
+const RubyBlocksModulesHub = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-blocks-modules/pages/rubyBlocksModulesHub.jsx"),
+);
+const RubyBlocksModulesLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-blocks-modules/pages/rubyBlocksModulesLessonPage.jsx"),
+);
 const AllCoursesPage = lazyWithChunkRetry(
   () => import("./features/courses/pages/AllCoursesPage"),
 );
@@ -2464,6 +2470,15 @@ function AppRoutes() {
           basePath: "/learn/ruby-oop",
           Hub: RubyOopHub,
           Lesson: RubyOopLessonPage,
+          theme,
+          onThemeChange: handleThemeChange,
+          onGoToStackPicker: goToStackPicker,
+          selectedLanguage,
+        })}
+        {learnCourseRoutes({
+          basePath: "/learn/ruby-blocks-modules",
+          Hub: RubyBlocksModulesHub,
+          Lesson: RubyBlocksModulesLessonPage,
           theme,
           onThemeChange: handleThemeChange,
           onGoToStackPicker: goToStackPicker,

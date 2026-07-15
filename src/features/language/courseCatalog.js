@@ -443,6 +443,15 @@ export const languageCourses = {
       href: "/learn/ruby-oop",
       accent: "#b91c1c",
     },
+    {
+      title: "Ruby Blocks & Modules",
+      tag: "Interactive Course",
+      icon: Boxes,
+      description:
+        "Master Ruby blocks, procs, lambdas, modules, mixins, and advanced patterns with hands‑on challenges and runnable code.",
+      href: "/learn/ruby-blocks-modules",
+      accent: "#701516",
+    },
   ],
   // ─── ADD GO TRACK DEFINITION ────────────────────────────────────────────────
   go: [
@@ -580,6 +589,7 @@ export const learnNavByLanguage = {
     { label: "Ruby Basics", to: "/learn/ruby-fundamentals" },
     { label: "Ruby Gems", to: "/learn/ruby-gems" },
     { label: "Ruby OOP", to: "/learn/ruby-oop" },
+    { label: "Ruby Blocks & Modules", to: "/learn/ruby-blocks-modules" },
   ],
   // ─── ADD GO NAVIGATION ENTRIES ─────────────────────────────────────────────
   go: [{ label: "Go Basics", to: "/learn/golang-fundamentals" }],
