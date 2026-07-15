@@ -17,6 +17,7 @@ import {
   FolderOpen,
   Database,
   Wrench,
+  Atom,
 } from "lucide-react";
 
 export function languageKey(value = "") {
@@ -465,6 +466,44 @@ export const languageCourses = {
       accent: "#00add8",
     },
   ],
+  quantum: [
+    {
+      title: "Quantum Computing Fundamentals",
+      tag: "Core Course",
+      icon: Atom,
+      description:
+        "Beginner-friendly intro to qubits, superposition, and circuits, with light interactive checks along the way.",
+      href: "/learn/quantum-computing-fundamentals",
+      accent: "#6366f1",
+    },
+    {
+      title: "Quantum Mechanics for Programmers",
+      tag: "Theory Course",
+      icon: BrainCircuit,
+      description:
+        "The physics behind the qubit: wavefunctions, measurement, and entanglement explained for a programming audience.",
+      href: "/learn/quantum-mechanics-for-programmers",
+      accent: "#8b5cf6",
+    },
+    {
+      title: "Quantum Algorithms",
+      tag: "Core Course",
+      icon: Cpu,
+      description:
+        "Simulate gate math and circuit logic in Python, covering the building blocks behind Grover, Deutsch-Jozsa, and more.",
+      href: "/learn/quantum-algorithms",
+      accent: "#4f46e5",
+    },
+    {
+      title: "Quantum Programming Projects",
+      tag: "Capstone",
+      icon: Boxes,
+      description:
+        "Bigger, capstone-style challenges that combine everything from the earlier quantum courses into real mini-projects.",
+      href: "/learn/quantum-programming-projects",
+      accent: "#7c3aed",
+    },
+  ],
 };
 
 /** Ordered stacks for navbar grouping (one row per language, sub-courses inside). */
@@ -528,6 +567,12 @@ export const courseStackGroups = [
     label: "Go",
     accent: "#00add8",
     languagePath: "/language/Go",
+  },
+  {
+    id: "quantum",
+    label: "Quantum",
+    accent: "#6366f1",
+    languagePath: "/language/Quantum",
   },
 ];
 
@@ -593,6 +638,12 @@ export const learnNavByLanguage = {
   ],
   // ─── ADD GO NAVIGATION ENTRIES ─────────────────────────────────────────────
   go: [{ label: "Go Basics", to: "/learn/golang-fundamentals" }],
+  quantum: [
+    { label: "Computing Fundamentals", to: "/learn/quantum-computing-fundamentals" },
+    { label: "Mechanics for Programmers", to: "/learn/quantum-mechanics-for-programmers" },
+    { label: "Algorithms", to: "/learn/quantum-algorithms" },
+    { label: "Programming Projects", to: "/learn/quantum-programming-projects" },
+  ],
 };
 
 const learnNavLanguageAliases = {
@@ -675,6 +726,14 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/java-projects")
   ) {
     return "java";
+  }
+  if (
+    pathname.startsWith("/learn/quantum-computing-fundamentals") ||
+    pathname.startsWith("/learn/quantum-mechanics-for-programmers") ||
+    pathname.startsWith("/learn/quantum-algorithms") ||
+    pathname.startsWith("/learn/quantum-programming-projects")
+  ) {
+    return "quantum";
   }
   return null;
 }

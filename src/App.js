@@ -197,6 +197,38 @@ const PythonFundamentalsLessonPage = lazyWithChunkRetry(
   () =>
     import("./features/learn/python-fundamentals/pages/PythonFundamentalsLessonPage"),
 );
+const QuantumComputingFundamentalsHub = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/quantum-computing-fundamentals/pages/QuantumComputingFundamentalsHub"),
+);
+const QuantumComputingFundamentalsLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/quantum-computing-fundamentals/pages/QuantumComputingFundamentalsLessonPage"),
+);
+const QuantumMechanicsForProgrammersHub = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/quantum-mechanics-for-programmers/pages/QuantumMechanicsForProgrammersHub"),
+);
+const QuantumMechanicsForProgrammersLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/quantum-mechanics-for-programmers/pages/QuantumMechanicsForProgrammersLessonPage"),
+);
+const QuantumAlgorithmsHub = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/quantum-algorithms/pages/QuantumAlgorithmsHub"),
+);
+const QuantumAlgorithmsLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/quantum-algorithms/pages/QuantumAlgorithmsLessonPage"),
+);
+const QuantumProgrammingProjectsHub = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/quantum-programming-projects/pages/QuantumProgrammingProjectsHub"),
+);
+const QuantumProgrammingProjectsLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/quantum-programming-projects/pages/QuantumProgrammingProjectsLessonPage"),
+);
 const MatplotlibHub = lazyWithChunkRetry(
   () => import("./features/learn/matplotlib-py/pages/MatplotlibHub"),
 );
@@ -866,6 +898,13 @@ function AppRoutes() {
     ) {
       handleLanguageSelect("Python", { stay: true });
     } else if (
+      path.startsWith("/learn/quantum-computing-fundamentals") ||
+      path.startsWith("/learn/quantum-mechanics-for-programmers") ||
+      path.startsWith("/learn/quantum-algorithms") ||
+      path.startsWith("/learn/quantum-programming-projects")
+    ) {
+      handleLanguageSelect("Quantum", { stay: true });
+    } else if (
       path.startsWith("/learn/js-fundamentals") ||
       path.startsWith("/learn/js-dom") ||
       path.startsWith("/learn/js-web-dev") ||
@@ -1224,6 +1263,126 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <PythonFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/quantum-computing-fundamentals"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <QuantumComputingFundamentalsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/quantum-computing-fundamentals/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <QuantumComputingFundamentalsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/quantum-mechanics-for-programmers"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <QuantumMechanicsForProgrammersHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/quantum-mechanics-for-programmers/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <QuantumMechanicsForProgrammersLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/quantum-algorithms"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <QuantumAlgorithmsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/quantum-algorithms/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <QuantumAlgorithmsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/quantum-programming-projects"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <QuantumProgrammingProjectsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/quantum-programming-projects/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <QuantumProgrammingProjectsLessonPage />
               </LearnShell>
             </ThemedShell>
           }

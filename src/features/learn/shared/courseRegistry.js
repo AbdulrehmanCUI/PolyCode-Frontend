@@ -52,6 +52,11 @@ export const COURSE_PROGRESS_REGISTRY = [
   { courseId: "java-jdbc", storagePrefix: "java_jdbc", scoped: false, notes: true },
   { courseId: "java-spring-boot", storagePrefix: "java_spring_boot", scoped: false, notes: true },
   { courseId: "java-projects", storagePrefix: "java_projects", scoped: false, notes: true },
+  // ─── ADD QUANTUM COURSES ────────────────────────────────────────────────────
+  { courseId: "quantum-computing-fundamentals", storagePrefix: "quantum_computing_fundamentals", scoped: false, notes: false },
+  { courseId: "quantum-mechanics-for-programmers", storagePrefix: "quantum_mechanics_for_programmers", scoped: false, notes: false },
+  { courseId: "quantum-algorithms", storagePrefix: "quantum_algorithms", scoped: false, notes: false },
+  { courseId: "quantum-programming-projects", storagePrefix: "quantum_programming_projects", scoped: false, notes: false },
 ];
 
 export function getCourseRegistryEntry(courseId) {
