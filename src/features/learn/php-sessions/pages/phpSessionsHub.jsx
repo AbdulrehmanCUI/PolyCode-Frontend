@@ -1,41 +1,41 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  PHP_FUNDAMENTALS_CHAPTERS,
-  PHP_FUNDAMENTALS_LESSONS,
-  PHP_FUNDAMENTALS_TOTAL_XP,
-} from "../data/phpFundamentalsCurriculum";
-import usePhpFundamentalsProgress from "../hooks/usePhpFundamentalsProgress";
+  PHP_SESSIONS_CHAPTERS,
+  PHP_SESSIONS_LESSONS,
+  PHP_SESSIONS_TOTAL_XP,
+} from "../data/phpSessionsCurriculum";
+import usePhpSessionsProgress from "../hooks/usePhpSessionsProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
 import CourseCertificate from "../../shared/CourseCertificate";
 
-const BASE_PATH = "/learn/php-fundamentals";
+const BASE_PATH = "/learn/php-sessions";
 
 const LEARNING_PATH = [
   {
     level: "Beginner",
-    chapters: ["welcome", "variables", "control-flow"],
-    color: "#777bb4",
-    summary: "Your first PHP script, variables & types, and control flow.",
+    chapters: ["session-basics"],
+    color: "#06b6d4",
+    summary: "Starting sessions, storing/reading $_SESSION data, and removing it.",
   },
   {
     level: "Intermediate",
-    chapters: ["functions", "arrays", "superglobals"],
+    chapters: ["cookies"],
     color: "#3b82f6",
-    summary: "Core functions, advanced arrays, and superglobals like $_GET/$_POST.",
+    summary: "setcookie(), expiration options, and reading cookies back.",
   },
   {
     level: "Advanced",
-    chapters: ["oop", "oop-domain"],
+    chapters: ["login-auth"],
     color: "#f59e0b",
-    summary: "Object-oriented blueprinting and real domain modeling in PHP.",
+    summary: "Storing identity after login, guarding pages, and logging out.",
   },
   {
     level: "Pro",
-    chapters: ["safety", "capstone"],
+    chapters: ["session-security"],
     color: "#8b5cf6",
-    summary: "Runtime safety, error handling, and a capstone project.",
+    summary: "Session fixation, secure cookie flags, and a full secure login flow.",
   },
 ];
 
@@ -46,7 +46,7 @@ function lessonPlainText(lesson) {
     .join(" ");
 }
 
-export default function PhpFundamentalsHub() {
+export default function PhpSessionsHub() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -55,31 +55,31 @@ export default function PhpFundamentalsHub() {
     completedMap: progress,
     bookmarks,
     lastLessonId,
-  } = usePhpFundamentalsProgress();
+  } = usePhpSessionsProgress();
 
   const completedCount = Object.keys(progress).length;
-  const earnedXP = PHP_FUNDAMENTALS_LESSONS.filter((lesson) => progress[lesson.id]).reduce(
+  const earnedXP = PHP_SESSIONS_LESSONS.filter((lesson) => progress[lesson.id]).reduce(
     (sum, lesson) => sum + lesson.xp,
     0,
   );
   const pct =
-    Math.round((completedCount / PHP_FUNDAMENTALS_LESSONS.length) * 100) || 0;
+    Math.round((completedCount / PHP_SESSIONS_LESSONS.length) * 100) || 0;
   const nextLesson =
-    PHP_FUNDAMENTALS_LESSONS.find((lesson) => !progress[lesson.id]) ||
-    PHP_FUNDAMENTALS_LESSONS[0];
+    PHP_SESSIONS_LESSONS.find((lesson) => !progress[lesson.id]) ||
+    PHP_SESSIONS_LESSONS[0];
   const resumeLesson =
-    PHP_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === lastLessonId) ||
+    PHP_SESSIONS_LESSONS.find((lesson) => lesson.id === lastLessonId) ||
     nextLesson;
-  const completedChapters = PHP_FUNDAMENTALS_CHAPTERS.filter((chapter) =>
+  const completedChapters = PHP_SESSIONS_CHAPTERS.filter((chapter) =>
     chapter.lessons.every((lesson) => progress[lesson.id]),
   ).length;
   const bookmarkedLessons = bookmarks
-    .map((id) => PHP_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === id))
+    .map((id) => PHP_SESSIONS_LESSONS.find((lesson) => lesson.id === id))
     .filter(Boolean);
 
   const filteredLessons = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return PHP_FUNDAMENTALS_LESSONS.filter((lesson) => {
+    return PHP_SESSIONS_LESSONS.filter((lesson) => {
       const matchesQuery =
         !query ||
         lesson.title.toLowerCase().includes(query) ||
@@ -95,8 +95,8 @@ export default function PhpFundamentalsHub() {
   }, [bookmarks, filter, progress, search]);
 
   return (
-    <div className="oops-hub php-fundamentals-hub">
-      <div className="oops-hero php-fundamentals-hero">
+    <div className="oops-hub php-sessions-hub">
+      <div className="oops-hero php-sessions-hero">
         <Link
           to="/language/PHP"
           className="oops-back-btn"
@@ -104,11 +104,11 @@ export default function PhpFundamentalsHub() {
         >
           ← PHP courses
         </Link>
-        <div className="oops-hero-badge">PHP · CORE TRACK</div>
+        <div className="oops-hero-badge">PHP · SESSIONS & COOKIES</div>
         <h1 className="oops-hero-title">
           PHP
           <br />
-          <span className="oops-hero-accent" style={{ color: "#777bb4" }}>Fundamentals</span>
+          <span className="oops-hero-accent" style={{ color: "#3b82f6" }}>Sessions & Cookies</span>
         </h1>
         <p className="oops-hero-sub">
           From your first `echo` to associative arrays, OOP architecture, superglobals, and REST APIs —
@@ -120,15 +120,15 @@ export default function PhpFundamentalsHub() {
             <div className="oops-xp-meta">
               <span>
                 {isAuthenticated
-                  ? `${completedCount}/${PHP_FUNDAMENTALS_LESSONS.length} lessons · ${earnedXP}/${PHP_FUNDAMENTALS_TOTAL_XP} XP`
-                  : `Sign in to track progress · ${PHP_FUNDAMENTALS_LESSONS.length} lessons`}
+                  ? `${completedCount}/${PHP_SESSIONS_LESSONS.length} lessons · ${earnedXP}/${PHP_SESSIONS_TOTAL_XP} XP`
+                  : `Sign in to track progress · ${PHP_SESSIONS_LESSONS.length} lessons`}
               </span>
               <span>{isAuthenticated ? `${pct}%` : "—"}</span>
             </div>
             <div className="oops-xp-track">
               <div
                 className="oops-xp-fill"
-                style={{ width: isAuthenticated ? `${pct}%` : "0%", backgroundColor: "#777bb4" }}
+                style={{ width: isAuthenticated ? `${pct}%` : "0%", backgroundColor: "#3b82f6" }}
               />
             </div>
           </div>
@@ -175,13 +175,13 @@ export default function PhpFundamentalsHub() {
 
       <div className="oops-guide-tools">
         <div className="oops-tool-panel oops-tool-panel-main">
-          <span className="oops-interactive-label">Find a PHP topic</span>
+          <span className="oops-interactive-label">Find a Sessions & Cookies topic</span>
           <div className="oops-search-row">
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search arrays, loops, classes..."
+              placeholder="Search sessions, cookies, login..."
               aria-label="Search PHP lessons"
             />
             <div
@@ -262,19 +262,19 @@ export default function PhpFundamentalsHub() {
         <div className="oops-stat-tile">
           <span>Lessons</span>
           <strong>
-            {completedCount}/{PHP_FUNDAMENTALS_LESSONS.length}
+            {completedCount}/{PHP_SESSIONS_LESSONS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>Chapters</span>
           <strong>
-            {completedChapters}/{PHP_FUNDAMENTALS_CHAPTERS.length}
+            {completedChapters}/{PHP_SESSIONS_CHAPTERS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>XP</span>
           <strong>
-            {earnedXP}/{PHP_FUNDAMENTALS_TOTAL_XP}
+            {earnedXP}/{PHP_SESSIONS_TOTAL_XP}
           </strong>
         </div>
         <div className="oops-stat-tile">
@@ -288,13 +288,13 @@ export default function PhpFundamentalsHub() {
         <div className="matplotlib-path-label">
           <span>Your path · Beginner to Pro</span>
           <small>
-            {PHP_FUNDAMENTALS_CHAPTERS.length} chapters ·{" "}
-            {PHP_FUNDAMENTALS_LESSONS.length} lessons
+            {PHP_SESSIONS_CHAPTERS.length} chapters ·{" "}
+            {PHP_SESSIONS_LESSONS.length} lessons
           </small>
         </div>
         <div className="matplotlib-path-grid">
           {LEARNING_PATH.map((stage) => {
-            const stageChapters = PHP_FUNDAMENTALS_CHAPTERS.filter((ch) =>
+            const stageChapters = PHP_SESSIONS_CHAPTERS.filter((ch) =>
               stage.chapters.includes(ch.id),
             );
             const stageLessons = stageChapters.flatMap((ch) => ch.lessons);
@@ -346,7 +346,7 @@ export default function PhpFundamentalsHub() {
       </section>
 
       <LearnChapterPathOverview
-        chapters={PHP_FUNDAMENTALS_CHAPTERS}
+        chapters={PHP_SESSIONS_CHAPTERS}
         progress={progress}
         onChapterSelect={(chapter) =>
           navigate(`${BASE_PATH}/lesson/${chapter.lessons[0].id}`)
@@ -354,18 +354,18 @@ export default function PhpFundamentalsHub() {
       />
 
       <LearnChapterGrid
-        chapters={PHP_FUNDAMENTALS_CHAPTERS}
+        chapters={PHP_SESSIONS_CHAPTERS}
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
       />
 
       <CourseCertificate
-        courseName="PHP Fundamentals"
-        totalLessons={PHP_FUNDAMENTALS_LESSONS.length}
+        courseName="PHP Sessions & Cookies"
+        totalLessons={PHP_SESSIONS_LESSONS.length}
         completedCount={completedCount}
         earnedXP={earnedXP}
-        totalXP={PHP_FUNDAMENTALS_TOTAL_XP}
+        totalXP={PHP_SESSIONS_TOTAL_XP}
       />
     </div>
   );

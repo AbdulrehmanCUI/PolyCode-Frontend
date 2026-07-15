@@ -17,7 +17,6 @@ import {
   FolderOpen,
   Database,
   Wrench,
-  Atom,
 } from "lucide-react";
 
 export function languageKey(value = "") {
@@ -321,12 +320,30 @@ export const languageCourses = {
   php: [
     {
       title: "PHP Fundamentals",
-      tag: "Interactive Course",
+      tag: "Core Course",
       icon: Terminal,
       description:
         "Modern server-side PHP: strict types, control flow, match expressions, associative arrays, superglobals, OOP constructor property promotion, and custom REST API endpoints.",
       href: "/learn/php-fundamentals",
       accent: "#777bb4",
+    },
+    {
+      title: "PHP Forms",
+      tag: "Interactive Course",
+      icon: FileText,
+      description:
+        "Handle $_GET/$_POST, validate and sanitize input, manage file uploads, and protect against CSRF attacks — with real, runnable PHP challenges.",
+      href: "/learn/php-forms",
+      accent: "#f97316",
+    },
+    {
+      title: "PHP Sessions & Cookies",
+      tag: "Interactive Course",
+      icon: Server,
+      description:
+        "Manage state across requests with $_SESSION, work with cookies, build login/logout flows, and secure sessions against fixation attacks.",
+      href: "/learn/php-sessions",
+      accent: "#3b82f6",
     },
   ],
   csharp: [
@@ -363,7 +380,7 @@ export const languageCourses = {
     },
     {
       title: "Java OOP",
-      tag: "OOP Course",
+      tag: "Core Course",
       icon: Boxes,
       description:
         "Abstract classes, polymorphism, interfaces, generics, collections, File I/O, Streams, Optional, and Records.",
@@ -372,7 +389,7 @@ export const languageCourses = {
     },
     {
       title: "Java Exception Handling",
-      tag: "Error Handling Course",
+      tag: "Intermediate Course",
       icon: Terminal,
       description:
         "Checked and unchecked exceptions, custom exceptions, try-with-resources, chaining, and real-world error handling patterns.",
@@ -381,7 +398,7 @@ export const languageCourses = {
     },
     {
       title: "Java Multithreading",
-      tag: "Concurrency Course",
+      tag: "Advanced Course",
       icon: Layers3,
       description:
         "Threads, synchronization, atomic classes, ExecutorService, concurrent collections, CompletableFuture, and deadlock prevention.",
@@ -390,7 +407,7 @@ export const languageCourses = {
     },
     {
       title: "Java JDBC",
-      tag: "Databases Course",
+      tag: "Advanced Course",
       icon: Database,
       description:
         "Connect to databases with JDBC, PreparedStatement, transactions, batch updates, and the DAO pattern — with real, runnable challenges compiled by javac.",
@@ -399,7 +416,7 @@ export const languageCourses = {
     },
     {
       title: "Java Spring Boot",
-      tag: "Frameword Course",
+      tag: "Professional Course",
       icon: Grid3x3,
       description:
         "Build REST APIs with Spring Boot: controllers, dependency injection, services, Spring Data JPA, and DTOs — with theory, quizzes, and real coding challenges.",
@@ -435,24 +452,6 @@ export const languageCourses = {
       href: "/learn/ruby-gems",
       accent: "#9333ea",
     },
-    {
-      title: "Ruby OOP",
-      tag: "Interactive Course",
-      icon: BrainCircuit,
-      description:
-        "Deep dive into Ruby object‑oriented programming: classes, inheritance, modules, mixins, encapsulation, and design patterns with hands‑on challenges.",
-      href: "/learn/ruby-oop",
-      accent: "#b91c1c",
-    },
-    {
-      title: "Ruby Blocks & Modules",
-      tag: "Interactive Course",
-      icon: Boxes,
-      description:
-        "Master Ruby blocks, procs, lambdas, modules, mixins, and advanced patterns with hands‑on challenges and runnable code.",
-      href: "/learn/ruby-blocks-modules",
-      accent: "#701516",
-    },
   ],
   // ─── ADD GO TRACK DEFINITION ────────────────────────────────────────────────
   go: [
@@ -464,44 +463,6 @@ export const languageCourses = {
         "From variables and short declarations to slices, maps, struct composition, implicit interfaces, and concurrent goroutines.",
       href: "/learn/golang-fundamentals",
       accent: "#00add8",
-    },
-  ],
-  quantum: [
-    {
-      title: "Quantum Computing Fundamentals",
-      tag: "Core Course",
-      icon: Atom,
-      description:
-        "Beginner-friendly intro to qubits, superposition, and circuits, with light interactive checks along the way.",
-      href: "/learn/quantum-computing-fundamentals",
-      accent: "#6366f1",
-    },
-    {
-      title: "Quantum Mechanics for Programmers",
-      tag: "Theory Course",
-      icon: BrainCircuit,
-      description:
-        "The physics behind the qubit: wavefunctions, measurement, and entanglement explained for a programming audience.",
-      href: "/learn/quantum-mechanics-for-programmers",
-      accent: "#8b5cf6",
-    },
-    {
-      title: "Quantum Algorithms",
-      tag: "Core Course",
-      icon: Cpu,
-      description:
-        "Simulate gate math and circuit logic in Python, covering the building blocks behind Grover, Deutsch-Jozsa, and more.",
-      href: "/learn/quantum-algorithms",
-      accent: "#4f46e5",
-    },
-    {
-      title: "Quantum Programming Projects",
-      tag: "Capstone",
-      icon: Boxes,
-      description:
-        "Bigger, capstone-style challenges that combine everything from the earlier quantum courses into real mini-projects.",
-      href: "/learn/quantum-programming-projects",
-      accent: "#7c3aed",
     },
   ],
 };
@@ -568,12 +529,6 @@ export const courseStackGroups = [
     accent: "#00add8",
     languagePath: "/language/Go",
   },
-  {
-    id: "quantum",
-    label: "Quantum",
-    accent: "#6366f1",
-    languagePath: "/language/Quantum",
-  },
 ];
 
 /** Navbar learn links per language (mirrors languageCourses). */
@@ -627,23 +582,19 @@ export const learnNavByLanguage = {
     { label: "Spring Boot", to: "/learn/java-spring-boot" },
     { label: "Projects", to: "/learn/java-projects" },
   ],
-  php: [{ label: "PHP Basics", to: "/learn/php-fundamentals" }],
+  php: [
+    { label: "PHP Fundamentals", to: "/learn/php-fundamentals" },
+    { label: "PHP Forms", to: "/learn/php-forms" },
+    { label: "Sessions & Cookies", to: "/learn/php-sessions" },
+  ],
   csharp: [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
   "c#": [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
   ruby: [
     { label: "Ruby Basics", to: "/learn/ruby-fundamentals" },
     { label: "Ruby Gems", to: "/learn/ruby-gems" },
-    { label: "Ruby OOP", to: "/learn/ruby-oop" },
-    { label: "Ruby Blocks & Modules", to: "/learn/ruby-blocks-modules" },
   ],
   // ─── ADD GO NAVIGATION ENTRIES ─────────────────────────────────────────────
   go: [{ label: "Go Basics", to: "/learn/golang-fundamentals" }],
-  quantum: [
-    { label: "Computing Fundamentals", to: "/learn/quantum-computing-fundamentals" },
-    { label: "Mechanics for Programmers", to: "/learn/quantum-mechanics-for-programmers" },
-    { label: "Algorithms", to: "/learn/quantum-algorithms" },
-    { label: "Programming Projects", to: "/learn/quantum-programming-projects" },
-  ],
 };
 
 const learnNavLanguageAliases = {
@@ -700,7 +651,11 @@ export function inferLanguageFromLearnPath(pathname = "") {
   if (pathname.startsWith("/learn/html-css-foundation")) {
     return "htmlcss";
   }
-  if (pathname.startsWith("/learn/php-fundamentals")) {
+  if (
+    pathname.startsWith("/learn/php-fundamentals") ||
+    pathname.startsWith("/learn/php-forms") ||
+    pathname.startsWith("/learn/php-sessions")
+  ) {
     return "php";
   }
   if (
@@ -726,14 +681,6 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/java-projects")
   ) {
     return "java";
-  }
-  if (
-    pathname.startsWith("/learn/quantum-computing-fundamentals") ||
-    pathname.startsWith("/learn/quantum-mechanics-for-programmers") ||
-    pathname.startsWith("/learn/quantum-algorithms") ||
-    pathname.startsWith("/learn/quantum-programming-projects")
-  ) {
-    return "quantum";
   }
   return null;
 }
