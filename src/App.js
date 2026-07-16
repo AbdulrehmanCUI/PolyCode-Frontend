@@ -238,6 +238,12 @@ const PhpSessionsHub = lazyWithChunkRetry(
 const PhpSessionsLessonPage = lazyWithChunkRetry(
   () => import('./features/learn/php-sessions/pages/phpSessionsLessonPage'),
 );
+const PhpMysqlHub = lazyWithChunkRetry(
+  () => import('./features/learn/php-mysql/pages/phpMysqlHub'),
+);
+const PhpMysqlLessonPage = lazyWithChunkRetry(
+  () => import('./features/learn/php-mysql/pages/phpMysqlLessonPage'),
+);
 const JavaFundamentalsHub = lazyWithChunkRetry(
   () => import("./features/learn/java-fundamentals/pages/JavaFundamentalsHub"),
 );
@@ -633,7 +639,8 @@ function AppRoutes() {
     } else if (
       path.startsWith("/learn/php-fundamentals") ||
       path.startsWith("/learn/php-forms") ||
-      path.startsWith("/learn/php-sessions")
+      path.startsWith("/learn/php-sessions") ||
+      path.startsWith("/learn/php-mysql")
     ) {
       handleLanguageSelect("PHP", { stay: true });
     } else if (
@@ -1443,6 +1450,38 @@ function AppRoutes() {
             <ThemedShell theme={theme}>
               <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
                 <PhpSessionsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        {/* ── PHP MySQL ── */}
+        <Route
+          path="/learn/php-mysql"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <PhpMysqlHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/php-mysql/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <PhpMysqlLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/php-mysql/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <PhpMysqlLessonPage />
               </LearnShell>
             </ThemedShell>
           }

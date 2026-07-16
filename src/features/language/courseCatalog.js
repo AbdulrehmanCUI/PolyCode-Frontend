@@ -345,6 +345,15 @@ export const languageCourses = {
       href: "/learn/php-sessions",
       accent: "#3b82f6",
     },
+    {
+      title: "PHP MySQL",
+      tag: "Interactive Course",
+      icon: Database,
+      description:
+        "Connect with PDO, write prepared statements, handle transactions, and build repositories — with real, runnable PHP database challenges.",
+      href: "/learn/php-mysql",
+      accent: "#06b6d4",
+    },
   ],
   csharp: [
     {
@@ -586,6 +595,7 @@ export const learnNavByLanguage = {
     { label: "PHP Fundamentals", to: "/learn/php-fundamentals" },
     { label: "PHP Forms", to: "/learn/php-forms" },
     { label: "Sessions & Cookies", to: "/learn/php-sessions" },
+    { label: "MySQL", to: "/learn/php-mysql" },
   ],
   csharp: [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
   "c#": [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
@@ -654,7 +664,8 @@ export function inferLanguageFromLearnPath(pathname = "") {
   if (
     pathname.startsWith("/learn/php-fundamentals") ||
     pathname.startsWith("/learn/php-forms") ||
-    pathname.startsWith("/learn/php-sessions")
+    pathname.startsWith("/learn/php-sessions") ||
+    pathname.startsWith("/learn/php-mysql")
   ) {
     return "php";
   }
