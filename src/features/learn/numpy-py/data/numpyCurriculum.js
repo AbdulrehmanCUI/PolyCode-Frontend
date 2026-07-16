@@ -4354,37 +4354,217 @@ print(np.unique(answers, return_counts=True))`,
       },
       {
         id: "numpy-24",
-        title: "Save & Load .npy",
+        title: "Save & Load .npy Files",
         xp: 15,
         theory: [
           {
             type: "text",
             content:
-              "Finished crunching? **`np.save('file.npy', arr)`** writes a binary file. **`np.load('file.npy')`** reads it back — fast, compact, and dtype-safe. Like freezing your spreadsheet for later.",
+              "Imagine you've spent **30 minutes** creating and processing a NumPy array. If you close your Python program, everything stored in memory **disappears**.",
           },
           {
-            type: "code",
-            lang: "python",
-            label: "Save and load",
-            content: `import numpy as np
+            type: "text",
+            content:
+              "Instead of creating the array again next time, you can **save it to your computer** and **load it back** whenever you need it. That's exactly what **`.npy` files** are for.",
+          },
+          {
+            type: "text",
+            content:
+              "**`np.save()`** → Saves a NumPy array into a file.\n\n**`np.load()`** → Reads that saved array back into Python.",
+          },
+          {
+            type: "scenario",
+            content:
+              "Think of a **Word document**: you write notes, click **Save**, and later open the file to continue. NumPy works the same way with arrays — create → save → load → original array back.",
+          },
+          {
+            type: "diagram",
+            title: "Save & load flow",
+            nodes: [
+              {
+                id: "create",
+                label: "1. Create array",
+                color: "#14b8a6",
+                items: ["Build your NumPy array", "Process and clean data"],
+              },
+              {
+                id: "save",
+                label: "2. np.save()",
+                color: "#0d9488",
+                items: ["Writes file.npy", "Stores numbers on disk"],
+              },
+              {
+                id: "load",
+                label: "3. np.load()",
+                color: "#0f766e",
+                items: ["Reads file.npy", "Original array is back"],
+              },
+            ],
+          },
+          {
+            type: "text",
+            content:
+              "Here is a complete example. Notice that the **loaded array is exactly the same** as the original one.",
+            code: {
+              lang: "python",
+              label: "Save an array, then load it back",
+              content: `import numpy as np
 
-data = np.array([1, 2, 3, 4])
-np.save("my_data.npy", data)
-loaded = np.load("my_data.npy")
-print(loaded)`,
+# Create an array
+arr = np.array([10, 20, 30, 40, 50])
+
+# Save the array
+np.save("numbers.npy", arr)
+print("Array saved successfully!")
+
+# Load the array
+loaded_arr = np.load("numbers.npy")
+print("Loaded Array:")
+print(loaded_arr)`,
+            },
+          },
+          {
+            type: "callout",
+            variant: "info",
+            content:
+              "**Expected output:** `Array saved successfully!` then `Loaded Array:` and `[10 20 30 40 50]`.",
+          },
+          {
+            type: "scenario",
+            content:
+              "**Real-life example — a teacher.** You enter marks for **1000 students** into a NumPy array. If you close Python, those marks disappear. So before closing, you save them with `np.save(\"student_marks.npy\", marks)`. Tomorrow you simply load them with `np.load(\"student_marks.npy\")` — all marks are back instantly.",
+          },
+          {
+            type: "table",
+            title: "Why use .npy instead of a text file?",
+            columns: ["Text file", ".npy file"],
+            rows: [
+              {
+                label: "Speed",
+                values: [
+                  "Loading is slower",
+                  "Much faster to save and load",
+                ],
+              },
+              {
+                label: "Space",
+                values: [
+                  "Ordinary text takes more space",
+                  "Takes less storage space",
+                ],
+              },
+              {
+                label: "Data type",
+                values: [
+                  "Types may change when you reload",
+                  "NumPy remembers int, float, etc.",
+                ],
+              },
+              {
+                label: "Accuracy",
+                values: [
+                  "May not match the original array",
+                  "Loads exactly as it was saved",
+                ],
+              },
+            ],
+            showTotals: false,
+            footnote:
+              "For arrays like `[10 20 30 40 50]`, prefer `.npy` over plain text when you want a faithful, fast round-trip.",
+          },
+          {
+            type: "text",
+            content:
+              "**Multiple arrays?** Use **`np.savez()`** to store several arrays in one **`.npz`** file — like a folder that holds several NumPy arrays together.",
+            code: {
+              lang: "python",
+              label: "Save and load more than one array",
+              content: `import numpy as np
+
+marks = np.array([88, 92, 75])
+ages = np.array([15, 16, 15])
+
+# Save both in one .npz file
+np.savez("data.npz", marks=marks, ages=ages)
+
+# Load them later
+data = np.load("data.npz")
+print(data["marks"])
+print(data["ages"])`,
+            },
+          },
+          {
+            type: "table",
+            title: "Easy way to remember",
+            columns: ["Meaning"],
+            rows: [
+              {
+                label: "np.save()",
+                values: ["Save **one** NumPy array to a `.npy` file"],
+              },
+              {
+                label: "np.load()",
+                values: ["Load the saved array (or `.npz`) back"],
+              },
+              {
+                label: "np.savez()",
+                values: ["Save **multiple** arrays in one `.npz` file"],
+              },
+            ],
+            showTotals: false,
           },
           {
             type: "callout",
             variant: "tip",
             content:
-              "Use `np.savez` for multiple named arrays in one `.npz` archive — great for train/test splits.",
+              "Use **`np.save`** for one array. Use **`np.savez`** when you need several named arrays (like marks + ages) in a single file.",
           },
           {
             type: "quiz",
-            question: "Which loads a .npy file?",
-            options: ["np.read", "np.load", "np.open", "pickle.load only"],
+            question: "What does np.save() do?",
+            options: [
+              "Deletes an array from memory",
+              "Saves a NumPy array into a .npy file",
+              "Sorts the array from low to high",
+              "Prints the array to the screen",
+            ],
             answer: 1,
-            explanation: "np.load is the standard loader for .npy and .npz files.",
+            explanation:
+              "np.save() writes one NumPy array to a .npy file on your computer.",
+          },
+          {
+            type: "quiz",
+            question: "Which function loads a saved .npy file back into Python?",
+            options: ["np.read", "np.open", "np.load", "np.reload"],
+            answer: 2,
+            explanation:
+              "np.load() reads a .npy (or .npz) file and returns the array.",
+          },
+          {
+            type: "quiz",
+            question: "Why prefer .npy over a plain text file for NumPy arrays?",
+            options: [
+              "Text files cannot store numbers",
+              "It is faster, smaller, and keeps the data type",
+              "np.load only works with text files",
+              "Text files are always safer",
+            ],
+            answer: 1,
+            explanation:
+              ".npy is faster, uses less space, and NumPy remembers dtype so the array loads exactly as saved.",
+          },
+          {
+            type: "quiz",
+            question: "How do you save marks and ages together in one file?",
+            options: [
+              "np.save(\"data.npy\", marks, ages)",
+              "np.savez(\"data.npz\", marks=marks, ages=ages)",
+              "np.load(\"data.npz\", marks, ages)",
+              "print(marks, ages)",
+            ],
+            answer: 1,
+            explanation:
+              "np.savez() stores multiple named arrays inside one .npz file.",
           },
         ],
         challenge: {

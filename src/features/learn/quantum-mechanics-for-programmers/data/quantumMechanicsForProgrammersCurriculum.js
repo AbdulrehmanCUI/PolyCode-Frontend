@@ -198,7 +198,7 @@ const RAW_QUANTUM_MECHANICS_FOR_PROGRAMMERS_CHAPTERS = [
             type: "code",
             lang: "python",
             label: "Collapsing a state after measurement (conceptually)",
-            content: `state_before = [0.6, 0.8]\n# After measuring and getting outcome 1:\nstate_after = [0, 1]\nprint(state_before, \"->\", state_after)`,
+            content: `state_before = [0.6, 0.8]\n# After measuring and getting outcome 1:\nstate_after = [0, 1]\nprint(state_before, '->', state_after)`,
           },
           {
             type: "callout",

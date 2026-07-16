@@ -42,7 +42,7 @@ const RAW_QUANTUM_PROGRAMMING_PROJECTS_CHAPTERS = [
             type: "code",
             lang: "python",
             label: "A tiny 'circuit runner' abstraction",
-            content: `def run_bell_circuit():\n    gates_applied = [\"H(q0)\", \"CNOT(q0,q1)\"]\n    possible_outcomes = [\"00\", \"11\"]\n    return gates_applied, possible_outcomes\n\ngates, outcomes = run_bell_circuit()\nprint(gates)\nprint(outcomes)`,
+            content: `def run_bell_circuit():\n    gates_applied = ["H(q0)", "CNOT(q0,q1)"]\n    possible_outcomes = ["00", "11"]\n    return gates_applied, possible_outcomes\n\ngates, outcomes = run_bell_circuit()\nprint(gates)\nprint(outcomes)`,
           },
           {
             type: "callout",
@@ -90,7 +90,7 @@ const RAW_QUANTUM_PROGRAMMING_PROJECTS_CHAPTERS = [
             type: "code",
             lang: "python",
             label: "A simulated quantum coin flip API",
-            content: `import random\n\ndef quantum_coin_flip():\n    # Equal superposition -> 50/50 measurement, simulated here\n    return random.choice([\"heads\", \"tails\"])\n\nresults = [quantum_coin_flip() for _ in range(10)]\nprint(results)`,
+            content: `import random\n\ndef quantum_coin_flip():\n    # Equal superposition -> 50/50 measurement, simulated here\n    return random.choice(["heads", "tails"])\n\nresults = [quantum_coin_flip() for _ in range(10)]\nprint(results)`,
           },
           {
             type: "callout",
@@ -156,7 +156,7 @@ const RAW_QUANTUM_PROGRAMMING_PROJECTS_CHAPTERS = [
             type: "code",
             lang: "python",
             label: "Modeling the protocol's classical-bit correction step",
-            content: `def bob_correction(bits):\n    corrections = {\n        \"00\": \"I\",   # do nothing\n        \"01\": \"X\",   # apply X gate\n        \"10\": \"Z\",   # apply Z gate\n        \"11\": \"XZ\",  # apply both\n    }\n    return corrections[bits]\n\nprint(bob_correction(\"10\"))`,
+            content: `def bob_correction(bits):\n    corrections = {\n        "00": "I",   # do nothing\n        "01": "X",   # apply X gate\n        "10": "Z",   # apply Z gate\n        "11": "XZ",  # apply both\n    }\n    return corrections[bits]\n\nprint(bob_correction("10"))`,
           },
           {
             type: "callout",
@@ -181,7 +181,7 @@ const RAW_QUANTUM_PROGRAMMING_PROJECTS_CHAPTERS = [
           title: "Map Measurement Bits to Corrections",
           description:
             "Write `bob_correction(bits)` using the dict `{\"00\": \"I\", \"01\": \"X\", \"10\": \"Z\", \"11\": \"XZ\"}`, then print the result for `\"11\"`.",
-          starterCode: `def bob_correction(bits):\n    corrections = {\n        \"00\": \"I\",\n        \"01\": \"X\",\n        \"10\": \"Z\",\n        \"11\": \"XZ\",\n    }\n    # return the matching correction\n\n\n`,
+          starterCode: `def bob_correction(bits):\n    corrections = {\n        "00": "I",\n        "01": "X",\n        "10": "Z",\n        "11": "XZ",\n    }\n    # return the matching correction\n\n\n`,
           solutionCode: `def bob_correction(bits):\n    corrections = {\n        "00": "I",\n        "01": "X",\n        "10": "Z",\n        "11": "XZ",\n    }\n    return corrections[bits]\n\nprint(bob_correction("11"))`,
           tests: [
             { id: 1, label: "Defines bob_correction", keywords: [{ pattern: "def\\s+bob_correction" }] },
@@ -213,7 +213,7 @@ const RAW_QUANTUM_PROGRAMMING_PROJECTS_CHAPTERS = [
             type: "code",
             lang: "python",
             label: "A tiny hill-climbing optimizer loop",
-            content: `def cost(theta):\n    # toy cost function standing in for a circuit's output\n    return (theta - 3) ** 2\n\ntheta = 0\nfor step in range(5):\n    theta += 1  # naive fixed-step search\n    print(f\"step {step}: theta={theta}, cost={cost(theta)}\")`,
+            content: `def cost(theta):\n    # toy cost function standing in for a circuit's output\n    return (theta - 3) ** 2\n\ntheta = 0\nfor step in range(5):\n    theta += 1  # naive fixed-step search\n    print(f"step {step}: theta={theta}, cost={cost(theta)}")`,
           },
           {
             type: "callout",
@@ -269,7 +269,7 @@ const RAW_QUANTUM_PROGRAMMING_PROJECTS_CHAPTERS = [
             type: "code",
             lang: "python",
             label: "Combining iteration estimate + actual search",
-            content: `import math\n\ndef grover_iterations(n):\n    return round(math.pi / 4 * math.sqrt(n))\n\ndef grover_search(items, target):\n    for i, item in enumerate(items):\n        if item == target:\n            return i\n    return -1\n\nitems = [\"a\", \"b\", \"c\", \"d\", \"e\"]\nprint(grover_iterations(len(items)))\nprint(grover_search(items, \"d\"))`,
+            content: `import math\n\ndef grover_iterations(n):\n    return round(math.pi / 4 * math.sqrt(n))\n\ndef grover_search(items, target):\n    for i, item in enumerate(items):\n        if item == target:\n            return i\n    return -1\n\nitems = ["a", "b", "c", "d", "e"]\nprint(grover_iterations(len(items)))\nprint(grover_search(items, "d"))`,
           },
           {
             type: "callout",

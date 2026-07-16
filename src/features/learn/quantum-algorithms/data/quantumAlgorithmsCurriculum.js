@@ -89,7 +89,7 @@ const RAW_QUANTUM_ALGORITHMS_CHAPTERS = [
             type: "code",
             lang: "python",
             label: "Constructive vs destructive interference (toy amplitudes)",
-            content: `constructive = [0.5, 0.5]  # amplitudes add up\ndestructive = [0.5, -0.5]  # amplitudes cancel\n\nprint(\"constructive sum:\", sum(constructive))\nprint(\"destructive sum:\", sum(destructive))`,
+            content: `constructive = [0.5, 0.5]  # amplitudes add up\ndestructive = [0.5, -0.5]  # amplitudes cancel\n\nprint("constructive sum:", sum(constructive))\nprint("destructive sum:", sum(destructive))`,
           },
           {
             type: "callout",
@@ -153,7 +153,7 @@ const RAW_QUANTUM_ALGORITHMS_CHAPTERS = [
             type: "code",
             lang: "python",
             label: "Classifying a function classically (for intuition)",
-            content: `def classify(f, inputs):\n    outputs = [f(x) for x in inputs]\n    if len(set(outputs)) == 1:\n        return \"constant\"\n    return \"balanced\"\n\nprint(classify(lambda x: 0, [0, 1, 2, 3]))\nprint(classify(lambda x: x % 2, [0, 1, 2, 3]))`,
+            content: `def classify(f, inputs):\n    outputs = [f(x) for x in inputs]\n    if len(set(outputs)) == 1:\n        return "constant"\n    return "balanced"\n\nprint(classify(lambda x: 0, [0, 1, 2, 3]))\nprint(classify(lambda x: x % 2, [0, 1, 2, 3]))`,
           },
           {
             type: "callout",
@@ -178,7 +178,7 @@ const RAW_QUANTUM_ALGORITHMS_CHAPTERS = [
           title: "Classify a Function",
           description:
             "Write `classify(f, inputs)` that returns `\"constant\"` if all outputs match, else `\"balanced\"`. Test it on `lambda x: 1` with `[0, 1, 2, 3]`.",
-          starterCode: `def classify(f, inputs):\n    outputs = [f(x) for x in inputs]\n    # return \"constant\" if all outputs are the same, else \"balanced\"\n\n\n`,
+          starterCode: `def classify(f, inputs):\n    outputs = [f(x) for x in inputs]\n    # return "constant" if all outputs are the same, else "balanced"\n\n\n`,
           solutionCode: `def classify(f, inputs):\n    outputs = [f(x) for x in inputs]\n    if len(set(outputs)) == 1:\n        return "constant"\n    return "balanced"\n\nprint(classify(lambda x: 1, [0, 1, 2, 3]))`,
           tests: [
             { id: 1, label: "Defines classify", keywords: [{ pattern: "def\\s+classify" }] },

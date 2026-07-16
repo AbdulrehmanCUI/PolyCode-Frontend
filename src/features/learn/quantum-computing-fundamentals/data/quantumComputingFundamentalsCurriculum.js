@@ -275,7 +275,7 @@ const RAW_QUANTUM_COMPUTING_FUNDAMENTALS_CHAPTERS = [
             type: "code",
             lang: "python",
             label: "Modeling a tiny circuit as a list of steps",
-            content: `circuit = ["H", "CNOT"]  # Hadamard then CNOT builds a Bell pair\nfor gate in circuit:\n    print(f\"Apply {gate}\")`,
+            content: `circuit = ['H', 'CNOT']  # Hadamard then CNOT builds a Bell pair\nfor gate in circuit:\n    print('Apply', gate)`,
           },
           {
             type: "callout",
