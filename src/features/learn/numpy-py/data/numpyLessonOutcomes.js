@@ -132,9 +132,9 @@ export const NUMPY_LESSON_OUTCOMES = {
     "List unique answers with `np.unique()`",
   ],
   "numpy-24": [
-    "Save an array to a `.npy` file",
-    "Load it back without losing dtype or shape",
-    "Move data between practice sessions on your computer",
+    "Save one array with `np.save()` and load it with `np.load()`",
+    "Explain why `.npy` is better than a plain text file for arrays",
+    "Save several arrays together with `np.savez()` into a `.npz` file",
   ],
   "numpy-25": [
     "Tell a **view** from a **copy** when you slice an array",
