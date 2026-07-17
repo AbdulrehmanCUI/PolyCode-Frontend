@@ -354,6 +354,15 @@ export const languageCourses = {
       href: "/learn/php-mysql",
       accent: "#06b6d4",
     },
+    {
+      title: "PHP OOP",
+      tag: "Interactive Course",
+      icon: Boxes,
+      description:
+        "Classes, inheritance, interfaces, traits, magic methods, enums, and readonly properties — with theory, quizzes, and real PHP OOP challenges.",
+      href: "/learn/php-oop",
+      accent: "#f59e0b",
+    },
   ],
   csharp: [
     {
@@ -596,6 +605,7 @@ export const learnNavByLanguage = {
     { label: "PHP Forms", to: "/learn/php-forms" },
     { label: "Sessions & Cookies", to: "/learn/php-sessions" },
     { label: "MySQL", to: "/learn/php-mysql" },
+    { label: "PHP OOP", to: "/learn/php-oop" },
   ],
   csharp: [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
   "c#": [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
@@ -665,7 +675,8 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/php-fundamentals") ||
     pathname.startsWith("/learn/php-forms") ||
     pathname.startsWith("/learn/php-sessions") ||
-    pathname.startsWith("/learn/php-mysql")
+    pathname.startsWith("/learn/php-mysql") ||
+    pathname.startsWith("/learn/php-oop")
   ) {
     return "php";
   }

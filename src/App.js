@@ -244,6 +244,12 @@ const PhpMysqlHub = lazyWithChunkRetry(
 const PhpMysqlLessonPage = lazyWithChunkRetry(
   () => import('./features/learn/php-mysql/pages/phpMysqlLessonPage'),
 );
+const PhpOopHub = lazyWithChunkRetry(
+  () => import('./features/learn/php-oop/pages/phpOopHub'),
+);
+const PhpOopLessonPage = lazyWithChunkRetry(
+  () => import('./features/learn/php-oop/pages/phpOopLessonPage'),
+);
 const JavaFundamentalsHub = lazyWithChunkRetry(
   () => import("./features/learn/java-fundamentals/pages/JavaFundamentalsHub"),
 );
@@ -640,7 +646,8 @@ function AppRoutes() {
       path.startsWith("/learn/php-fundamentals") ||
       path.startsWith("/learn/php-forms") ||
       path.startsWith("/learn/php-sessions") ||
-      path.startsWith("/learn/php-mysql")
+      path.startsWith("/learn/php-mysql") ||
+      path.startsWith("/learn/php-oop")
     ) {
       handleLanguageSelect("PHP", { stay: true });
     } else if (
@@ -1388,7 +1395,7 @@ function AppRoutes() {
                 <PhpFundamentalsLessonPage />
               </LearnShell>
             </ThemedShell>
-          }
+          }A
         />
 
         {/* ── PHP Forms ── */}
@@ -1482,6 +1489,38 @@ function AppRoutes() {
             <ThemedShell theme={theme}>
               <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
                 <PhpMysqlLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        {/* ── PHP OOP ── */}
+        <Route
+          path="/learn/php-oop"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <PhpOopHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/php-oop/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <PhpOopLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/php-oop/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell theme={theme} onThemeChange={handleThemeChange} onGoToStackPicker={goToStackPicker} selectedLanguage={selectedLanguage}>
+                <PhpOopLessonPage />
               </LearnShell>
             </ThemedShell>
           }
