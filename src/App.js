@@ -155,6 +155,12 @@ const FastapiHub = lazyWithChunkRetry(
 const FastapiLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/fastapi-py/pages/FastapiLessonPage"),
 );
+const PytorchHub = lazyWithChunkRetry(
+  () => import("./features/learn/pytorch-py/pages/PytorchHub"),
+);
+const PytorchLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/pytorch-py/pages/PytorchLessonPage"),
+);
 const AiHub = lazyWithChunkRetry(
   () => import("./features/learn/ai_ml-py/pages/aiHub"),
 );
@@ -612,7 +618,7 @@ function AppRoutes() {
       path.startsWith("/learn/pandas-py") ||
       path.startsWith("/learn/matplotlib-py") ||
       path.startsWith("/learn/fastapi-py") ||
-      path.startsWith("/learn/matplotlib-py") ||
+      path.startsWith("/learn/pytorch-py") ||
       path.startsWith("/learn/ai_ml-py")
     ) {
       handleLanguageSelect("Python", { stay: true });
@@ -1017,6 +1023,52 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <FastapiLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        {/* PyTorch Python Course Routes */}
+        <Route
+          path="/learn/pytorch-py"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <PytorchHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/pytorch-py/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <PytorchLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/pytorch-py/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <PytorchLessonPage />
               </LearnShell>
             </ThemedShell>
           }
