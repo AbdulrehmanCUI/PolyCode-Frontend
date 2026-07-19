@@ -42,6 +42,9 @@ const RAW_DSA_CPP_CHAPTERS = [
             { id: "on", label: "O(n)", color: "#f59e0b", items: ["Linear"] },
             { id: "onlogn", label: "O(n log n)", color: "#22c55e", items: ["Divide & conquer sorts"] },
           ]),
+          text("Divide and conquer means solving a problem by splitting it into smaller pieces of the same kind, solving those pieces (often recursively), then combining the results. Think of three steps: divide the input, conquer each part, and merge (or select) an answer from the parts."),
+          text("Example: merge sort divides an array into two halves, sorts each half, then merges the sorted halves. Binary search is a lighter form: each step divides the search range in half and only conquers one side. That repeated halving is why many divide-and-conquer algorithms cost about O(n log n) or O(log n) instead of O(n^2)."),
+          callout("info", "Divide and conquer is a strategy, not a single algorithm. Merge sort, quicksort, and binary search all use it — they differ in how they split and how they combine."),
           quiz("Which runtime is typical for merge sort?", ["O(n)", "O(n log n)", "O(n^2)", "O(log n)"], 1, "Merge sort splits and merges — O(n log n)."),
           text("Amortized analysis: some operations are cheap most of the time and occasionally expensive (e.g., dynamic array push which resizes). Amortized cost averages across operations."),
           text("Example: binary search runs in O(log n). Typical implementation:", { label: "Binary search (C++)", content: `#include <iostream>
