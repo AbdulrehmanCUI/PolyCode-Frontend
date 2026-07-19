@@ -986,8 +986,14 @@ html[data-theme="light"] .lesson-annotator-fab-close,
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
 }
 
-.app.theme-light .main-content.learn-content .lesson-topic-w3-syntax code {
+.app.theme-light .main-content.learn-content .lesson-topic-w3-syntax:not(.lesson-topic-w3-syntax--highlighted) code {
   color: #0f172a !important;
+}
+
+.app.theme-light .main-content.learn-content .lesson-topic-w3-syntax--highlighted {
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98)) !important;
+  border-color: rgba(51, 65, 85, 0.9) !important;
 }
 
 .app.theme-light .main-content.learn-content .lesson-topic-w3-cli code {

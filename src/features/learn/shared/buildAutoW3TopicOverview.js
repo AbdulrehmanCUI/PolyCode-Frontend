@@ -1,12 +1,17 @@
 function firstCodeSample(theory = []) {
   for (const block of theory) {
     if (block.type === "code" && block.content) {
-      return { content: block.content, label: block.label || "Example" };
+      return {
+        content: block.content,
+        label: block.label || "Example",
+        lang: block.lang || "python",
+      };
     }
     if (block.type === "text" && block.code?.content) {
       return {
         content: block.code.content,
         label: block.code.label || block.label || "Example",
+        lang: block.code.lang || block.lang || "python",
       };
     }
   }
@@ -77,6 +82,7 @@ export function buildAutoW3TopicOverview(lesson = {}) {
   if (code) {
     overview.syntax = code.content.trim().split("\n").slice(0, 10).join("\n");
     overview.syntaxLabel = code.label || "Example";
+    overview.syntaxLang = code.lang || "python";
   } else if (lesson.challenge?.starterCode) {
     const starter = lesson.challenge.starterCode
       .trim()

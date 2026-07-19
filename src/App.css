@@ -9368,7 +9368,7 @@ body {
 
 .lesson-topic-w3-syntax {
   margin: 0;
-  padding: 14px 16px;
+  padding: 0;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background:
@@ -9386,6 +9386,13 @@ body {
   line-height: 1.55;
   color: var(--vscode-editor-fg, #f1f5f9);
   white-space: pre-wrap;
+}
+
+.lesson-topic-w3-syntax--highlighted pre,
+.lesson-topic-w3-syntax--highlighted code {
+  background: transparent !important;
+  color: inherit;
+  white-space: pre;
 }
 
 .lesson-topic-w3-cli {

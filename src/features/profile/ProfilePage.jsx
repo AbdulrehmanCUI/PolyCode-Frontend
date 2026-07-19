@@ -5,7 +5,6 @@ import { rememberSignedInUser } from "../../lib/authSession";
 import ProfileEditSection from "./components/ProfileEditSection";
 import ProfileHero from "./components/ProfileHero";
 import LearnerStatsRow from "./components/LearnerStatsRow";
-import AllCoursesList from "./components/AllCoursesList";
 import DailyXpProgressSection from "./components/DailyXpProgressSection";
 import useDailyXpProgress from "./hooks/useDailyXpProgress";
 import useLearnDashboard from "./hooks/useLearnDashboard";
@@ -582,11 +581,6 @@ export default function ProfilePage() {
         featuredCompleted={totalCompleted}
         featuredTotal={totalLessons}
         featuredPct={totalPct}
-      />
-
-      <AllCoursesList
-        courses={learnDashboard.courses}
-        showEngagement={isOwnProfile}
       />
 
       {isOwnProfile ? (
