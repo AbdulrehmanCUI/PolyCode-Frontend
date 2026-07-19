@@ -84,6 +84,7 @@ print(x)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Your First Tensor Print`,
           description:
             `Import \`torch\`, create \`scores = torch.tensor([72.0, 85.0, 91.0])\`, and print \`scores\`.`,
@@ -174,6 +175,7 @@ print(t + 5)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `NumPy and PyTorch Together`,
           description:
             `Import \`numpy as np\` and \`torch\`. Create \`arr = np.array([4, 5, 6])\` and \`t = torch.tensor([4, 5, 6])\`. Print both.`,
@@ -283,6 +285,7 @@ print(steps + 500)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Steps Tensor`,
           description:
             `Import \`torch\`, create \`steps = torch.tensor([4000, 5200, 6100])\`, print \`steps.shape\`, then print \`steps + 500\`.`,
@@ -369,6 +372,7 @@ print(grades.shape)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Grade Table Tensor`,
           description:
             `Create \`grades = torch.tensor([[90, 88], [76, 82]])\` and print \`grades.shape\`.`,
@@ -446,6 +450,7 @@ print(r)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Random 2×3 Tensor`,
           description:
             `Create \`r = torch.rand(2, 3)\` and print \`r.shape\`.`,
@@ -537,6 +542,7 @@ print(t2.device)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Float Tensor Metadata`,
           description:
             `Create \`x = torch.tensor([1.0, 2.0, 3.0], dtype=torch.float32)\` and print \`x.shape\`, \`x.dtype\`.`,
@@ -616,6 +622,7 @@ print(back)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `from_numpy Bridge`,
           description:
             `Import \`numpy as np\` and \`torch\`. Create \`arr = np.array([1.0, 2.0, 3.0])\`, then \`t = torch.from_numpy(arr)\`, and print \`t\`.`,
@@ -703,6 +710,7 @@ print(t.sum())`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Temperature Stats`,
           description:
             `Create \`temps = torch.tensor([18.0, 22.0, 19.0])\`, print \`temps + 2\` and \`temps.mean()\`.`,
@@ -793,6 +801,7 @@ print(scores + bonus)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Broadcast Bonus`,
           description:
             `Create \`m = torch.tensor([[1., 2.], [3., 4.]])\` and \`b = torch.tensor([10., 20.])\`. Print \`m + b\`.`,
@@ -860,6 +869,7 @@ print(g[:, 1])`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `First Column`,
           description:
             `Create \`g = torch.tensor([[1, 2], [3, 4], [5, 6]])\` and print \`g[:, 0]\`.`,
@@ -935,6 +945,7 @@ print(w.grad)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Track w`,
           description:
             `Create \`w = torch.tensor(2.0, requires_grad=True)\`, compute \`y = w * 4\`, call \`y.backward()\`, print \`w.grad\`.`,
@@ -1034,6 +1045,7 @@ print(w.grad)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Squared Error Grad`,
           description:
             `With \`w = torch.tensor(1.0, requires_grad=True)\`, set \`pred = w * 5\`, \`target = torch.tensor(20.0)\`, \`loss = (pred - target) ** 2\`, backward, print \`w.grad\`.`,
@@ -1110,6 +1122,7 @@ print(y.requires_grad)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `No Grad Block`,
           description:
             `Create \`x = torch.tensor([1.0, 2.0], requires_grad=True)\`. Inside \`with torch.no_grad():\`, set \`y = x * 2\` and print \`y.requires_grad\`.`,
@@ -1192,6 +1205,7 @@ print(model)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Define TinyNet`,
           description:
             `Import torch and nn. Define class \`TinyNet(nn.Module)\` with \`self.fc = nn.Linear(2, 1)\` in __init__ and \`return self.fc(x)\` in forward. Create \`model = TinyNet()\` and print \`model\`.`,
@@ -1273,6 +1287,7 @@ print(out.shape)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Linear Forward`,
           description:
             `Create \`layer = nn.Linear(2, 1)\` and \`x = torch.tensor([[1.0, 2.0]])\`. Print \`layer(x)\`.`,
@@ -1360,6 +1375,7 @@ print(nn.ReLU()(x))`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Apply ReLU`,
           description:
             `Create \`x = torch.tensor([-1.0, 0.0, 2.0])\` and print \`torch.relu(x)\`.`,
@@ -1428,6 +1444,7 @@ print(loss_fn(pred, target))`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Compute MSE`,
           description:
             `Use \`nn.MSELoss()\` with \`pred = torch.tensor([72.0])\` and \`target = torch.tensor([80.0])\`. Print the loss.`,
@@ -1537,6 +1554,7 @@ print(w)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `One SGD Step`,
           description:
             `Use \`w = torch.tensor([1.0], requires_grad=True)\`, \`opt = torch.optim.SGD([w], lr=0.1)\`, target 3.0, pred = w*2, MSE loss, zero_grad, backward, step, print w.`,
@@ -1626,6 +1644,7 @@ for xb, yb in loader:
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Mini DataLoader`,
           description:
             `Define \`Numbers\` Dataset with 3 items returning \`(torch.tensor([float(i)]), torch.tensor([float(i)]))\`. Create \`DataLoader(Numbers(), batch_size=2)\`, loop once and print \`xb.shape\`.`,
@@ -1712,6 +1731,7 @@ for epoch in range(3):
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Three Epochs`,
           description:
             `Train \`nn.Linear(1,1)\` on x=[[1],[2]] y=[[2],[4]] for 3 epochs with SGD lr=0.1 and MSELoss. Print \`loss.item()\` each epoch.`,
@@ -1800,6 +1820,7 @@ print(out.shape)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Conv2d Forward`,
           description:
             `Create \`x = torch.randn(1, 1, 8, 8)\` and \`conv = nn.Conv2d(1, 2, kernel_size=3)\`. Print \`conv(x).shape\`.`,
@@ -1871,6 +1892,7 @@ print('loaded')`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Save state_dict`,
           description:
             `Create \`model = nn.Linear(2, 1)\`, save with \`torch.save(model.state_dict(), 'model.pt')\`, create fresh \`model2 = nn.Linear(2, 1)\`, load weights, print \`'loaded'\`.`,
@@ -1943,6 +1965,7 @@ print(model(x).device)`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Pick Device`,
           description:
             `Set \`device = 'cuda' if torch.cuda.is_available() else 'cpu'\`, create \`x = torch.tensor([1.0]).to(device)\`, print \`x.device\`.`,
@@ -2038,6 +2061,7 @@ print(model(X).argmax(dim=1))`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Train Mini Clf`,
           description:
             `Define \`Clf\` with \`nn.Sequential(Linear(2,4), ReLU(), Linear(4,2))\`. Train on X=[[0.1,0.2],[0.9,0.8]] y=[0,1] for 10 steps with SGD and CrossEntropyLoss. Print \`model(X).argmax(dim=1)\`.`,
@@ -2158,6 +2182,7 @@ print(model(X).argmax(dim=1))`,
           },
         ],
         challenge: {
+          gradeMode: "keywords",
           title: `Cheat Sheet Print`,
           description:
             `Import torch and nn, create \`t = torch.tensor([1.0, 2.0, 3.0])\`, print \`t.mean()\` and \`torch.__version__\`.`,

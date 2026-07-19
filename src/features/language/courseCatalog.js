@@ -271,6 +271,15 @@ export const languageCourses = {
       icon: Presentation,
     },
     {
+      title: "PyTorch · py",
+      tag: "Deep Learning",
+      icon: Cpu,
+      description:
+        "Tensors, autograd, nn.Module, training loops, and a hands-on deep learning track — 8 chapters, 25 lessons.",
+      href: "/learn/pytorch-py",
+      accent: "#EE4C2C",
+    },
+    {
       title: "AI/ML · py",
       tag: "Data Course",
       icon: BrainCircuit,
@@ -669,6 +678,7 @@ export const learnNavByLanguage = {
     { label: "Pandas", to: "/learn/pandas-py" },
     { label: "FastAPI", to: "/learn/fastapi-py" },
     { label: "Matplotlib", to: "/learn/matplotlib-py" },
+    { label: "PyTorch", to: "/learn/pytorch-py" },
     { label: "AI/ML", to: "/learn/ai_ml-py" },
   ],
   javascript: [
@@ -767,6 +777,7 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/pandas-py") ||
     pathname.startsWith("/learn/fastapi-py") ||
     pathname.startsWith("/learn/matplotlib-py") ||
+    pathname.startsWith("/learn/pytorch-py") ||
     pathname.startsWith("/learn/ai_ml-py")
   ) {
     return "python";
