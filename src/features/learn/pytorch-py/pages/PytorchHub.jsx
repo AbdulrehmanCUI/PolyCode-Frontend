@@ -8,10 +8,38 @@ import {
 import usePytorchProgress from "../hooks/usePytorchProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import LearnChapterIcon from "../../shared/LearnChapterIcon";
 import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/pytorch-py";
 const ACCENT = "#EE4C2C";
+
+const LEARNING_PATH = [
+  {
+    level: "Beginner",
+    chapters: ["intro", "create"],
+    color: "#27ae60",
+    summary: "What PyTorch is, tensors vs NumPy, and how to create tensors.",
+  },
+  {
+    level: "Intermediate",
+    chapters: ["math", "autograd"],
+    color: "#2ecc71",
+    summary: "Tensor math, broadcasting, and automatic gradients.",
+  },
+  {
+    level: "Advanced",
+    chapters: ["nn", "train"],
+    color: "#f39c12",
+    summary: "nn.Module building blocks and full training loops.",
+  },
+  {
+    level: "Pro",
+    chapters: ["further", "capstone"],
+    color: "#EE4C2C",
+    summary: "CNNs, save/load, and a hands-on capstone project.",
+  },
+];
 
 function lessonPlainText(lesson) {
   return lesson.theory
@@ -257,6 +285,71 @@ export default function PytorchHub() {
           <strong>{bookmarks.length}</strong>
         </div>
       </div>
+
+      <section className="matplotlib-learn-path" aria-label="Learning path">
+        <div className="matplotlib-path-label">
+          <span>Your path · Beginner to Advanced</span>
+          <small>
+            {PYTORCH_CHAPTERS.length} chapters · {PYTORCH_LESSONS.length}{" "}
+            lessons
+          </small>
+        </div>
+        <div className="matplotlib-path-grid">
+          {LEARNING_PATH.map((stage) => {
+            const stageChapters = PYTORCH_CHAPTERS.filter((ch) =>
+              stage.chapters.includes(ch.id),
+            );
+            const stageLessons = stageChapters.flatMap((ch) => ch.lessons);
+            const stageDone = stageLessons.filter((l) => progress[l.id]).length;
+            const stagePct =
+              stageLessons.length > 0
+                ? Math.round((stageDone / stageLessons.length) * 100)
+                : 0;
+
+            return (
+              <article
+                key={stage.level}
+                className="matplotlib-path-card"
+                style={{ "--stage-color": stage.color }}
+              >
+                <header className="matplotlib-path-card-head">
+                  <span className="matplotlib-path-level">{stage.level}</span>
+                  <span className="matplotlib-path-pct">{stagePct}%</span>
+                </header>
+                <p className="matplotlib-path-summary">{stage.summary}</p>
+                <ul className="matplotlib-path-chapters">
+                  {stageChapters.map((ch) => (
+                    <li key={ch.id}>
+                      <span className="oops-chapter-icon-wrap" aria-hidden>
+                        <LearnChapterIcon icon={ch.icon} size={14} />
+                      </span>
+                      {ch.title}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  className="matplotlib-path-cta"
+                  onClick={() => {
+                    const firstOpen =
+                      stageLessons.find((l) => !progress[l.id]) ||
+                      stageLessons[0];
+                    if (firstOpen) {
+                      navigate(`${BASE_PATH}/lesson/${firstOpen.id}`);
+                    }
+                  }}
+                >
+                  {stageDone === stageLessons.length && stageLessons.length > 0
+                    ? "Review stage →"
+                    : stageDone > 0
+                      ? "Continue stage →"
+                      : "Start stage →"}
+                </button>
+              </article>
+            );
+          })}
+        </div>
+      </section>
 
       <LearnChapterPathOverview
         chapters={PYTORCH_CHAPTERS}
