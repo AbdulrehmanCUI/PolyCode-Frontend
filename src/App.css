@@ -7011,6 +7011,31 @@ body {
   font-weight: 800;
 }
 
+.courses-catalog-main {
+  min-width: 0;
+}
+
+.courses-catalog-main--enter {
+  animation: courses-catalog-rise 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes courses-catalog-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .courses-catalog-main--enter {
+    animation: none;
+  }
+}
+
 @media (max-width: 760px) {
   .courses-catalog-layout {
     grid-template-columns: 1fr;

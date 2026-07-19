@@ -341,8 +341,17 @@ function AppFooter() {
 
 function ScrollToTop() {
   const { pathname, search } = useLocation();
+  const previousPathnameRef = React.useRef(pathname);
 
   React.useLayoutEffect(() => {
+    const pathnameChanged = previousPathnameRef.current !== pathname;
+    previousPathnameRef.current = pathname;
+
+    // Courses stack filters handle their own smooth scroll-up.
+    if (!pathnameChanged && pathname === "/courses") {
+      return undefined;
+    }
+
     const html = document.documentElement;
     const previousScrollBehavior = html.style.scrollBehavior;
 

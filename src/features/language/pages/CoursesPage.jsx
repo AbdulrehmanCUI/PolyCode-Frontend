@@ -1,12 +1,29 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, BookOpen, Layers3 } from "lucide-react";
 import { COURSE_GROUPS } from "../../learn/shared/allCourses";
+
+function scrollCoursesToTop() {
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+  const behavior = prefersReducedMotion ? "auto" : "smooth";
+
+  window.scrollTo({ top: 0, left: 0, behavior });
+  document
+    .querySelectorAll(".main-content, .learn-content")
+    .forEach((node) => {
+      node.scrollTo({ top: 0, left: 0, behavior });
+    });
+}
 
 export default function CoursesPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const stackParam = (params.get("stack") || "").trim().toLowerCase();
+  const [panelKey, setPanelKey] = useState(stackParam || "default");
+  const [panelAnimating, setPanelAnimating] = useState(false);
+  const skipFirstScroll = useRef(true);
 
   const activeGroup = useMemo(() => {
     if (!stackParam) return COURSE_GROUPS[0] || null;
@@ -17,7 +34,27 @@ export default function CoursesPage() {
     );
   }, [stackParam]);
 
+  useEffect(() => {
+    if (!activeGroup) return;
+
+    setPanelKey(activeGroup.id);
+    setPanelAnimating(true);
+    const timer = window.setTimeout(() => setPanelAnimating(false), 420);
+
+    if (skipFirstScroll.current) {
+      skipFirstScroll.current = false;
+    } else {
+      scrollCoursesToTop();
+    }
+
+    return () => window.clearTimeout(timer);
+  }, [activeGroup?.id]);
+
   const selectStack = (stackId) => {
+    if (stackId === activeGroup?.id) {
+      scrollCoursesToTop();
+      return;
+    }
     navigate(`/courses?stack=${encodeURIComponent(stackId)}`, { replace: true });
   };
 
@@ -80,7 +117,12 @@ export default function CoursesPage() {
           ))}
         </aside>
 
-        <div className="courses-catalog-main">
+        <div
+          key={panelKey}
+          className={`courses-catalog-main${
+            panelAnimating ? " courses-catalog-main--enter" : ""
+          }`}
+        >
           <div className="language-section-head">
             <span>Available Courses</span>
             <h2>
