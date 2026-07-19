@@ -4,6 +4,7 @@ import {
   mergePythonRunResult,
   codeUsesMatplotlib,
 } from "./pythonPlotOutput";
+import { codeUsesTorch } from "./torchBrowserShim";
 
 async function readJsonResponse(response) {
   const text = await response.text();
@@ -107,7 +108,8 @@ async function runPythonWithBrowserFirst(source) {
 }
 
 export async function runPythonCode(source) {
-  if (codeUsesMatplotlib(source)) {
+  // Torch isn't on the server or real Pyodide wheels — use browser teaching shim.
+  if (codeUsesTorch(source) || codeUsesMatplotlib(source)) {
     return runPythonWithBrowserFirst(source);
   }
   return runPythonWithServerFirst(source);

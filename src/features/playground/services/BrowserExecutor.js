@@ -13,6 +13,10 @@ import {
   runJavaScriptInWorker,
   transpileTypeScript,
 } from "./jsRunner";
+import {
+  TORCH_BROWSER_SHIM,
+  codeUsesTorch,
+} from "../../learn/shared/torchBrowserShim";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -138,6 +142,7 @@ let pyodideInstance = null;
 let pyodideLoading = false;
 const pyodideLoadedPackages = new Set();
 let matplotlibPyodideReady = false;
+let torchShimReady = false;
 
 const MATPLOTLIB_PYODIDE_SETUP = `
 import matplotlib
@@ -326,11 +331,21 @@ async function ensurePyodide() {
   }
 }
 
+async function ensureTorchBrowserShim(py) {
+  if (torchShimReady) return;
+  await py.loadPackage("numpy");
+  pyodideLoadedPackages.add("numpy");
+  py.runPython(TORCH_BROWSER_SHIM);
+  torchShimReady = true;
+}
+
 export async function runPython(code, stdin = '') {
   try {
-    const blocked = getImportedModules(code).filter(
-      (moduleName) => !isAllowedPythonModule(moduleName),
-    );
+    const usesTorch = codeUsesTorch(code);
+    const blocked = getImportedModules(code).filter((moduleName) => {
+      if (usesTorch && moduleName === "torch") return false;
+      return !isAllowedPythonModule(moduleName);
+    });
     if (blocked.length) {
       const importedModule = blocked[0];
       return {
@@ -340,7 +355,7 @@ export async function runPython(code, stdin = '') {
           '',
           '💡 This playground runs Python with Pyodide (WebAssembly).',
           '',
-          '✅ Available: stdlib, numpy, pandas, matplotlib, scipy, scikit-learn, joblib, micropip',
+          '✅ Available: stdlib, numpy, pandas, matplotlib, scipy, scikit-learn, joblib, micropip, torch (teaching shim)',
           '❌ Not available: requests, socket, threading, subprocess, etc.',
         ].join('\n'),
         error: `Module '${importedModule}' is not available in the browser.`,
@@ -348,6 +363,9 @@ export async function runPython(code, stdin = '') {
     }
 
     const py = await ensurePyodide();
+    if (usesTorch) {
+      await ensureTorchBrowserShim(py);
+    }
     await ensurePyodidePackages(py, code);
     const usesMatplotlib = codeUsesMatplotlib(code);
     if (usesMatplotlib) {
@@ -377,8 +395,11 @@ export async function runPython(code, stdin = '') {
       }
     }
     
-    const stdout = py.runPython('sys.stdout.getvalue()');
+    let stdout = py.runPython('sys.stdout.getvalue()');
     const stderr = py.runPython('sys.stderr.getvalue()');
+    if (usesTorch && !error) {
+      stdout = `[PolyCode browser demo · teaching torch shim]\n${stdout || ""}`;
+    }
     const plotImages =
       usesMatplotlib && matplotlibPyodideReady ? extractPyodidePlotImages(py) : [];
     
