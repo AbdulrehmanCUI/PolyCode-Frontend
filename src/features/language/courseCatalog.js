@@ -53,6 +53,18 @@ export const generalCourses = [
 
 /** Interactive courses shown on /language/:language (language-specific only). */
 export const languageCourses = {
+  sql: [
+    { title: "SQL Fundamentals", tag: "Core Course", icon: Database, description: "Learn database basics, tables, and standard SQL syntax.", href: "/learn/sql-fundamentals", accent: "#00758f" },
+    { title: "SQL Queries", tag: "Core Course", icon: Database, description: "Master SELECT, WHERE, ORDER BY, and basic data retrieval.", href: "/learn/sql-queries", accent: "#00758f" },
+    { title: "SQL Joins", tag: "Core Course", icon: Database, description: "Combine data from multiple tables using INNER, LEFT, and RIGHT joins.", href: "/learn/sql-joins", accent: "#00758f" },
+    { title: "SQL Aggregate Functions", tag: "Core Course", icon: Database, description: "Use COUNT, SUM, AVG, and GROUP BY to analyze data.", href: "/learn/sql-aggregate-functions", accent: "#00758f" },
+    { title: "SQL Subqueries", tag: "Advanced Course", icon: Database, description: "Write nested queries to solve complex data problems.", href: "/learn/sql-subqueries", accent: "#00758f" },
+    { title: "SQL Indexes", tag: "Advanced Course", icon: Database, description: "Optimize database performance with indexes.", href: "/learn/sql-indexes", accent: "#00758f" },
+    { title: "SQL Views", tag: "Advanced Course", icon: Database, description: "Create virtual tables to simplify complex queries.", href: "/learn/sql-views", accent: "#00758f" },
+    { title: "SQL Stored Procedures", tag: "Advanced Course", icon: Database, description: "Save and reuse SQL code with stored procedures.", href: "/learn/sql-stored-procedures", accent: "#00758f" },
+    { title: "SQL Projects", tag: "Projects Course", icon: Database, description: "Build real-world database schemas and analyze datasets.", href: "/learn/sql-projects", accent: "#00758f" },
+  ],
+
   c: [
     {
       title: "C Fundamentals",
@@ -501,10 +513,51 @@ export const languageCourses = {
       accent: "#00add8",
     },
   ],
+  powershell: [
+    {
+      title: "PowerShell Fundamentals",
+      tag: "Core Course",
+      icon: Terminal,
+      description: "Variables, operators, data types, and basic pipeline usage.",
+      href: "/learn/powershell-fundamentals",
+      accent: "#5391fe",
+    },
+    {
+      title: "PowerShell Scripting",
+      tag: "Interactive Course",
+      icon: Wrench,
+      description: "Functions, control flow, file I/O, error handling, and scripts.",
+      href: "/learn/powershell-scripting",
+      accent: "#5391fe",
+    },
+    {
+      title: "PowerShell Administration",
+      tag: "Advanced Course",
+      icon: Cpu,
+      description: "WMI/CIM, Active Directory basics, networking, and system automation.",
+      href: "/learn/powershell-administration",
+      accent: "#5391fe",
+    },
+    {
+      title: "PowerShell Projects",
+      tag: "Projects Course",
+      icon: Database,
+      description: "Capstone real-world scripts (e.g., user onboarding automation, log parsing).",
+      href: "/learn/powershell-projects",
+      accent: "#5391fe",
+    },
+  ],
 };
 
 /** Ordered stacks for navbar grouping (one row per language, sub-courses inside). */
 export const courseStackGroups = [
+  {
+    id: "sql",
+    label: "SQL",
+    accent: "#00758f",
+    languagePath: "/language/SQL",
+  },
+
   {
     id: "c",
     label: "C",
@@ -565,10 +618,28 @@ export const courseStackGroups = [
     accent: "#00add8",
     languagePath: "/language/Go",
   },
+  {
+    id: "powershell",
+    label: "PowerShell",
+    accent: "#5391fe",
+    languagePath: "/language/PowerShell",
+  },
 ];
 
 /** Navbar learn links per language (mirrors languageCourses). */
 export const learnNavByLanguage = {
+  sql: [
+    { label: "Fundamentals", to: "/learn/sql-fundamentals" },
+    { label: "Queries", to: "/learn/sql-queries" },
+    { label: "Joins", to: "/learn/sql-joins" },
+    { label: "Aggregate Functions", to: "/learn/sql-aggregate-functions" },
+    { label: "Subqueries", to: "/learn/sql-subqueries" },
+    { label: "Indexes", to: "/learn/sql-indexes" },
+    { label: "Views", to: "/learn/sql-views" },
+    { label: "Stored Procedures", to: "/learn/sql-stored-procedures" },
+    { label: "Projects", to: "/learn/sql-projects" },
+  ],
+
   c: [
     { label: "Fundamentals", to: "/learn/c-fundamentals" },
     { label: "Functions", to: "/learn/c-functions" },
@@ -635,6 +706,12 @@ export const learnNavByLanguage = {
   ],
   // ─── ADD GO NAVIGATION ENTRIES ─────────────────────────────────────────────
   go: [{ label: "Go Basics", to: "/learn/golang-fundamentals" }],
+  powershell: [
+    { label: "Fundamentals", to: "/learn/powershell-fundamentals" },
+    { label: "Scripting", to: "/learn/powershell-scripting" },
+    { label: "Administration", to: "/learn/powershell-administration" },
+    { label: "Projects", to: "/learn/powershell-projects" },
+  ],
 };
 
 const learnNavLanguageAliases = {
@@ -649,6 +726,20 @@ function normalizeLearnNavLanguageKey(key = "") {
 
 /** Infer stack from an active /learn/* route when language is not set. */
 export function inferLanguageFromLearnPath(pathname = "") {
+  if (
+    pathname.startsWith("/learn/sql-fundamentals") ||
+    pathname.startsWith("/learn/sql-queries") ||
+    pathname.startsWith("/learn/sql-joins") ||
+    pathname.startsWith("/learn/sql-aggregate-functions") ||
+    pathname.startsWith("/learn/sql-subqueries") ||
+    pathname.startsWith("/learn/sql-indexes") ||
+    pathname.startsWith("/learn/sql-views") ||
+    pathname.startsWith("/learn/sql-stored-procedures") ||
+    pathname.startsWith("/learn/sql-projects")
+  ) {
+    return "sql";
+  }
+
   if (
     pathname.startsWith("/learn/c-fundamentals") ||
     pathname.startsWith("/learn/c-functions") ||
@@ -711,9 +802,16 @@ export function inferLanguageFromLearnPath(pathname = "") {
   if (pathname.startsWith("/learn/c-sharp-fundamentals")) {
     return "csharp";
   }
-  // ─── ADD GO ROUTE INFERENCE ────────────────────────────────────────────────
   if (pathname.startsWith("/learn/golang-fundamentals")) {
     return "go";
+  }
+  if (
+    pathname.startsWith("/learn/powershell-fundamentals") ||
+    pathname.startsWith("/learn/powershell-scripting") ||
+    pathname.startsWith("/learn/powershell-administration") ||
+    pathname.startsWith("/learn/powershell-projects")
+  ) {
+    return "powershell";
   }
   if (
     pathname.startsWith("/learn/java-fundamentals") ||
