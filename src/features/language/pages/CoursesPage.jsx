@@ -48,7 +48,7 @@ export default function CoursesPage() {
     }
 
     return () => window.clearTimeout(timer);
-  }, [activeGroup?.id]);
+  }, [activeGroup]);
 
   const selectStack = (stackId) => {
     if (stackId === activeGroup?.id) {
