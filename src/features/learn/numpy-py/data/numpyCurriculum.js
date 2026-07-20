@@ -4873,39 +4873,206 @@ print(a.nbytes, b.nbytes)`,
           {
             type: "text",
             content:
-              "**Normalization** puts data on a common scale. The **z-score** formula `(x - mean) / std` centers data around 0 with spread 1 — like asking 'how unusual is this score compared to the group?'",
+              "A **z-score** answers one simple question: *how far is this number from the average, in steps of “spread”?*  \n\n**Definition:** for each value `x`,  \n`z = (x − mean) ÷ std`  \n- **mean** = the typical middle value  \n- **std** (standard deviation) = how spread out the numbers are  \n\nAfter this, the new list usually has **mean ≈ 0** and **std ≈ 1**. People also call this **standardizing** or **normalizing** (z-score style).",
           },
           {
-            type: "code",
-            lang: "python",
-            label: "Z-score vector",
-            content: `import numpy as np
-
-x = np.array([10.0, 20.0, 30.0])
-z = (x - x.mean()) / x.std()
-print(z)  # [-1.  0.  1.]`,
+            type: "scenario",
+            title: "Real world: two quiz classes",
+            content:
+              "Class A quizzes are hard (average 60). Class B quizzes are easy (average 90).  \nAli scored **70** in Class A. Sara scored **85** in Class B.  \n\nRaw scores make Sara look better — but 70 might be *above average* in the hard class, while 85 might be *below average* in the easy class.  \n\n**Z-scores fix that.** They put both students on the same “how unusual?” scale so you can compare fairly.",
+          },
+          {
+            type: "diagram",
+            title: "What a z-score is doing",
+            nodes: [
+              {
+                id: "raw",
+                label: "1. Raw scores",
+                color: "#6366f1",
+                items: ["70, 80, 90", "Different units / levels", "Hard to compare"],
+              },
+              {
+                id: "center",
+                label: "2. Subtract mean",
+                color: "#0ea5e9",
+                items: ["x − mean", "Centers around 0", "Above avg → positive"],
+              },
+              {
+                id: "scale",
+                label: "3. Divide by std",
+                color: "#10b981",
+                items: ["÷ std", "Measures in “spreads”", "Fair comparison"],
+              },
+            ],
+          },
+          {
+            type: "table",
+            title: "Related ideas you need first",
+            columns: ["Idea", "Plain English", "NumPy"],
+            rows: [
+              {
+                label: "Mean",
+                values: [
+                  "Mean",
+                  "The average — the balance point of the list",
+                  "`x.mean()`",
+                ],
+              },
+              {
+                label: "Std",
+                values: [
+                  "Std (std)",
+                  "How spread out numbers are from the mean",
+                  "`x.std()`",
+                ],
+              },
+              {
+                label: "Z-score",
+                values: [
+                  "Z-score",
+                  "How many spreads above/below the mean",
+                  "`(x - x.mean()) / x.std()`",
+                ],
+              },
+              {
+                label: "Outlier",
+                values: [
+                  "Outlier tip",
+                  "Often |z| > 2 feels unusual on a bell curve",
+                  "Check `np.abs(z) > 2`",
+                ],
+              },
+            ],
           },
           {
             type: "callout",
             variant: "info",
             content:
-              "Z-scores above 2 or below -2 are often considered outliers in bell-curve data.",
+              "**Tiny number line:** mean sits at **0**. A z-score of **+1** means “one std above average.” **−1** means “one std below.” **0** means “exactly average.”",
+          },
+          {
+            type: "diagram",
+            title: "Number line of z-scores",
+            nodes: [
+              {
+                id: "low",
+                label: "z = −2",
+                color: "#f97316",
+                items: ["Quite low", "Often unusual", "Far left"],
+              },
+              {
+                id: "neg",
+                label: "z = −1",
+                color: "#fb923c",
+                items: ["Below average", "Still common", "Left of 0"],
+              },
+              {
+                id: "zero",
+                label: "z = 0",
+                color: "#10b981",
+                items: ["At the mean", "Typical score", "Center"],
+              },
+              {
+                id: "pos",
+                label: "z = +1",
+                color: "#38bdf8",
+                items: ["Above average", "Still common", "Right of 0"],
+              },
+              {
+                id: "high",
+                label: "z = +2",
+                color: "#6366f1",
+                items: ["Quite high", "Often unusual", "Far right"],
+              },
+            ],
+          },
+          {
+            type: "code",
+            lang: "python",
+            label: "Step by step — class marks",
+            content: `import numpy as np
+
+# Three quiz scores (easy numbers)
+marks = np.array([10.0, 20.0, 30.0])
+
+avg = marks.mean()      # 20.0  ← middle value
+spread = marks.std()    # how far they usually sit from 20
+
+print("mean:", avg)
+print("std:", spread)
+
+# Z-score: how many "spreads" from the mean?
+z = (marks - avg) / spread
+print("z-scores:", z)   # [-1.  0.  1.]`,
+          },
+          {
+            type: "text",
+            content:
+              "Read that printout like a story:  \n- **10** → z = **−1** (one step below average)  \n- **20** → z = **0** (exactly average)  \n- **30** → z = **+1** (one step above average)",
+          },
+          {
+            type: "code",
+            lang: "python",
+            label: "Same idea in one short line",
+            content: `import numpy as np
+
+scores = np.array([70.0, 80.0, 90.0])
+z = (scores - scores.mean()) / scores.std()
+print(z)`,
+          },
+          {
+            type: "scenario",
+            title: "Why people use this",
+            content:
+              "**Games:** compare points from easy vs hard levels.  \n**Fitness:** compare step counts for a quiet week vs a busy week.  \n**Machine learning:** many models learn better when features are on a similar scale.  \n\nIn all cases: *don’t only look at the raw number — look at how it sits in its own group.*",
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              "**Watch out:** if every value is the same, `std` is **0** and you cannot divide. Real data almost always has some spread — if not, there is nothing to normalize.",
+          },
+          {
+            type: "callout",
+            variant: "success",
+            content:
+              "You now know: mean + std → z-score → fair comparison. Next topics build on this (weights, filters, full projects).",
           },
           {
             type: "quiz",
-            question: "Z-score formula is?",
-            options: ["x / sum", "(x - mean) / std", "x - min", "x * weights"],
+            question: "What does a z-score of 0 mean?",
+            options: [
+              "The value is missing",
+              "The value equals the mean (average)",
+              "The value is the biggest in the list",
+              "The value is always an outlier",
+            ],
             answer: 1,
-            explanation: "Standardizing subtracts mean and divides by standard deviation.",
+            explanation:
+              "z = 0 means x is exactly at the mean — a typical / average value.",
+          },
+          {
+            type: "quiz",
+            question: "The z-score formula is?",
+            options: [
+              "x / sum",
+              "(x - mean) / std",
+              "x - min",
+              "x * weights",
+            ],
+            answer: 1,
+            explanation:
+              "Subtract the mean (center), then divide by std (scale into “spreads”).",
           },
         ],
         challenge: {
-          title: "Z-Score Vector",
+          title: "Z-Score Your Scores",
           description:
-            "For `np.array([2.0, 4.0, 6.0, 8.0])`, print `(x - x.mean()) / x.std()`.",
+            "You have quiz scores `x = np.array([2.0, 4.0, 6.0, 8.0])`. Print the z-scores using `(x - x.mean()) / x.std()`.",
           starterCode: `import numpy as np
 
 x = np.array([2.0, 4.0, 6.0, 8.0])
+# Print z-scores: (x - mean) / std
 `,
           solutionCode: `import numpy as np
 
@@ -4926,8 +5093,8 @@ print((x - x.mean()) / x.std())`,
             },
             {
               id: 3,
-              label: "Prints",
-              hint: "print(...)",
+              label: "Prints z-scores",
+              hint: "print((x - x.mean()) / x.std())",
               keywords: [{ pattern: "print\\s*\\(" }],
             },
           ],
