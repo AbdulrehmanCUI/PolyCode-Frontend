@@ -152,9 +152,9 @@ export const NUMPY_LESSON_OUTCOMES = {
     "Compare list vs array speed in plain terms",
   ],
   "numpy-15": [
-    "Normalize numbers with a z-score (mean 0, spread 1)",
-    "Use `(x - mean) / std` on a whole vector at once",
-    "Compare scores on the same scale fairly",
+    "Explain mean, std, and z-score in plain words",
+    "Compute z-scores with `(x - mean) / std` on a NumPy array",
+    "Use z-scores to compare values fairly across different groups",
   ],
   "numpy-16": [
     "Compute a weighted average (tests with different weights)",
