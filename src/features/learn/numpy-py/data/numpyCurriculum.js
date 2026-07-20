@@ -5108,12 +5108,47 @@ print((x - x.mean()) / x.std())`,
           {
             type: "text",
             content:
-              "Not every **game score** counts equally — finals might be worth 40%, homework 60%. A **weighted average** is `sum(values * weights) / sum(weights)`. One elegant line with NumPy dot product.",
+              "**Weighted Average**\n\nIn real life, not every value has the same importance.\n\nFor example, imagine a student's final grade is calculated like this:\n\n• **Assignments** = 50%\n• **Quizzes** = 30%\n• **Final Exam** = 20%\n\nAlthough there are three scores, they should **not** contribute equally — some assessments matter more than others.\n\nA **weighted average** gives different importance (**weights**) to different values before calculating the final result.",
+          },
+          {
+            type: "scenario",
+            title: "Think of it like this",
+            content:
+              "Suppose a student has these marks:\n\n• **Assignment:** 90 (weight 50%)\n• **Quiz:** 80 (weight 30%)\n• **Final Exam:** 70 (weight 20%)\n\nA **normal average** would be:\n\n(90 + 80 + 70) ÷ 3 = **80**\n\nThat looks fine — but it is **wrong** here, because each assessment has a different contribution.\n\nInstead, **multiply each mark by its weight**, then add the pieces together:\n\n• 90 × 0.5 = **45**\n• 80 × 0.3 = **24**\n• 70 × 0.2 = **14**\n\n45 + 24 + 14 = **83**\n\nThe **weighted average is 83** — not 80.",
+          },
+          {
+            type: "table",
+            title: "Marks, weights, and contributions",
+            columns: ["Assessment", "Marks", "Weight", "Contribution"],
+            rows: [
+              {
+                label: "Assignment",
+                values: ["Assignment", "90", "0.5 (50%)", "45"],
+              },
+              {
+                label: "Quiz",
+                values: ["Quiz", "80", "0.3 (30%)", "24"],
+              },
+              {
+                label: "Final Exam",
+                values: ["Final Exam", "70", "0.2 (20%)", "14"],
+              },
+              {
+                label: "Total",
+                values: ["Total", "—", "1.0 (100%)", "83"],
+              },
+            ],
+          },
+          {
+            type: "callout",
+            variant: "info",
+            content:
+              "**Formula:** Weighted Average = Sum(Value × Weight) ÷ Sum(Weights)\n\nIn words: multiply each value by how important it is, add those products, then divide by the total weight.",
           },
           {
             type: "code",
             lang: "python",
-            label: "Weighted mean",
+            label: "Weighted average in NumPy",
             content: `import numpy as np
 
 values = np.array([90, 80, 70])
@@ -5122,17 +5157,109 @@ avg = np.dot(values, weights) / weights.sum()
 print(avg)  # 83.0`,
           },
           {
+            type: "table",
+            title: "Understanding the code — line by line",
+            columns: ["Line", "Plain English"],
+            rows: [
+              {
+                label: "values",
+                values: [
+                  "`values = np.array([90, 80, 70])`",
+                  "Stores the marks (the numbers you care about).",
+                ],
+              },
+              {
+                label: "weights",
+                values: [
+                  "`weights = np.array([0.5, 0.3, 0.2])`",
+                  "Stores how important each mark is.",
+                ],
+              },
+              {
+                label: "dot",
+                values: [
+                  "`np.dot(values, weights)`",
+                  "Multiplies each value by its matching weight and adds the results (45 + 24 + 14).",
+                ],
+              },
+              {
+                label: "sum",
+                values: [
+                  "`weights.sum()`",
+                  "Adds all weights together (here: 0.5 + 0.3 + 0.2 = 1.0).",
+                ],
+              },
+              {
+                label: "avg",
+                values: [
+                  "Divide by `weights.sum()`",
+                  "Gives the correct weighted average — even when weights do not add up to 1.",
+                ],
+              },
+            ],
+          },
+          {
             type: "callout",
             variant: "tip",
             content:
-              "Weights don't have to sum to 1 — dividing by weights.sum() normalizes automatically.",
+              "**Why divide by `weights.sum()`?**\n\nWeights do **not** have to add up to 1.\n\n`weights = [50, 30, 20]` works the same as `weights = [0.5, 0.3, 0.2]` — dividing by `weights.sum()` automatically **normalizes** the result.",
+          },
+          {
+            type: "diagram",
+            title: "Real-world uses",
+            nodes: [
+              {
+                id: "grades",
+                label: "Student grading",
+                color: "#10b981",
+                items: ["Assignments vs exams", "Different % weights", "Final course mark"],
+              },
+              {
+                id: "ratings",
+                label: "Product ratings",
+                color: "#6366f1",
+                items: ["Verified buyers count more", "Recent reviews weighted", "Fair star average"],
+              },
+              {
+                id: "finance",
+                label: "Investments",
+                color: "#0ea5e9",
+                items: ["Portfolio mix", "Bigger holdings matter more", "Weighted return"],
+              },
+              {
+                id: "ml",
+                label: "Machine learning",
+                color: "#4f46e5",
+                items: ["Survey analysis", "Sample weights", "Model training scores"],
+              },
+            ],
+          },
+          {
+            type: "callout",
+            variant: "success",
+            content:
+              "**Key takeaways:**\n\n• A **normal average** treats every value equally.\n• A **weighted average** gives different importance to different values.\n• **`np.dot()`** multiplies values by weights and adds the results.\n• **`weights.sum()`** normalizes automatically.\n• Weighted averages are common in real-world data analysis.",
           },
           {
             type: "quiz",
-            question: "Weighted average uses?",
-            options: ["values.mean()", "np.dot(values, weights) / weights.sum()", "values.max()", "np.sort"],
+            question: "Which formula computes a weighted average in NumPy?",
+            options: [
+              "values.mean()",
+              "np.dot(values, weights) / weights.sum()",
+              "values.max()",
+              "np.sort(values)",
+            ],
             answer: 1,
-            explanation: "Dot product for weighted sum, divide by total weight.",
+            explanation:
+              "np.dot multiplies each value by its weight and adds them; dividing by weights.sum() normalizes the result.",
+          },
+          {
+            type: "quiz",
+            question: "A student has Assignment 90 (50%), Quiz 80 (30%), Exam 70 (20%). What is the weighted average?",
+            options: ["80", "83", "90", "70"],
+            answer: 1,
+            explanation:
+              "90×0.5 + 80×0.3 + 70×0.2 = 45 + 24 + 14 = 83.",
           },
         ],
         challenge: {
