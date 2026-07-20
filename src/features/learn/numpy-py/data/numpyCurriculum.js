@@ -5505,6 +5505,9 @@ export const NUMPY_LESSONS = applyLessonVideoLinks(
   NUMPY_CHAPTERS.flatMap((ch) =>
     ch.lessons.map((l) => ({
       ...l,
+      challenge: l.challenge
+        ? { ...l.challenge, id: l.challenge.id || l.id }
+        : l.challenge,
       outcomes: l.outcomes ?? NUMPY_LESSON_OUTCOMES[l.id] ?? [],
       chapterId: ch.id,
       chapterTitle: ch.title,

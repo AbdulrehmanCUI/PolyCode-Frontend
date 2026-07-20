@@ -201,7 +201,10 @@ export default function NumpyLessonPage() {
             />
           ) : (
             <PythonCodeChallenge
-              challenge={lesson.challenge}
+              challenge={{
+                ...lesson.challenge,
+                id: lesson.challenge?.id || lesson.id,
+              }}
               accentColor={LEARN_ACCENT}
               isCompleted={isCompleted}
               onComplete={handleChallengeComplete}

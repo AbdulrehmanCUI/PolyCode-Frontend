@@ -20,6 +20,24 @@ function normalizeWhitespace(value = "") {
   return value.replace(/\s+/g, "");
 }
 
+/** Curriculum challenges often omit `id` — still need a per-lesson key to reset UI. */
+function getChallengeKey(challenge = {}) {
+  if (challenge.id != null && String(challenge.id).trim()) {
+    return String(challenge.id);
+  }
+  return [
+    challenge.title || "",
+    challenge.starterCode || "",
+    challenge.solutionCode || "",
+  ].join("\u0000");
+}
+
+function acceptanceTestsPassed(tests = []) {
+  return tests
+    .filter((test) => test.id !== "runtime")
+    .every((test) => test.passed);
+}
+
 function testPasses(test, code, solutionCode) {
   const keywords =
     test.keywords || extractKeywords(solutionCode, test.id, [test]);
@@ -79,22 +97,25 @@ export default function PythonCodeChallenge({
   const canRun = isAuthenticated && !authLoading;
   const reportChallengeResult = useChallengeTelemetry();
 
+  const challengeKey = getChallengeKey(challenge);
   const [code, setCode] = useState(initialCode || challenge.starterCode);
   const [results, setResults] = useState(null);
   const [output, setOutput] = useState(null);
   const [showSolution, setShowSolution] = useState(false);
   const [running, setRunning] = useState(false);
   const [submitGeneration, setSubmitGeneration] = useState(0);
-  const activeChallengeId = useRef(challenge.id);
+  const activeChallengeKey = useRef(challengeKey);
   const runTestsRef = useRef(null);
   const { showCelebration, triggerCelebration, dismissCelebration } =
-    useChallengeCelebration(challenge.id);
+    useChallengeCelebration(challengeKey);
 
   useEffect(() => {
-    const challengeChanged = activeChallengeId.current !== challenge.id;
+    const challengeChanged = activeChallengeKey.current !== challengeKey;
     if (challengeChanged) {
-      activeChallengeId.current = challenge.id;
-      setCode(initialCode || challenge.starterCode);
+      activeChallengeKey.current = challengeKey;
+      setCode(
+        typeof initialCode === "string" ? initialCode : challenge.starterCode,
+      );
       setResults(null);
       setOutput(null);
       setShowSolution(false);
@@ -102,12 +123,15 @@ export default function PythonCodeChallenge({
       return;
     }
 
+    // Same challenge: apply saved code once it arrives from the server.
     if (typeof initialCode === "string") {
       setCode((currentCode) =>
-        currentCode === challenge.starterCode ? initialCode : currentCode,
+        !currentCode || currentCode === challenge.starterCode
+          ? initialCode
+          : currentCode,
       );
     }
-  }, [challenge.id, challenge.starterCode, initialCode]);
+  }, [challengeKey, challenge.starterCode, initialCode]);
 
   function runTests() {
     if (!canRun || running || showSolution) return;
@@ -128,17 +152,14 @@ export default function PythonCodeChallenge({
           ...test,
           passed: testPasses(test, code, challenge.solutionCode),
         }));
-        const acceptanceTests = testResults.filter(
-          (test) => test.id !== "runtime",
-        );
-        const allPassed = acceptanceTests.every((test) => test.passed);
+        const allPassed = acceptanceTestsPassed(testResults);
 
         setResults({ passed: allPassed, tests: testResults });
         setOutput({
           status: allPassed ? "pass" : "fail",
           stdout: allPassed
             ? "Pattern checks passed (browser deep-learning libs are graded by code patterns)."
-            : "Some pattern checks failed. Match the required PyTorch APIs from the lesson.",
+            : "Some pattern checks failed. Match the required APIs from the lesson.",
         });
 
         if (allPassed) {
@@ -177,23 +198,40 @@ export default function PythonCodeChallenge({
       try {
         runPayload = await runPythonCode(code);
       } catch (error) {
-        setResults(
-          buildRuntimeFailureResults(
-            challenge,
-            code,
-            challenge.solutionCode,
-            testPasses,
-            {
-              runtimeLabel: "Python runs without errors",
-              runtimeHint: error.message || "Could not run Python.",
-            },
-          ),
+        const failureResults = buildRuntimeFailureResults(
+          challenge,
+          code,
+          challenge.solutionCode,
+          testPasses,
+          {
+            runtimeLabel: "Python runs without errors",
+            runtimeHint: error.message || "Could not run Python.",
+          },
         );
+        const keywordsOk = acceptanceTestsPassed(failureResults.tests);
+        setResults({
+          ...failureResults,
+          // Lesson goals are keyword checks — still allow completion if those pass.
+          passed: keywordsOk,
+        });
         setOutput({
-          status: "fail",
-          stdout: error.message || "Run failed",
+          status: keywordsOk ? "pass" : "fail",
+          stdout: keywordsOk
+            ? `${error.message || "Runtime warning"}\n\nCode checks passed — lesson marked complete. Fix the runtime message if you want clean output.`
+            : error.message || "Run failed",
           expected: expectedOutput,
         });
+        if (keywordsOk) {
+          reportChallengeResult?.(true);
+          triggerCelebration();
+          if (!isCompleted) {
+            Promise.resolve(onComplete()).catch((err) => {
+              console.error("Unable to save lesson progress:", err);
+            });
+          }
+        } else {
+          reportChallengeResult?.(false);
+        }
         setRunning(false);
         setSubmitGeneration((value) => value + 1);
         return;
@@ -205,23 +243,39 @@ export default function PythonCodeChallenge({
       const stdout = formatPythonOutput(runResult);
 
       if (runtimeError) {
-        setResults(
-          buildRuntimeFailureResults(
-            challenge,
-            code,
-            challenge.solutionCode,
-            testPasses,
-            {
-              runtimeLabel: "Python runs without errors",
-              runtimeHint: "Fix the error in Output, then run again.",
-            },
-          ),
+        const failureResults = buildRuntimeFailureResults(
+          challenge,
+          code,
+          challenge.solutionCode,
+          testPasses,
+          {
+            runtimeLabel: "Python runs without errors",
+            runtimeHint: "Fix the error in Output, then run again.",
+          },
         );
+        const keywordsOk = acceptanceTestsPassed(failureResults.tests);
+        setResults({
+          ...failureResults,
+          passed: keywordsOk,
+        });
         setOutput({
-          status: "fail",
-          stdout: runtimeError,
+          status: keywordsOk ? "pass" : "fail",
+          stdout: keywordsOk
+            ? `${runtimeError}\n\nCode checks passed — lesson marked complete. Fix the runtime message if you want clean output.`
+            : runtimeError,
           expected: expectedOutput,
         });
+        if (keywordsOk) {
+          reportChallengeResult?.(true);
+          triggerCelebration();
+          if (!isCompleted) {
+            Promise.resolve(onComplete()).catch((err) => {
+              console.error("Unable to save lesson progress:", err);
+            });
+          }
+        } else {
+          reportChallengeResult?.(false);
+        }
         setRunning(false);
         setSubmitGeneration((value) => value + 1);
         return;
@@ -232,10 +286,7 @@ export default function PythonCodeChallenge({
         passed: testPasses(test, code, challenge.solutionCode),
       }));
 
-      const acceptanceTests = testResults.filter(
-        (test) => test.id !== "runtime",
-      );
-      const allPassed = acceptanceTests.every((test) => test.passed);
+      const allPassed = acceptanceTestsPassed(testResults);
 
       setResults({ passed: allPassed, tests: testResults });
       setOutput({
@@ -456,7 +507,7 @@ export default function PythonCodeChallenge({
             language="python"
             variant="learn"
             disabled={!canRun || showSolution}
-            resetKey={`${challenge.id}:${showSolution ? "solution" : "code"}`}
+            resetKey={`${challengeKey}:${showSolution ? "solution" : "code"}`}
             autoRunKey={submitGeneration || null}
             hideManualTrigger
             analysisContext={{
@@ -521,7 +572,7 @@ export default function PythonCodeChallenge({
             >
               {results.passed
                 ? "✓ All tests passed!"
-                : `${results.tests.filter((t) => t.passed && t.id !== "runtime").length}/${challenge.tests.length} tests passed`}
+                : `${results.tests.filter((t) => t.passed && t.id !== "runtime").length}/${challenge.tests.length} code checks passed`}
             </div>
           )}
           <button
