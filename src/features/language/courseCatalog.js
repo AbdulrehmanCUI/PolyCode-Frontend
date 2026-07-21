@@ -384,7 +384,7 @@ export const languageCourses = {
       href: "/learn/php-oop",
       accent: "#f59e0b",
     },
-    {
+{
       title: "Laravel Basics",
       tag: "Interactive Course",
       icon: Layers3,
@@ -508,6 +508,33 @@ export const languageCourses = {
         "Master the RubyGems ecosystem: Bundler, Gemfiles, gemspecs, semver, dependency resolution, testing, publishing, and professional library design — with hands-on challenges.",
       href: "/learn/ruby-gems",
       accent: "#9333ea",
+    },
+    {
+      title: "Ruby File Handling",
+      tag: "Interactive Course",
+      icon: FolderOpen,
+      description:
+        "Read, write, and manage files in Ruby — from simple text files to CSV, JSON, YAML, and binary data with robust error handling.",
+      href: "/learn/ruby-file-handling",
+      accent: "#dc2626",
+    },
+    {
+      title: "Ruby OOP",
+      tag: "Interactive Course",
+      icon: Boxes,
+      description:
+        "Master object-oriented programming in Ruby — classes, inheritance, modules, mixins, encapsulation, polymorphism, and metaprogramming.",
+      href: "/learn/ruby-oop",
+      accent: "#9333ea",
+    },
+    {
+      title: "Ruby Blocks & Modules",
+      tag: "Interactive Course",
+      icon: Layers3,
+      description:
+        "Deep dive into Ruby blocks, procs, lambdas, modules, and mixins — the building blocks of Ruby's expressive and modular design.",
+      href: "/learn/ruby-blocks-modules",
+      accent: "#0891b2",
     },
   ],
   // ─── ADD GO TRACK DEFINITION ────────────────────────────────────────────────
@@ -713,6 +740,9 @@ export const learnNavByLanguage = {
   ruby: [
     { label: "Ruby Basics", to: "/learn/ruby-fundamentals" },
     { label: "Ruby Gems", to: "/learn/ruby-gems" },
+    { label: "File Handling", to: "/learn/ruby-file-handling" },
+    { label: "Ruby OOP", to: "/learn/ruby-oop" },
+    { label: "Blocks & Modules", to: "/learn/ruby-blocks-modules" },
   ],
   // ─── ADD GO NAVIGATION ENTRIES ─────────────────────────────────────────────
   go: [{ label: "Go Basics", to: "/learn/golang-fundamentals" }],
@@ -798,7 +828,6 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/php-forms") ||
     pathname.startsWith("/learn/php-sessions") ||
     pathname.startsWith("/learn/php-mysql") ||
-    pathname.startsWith("/learn/php-oop") ||
     pathname.startsWith("/learn/laravel-basics") ||
     pathname.startsWith("/learn/php-projects")
   ) {
@@ -806,7 +835,10 @@ export function inferLanguageFromLearnPath(pathname = "") {
   }
   if (
     pathname.startsWith("/learn/ruby-fundamentals") ||
-    pathname.startsWith("/learn/ruby-gems")
+    pathname.startsWith("/learn/ruby-gems") ||
+    pathname.startsWith("/learn/ruby-file-handling") ||
+    pathname.startsWith("/learn/ruby-oop") ||
+    pathname.startsWith("/learn/ruby-blocks-modules")
   ) {
     return "ruby";
   }

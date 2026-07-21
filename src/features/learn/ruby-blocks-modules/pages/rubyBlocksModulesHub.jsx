@@ -149,7 +149,7 @@ export default function RubyBlocksModulesHub() {
           </div>
         </div>
       </div>
-
+      
       <div className="oops-stage-tabs" style={{ padding: "0 1.5rem", marginTop: "0.5rem" }}>
         {[ ["beginner","Beginner"], ["intermediate","Intermediate"], ["advanced","Advanced"], ["pro","Pro"] ].map(([id,label])=> (
           <button key={id} type="button" className={stage===id?"active stage-tab":"stage-tab"} onClick={()=>setStage(id)} style={{ marginRight: 8 }}>
