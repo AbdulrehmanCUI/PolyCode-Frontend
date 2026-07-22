@@ -509,6 +509,24 @@ export const languageCourses = {
       href: "/learn/ruby-gems",
       accent: "#9333ea",
     },
+    {
+      title: "Ruby Blocks & Modules",
+      tag: "Interactive Course",
+      icon: Layers3,
+      description:
+        "Blocks, procs, and lambdas; yield and block parameters; modules and mixins with include/extend — with hands-on Ruby challenges.",
+      href: "/learn/ruby-blocks-modules",
+      accent: "#dc2626",
+    },
+    {
+      title: "Ruby OOP",
+      tag: "Interactive Course",
+      icon: Boxes,
+      description:
+        "Classes, instances, and initialize; encapsulation with attr_reader/writer/accessor; inheritance, modules, and polymorphism in Ruby.",
+      href: "/learn/ruby-oop",
+      accent: "#f59e0b",
+    },
   ],
   // ─── ADD GO TRACK DEFINITION ────────────────────────────────────────────────
   go: [
@@ -713,6 +731,8 @@ export const learnNavByLanguage = {
   ruby: [
     { label: "Ruby Basics", to: "/learn/ruby-fundamentals" },
     { label: "Ruby Gems", to: "/learn/ruby-gems" },
+    { label: "Blocks & Modules", to: "/learn/ruby-blocks-modules" },
+    { label: "Ruby OOP", to: "/learn/ruby-oop" },
   ],
   // ─── ADD GO NAVIGATION ENTRIES ─────────────────────────────────────────────
   go: [{ label: "Go Basics", to: "/learn/golang-fundamentals" }],
@@ -806,7 +826,9 @@ export function inferLanguageFromLearnPath(pathname = "") {
   }
   if (
     pathname.startsWith("/learn/ruby-fundamentals") ||
-    pathname.startsWith("/learn/ruby-gems")
+    pathname.startsWith("/learn/ruby-gems") ||
+    pathname.startsWith("/learn/ruby-blocks-modules") ||
+    pathname.startsWith("/learn/ruby-oop")
   ) {
     return "ruby";
   }

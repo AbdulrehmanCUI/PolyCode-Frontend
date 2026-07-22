@@ -641,10 +641,37 @@ export default function NumpyIntroTheory({
   const introTextIndex = theoryBase.findIndex(
     (block) => block.type === "text" && !block.code,
   );
-  const theoryBlocks =
+  const theoryBlocksRaw =
     introTextIndex >= 0
       ? theoryBase.filter((_, index) => index !== introTextIndex)
       : theoryBase;
+  const hasCustomW3 =
+    activeLesson?.topicOverview?.style === "w3" ||
+    Boolean(activeLesson?.topicOverview?.definition);
+  const usesAutoOverview = !isCourseStart && autoW3 && !hasCustomW3;
+  // The auto-generated W3 overview (buildAutoW3TopicOverview) already lifts
+  // the lesson's first "tip" callout and first "warning"/"info" callout up
+  // into its own Key Points summary — drop those same blocks here so they
+  // don't render a second time further down the page.
+  let autoTipDropped = false;
+  let autoNoteDropped = false;
+  const theoryBlocks = usesAutoOverview
+    ? theoryBlocksRaw.filter((block) => {
+        if (block.type !== "callout") return true;
+        if (!autoTipDropped && block.variant === "tip") {
+          autoTipDropped = true;
+          return false;
+        }
+        if (
+          !autoNoteDropped &&
+          (block.variant === "warning" || block.variant === "info")
+        ) {
+          autoNoteDropped = true;
+          return false;
+        }
+        return true;
+      })
+    : theoryBlocksRaw;
   const theoryWithQuizMeta = mapTheoryWithQuizIndices(theoryBlocks);
   const quizSlides = theoryWithQuizMeta
     .filter(({ block }) => block.type === "quiz")
@@ -652,9 +679,6 @@ export default function NumpyIntroTheory({
   let stepCounter = 0;
   let quizSliderRendered = false;
 
-  const hasCustomW3 =
-    activeLesson?.topicOverview?.style === "w3" ||
-    Boolean(activeLesson?.topicOverview?.definition);
   const showTopicOverview =
     !isCourseStart && (autoW3 || hasCustomW3);
   const hasW3Overview =

@@ -347,7 +347,7 @@ print(steps + 500)`,
             content: `import torch
 
 one_d = torch.tensor([1, 2, 3])
-grades = torch.tensor([[78, 85], [92, 88]])
+grades = torch.tensor([[78, 85], [92, 88], [81, 79]])
 print(one_d.shape)
 print(grades.shape)`,
           },
@@ -447,6 +447,19 @@ print(r)`,
             answer: 2,
             explanation:
               `\`torch.rand(shape)\` fills a tensor with uniform random values in [0, 1).`,
+          },
+          {
+            type: "quiz",
+            question: `Which PyTorch function creates a tensor filled with ones?`,
+            options: [
+              `torch.zeros()`,
+              `torch.ones()`,
+              `torch.rand()`,
+              `torch.tensor()`,
+            ],
+            answer: 1,
+            explanation:
+              `\`torch.ones()\` creates a tensor of the given shape filled entirely with the value 1.`,
           },
         ],
         challenge: {
