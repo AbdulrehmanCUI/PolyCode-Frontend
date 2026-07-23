@@ -32,6 +32,7 @@ export const COURSE_PROGRESS_REGISTRY = [
   { courseId: "php-fundamentals", storagePrefix: "php_fundamentals", scoped: false, notes: false },
   { courseId: "ruby-fundamentals", storagePrefix: "ruby_fundamentals", scoped: false, notes: false },
   { courseId: "ruby-gems", storagePrefix: "ruby_gems", scoped: false, notes: false },
+  { courseId: "ruby-file-handling", storagePrefix: "ruby_file_handling", scoped: false, notes: false },
   { courseId: "csharp-fundamentals", storagePrefix: "csharp", scoped: false, notes: false },
   { courseId: "sql-fundamentals", storagePrefix: "sqlfundamentals", scoped: false, notes: false },
   { courseId: "sql-queries", storagePrefix: "sqlqueries", scoped: false, notes: false },

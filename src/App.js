@@ -1,7 +1,3 @@
-import {
-  courseStackGroups,
-  inferLanguageFromLearnPath,
-} from "./features/language/courseCatalog";
 import React, { Suspense, lazy } from "react";
 import {
   BrowserRouter as Router,
@@ -290,6 +286,26 @@ const CsharpHub = lazyWithChunkRetry(
 const CsharpLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/csharp-fundamentals/pages/CsharpLessonPage"),
 );
+const RubyFileHandlingHub = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-file-handling/pages/RubyFileHandlingHub"),
+);
+const RubyFileHandlingLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/ruby-file-handling/pages/RubyFileHandlingLessonPage"),
+);
+const RubyOopHub = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-oop/pages/rubyOopHub"),
+);
+const RubyOopLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-oop/pages/rubyOopLessonPage"),
+);
+const RubyBlocksModulesHub = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-blocks-modules/pages/rubyBlocksModulesHub"),
+);
+const RubyBlocksModulesLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/ruby-blocks-modules/pages/rubyBlocksModulesLessonPage"),
+);
 
 const PageFallback = () => (
   <div className="loading">
@@ -378,9 +394,16 @@ function MainApp({
   theme,
   onThemeChange,
 }) {
+  const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const toggleSidebar = () => setIsSidebarOpen((o) => !o);
   const closeSidebar = () => setIsSidebarOpen(false);
+
+  React.useEffect(() => {
+    if (location.pathname.startsWith("/learn/")) {
+      setIsSidebarOpen(false);
+    }
+  }, [location.pathname]);
 
   React.useEffect(() => {
     const mq = window.matchMedia("(max-width: 900px)");
@@ -450,6 +473,12 @@ function MainApp({
                 path="/daily-challenge"
                 element={<DailyChallenge theme={theme} />}
               />
+              {/*
+                NOTE: The Ruby File Handling routes used to live here, which was the bug —
+                this MainApp shell always renders the docs Navbar + Sidebar ("CURRENT STACK",
+                "NAVIGATE", "FILES"). They've been moved to AppRoutes below, wrapped in
+                LearnShell only (matching every other course), so they render full-width.
+              */}
               <Route path="*" element={<Navigate to="/hub" replace />} />
             </Routes>
           </Suspense>
@@ -651,10 +680,51 @@ function AppRoutes() {
   }, []);
 
   React.useEffect(() => {
-    const inferred = inferLanguageFromLearnPath(location.pathname);
-    if (!inferred) return;
-    const stack = courseStackGroups.find((entry) => entry.id === inferred);
-    handleLanguageSelect(stack?.label || inferred, { stay: true });
+    const path = location.pathname;
+    if (
+      path.startsWith("/learn/python-fundamentals") ||
+      path.startsWith("/learn/numpy-py") ||
+      path.startsWith("/learn/pandas-py") ||
+      path.startsWith("/learn/matplotlib-py") ||
+      path.startsWith("/learn/fastapi-py") ||
+      path.startsWith("/learn/matplotlib-py") ||
+      path.startsWith("/learn/ai_ml-py")
+    ) {
+      handleLanguageSelect("Python", { stay: true });
+    } else if (path.startsWith("/learn/js-fundamentals")) {
+      handleLanguageSelect("JavaScript", { stay: true });
+    } else if (path.startsWith("/learn/c-sharp-fundamentals")) {
+      handleLanguageSelect("C#", { stay: true });
+    } else if (
+      path.startsWith("/learn/java-fundamentals") ||
+      path.startsWith("/learn/java-intermediate") ||
+      path.startsWith("/learn/java-exception") ||
+      path.startsWith("/learn/java-multithreading") ||
+      path.startsWith("/learn/java-jdbc") ||
+      path.startsWith("/learn/java-spring-boot") ||
+      path.startsWith("/learn/java-projects")
+    ) {
+      handleLanguageSelect("Java", { stay: true });
+    } else if (
+      path.startsWith("/learn/php-fundamentals") ||
+      path.startsWith("/learn/php-forms") ||
+      path.startsWith("/learn/php-sessions") ||
+      path.startsWith("/learn/php-mysql") ||
+      path.startsWith("/learn/php-oop")
+    ) {
+      handleLanguageSelect("PHP", { stay: true });
+    } else if (
+      path.startsWith("/learn/oops-cpp") ||
+      path.startsWith("/learn/pointers-cpp")
+    ) {
+      handleLanguageSelect("C++", { stay: true });
+    } else if (
+      path.startsWith("/learn/ruby-fundamentals") ||
+      path.startsWith("/learn/ruby-gems") ||
+      path.startsWith("/learn/ruby-file-handling")
+    ) {
+      handleLanguageSelect("Ruby", { stay: true });
+    }
   }, [location.pathname, handleLanguageSelect]);
 
   React.useEffect(() => {
@@ -1726,7 +1796,150 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
-        <Route path="/profile" element={<ProfileRedirect />} /><Route
+
+        {/* ── Ruby File Handling ── (moved here from MainApp — was rendering the docs
+             Navbar/Sidebar shell instead of LearnShell, which caused the stray
+             "CURRENT STACK / NAVIGATE / FILES" sidebar and the leftover C# stack label) */}
+        <Route
+          path="/learn/ruby-file-handling"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyFileHandlingHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/ruby-file-handling/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyFileHandlingLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/ruby-file-handling/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyFileHandlingLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        <Route
+          path="/learn/ruby-oop"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyOopHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/ruby-oop/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyOopLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/ruby-oop/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyOopLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        <Route
+          path="/learn/ruby-blocks-modules"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyBlocksModulesHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/ruby-blocks-modules/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyBlocksModulesLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/ruby-blocks-modules/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyBlocksModulesLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        <Route path="/profile" element={<ProfileRedirect />} />
+        <Route
           path="/learn/sql-fundamentals/*"
           element={
             <ThemedShell theme={theme}>
@@ -2266,6 +2479,7 @@ function AppRoutes() {
             </ThemedShell>
           }
         />
+        <Route path="/profile" element={<ProfileRedirect />} />
         <Route
           path="/*"
           element={

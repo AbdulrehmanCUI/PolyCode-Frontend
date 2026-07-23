@@ -39,6 +39,7 @@ const COURSE_NAMES = {
   "php-fundamentals": "PHP Fundamentals",
   "ruby-fundamentals": "Ruby Fundamentals",
   "ruby-gems": "Ruby Gems",
+  "ruby-file-handling": "Ruby File Handling",
   "csharp-fundamentals": "C# Fundamentals",
   "sql-fundamentals": "SQL Fundamentals",
   "sql-queries": "SQL Queries",
