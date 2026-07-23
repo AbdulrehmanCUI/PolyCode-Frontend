@@ -12,6 +12,33 @@ import CourseCertificate from "../../shared/CourseCertificate";
 
 const BASE_PATH = "/learn/ruby-fundamentals";
 
+const LEARNING_PATH = [
+  {
+    level: "Beginner",
+    chapters: RUBY_FUNDAMENTALS_CHAPTERS.filter((ch) => ch.stage === "beginner").map((ch) => ch.id),
+    color: "#16a34a",
+    summary: "Start with variables, control flow, methods, and Ruby basics.",
+  },
+  {
+    level: "Intermediate",
+    chapters: RUBY_FUNDAMENTALS_CHAPTERS.filter((ch) => ch.stage === "intermediate").map((ch) => ch.id),
+    color: "#0ea5e9",
+    summary: "Learn collections, hashes, and Ruby's functional iteration tools.",
+  },
+  {
+    level: "Pro",
+    chapters: RUBY_FUNDAMENTALS_CHAPTERS.filter((ch) => ch.stage === "pro").map((ch) => ch.id),
+    color: "#7e22ce",
+    summary: "Build with blocks, lambdas, and deeper object-oriented patterns.",
+  },
+  {
+    level: "Advanced",
+    chapters: RUBY_FUNDAMENTALS_CHAPTERS.filter((ch) => ch.stage === "advanced").map((ch) => ch.id),
+    color: "#dc2626",
+    summary: "Finish with modules, exceptions, and capstone challenges.",
+  },
+];
+
 function lessonPlainText(lesson) {
   return lesson.theory
     .filter((block) => block.type === "text" || block.type === "callout")
@@ -22,6 +49,7 @@ function lessonPlainText(lesson) {
 export default function RubyFundamentalsHub() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const [stage, setStage] = useState("beginner");
   const [filter, setFilter] = useState("all");
   const {
     isAuthenticated,
@@ -43,7 +71,8 @@ export default function RubyFundamentalsHub() {
   const resumeLesson =
     RUBY_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === lastLessonId) ||
     nextLesson;
-  const completedChapters = RUBY_FUNDAMENTALS_CHAPTERS.filter((chapter) =>
+  const chaptersForStage = RUBY_FUNDAMENTALS_CHAPTERS.filter((c) => (c.stage || "beginner") === stage);
+  const completedChapters = chaptersForStage.filter((chapter) =>
     chapter.lessons.every((lesson) => progress[lesson.id]),
   ).length;
   const bookmarkedLessons = bookmarks
@@ -53,6 +82,9 @@ export default function RubyFundamentalsHub() {
   const filteredLessons = useMemo(() => {
     const query = search.trim().toLowerCase();
     return RUBY_FUNDAMENTALS_LESSONS.filter((lesson) => {
+      const chapter = RUBY_FUNDAMENTALS_CHAPTERS.find((c) => c.id === lesson.chapterId);
+      if (((chapter && (chapter.stage || "beginner")) || "beginner") !== stage) return false;
+
       const matchesQuery =
         !query ||
         lesson.title.toLowerCase().includes(query) ||
@@ -65,7 +97,7 @@ export default function RubyFundamentalsHub() {
         (filter === "bookmarked" && bookmarks.includes(lesson.id));
       return matchesQuery && matchesFilter;
     });
-  }, [bookmarks, filter, progress, search]);
+  }, [bookmarks, filter, progress, search, stage]);
 
   return (
     <div className="oops-hub ruby-fundamentals-hub">
@@ -146,6 +178,81 @@ export default function RubyFundamentalsHub() {
           </div>
         </div>
       </div>
+
+      <div className="oops-stage-tabs" style={{ padding: "0 1.5rem", marginTop: "0.5rem" }}>
+        {[["beginner", "Beginner"], ["intermediate", "Intermediate"], ["pro", "Pro"], ["advanced", "Advanced"]].map(
+          ([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              className={stage === id ? "active stage-tab" : "stage-tab"}
+              onClick={() => setStage(id)}
+              style={{ marginRight: 8 }}
+            >
+              {label}
+            </button>
+          ),
+        )}
+      </div>
+
+      <section className="matplotlib-learn-path" aria-label="Learning path">
+        <div className="matplotlib-path-label">
+          <span>Your path · Beginner to Advanced</span>
+          <small>
+            {RUBY_FUNDAMENTALS_CHAPTERS.length} chapters · {RUBY_FUNDAMENTALS_LESSONS.length} lessons
+          </small>
+        </div>
+        <div className="matplotlib-path-grid">
+          {LEARNING_PATH.map((stageDef) => {
+            const stageChapters = RUBY_FUNDAMENTALS_CHAPTERS.filter((ch) =>
+              stageDef.chapters.includes(ch.id),
+            );
+            const stageLessons = stageChapters.flatMap((ch) => ch.lessons);
+            const stageDone = stageLessons.filter((l) => progress[l.id]).length;
+            const stagePct =
+              stageLessons.length > 0
+                ? Math.round((stageDone / stageLessons.length) * 100)
+                : 0;
+
+            return (
+              <article
+                key={stageDef.level}
+                className="matplotlib-path-card"
+                style={{ "--stage-color": stageDef.color }}
+              >
+                <header className="matplotlib-path-card-head">
+                  <span className="matplotlib-path-level">{stageDef.level}</span>
+                  <span className="matplotlib-path-pct">{stagePct}%</span>
+                </header>
+                <p className="matplotlib-path-summary">{stageDef.summary}</p>
+                <ul className="matplotlib-path-chapters">
+                  {stageChapters.map((ch) => (
+                    <li key={ch.id}>{ch.title}</li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  className="matplotlib-path-cta"
+                  onClick={() => {
+                    const firstOpen =
+                      stageLessons.find((l) => !progress[l.id]) ||
+                      stageLessons[0];
+                    if (firstOpen) {
+                      navigate(`${BASE_PATH}/lesson/${firstOpen.id}`);
+                    }
+                  }}
+                >
+                  {stageDone === stageLessons.length && stageLessons.length > 0
+                    ? "Review stage →"
+                    : stageDone > 0
+                    ? "Continue stage →"
+                    : "Start stage →"}
+                </button>
+              </article>
+            );
+          })}
+        </div>
+      </section>
 
       <div className="oops-guide-tools">
         <div className="oops-tool-panel oops-tool-panel-main">

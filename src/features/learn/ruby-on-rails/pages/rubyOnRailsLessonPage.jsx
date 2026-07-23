@@ -10,8 +10,8 @@ import {
   RUBY_ON_RAILS_CHAPTERS,
   RUBY_ON_RAILS_LESSONS,
   RUBY_ON_RAILS_TOTAL_XP,
-} from "../../ruby-on-rails/data/rubyOnRailsCurriculum";
-import useRubyOnRailsProgress from "../../ruby-on-rails/hooks/useRubyOnRailsProgress";
+} from "../data/rubyOnRailsCurriculum";
+import useRubyOnRailsProgress from "../hooks/useRubyOnRailsProgress";
 import useLessonReadGate from "../../shared/useLessonReadGate";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
 import { useLessonAssistantContext } from "../../../assistant/hooks/useLessonAssistantContext";
@@ -24,9 +24,20 @@ export default function RubyOnRailsLessonPage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState("theory");
   const [focusMode, setFocusMode] = useState(false);
-  const { markedAsRead, markAsRead, confidence, handleConfidenceChange, createGoToChallenge, challengeTabLocked } = useLessonReadGate(READ_GATE_PREFIX, lessonId);
+  const { markedAsRead, markAsRead, confidence, handleConfidenceChange, createGoToChallenge, challengeTabLocked } =
+    useLessonReadGate(READ_GATE_PREFIX, lessonId);
   const goToChallenge = createGoToChallenge(setTab);
-  const { user, isAuthenticated, completedMap: progress, savedCodeMap, bookmarks, completeLesson, rememberLesson, saveCode, toggleBookmark } = useRubyOnRailsProgress();
+  const {
+    user,
+    isAuthenticated,
+    progress,
+    savedCodeMap,
+    bookmarks,
+    completeLesson,
+    rememberLesson,
+    saveCode,
+    toggleBookmark,
+  } = useRubyOnRailsProgress();
   const codeSaveTimer = useRef(null);
 
   const lesson = RUBY_ON_RAILS_LESSONS.find((item) => item.id === lessonId);
@@ -40,12 +51,16 @@ export default function RubyOnRailsLessonPage() {
     lesson,
     chapter: lesson?.chapterTitle,
     tab,
-    code: savedCodeMap[lessonId] || "",
+    code: savedCodeMap?.[lessonId] || "",
   });
 
-  useEffect(() => { setTab("theory"); }, [lessonId]);
+  useEffect(() => {
+    setTab("theory");
+  }, [lessonId]);
 
-  useEffect(() => { if (lessonId) rememberLesson(lessonId); }, [lessonId, rememberLesson]);
+  useEffect(() => {
+    if (lessonId) rememberLesson(lessonId);
+  }, [lessonId, rememberLesson]);
 
   useEffect(() => () => { window.clearTimeout(codeSaveTimer.current); }, []);
 
@@ -58,21 +73,31 @@ export default function RubyOnRailsLessonPage() {
     );
   }
 
-  const isCompleted = isAuthenticated && !!progress[lessonId];
-  const isBookmarked = bookmarks.includes(lessonId);
-  const completedCount = Object.keys(progress).length;
-  const earnedXP = RUBY_ON_RAILS_LESSONS.filter((item) => progress[item.id]).reduce((sum, item) => sum + item.xp, 0);
+  const isCompleted = isAuthenticated && !!progress?.[lessonId];
+  const isBookmarked = (bookmarks || []).includes(lessonId);
+  const completedCount = Object.keys(progress || {}).length;
+  const earnedXP = RUBY_ON_RAILS_LESSONS.filter((item) => progress?.[item.id]).reduce((sum, item) => sum + item.xp, 0);
 
-  async function handleChallengeComplete() { await completeLesson(lesson); }
+  async function handleChallengeComplete() {
+    await completeLesson(lesson);
+  }
 
   function handleCodeChange(code) {
     window.clearTimeout(codeSaveTimer.current);
-    codeSaveTimer.current = window.setTimeout(() => { saveCode(lessonId, code).catch(() => {}); }, 700);
+    codeSaveTimer.current = window.setTimeout(() => {
+      saveCode(lessonId, code).catch(() => {});
+    }, 700);
   }
 
   return (
     <div className={`oops-lesson-page ${focusMode ? "oops-focus-mode" : ""}`}>
-      <OopsSidebar currentLessonId={lessonId} progress={progress} chapters={RUBY_ON_RAILS_CHAPTERS} basePath={BASE_PATH} title="Ruby on Rails" />
+      <OopsSidebar
+        currentLessonId={lessonId}
+        progress={progress}
+        chapters={RUBY_ON_RAILS_CHAPTERS}
+        basePath={BASE_PATH}
+        title="Ruby on Rails"
+      />
 
       <div className="oops-lesson-main">
         <div className="oops-lesson-topbar">
@@ -83,9 +108,23 @@ export default function RubyOnRailsLessonPage() {
             <span>{lesson.title}</span>
           </div>
           {isCompleted && <span className="oops-completed-badge">✓ Completed</span>}
-          <button type="button" className={`oops-bookmark-btn ${isBookmarked ? "active" : ""}`} onClick={() => toggleBookmark(lessonId)}>{isBookmarked ? "★" : "☆"}</button>
-          <button type="button" className={`oops-focus-btn ${focusMode ? "active" : ""}`} onClick={() => setFocusMode((v) => !v)}>{focusMode ? "Exit Focus" : "Focus"}</button>
-          <LearnProfileMenu user={user} trackTitle="Ruby on Rails" syncLabel={isAuthenticated ? "Ruby on Rails progress saved to your account" : "Sign in to save progress"} completedCount={completedCount} totalLessons={RUBY_ON_RAILS_LESSONS.length} earnedXP={earnedXP} totalXP={RUBY_ON_RAILS_TOTAL_XP} bookmarksCount={bookmarks.length} streak={0} />
+          <button type="button" className={`oops-bookmark-btn ${isBookmarked ? "active" : ""}`} onClick={() => toggleBookmark(lessonId)}>
+            {isBookmarked ? "★" : "☆"}
+          </button>
+          <button type="button" className={`oops-focus-btn ${focusMode ? "active" : ""}`} onClick={() => setFocusMode((v) => !v)}>
+            {focusMode ? "Exit Focus" : "Focus"}
+          </button>
+          <LearnProfileMenu
+            user={user}
+            trackTitle="Ruby on Rails"
+            syncLabel={isAuthenticated ? "Ruby on Rails progress saved to your account" : "Sign in to save progress"}
+            completedCount={completedCount}
+            totalLessons={RUBY_ON_RAILS_LESSONS.length}
+            earnedXP={earnedXP}
+            totalXP={RUBY_ON_RAILS_TOTAL_XP}
+            bookmarksCount={(bookmarks || []).length}
+            streak={0}
+          />
         </div>
 
         <div className="oops-tabs">
@@ -110,7 +149,7 @@ export default function RubyOnRailsLessonPage() {
               accentColor={LEARN_ACCENT}
               isCompleted={isCompleted}
               onComplete={handleChallengeComplete}
-              initialCode={savedCodeMap[lessonId]}
+              initialCode={savedCodeMap?.[lessonId]}
               onCodeChange={handleCodeChange}
             />
           )}

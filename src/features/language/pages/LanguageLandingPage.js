@@ -77,6 +77,13 @@ const languageMeta = {
     description:
       "Query data, shape tables, reason about joins, and learn database habits that scale.",
   },
+  ruby: {
+    name: "Ruby",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/ruby/ruby-original.svg",
+    color: "#701516",
+    description:
+      "Learn elegant, expressive Ruby — from fundamentals to Rails, with focus on OOP, blocks, and web development.",
+  },
   quantum: {
     name: "Quantum",
     icon: "/images/quantum-lang-icon.png",

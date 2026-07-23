@@ -1,5 +1,6 @@
 // PolyCode — Ruby on Rails course (Beginner → Advanced)
 
+
 const ACCENT = "#cc0000";
 
 function quiz(question, options, answer, explanation) {
@@ -21,6 +22,7 @@ function text(content, codeBlock = null) {
   return { type: "text", content };
 }
 
+// (keep ACCENT and everything below exactly as it was)
 export const RUBY_ON_RAILS_CHAPTERS = [
   {
     id: "rails-intro",
@@ -30,21 +32,39 @@ export const RUBY_ON_RAILS_CHAPTERS = [
     color: ACCENT,
     lessons: [
       {
-        id: "rails-0",
-        title: "What is Ruby on Rails?",
-        xp: 10,
-        theory: [
-          text(
-            "Ruby on Rails (often called Rails) is a web application framework written in Ruby. It follows the MVC (Model-View-Controller) architectural pattern and emphasizes Convention Over Configuration (CoC) and Don't Repeat Yourself (DRY) principles."
-          ),
-          text(
-            "Rails is built on Ruby, so if you know Ruby basics, you're ready to learn Rails. Rails handles the boilerplate of web development — routing, database access, sessions, caching — so you can focus on building features."
-          ),
-          callout(
-            "info",
-            "Course level: Beginner to Advanced — each chapter builds on the previous. Examples simulate Rails patterns in pure Ruby so they run in the browser-backed interpreter."
-          ),
-        ],
+  id: "rails-0",
+  title: "What is Ruby on Rails?",
+  xp: 10,
+  theory: [
+    text(
+      "Ruby on Rails (often called Rails) is a web application framework written in Ruby. It follows the MVC (Model-View-Controller) architectural pattern and emphasizes Convention Over Configuration (CoC) and Don't Repeat Yourself (DRY) principles.",
+      {
+        label: "Rails in one glance",
+        content: `# Rails maps a URL to a controller action,
+# which loads data from a model and renders a view.
+
+class WelcomeController
+  def index
+    @message = "Hello from Rails!"
+    render_view(@message)
+  end
+
+  def render_view(message)
+    puts "<h1>#{message}</h1>"
+  end
+end
+
+WelcomeController.new.index`,
+      },
+    ),
+    text(
+      "Rails is built on Ruby, so if you know Ruby basics, you're ready to learn Rails. Rails handles the boilerplate of web development — routing, database access, sessions, caching — so you can focus on building features.",
+    ),
+    callout(
+      "info",
+      "Course level: Beginner to Advanced — each chapter builds on the previous. Examples simulate Rails patterns in pure Ruby so they run in the browser-backed interpreter."
+    ),
+  ],
         challenge: {
           title: "Rails Concept Check",
           description: "Create a class that simulates a Rails-like router. It should have a `match` method that registers a route and a `route_for` method that finds a registered route. Return the route path string.",
@@ -230,31 +250,47 @@ class RailsRouter
     instance_eval(&block) if block_given?
   end
 
-  def get(path, to:)
-    controller, action = to.split("#")
-    @routes[:get] << { path: path, controller: controller, action: action }
+  # Define methods for each HTTP verb dynamically to keep code DRY
+  [:get, :post, :put, :patch, :delete].each do |method_name|
+    define_method(method_name) do |path, to:|
+      controller, action = to.split("#")
+      @routes[method_name] << { path: path, controller: controller, action: action }
+    end
   end
 
   def resources(name)
-    get "/#{name}", to: "#{name}_controller#index"
-    get "/#{name}/:id", to: "#{name}_controller#show"
-    post "/#{name}", to: "#{name}_controller#create"
-    put "/#{name}/:id", to: "#{name}_controller#update"
-    delete "/#{name}/:id", to: "#{name}_controller#destroy"
+    get "/#{name}", to: "#{name}#index"
+    get "/#{name}/:id", to: "#{name}#show"
+    post "/#{name}", to: "#{name}#create"
+    put "/#{name}/:id", to: "#{name}#update"
+    delete "/#{name}/:id", to: "#{name}#destroy"
   end
 
   def recognize_path(method, path)
-    @routes[method.to_sym]&.find { |r| r[:path] == path }
+    @routes[method.to_sym]&.find do |r|
+      # Convert route placeholders like :id into dynamic regex matchers
+      pattern = Regexp.new("^" + r[:path].gsub(/:[a-zA-Z_]+/, '[^/]+') + "$")
+      pattern.match?(path)
+    end
   end
 end
+
+# --- Testing the router ---
 
 router = RailsRouter.new do
   get "/", to: "pages#home"
   resources :articles
 end
 
-route = router.recognize_path("get", "/articles")
-puts "Controller: #{route[:controller]}, Action: #{route[:action]}"`,
+# Test index route
+route1 = router.recognize_path("get", "/articles")
+puts "Controller: #{route1[:controller]}, Action: #{route1[:action]}"
+# => Controller: articles, Action: index
+
+# Test show route with dynamic ID
+route2 = router.recognize_path("get", "/articles/42")
+puts "Controller: #{route2[:controller]}, Action: #{route2[:action]}"
+# => Controller: articles, Action: show`,
             },
           ),
           callout("tip", "Use `rails routes` in terminal to see all available routes in your Rails app."),
@@ -348,7 +384,7 @@ router.print_routes`,
               label: "Controller simulation",
               content: `# Simulating Rails controller
 class RailsController
-  attr_accessor :request, :response, :params, :flash
+  attr_accessor :request, :response, :flash
 
   def initialize
     @flash = {}
@@ -390,12 +426,14 @@ class PostsController < RailsController
   end
 end
 
-# Simulate requests
+# --- Simulate requests ---
+
 req1 = PostsController.new
 req1.params[:id] = 42
 req1.show
 
 puts "---"
+
 req2 = PostsController.new
 req2.params[:post] = { title: "Hello Rails" }
 req2.create
@@ -469,6 +507,7 @@ puts "Result: #{result}"`,
       },
     ],
   },
+
   {
     id: "rails-models",
     title: "Active Record & Models — Intermediate",
@@ -485,95 +524,100 @@ puts "Result: #{result}"`,
             "Active Record is Rails' ORM (Object-Relational Mapping) layer. It maps database tables to Ruby classes. Common methods: `all`, `find`, `create`, `update`, `destroy`, `where`.",
             {
               label: "Active Record simulation",
-              content: `# Simulating Active Record with a simple in-memory store
-class SimpleRecord
-  @@connection = {}
-  @@id_counter = 0
+              content: `# Simulating Active Record
+# 1. Define the parent module first
+module ActiveRecord
+  class Base
+    @@connection = {}
+    @@id_counter = 0
 
-  class << self
-    def table_name
-      name.downcase + "s"
-    end
-
-    def all
-      (@@connection[table_name] || []).map { |attrs| new(attrs) }
-    end
-
-    def find(id)
-      record = (@@connection[table_name] || []).find { |r| r[:id] == id }
-      raise "Couldn't find #{name} with id=#{id}" unless record
-      new(record)
-    end
-
-    def where(conditions)
-      results = (@@connection[table_name] || []).select do |r|
-        conditions.all? { |k, v| r[k] == v }
+    class << self
+      def table_name
+        name.downcase + "s"
       end
-      results.map { |attrs| new(attrs) }
+
+      def all
+        (@@connection[table_name] || []).map { |attrs| new(attrs) }
+      end
+
+      def find(id)
+        record = (@@connection[table_name] || []).find { |r| r[:id] == id }
+        raise "Couldn't find #{name} with id=#{id}" unless record
+        new(record)
+      end
+
+      def where(conditions)
+        results = (@@connection[table_name] || []).select do |r|
+          conditions.all? { |k, v| r[k] == v }
+        end
+        results.map { |attrs| new(attrs) }
+      end
+
+      def create(attributes)
+        record = new(attributes)
+        record.save
+        record
+      end
+
+      def reset_db
+        @@connection[table_name] = []
+        @@id_counter = 0
+      end
     end
 
-    def create(attributes)
-      record = new(attributes)
-      record.save
-      record
+    attr_accessor :id, :attributes
+
+    def initialize(attrs = {})
+      @attributes = attrs.dup
+      @id = attrs[:id]
     end
 
-    def reset_db
-      @@connection[table_name] = []
-      @@id_counter = 0
+    def save
+      return update if @id
+      @@id_counter += 1
+      @id ||= @@id_counter
+      @attributes[:id] = @id
+      @@connection[self.class.table_name] ||= []
+      @@connection[self.class.table_name] << @attributes.dup
+      true
     end
-  end
 
-  attr_accessor :id, :attributes
-
-  def initialize(attrs = {})
-    @attributes = attrs.dup
-    @id = attrs[:id]
-  end
-
-  def save
-    return update(@attributes) if @id
-    @@id_counter += 1
-    @id ||= @@id_counter
-    @attributes[:id] = @id
-    @@connection[self.class.table_name] ||= []
-    @@connection[self.class.table_name] << @attributes.dup
-    true
-  end
-
-  def update(attrs = {})
-    @attributes.merge!(attrs)
-    @@connection[self.class.table_name]&.each do |r|
-      r.merge!(@attributes) if r[:id] == @id
+    def update(attrs = {})
+      @attributes.merge!(attrs)
+      @@connection[self.class.table_name]&.each do |r|
+        r.merge!(@attributes) if r[:id] == @id
+      end
+      true
     end
-    true
-  end
 
-  def destroy
-    @@connection[self.class.table_name]&.delete_if { |r| r[:id] == @id }
-    true
-  end
-
-  def method_missing(m, *args, &block)
-    if @attributes.key?(m)
-      @attributes[m]
-    elsif m.to_s.end_with?("=")
-      attr = m.to_s.chomp("=").to_sym
-      @attributes[attr] = args.first
-    else
-      super
+    def destroy
+      @@connection[self.class.table_name]&.delete_if { |r| r[:id] == @id }
+      true
     end
-  end
 
-  def respond_to_missing?(m, include_private = false)
-    @attributes.key?(m.to_s.chomp("=").to_sym) || super
+    # Dynamic attribute accessors
+    def method_missing(m, *args, &block)
+      if @attributes.key?(m)
+        @attributes[m]
+      elsif m.to_s.end_with?("=")
+        attr = m.to_s.chomp("=").to_sym
+        @attributes[attr] = args.first
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(method_name, include_private = false)
+      @attributes.key?(method_name) || method_name.to_s.end_with?("=") || super
+    end
   end
 end
 
-class Post < SimpleRecord
+class Post < ActiveRecord::Base
 end
 
-# Use it
+# --- Use it ---
+
 Post.reset_db
 post = Post.create(title: "Hello Rails", body: "Rails is great!")
 puts "Created: #{post.title} (id: #{post.id})"
@@ -585,7 +629,7 @@ found = Post.find(post.id)
 puts "Found: #{found.title}"
 
 Post.create(title: "Second Post", body: "More content")
-puts "Posts with 'Hello': #{Post.where(title: 'Hello Rails').size}"`,
+puts "Posts with 'Hello Rails': #{Post.where(title: 'Hello Rails').size}"`,
             },
           ),
           quiz(
@@ -599,7 +643,7 @@ puts "Posts with 'Hello': #{Post.where(title: 'Hello Rails').size}"`,
           title: "Article CRUD",
           description: "Create an Article model with title and body attributes. Implement CRUD operations: create 3 articles, find one by id, update one, and count remaining after deleting one.",
           starterCode: `# Implement Article model with CRUD operations
-class Article < SimpleRecord
+class Article < ActiveRecord::Base
 end
 
 # Reset database
@@ -610,7 +654,7 @@ Article.reset_db
 # Update article 1's title
 # Delete article 3
 # Print remaining count`,
-          solutionCode: `class Article < SimpleRecord
+          solutionCode: `class Article < ActiveRecord::Base
 end
 
 Article.reset_db
@@ -645,67 +689,66 @@ puts "Remaining articles: #{remaining}"`,
             "Active Record associations define relationships between models: `has_many`, `has_one`, `belongs_to`, and `has_and_belongs_to_many`. Validations ensure data integrity before saving.",
             {
               label: "Associations simulation",
-              content: `# Simulating Rails-style associations
-class Author
-  attr_accessor :id, :name
+              content: `# Simulating Rails associations
+# --- 0. Clear previous memory definitions ---
+[:Author, :Article, :ActiveRecord].each do |const|
+  Object.send(:remove_const, const) if Object.const_defined?(const)
+end
 
-  @@all = []
+# --- 1. ActiveRecord Simulation Setup ---
+module ActiveRecord
+  class Base
+    attr_accessor :id
 
-  def initialize(attrs = {})
-    @id = attrs[:id]
-    @name = attrs[:name]
+    def initialize(attributes = {})
+      attributes.each do |key, value|
+        send("#{key}=", value) if respond_to?("#{key}=")
+      end
+    end
+
+    def save
+      self.class.records << self unless self.class.records.include?(self)
+      self
+    end
+
+    def self.records
+      @records ||= []
+    end
+
+    def self.where(query = {})
+      records.select do |record|
+        query.all? { |key, val| record.send(key) == val }
+      end
+    end
   end
+end
 
-  def save
-    @@all << self
-    true
-  end
+# --- 2. Model Definitions ---
+class Author < ActiveRecord::Base
+  attr_accessor :name
 
   def articles
-    Article.all.select { |a| a.author_id == @id }
-  end
-
-  def self.all
-    @@all
+    Article.where(author_id: id)
   end
 end
 
-class Article
-  attr_accessor :id, :title, :author_id
-
-  @@all = []
-
-  def initialize(attrs = {})
-    @id = attrs[:id]
-    @title = attrs[:title]
-    @author_id = attrs[:author_id]
-  end
-
-  def save
-    @@all << self
-    true
-  end
+class Article < ActiveRecord::Base
+  attr_accessor :title, :author_id
 
   def author
-    Author.all.find { |a| a.id == @author_id }
-  end
-
-  def self.all
-    @@all
+    Author.records.find { |a| a.id == author_id }
   end
 end
 
-# Create author and articles
+# --- 3. Test ---
 author = Author.new(id: 1, name: "Sarah")
 author.save
 
-a1 = Article.new(id: 1, title: "Rails Intro", author_id: 1)
-a2 = Article.new(id: 2, title: "Active Record", author_id: 1)
-a1.save
-a2.save
+Article.new(id: 1, title: "Rails Intro", author_id: 1).save
+Article.new(id: 2, title: "Active Record", author_id: 1).save
 
 puts "Author: #{author.name}"
-puts "Articles: #{author.articles.map(&:title).join(", ")}"`,
+puts "Articles: #{author.articles.map(&:title).join(', ')}"`,
             },
           ),
           callout("tip", "Always validate at the model level — never trust user input. Use `presence`, `uniqueness`, `format`, and `length` validators."),
@@ -805,8 +848,37 @@ puts "Errors: #{u2.errors.join(", ")}"`,
             "ERB (Embedded Ruby) allows Ruby code in HTML. Use `<% %>` for logic and `<%= %>` for output. Layouts wrap views with common elements like headers and footers.",
             {
               label: "ERB simulation",
-              content: `require 'erb'
+              content: `# Simulating ERB template rendering
 require 'ostruct'
+
+class ERB
+  def initialize(template)
+    @template = template
+  end
+
+  def result(bind = TOPLEVEL_BINDING)
+    code = "_out = ''; "
+    
+    # Process ERB tags using regular expressions
+    @template.scan(/(.*?)(<%(=)?(.*?)%>|\z)/m) do |text, tag, is_eval, expr|
+      # Append plain HTML text safely using inspect
+      code << "_out << #{text.inspect}; " unless text.empty?
+      
+      if tag
+        if is_eval
+          # <%= ... %> -> append result to output
+          code << "_out << (#{expr.strip}).to_s; "
+        else
+          # <% ... %> -> execute Ruby control code (if, else, end, etc.)
+          code << "#{expr.strip}; "
+        end
+      end
+    end
+    
+    code << "_out"
+    eval(code, bind)
+  end
+end
 
 # Simulate a view template
 template = <<~ERB
@@ -824,19 +896,21 @@ ERB
 @article = OpenStruct.new(title: "Rails Views", body: "ERB lets you embed Ruby in HTML.", published: true)
 @author = OpenStruct.new(name: "Sarah")
 
-# Render
+# Render template
 renderer = ERB.new(template)
-result = renderer.result(binding)
-
-puts result`,
+puts renderer.result(binding)`,
             },
           ),
           callout("info", "In real Rails, views go in app/views/controller_name/action_name.html.erb. Use partials (`render 'shared/header'`) for reusable components."),
         ],
         challenge: {
           title: "ERB Article List",
-          description: "Use ERB to render a list showing only published articles with their titles.",
-          starterCode: `require 'erb'
+          description: "Create a simple ERB renderer that processes `<%= %>` and `<% %>` tags. Given an articles array, render a list showing only published articles with their titles.",
+          starterCode: `# Implement a simple ERB renderer
+def render_erb(template, locals = {})
+  # Process <%= %> for output
+  # Process <% %> for logic
+end
 
 articles = [
   { title: "Rails", published: true },
@@ -854,9 +928,16 @@ template = <<~TPL
   </ul>
 TPL
 
-# Render the template using ERB and print the result
-`,
-          solutionCode: `require 'erb'
+puts render_erb(template, { articles: articles })`,
+          solutionCode: `def render_erb(template, locals = {})
+  result = template.dup
+  locals.each { |k, v| eval("#{k} = locals[:#{k}]") }
+
+  result.gsub!(/<%= (.+?) %>/) { eval($1).to_s }
+  result.gsub!(/<% (.+?) %>/) { eval($1) }
+
+  result
+end
 
 articles = [
   { title: "Rails", published: true },
@@ -865,19 +946,19 @@ articles = [
 ]
 
 template = <<~TPL
-  <ul>
-  <% articles.each do |article| %>
-    <% if article[:published] %>
-      <li><%= article[:title] %></li>
-    <% end %>
+<ul>
+<% articles.each do |article| %>
+  <% if article[:published] %>
+    <li><%= article[:title] %></li>
   <% end %>
-  </ul>
+<% end %>
+</ul>
 TPL
 
-puts ERB.new(template).result(binding)`,
+puts render_erb(template, { articles: articles })`,
           tests: [
-            { id: 1, label: "Requires erb", keywords: [{ pattern: "require 'erb'" }] },
-            { id: 2, label: "Uses ERB.new", keywords: [{ pattern: "ERB\\.new" }] },
+            { id: 1, label: "Processes output tags", keywords: [{ pattern: "<%=" }] },
+            { id: 2, label: "Processes logic tags", keywords: [{ pattern: "<%" }] },
             { id: 3, label: "Filters published articles", keywords: [{ pattern: "published" }] },
           ],
         },
@@ -891,9 +972,9 @@ puts ERB.new(template).result(binding)`,
             "Rails form helpers generate HTML forms with proper attributes. `form_with` is the modern helper. CSRF protection uses authenticity tokens to prevent cross-site request forgery.",
             {
               label: "Form helper simulation",
-              content: `require 'securerandom'
+              content: `# Simulating Rails form_with helper
+require 'securerandom'
 
-# Simulating Rails form_with helper
 class FormBuilder
   def initialize(scope, url, options = {})
     @scope = scope
@@ -902,14 +983,14 @@ class FormBuilder
     @html = []
   end
 
-  def text_field(method, options = {})
-    value = @scope && @scope.respond_to?(method) ? @scope.send(method) : ""
-    @html << "<input type=\\"text\\" name=\\"#{method}\\" value=\\"#{value}\\" />"
+  def text_field(method, **options)
+    value = @scope.respond_to?(method) ? @scope.send(method) : ""
+    @html << '<input type="text" name="' + method.to_s + '" value="' + value.to_s + '" />'
     self
   end
 
   def submit(value = "Submit")
-    @html << "<input type=\\"submit\\" value=\\"#{value}\\" />"
+    @html << '<input type="submit" value="' + value.to_s + '" />'
     self
   end
 
@@ -917,19 +998,20 @@ class FormBuilder
     <<~HTML
       <form action="#{@url}" method="post">
         <input type="hidden" name="authenticity_token" value="#{@authenticity_token}" />
-        #{@html.join("\\n")}
+        #{@html.join("\n  ")}
       </form>
     HTML
   end
 end
 
-def form_with(scope: nil, url:, **options)
+def form_with(scope: nil, url:, **options, &block)
   builder = FormBuilder.new(scope, url, options)
-  yield(builder) if block_given?
+  block.call(builder) if block
   builder.to_html
 end
 
-# Usage
+# --- Usage ---
+
 class UserForm
   attr_accessor :name, :email
 end
@@ -952,9 +1034,7 @@ puts html`,
         challenge: {
           title: "Secure Form Builder",
           description: "Create a form builder that generates a complete HTML form with CSRF token, text fields for name and email, and a submit button. The form should POST to /users.",
-          starterCode: `require 'securerandom'
-
-# Create a secure form builder
+          starterCode: `# Create a secure form builder
 class SecureFormBuilder
   def initialize(url)
     @url = url
@@ -986,9 +1066,7 @@ form.text_field("user[name]", "Alice")
 form.email_field("user[email]", "alice@example.com")
 form.submit("Create")
 puts form.to_html`,
-          solutionCode: `require 'securerandom'
-
-class SecureFormBuilder
+          solutionCode: `class SecureFormBuilder
   def initialize(url)
     @url = url
     @fields = []
@@ -1038,6 +1116,7 @@ puts form.to_html`,
       },
     ],
   },
+
   {
     id: "rails-auth",
     title: "Authentication & Authorization — Pro",
@@ -1051,12 +1130,12 @@ puts form.to_html`,
         xp: 18,
         theory: [
           text(
-            "Authentication verifies who a user is. Rails apps commonly use `has_secure_password` with BCrypt for password hashing. Sessions store authenticated user IDs across requests. Here we simulate the hashing with a simple digest so it runs anywhere.",
+            "Authentication verifies who a user is. Rails apps commonly use `has_secure_password` with BCrypt for password hashing. Sessions store authenticated user IDs across requests.",
             {
               label: "Authentication simulation",
-              content: `require 'digest'
+              content: `# Simulating Rails authentication with has_secure_password
+require 'digest'
 
-# Simulating Rails authentication with has_secure_password
 class User
   attr_accessor :email, :password_digest
 
@@ -1065,21 +1144,31 @@ class User
     self.password = password if password
   end
 
-  def password=(password)
-    @password_digest = Digest::SHA256.hexdigest(password)
-  end
-
   def authenticate(password)
     return false unless @password_digest
-    Digest::SHA256.hexdigest(password) == @password_digest
+    
+    # Compare SHA256 digests
+    hash_password(password) == @password_digest
+  end
+
+  def password=(password)
+    @password_digest = hash_password(password)
+  end
+
+  private
+
+  def hash_password(password)
+    Digest::SHA256.hexdigest(password)
   end
 end
 
-# Create users
+# --- Create users ---
+
 alice = User.new(email: "alice@example.com", password: "secret123")
 bob = User.new(email: "bob@example.com", password: "password")
 
-# Test authentication
+# --- Test authentication ---
+
 puts "Alice with correct password: #{alice.authenticate("secret123")}"
 puts "Alice with wrong password: #{alice.authenticate("wrong")}"
 puts "Bob: #{bob.authenticate("password")}"`,
@@ -1236,10 +1325,15 @@ puts "Logged in as: #{auth.current_user(token)&.email}"`,
             "Authorization determines what authenticated users can do. Use `before_action` filters and policy objects to enforce permissions. Never trust client-side checks alone.",
             {
               label: "Authorization simulation",
-              content: `require 'ostruct'
+              content: `# Simulating Rails authorization
+require 'ostruct'
+
+# Prevent superclass mismatch if re-run in persistent environments
+Object.send(:remove_const, :PostsController) if defined?(PostsController)
+Object.send(:remove_const, :ApplicationController) if defined?(ApplicationController)
 
 class ApplicationController
-  attr_accessor :current_user
+  attr_accessor :current_user, :request
 
   def initialize
     @current_user = nil
@@ -1252,8 +1346,11 @@ class ApplicationController
 
   def allowed?(action, resource)
     return false unless @current_user
+    # Admin can do anything
     return true if @current_user[:role] == :admin
+    # Owner can manage their own resources
     return true if resource.respond_to?(:user_id) && resource.user_id == @current_user[:id]
+    # Read-only for others
     action == :read
   end
 
@@ -1268,15 +1365,25 @@ class PostsController < ApplicationController
     authorize(:delete, post)
     puts "Post deleted!"
   end
+
+  def index
+    require_login
+    puts "Listing posts..."
+  end
 end
 
-# Test as regular user
+# --- Test as regular user ---
 user = { id: 42, role: :user }
 controller = PostsController.new
 controller.current_user = user
-controller.destroy rescue puts "Blocked: #{$!}"
 
-# Test as admin
+begin
+  controller.destroy
+rescue => e
+  puts "Blocked: #{e.message}"
+end
+
+# --- Test as admin ---
 admin = { id: 99, role: :admin }
 controller.current_user = admin
 controller.destroy`,
@@ -1383,7 +1490,8 @@ puts "Viewer cannot delete: #{access.can?(viewer, :delete, post)}"`,
             "Rails APIs return JSON instead of HTML. Use `render json:` to serialize data. Follow REST conventions: GET for reads, POST for creates, PUT/PATCH for updates, DELETE for removals.",
             {
               label: "API simulation",
-              content: `require 'json'
+              content: `# Simulating Rails API responses
+require 'json'
 
 class APIResponse
   def self.json(data, status: 200)
@@ -1450,9 +1558,7 @@ puts controller.create[:body]`,
         challenge: {
           title: "JSON API Endpoint",
           description: "Create an API controller that handles CRUD for a Product model. Implement index (returns all products), show (returns one by id), create (adds product), and destroy (removes product). All responses should be JSON.",
-          starterCode: `require 'json'
-
-# Implement a JSON API for products
+          starterCode: `# Implement a JSON API for products
 class Product
   attr_accessor :id, :name, :price
 
@@ -1468,8 +1574,6 @@ class Product
 end
 
 class ProductsController
-  attr_accessor :params
-
   def initialize
     @products = [
       Product.new(id: 1, name: "Laptop", price: 999),
@@ -1520,8 +1624,6 @@ class Product
 end
 
 class ProductsController
-  attr_accessor :params
-
   def initialize
     @products = [
       Product.new(id: 1, name: "Laptop", price: 999),
@@ -1578,40 +1680,50 @@ puts controller.destroy`,
             "JSON Web Tokens (JWT) authenticate API requests. Unlike sessions, JWTs are stateless and can be validated by any service. The token is sent in the Authorization header.",
             {
               label: "JWT simulation",
-              content: `require 'base64'
+              content: `# Simulating JWT authentication
+require 'base64'
 require 'json'
 
-class SimpleJWT
+# Avoid name collisions if JWT is defined elsewhere
+Object.send(:remove_const, :JWT) if defined?(JWT)
+
+class JWT
   def self.encode(payload, secret)
-    header = Base64.urlsafe_encode64({ typ: "JWT", alg: "HS256" }.to_json)
-    payload_b64 = Base64.urlsafe_encode64(payload.to_json)
-    signature = Base64.urlsafe_encode64("#{secret}:#{payload_b64}")
+    header = Base64.urlsafe_encode64({ typ: "JWT", alg: "HS256" }.to_json, padding: false)
+    payload_b64 = Base64.urlsafe_encode64(payload.to_json, padding: false)
+    signature = Base64.urlsafe_encode64("#{secret}:#{payload_b64}", padding: false)
+    
     "#{header}.#{payload_b64}.#{signature}"
   end
 
   def self.decode(token, secret)
     parts = token.split(".")
     return nil if parts.length != 3
+    
     header, payload_b64, signature = parts
-    expected = Base64.urlsafe_encode64("#{secret}:#{payload_b64}")
+    expected = Base64.urlsafe_encode64("#{secret}:#{payload_b64}", padding: false)
+    
     return nil unless signature == expected
+    
     JSON.parse(Base64.urlsafe_decode64(payload_b64))
   end
 end
 
-# Create token
+# --- Usage ---
+
 payload = { user_id: 42, exp: Time.now.to_i + 3600 }
 secret = "my_secret_key"
-token = SimpleJWT.encode(payload, secret)
+
+token = JWT.encode(payload, secret)
 puts "Token: #{token[0..50]}..."
 
 # Verify token
-decoded = SimpleJWT.decode(token, secret)
+decoded = JWT.decode(token, secret)
 puts "Decoded: #{decoded}"
 
 # Tamper detection
-tampered = token.sub("42", "99")
-puts "Tampered: #{SimpleJWT.decode(tampered, secret).inspect}"`,
+tampered = token.sub(/42/, "99")
+puts "Tampered: #{JWT.decode(tampered, secret).inspect}"`,
             },
           ),
           callout("tip", "In production, use the `jwt` gem and store secrets in environment variables, never in code."),
@@ -1619,8 +1731,7 @@ puts "Tampered: #{SimpleJWT.decode(tampered, secret).inspect}"`,
         challenge: {
           title: "Token-protected API",
           description: "Create an APIGateway class that accepts requests with a Bearer token, validates it, and returns either the requested data or an unauthorized error.",
-          starterCode: `require 'json'
-
+          starterCode: `# Implement token-protected API gateway
 class SimpleJWT
   def self.encode(payload, secret)
     "#{secret}_#{payload.to_json}_#{secret}"
@@ -1690,6 +1801,7 @@ puts gateway.handle_request(path: "/users", auth_header: "Bearer #{SimpleJWT.enc
       },
     ],
   },
+
   {
     id: "rails-deployment",
     title: "Deployment & Performance — Advanced",
@@ -1706,28 +1818,27 @@ puts gateway.handle_request(path: "/users", auth_header: "Bearer #{SimpleJWT.enc
             "Rails environments: development (local), test (CI), production (live). Use environment variables for secrets. Configure asset pipelines, caching, and logging per environment.",
             {
               label: "Environment configuration simulation",
-              content: `# Simulating Rails-style environment configuration
-class AppConfig
-  class Configuration
-    attr_accessor :cache_store, :log_level, :precompile_assets, :secret_key_base
+              content: `# Simulating Rails environment configuration
+require 'ostruct'
+
+# Reset constants to prevent environment re-run issues
+Object.send(:remove_const, :Rails) if defined?(Rails)
+
+class Rails
+  class Application
+    attr_accessor :config
 
     def initialize
-      @cache_store = :memory_store
-      @log_level = :info
-      @precompile_assets = false
-      @secret_key_base = nil
-    end
-  end
-
-  class << self
-    def environments
-      @environments ||= {}
+      @config = {
+        environments: {},
+        secrets: {}
+      }
     end
 
     def configure(env)
-      settings = Configuration.new
+      # Reuse existing configuration or create a new one
+      settings = @config[:environments][env] ||= Rails::Configuration.new
       yield(settings)
-      environments[env] = settings
     end
 
     def env
@@ -1739,27 +1850,70 @@ class AppConfig
     end
 
     def settings
-      environments[env] || Configuration.new
+      @config[:environments][env] || Rails::Configuration.new
+    end
+  end
+
+  class Configuration
+    attr_accessor :cache_store, :log_level, :assets, :secret_key_base
+
+    def initialize
+      @cache_store = :memory_store
+      @log_level = :info
+      # Use OpenStruct so dot-notation works on nested properties
+      @assets = OpenStruct.new(enabled: true, precompile: false)
+      @secret_key_base = nil
+    end
+  end
+
+  class << self
+    attr_writer :application
+
+    def application
+      @application ||= Application.new
+    end
+
+    def configure(env, &block)
+      application.configure(env, &block)
+    end
+
+    # Delegate helper methods to the application instance
+    def env
+      application.env
+    end
+
+    def env=(e)
+      application.env = e
+    end
+
+    def settings
+      application.settings
     end
   end
 end
 
-# Configure environments
-AppConfig.configure(:development) do |config|
+# --- Configure Environments ---
+
+Rails.configure :development do |config|
   config.log_level = :debug
-  config.precompile_assets = false
+  config.assets.precompile = false
 end
 
-AppConfig.configure(:production) do |config|
+Rails.configure :production do |config|
   config.log_level = :warn
-  config.precompile_assets = true
-  config.cache_store = :redis_store
+  config.assets.precompile = true
+  config.cache_store = [:redis_store, "redis://localhost:6379/1"]
   config.secret_key_base = ENV["SECRET_KEY_BASE"] || "fallback_secret"
 end
 
-AppConfig.env = :production
-puts "Cache: #{AppConfig.settings.cache_store}"
-puts "Log: #{AppConfig.settings.log_level}"`,
+# --- Usage ---
+
+Rails.env = :production
+
+puts "Current Env: #{Rails.env}"
+puts "Cache Store: #{Rails.settings.cache_store.inspect}"
+puts "Log Level:   #{Rails.settings.log_level}"
+puts "Precompile:  #{Rails.settings.assets.precompile}"`,
             },
           ),
           callout("info", "Use `RAILS_ENV=production rails server` to run in production mode. Always set SECRET_KEY_BASE for production."),
@@ -1767,9 +1921,7 @@ puts "Log: #{AppConfig.settings.log_level}"`,
         challenge: {
           title: "Environment Config",
           description: "Create a ConfigManager that loads environment-specific settings. It should have development (debug logging, localhost DB), production (warn logging, real DB URL from env), and test environments.",
-          starterCode: `require 'ostruct'
-
-# Implement environment-specific configuration
+          starterCode: `# Implement environment-specific configuration
 class ConfigManager
   def initialize
     @env = ENV['RAILS_ENV'] || 'development'
@@ -1789,15 +1941,14 @@ class ConfigManager
   end
 end
 
-manager = ConfigManager.new
-
-manager.configure(:development) do |c|
+# Setup configs
+ConfigManager.new.configure(:development) do |c|
   c.db_url = "postgres://localhost/myapp_dev"
   c.log_level = :debug
   c.secret = "dev_secret_123"
 end
 
-manager.configure(:production) do |c|
+ConfigManager.new.configure(:production) do |c|
   c.db_url = ENV['DATABASE_URL']
   c.log_level = :warn
   c.secret = ENV['SECRET_KEY_BASE']
@@ -1808,9 +1959,7 @@ ENV['RAILS_ENV'] = 'production'
 config = ConfigManager.new
 puts "DB: #{config[:db_url]}"
 puts "Log: #{config[:log_level]}"`,
-          solutionCode: `require 'ostruct'
-
-class ConfigManager
+          solutionCode: `class ConfigManager
   def initialize
     @env = ENV['RAILS_ENV'] || 'development'
     @configs = {}
@@ -1873,18 +2022,20 @@ puts "Log: #{config[:log_level]}"`,
               label: "Caching simulation",
               content: `# Simulating Rails caching
 class CacheStore
-  def initialize
-    @store = {}
+  def initialize(store = :memory)
+    @store = store == :memory ? {} : nil
+    @ttl = 3600
   end
 
   def fetch(key, expires_in: nil)
+    return yield unless @store
     if @store.key?(key)
       data = @store[key]
       if data[:expires_at] && Time.now > data[:expires_at]
         @store.delete(key)
-      else
-        return data[:value]
+        return yield
       end
+      return data[:value]
     end
     value = yield
     @store[key] = {
@@ -1895,11 +2046,12 @@ class CacheStore
   end
 
   def read(key)
-    return nil unless @store.key?(key)
+    return nil unless @store && @store.key?(key)
     @store[key][:value]
   end
 
   def write(key, value, expires_in: nil)
+    return unless @store
     @store[key] = {
       value: value,
       expires_at: expires_in ? Time.now + expires_in : nil
@@ -1907,18 +2059,18 @@ class CacheStore
   end
 
   def delete(key)
-    @store.delete(key)
+    @store&.delete(key)
   end
 
   def clear
-    @store.clear
+    @store&.clear
   end
 end
 
 cache = CacheStore.new
 
 # First call - executes block
-result1 = cache.fetch("articles") { ["Article 1", "Article 2"] }
+result1 = cache.fetch("articles") { sleep 0.01; ["Article 1", "Article 2"] }
 puts "First call: #{result1}"
 
 # Second call - from cache
@@ -1926,8 +2078,8 @@ result2 = cache.fetch("articles") { ["Should not run"] }
 puts "Cached: #{result2}"
 
 # With expiry
-cache.write("temp", "data", expires_in: 0.01)
-sleep 0.02
+cache.write("temp", "data", expires_in: 1)
+sleep 0.01
 puts "Expired: #{cache.read("temp").inspect}"`,
             },
           ),
@@ -2030,36 +2182,71 @@ puts "TTL expired: #{r4}"`,
         xp: 20,
         theory: [
           text(
-            "Background jobs move slow tasks out of the request cycle. Rails Active Job provides a unified interface for job libraries like Sidekiq, Resque, or DelayedJob. Here we simulate a simple synchronous queue.",
+            "Background jobs move slow tasks out of the request cycle. Rails Active Job provides a unified interface for job libraries like Sidekiq, Resque, or DelayedJob.",
             {
-              label: "Job queue simulation",
-              content: `# Simulating a simple Active-Job-style queue
-class JobBase
-  def self.perform_later(*args)
-    puts "Job enqueued: #{self}"
-    new.perform(*args)
-  end
+              label: "Active Job simulation",
+              content: `# Simulating Rails Active Job
+# Safely reset constants
+[:ActiveJob, :JobQueue, :SendWelcomeEmailJob, :GenerateReportJob].each do |const|
+  Object.send(:remove_const, const) if Object.const_defined?(const)
+end
 
-  def perform(*args)
-    raise "Not implemented"
+module ActiveJob
+  class Base
+    class << self
+      def perform_later(*args)
+        job = new
+        puts "Job enqueued: #{self}"
+        JobQueue.enqueue -> { job.perform(*args) }
+      end
+    end
+
+    def perform(*args)
+      raise "Not implemented"
+    end
   end
 end
 
-class SendWelcomeEmailJob < JobBase
+class JobQueue
+  @queue = []
+
+  class << self
+    def enqueue(job)
+      @queue << job
+      process_queue
+    end
+
+    # Process jobs synchronously (inline mode)
+    def process_queue
+      until @queue.empty?
+        job = @queue.shift
+        puts "Worker processing..."
+        job.call
+      end
+    end
+  end
+end
+
+# --- Jobs Definition ---
+
+class SendWelcomeEmailJob < ActiveJob::Base
   def perform(user_email)
     puts "Sending email to #{user_email}..."
     puts "Email sent to #{user_email}!"
   end
 end
 
-class GenerateReportJob < JobBase
+class GenerateReportJob < ActiveJob::Base
   def perform(report_id)
     puts "Generating report #{report_id}..."
     puts "Report #{report_id} ready!"
   end
 end
 
+# --- Execution ---
+
 SendWelcomeEmailJob.perform_later("alice@example.com")
+puts "---"
 GenerateReportJob.perform_later("report_42")`,
             },
           ),
@@ -2159,6 +2346,7 @@ class OrderPlacementService < ApplicationService
   def initialize(order_data, user)
     @order_data = order_data
     @user = user
+    @errors = []
   end
 
   def execute
@@ -2219,6 +2407,7 @@ end
 class RegisterUserService < ApplicationService
   def initialize(params)
     @params = params
+    @errors = []
   end
 
   def execute
@@ -2253,6 +2442,7 @@ end
 class RegisterUserService < ApplicationService
   def initialize(params)
     @params = params
+    @errors = []
     @existing_users = ["bob@example.com"]
   end
 

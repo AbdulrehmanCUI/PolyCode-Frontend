@@ -536,6 +536,15 @@ export const languageCourses = {
       href: "/learn/ruby-blocks-modules",
       accent: "#0891b2",
     },
+    {
+      title: "Ruby on Rails",
+      tag: "Interactive Course",
+      icon: Server,
+      description:
+        "Build modern web applications with Ruby on Rails — MVC architecture, REST APIs, Active Record, migrations, and full-stack development with hands-on challenges.",
+      href: "/learn/ruby-on-rails",
+      accent: "#cc0000",
+    },
   ],
   // ─── ADD GO TRACK DEFINITION ────────────────────────────────────────────────
   go: [
@@ -743,6 +752,7 @@ export const learnNavByLanguage = {
     { label: "File Handling", to: "/learn/ruby-file-handling" },
     { label: "Ruby OOP", to: "/learn/ruby-oop" },
     { label: "Blocks & Modules", to: "/learn/ruby-blocks-modules" },
+    { label: "Ruby on Rails", to: "/learn/ruby-on-rails" },
   ],
   // ─── ADD GO NAVIGATION ENTRIES ─────────────────────────────────────────────
   go: [{ label: "Go Basics", to: "/learn/golang-fundamentals" }],
@@ -838,7 +848,8 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/ruby-gems") ||
     pathname.startsWith("/learn/ruby-file-handling") ||
     pathname.startsWith("/learn/ruby-oop") ||
-    pathname.startsWith("/learn/ruby-blocks-modules")
+    pathname.startsWith("/learn/ruby-blocks-modules") ||
+    pathname.startsWith("/learn/ruby-on-rails")
   ) {
     return "ruby";
   }
