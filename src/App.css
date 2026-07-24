@@ -4419,6 +4419,32 @@ body {
   color: #ffffff;
 }
 
+/* Stage tabs used on hub pages (Beginner / Intermediate / Pro / Advanced) */
+.oops-stage-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.oops-stage-tabs .stage-tab {
+  border: none;
+  border-radius: 6px;
+  padding: 7px 9px;
+  background: transparent;
+  color: var(--txt-2, #6e7891);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+}
+
+.oops-stage-tabs .stage-tab.active,
+.oops-stage-tabs .stage-tab[aria-pressed="true"] {
+  background: var(--vscode-blue, #007acc);
+  color: #ffffff;
+}
+
 .oops-search-results,
 .oops-bookmark-list {
   display: grid;

@@ -788,6 +788,7 @@ export const learnNavByLanguage = {
     { label: "File Handling", to: "/learn/ruby-file-handling" },
     { label: "Ruby OOP", to: "/learn/ruby-oop" },
     { label: "Blocks & Modules", to: "/learn/ruby-blocks-modules" },
+    { label: "Ruby on Rails", to: "/learn/ruby-on-rails" },
     { label: "Blocks & Modules", to: "/learn/ruby-blocks-modules" },
     { label: "Ruby OOP", to: "/learn/ruby-oop" },
   ],
@@ -887,14 +888,15 @@ export function inferLanguageFromLearnPath(pathname = "") {
     return "php";
   }
   if (
-    pathname.startsWith("/learn/ruby-fundamentals") ||
-    pathname.startsWith("/learn/ruby-gems") ||
-    pathname.startsWith("/learn/ruby-file-handling") ||
-    pathname.startsWith("/learn/ruby-oop") ||
-    pathname.startsWith("/learn/ruby-blocks-modules")
-  ) {
-    return "ruby";
-  }
+  pathname.startsWith("/learn/ruby-fundamentals") ||
+  pathname.startsWith("/learn/ruby-gems") ||
+  pathname.startsWith("/learn/ruby-file-handling") ||
+  pathname.startsWith("/learn/ruby-oop") ||
+  pathname.startsWith("/learn/ruby-blocks-modules") ||
+  pathname.startsWith("/learn/ruby-on-rails")
+) {
+  return "ruby";
+}
   if (pathname.startsWith("/learn/c-sharp-fundamentals")) {
     return "csharp";
   }

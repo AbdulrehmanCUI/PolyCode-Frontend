@@ -25,7 +25,7 @@ export const COURSE_GROUPS = courseStackGroups
 export const STACK_NAV_LIMIT = 15;
 
 /** Max courses shown in navbar stack panel before "see all" CTA. */
-export const COURSE_PANEL_LIMIT = 5;
+export const COURSE_PANEL_LIMIT = 10;
 
 export function getAllCoursesPath(stackId = null) {
   if (!stackId) return "/courses";

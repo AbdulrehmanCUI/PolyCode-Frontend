@@ -30,6 +30,7 @@ export const RUBY_FUNDAMENTALS_CHAPTERS = [
   {
     id: "welcome",
     title: "Welcome to Ruby",
+    stage: "beginner",
     icon: "💎",
     color: ACCENT,
     lessons: [
@@ -149,6 +150,7 @@ p "Debugging text"`,
   {
     id: "variables",
     title: "Variables & Core Types",
+    stage: "beginner",
     icon: "📦",
     color: "#be123c",
     lessons: [
@@ -305,6 +307,7 @@ puts "Welcome, #{name}!"`,
   {
     id: "control-flow",
     title: "Control Flow",
+    stage: "beginner",
     icon: "🔀",
     color: "#e11d48",
     lessons: [
@@ -397,6 +400,7 @@ end`,
   {
     id: "loops",
     title: "Iteration & Loops",
+    stage: "beginner",
     icon: "🔄",
     color: "#f43f5e",
     lessons: [
@@ -489,6 +493,7 @@ end`,
   {
     id: "methods",
     title: "Methods & Scope",
+    stage: "intermediate",
     icon: "🔧",
     color: "#db2777",
     lessons: [
@@ -609,6 +614,7 @@ end
   {
     id: "arrays-collections",
     title: "Collections & Enumerables",
+    stage: "intermediate",
     icon: "📋",
     color: "#c026d3",
     lessons: [
@@ -691,6 +697,7 @@ end`,
   {
     id: "hashes",
     title: "Hashes & Symbol Essentials",
+    stage: "intermediate",
     icon: "🏷️",
     color: "#9333ea",
     lessons: [
@@ -772,6 +779,7 @@ puts user[:name]  # Retrieves "Ava"`,
   {
     id: "blocks",
     title: "Blocks, Procs, & Lambdas",
+    stage: "pro",
     icon: "🧱",
     color: "#7e22ce",
     lessons: [
@@ -857,6 +865,7 @@ puts multiplier.call(5)  # 10`,
   {
     id: "oop",
     title: "Pure Object-Oriented Ruby",
+    stage: "pro",
     icon: "🏗️",
     color: "#6b21a8",
     lessons: [
@@ -990,6 +999,7 @@ end`,
   {
     id: "modules-capstone",
     title: "Modules, Exceptions & Capstone",
+    stage: "advanced",
     icon: "🏆",
     color: "#1d4ed8",
     lessons: [
