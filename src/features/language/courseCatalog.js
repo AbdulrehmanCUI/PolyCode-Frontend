@@ -17,6 +17,7 @@ import {
   FolderOpen,
   Database,
   Wrench,
+  Atom,
 } from "lucide-react";
 
 export function languageKey(value = "") {
@@ -516,6 +517,9 @@ export const languageCourses = {
       description:
         "Read, write, and manage files in Ruby — from simple text files to CSV, JSON, YAML, and binary data with robust error handling.",
       href: "/learn/ruby-file-handling",
+      accent: "#be123c",
+    },
+    {
       title: "Ruby Blocks & Modules",
       tag: "Interactive Course",
       icon: Layers3,
@@ -532,18 +536,6 @@ export const languageCourses = {
         "Master object-oriented programming in Ruby — classes, inheritance, modules, mixins, encapsulation, polymorphism, and metaprogramming.",
       href: "/learn/ruby-oop",
       accent: "#9333ea",
-    },
-    {
-      title: "Ruby Blocks & Modules",
-      tag: "Interactive Course",
-      icon: Layers3,
-      description:
-        "Deep dive into Ruby blocks, procs, lambdas, modules, and mixins — the building blocks of Ruby's expressive and modular design.",
-      href: "/learn/ruby-blocks-modules",
-      accent: "#0891b2",
-        "Classes, instances, and initialize; encapsulation with attr_reader/writer/accessor; inheritance, modules, and polymorphism in Ruby.",
-      href: "/learn/ruby-oop",
-      accent: "#f59e0b",
     },
   ],
   // ─── ADD GO TRACK DEFINITION ────────────────────────────────────────────────
@@ -590,6 +582,44 @@ export const languageCourses = {
       description: "Capstone real-world scripts (e.g., user onboarding automation, log parsing).",
       href: "/learn/powershell-projects",
       accent: "#5391fe",
+    },
+  ],
+  quantum: [
+    {
+      title: "Quantum Computing Fundamentals",
+      tag: "Core Course",
+      icon: Atom,
+      description:
+        "Qubits, superposition, entanglement, and measurement — the core ideas behind quantum computing, explained for programmers.",
+      href: "/learn/quantum-computing-fundamentals",
+      accent: "#6366f1",
+    },
+    {
+      title: "Quantum Mechanics for Programmers",
+      tag: "Theory Course",
+      icon: BrainCircuit,
+      description:
+        "The physics behind the code: wavefunctions, probability amplitudes, and the linear algebra that quantum circuits run on.",
+      href: "/learn/quantum-mechanics-for-programmers",
+      accent: "#8b5cf6",
+    },
+    {
+      title: "Quantum Algorithms",
+      tag: "Algorithms Course",
+      icon: Layers3,
+      description:
+        "Deutsch-Jozsa, Grover's search, and Shor's algorithm — how quantum circuits achieve speedups over classical approaches.",
+      href: "/learn/quantum-algorithms",
+      accent: "#a855f7",
+    },
+    {
+      title: "Quantum Programming Projects",
+      tag: "Projects Course",
+      icon: Boxes,
+      description:
+        "Build real circuits and hybrid classical-quantum programs, from a Bell-state demo to a small variational algorithm.",
+      href: "/learn/quantum-programming-projects",
+      accent: "#c026d3",
     },
   ],
 };
@@ -668,6 +698,12 @@ export const courseStackGroups = [
     label: "PowerShell",
     accent: "#5391fe",
     languagePath: "/language/PowerShell",
+  },
+  {
+    id: "quantum",
+    label: "Quantum",
+    accent: "#6366f1",
+    languagePath: "/language/Quantum",
   },
 ];
 
@@ -763,6 +799,12 @@ export const learnNavByLanguage = {
     { label: "Administration", to: "/learn/powershell-administration" },
     { label: "Projects", to: "/learn/powershell-projects" },
   ],
+  quantum: [
+    { label: "Fundamentals", to: "/learn/quantum-computing-fundamentals" },
+    { label: "Mechanics", to: "/learn/quantum-mechanics-for-programmers" },
+    { label: "Algorithms", to: "/learn/quantum-algorithms" },
+    { label: "Projects", to: "/learn/quantum-programming-projects" },
+  ],
 };
 
 const learnNavLanguageAliases = {
@@ -850,8 +892,6 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/ruby-file-handling") ||
     pathname.startsWith("/learn/ruby-oop") ||
     pathname.startsWith("/learn/ruby-blocks-modules")
-    pathname.startsWith("/learn/ruby-blocks-modules") ||
-    pathname.startsWith("/learn/ruby-oop")
   ) {
     return "ruby";
   }
@@ -879,6 +919,14 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/java-projects")
   ) {
     return "java";
+  }
+  if (
+    pathname.startsWith("/learn/quantum-computing-fundamentals") ||
+    pathname.startsWith("/learn/quantum-mechanics-for-programmers") ||
+    pathname.startsWith("/learn/quantum-algorithms") ||
+    pathname.startsWith("/learn/quantum-programming-projects")
+  ) {
+    return "quantum";
   }
   return null;
 }
