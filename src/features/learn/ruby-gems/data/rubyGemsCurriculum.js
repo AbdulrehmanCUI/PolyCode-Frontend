@@ -33,6 +33,7 @@ export const RUBY_GEMS_CHAPTERS = applyRubyGemsEnhancements([
   {
     id: "ecosystem",
     title: "RubyGems Ecosystem",
+    stage: "beginner",
     icon: "💎",
     color: ACCENT,
     lessons: [
@@ -227,6 +228,7 @@ puts entry`,
   {
     id: "bundler",
     title: "Bundler Basics",
+    stage: "beginner",
     icon: "📦",
     color: "#7c3aed",
     lessons: [
@@ -432,6 +434,7 @@ puts "#{name} #{resolved(name)}"`,
   {
     id: "building",
     title: "Building a Gem",
+    stage: "intermediate",
     icon: "🔨",
     color: "#6d28d9",
     lessons: [
@@ -628,6 +631,7 @@ puts PolyStats.banner`,
   {
     id: "gemspec",
     title: "Gemspec Mastery",
+    stage: "intermediate",
     icon: "📋",
     color: "#5b21b6",
     lessons: [
@@ -829,6 +833,7 @@ puts dep_type("minitest")`,
   {
     id: "dependencies",
     title: "Dependencies",
+    stage: "intermediate",
     icon: "🔗",
     color: "#4c1d95",
     lessons: [
@@ -1046,6 +1051,7 @@ feature_status("export", "json")`,
   {
     id: "testing",
     title: "Testing Gems",
+    stage: "pro",
     icon: "🧪",
     color: "#3b0764",
     lessons: [
@@ -1230,6 +1236,7 @@ puts doc_line`,
   {
     id: "publishing",
     title: "Publishing",
+    stage: "pro",
     icon: "🚀",
     color: "#2e1065",
     lessons: [
@@ -1418,6 +1425,7 @@ puts trusted?(REQUESTED) ? "safe" : "review"`,
   {
     id: "pro-capstone",
     title: "Pro & Capstone",
+    stage: "advanced",
     icon: "🏆",
     color: "#1e1b4b",
     lessons: [

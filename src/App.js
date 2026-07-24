@@ -306,6 +306,13 @@ const RubyBlocksModulesLessonPage = lazyWithChunkRetry(
   () =>
     import("./features/learn/ruby-blocks-modules/pages/rubyBlocksModulesLessonPage"),
 );
+const RubyOnRailsHub = lazyWithChunkRetry(
+  () => import("./features/learn/ruby-on-rails/pages/rubyOnRailsHub"),
+);
+const RubyOnRailsLessonPage = lazyWithChunkRetry(
+  () =>
+    import("./features/learn/ruby-on-rails/pages/rubyOnRailsLessonPage"),
+);
 
 const PageFallback = () => (
   <div className="loading">
@@ -721,7 +728,8 @@ function AppRoutes() {
     } else if (
       path.startsWith("/learn/ruby-fundamentals") ||
       path.startsWith("/learn/ruby-gems") ||
-      path.startsWith("/learn/ruby-file-handling")
+      path.startsWith("/learn/ruby-file-handling") ||
+      path.startsWith("/learn/ruby-on-rails")
     ) {
       handleLanguageSelect("Ruby", { stay: true });
     }
@@ -1933,6 +1941,52 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <RubyBlocksModulesLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+
+        <Route
+          path="/learn/ruby-on-rails"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyOnRailsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/ruby-on-rails/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyOnRailsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/ruby-on-rails/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RubyOnRailsLessonPage />
               </LearnShell>
             </ThemedShell>
           }
