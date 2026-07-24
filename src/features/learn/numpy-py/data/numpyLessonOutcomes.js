@@ -157,9 +157,9 @@ export const NUMPY_LESSON_OUTCOMES = {
     "Use z-scores to compare values fairly across different groups",
   ],
   "numpy-16": [
-    "Compute a weighted average (tests with different weights)",
-    "Use `np.dot()` with weights that sum to 1",
-    "Explain a final grade from parts in one formula",
+    "Explain weighted average vs normal average in plain words",
+    "Compute a weighted mean with `np.dot(values, weights) / weights.sum()`",
+    "Know why dividing by `weights.sum()` works even when weights are not percentages",
   ],
   "numpy-27": [
     "Combine stats, masking, and reshape on a grade sheet",

@@ -516,6 +516,12 @@ export const languageCourses = {
       description:
         "Read, write, and manage files in Ruby — from simple text files to CSV, JSON, YAML, and binary data with robust error handling.",
       href: "/learn/ruby-file-handling",
+      title: "Ruby Blocks & Modules",
+      tag: "Interactive Course",
+      icon: Layers3,
+      description:
+        "Blocks, procs, and lambdas; yield and block parameters; modules and mixins with include/extend — with hands-on Ruby challenges.",
+      href: "/learn/ruby-blocks-modules",
       accent: "#dc2626",
     },
     {
@@ -535,6 +541,9 @@ export const languageCourses = {
         "Deep dive into Ruby blocks, procs, lambdas, modules, and mixins — the building blocks of Ruby's expressive and modular design.",
       href: "/learn/ruby-blocks-modules",
       accent: "#0891b2",
+        "Classes, instances, and initialize; encapsulation with attr_reader/writer/accessor; inheritance, modules, and polymorphism in Ruby.",
+      href: "/learn/ruby-oop",
+      accent: "#f59e0b",
     },
     {
       title: "Ruby on Rails",
@@ -752,7 +761,12 @@ export const learnNavByLanguage = {
     { label: "File Handling", to: "/learn/ruby-file-handling" },
     { label: "Ruby OOP", to: "/learn/ruby-oop" },
     { label: "Blocks & Modules", to: "/learn/ruby-blocks-modules" },
+<<<<<<< HEAD
     { label: "Ruby on Rails", to: "/learn/ruby-on-rails" },
+=======
+    { label: "Blocks & Modules", to: "/learn/ruby-blocks-modules" },
+    { label: "Ruby OOP", to: "/learn/ruby-oop" },
+>>>>>>> c2ce3d715838c731c4484cbbbca6d88649024699
   ],
   // ─── ADD GO NAVIGATION ENTRIES ─────────────────────────────────────────────
   go: [{ label: "Go Basics", to: "/learn/golang-fundamentals" }],
@@ -848,8 +862,14 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/ruby-gems") ||
     pathname.startsWith("/learn/ruby-file-handling") ||
     pathname.startsWith("/learn/ruby-oop") ||
+<<<<<<< HEAD
     pathname.startsWith("/learn/ruby-blocks-modules") ||
     pathname.startsWith("/learn/ruby-on-rails")
+=======
+    pathname.startsWith("/learn/ruby-blocks-modules")
+    pathname.startsWith("/learn/ruby-blocks-modules") ||
+    pathname.startsWith("/learn/ruby-oop")
+>>>>>>> c2ce3d715838c731c4484cbbbca6d88649024699
   ) {
     return "ruby";
   }
