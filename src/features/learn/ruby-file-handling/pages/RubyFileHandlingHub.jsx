@@ -33,6 +33,12 @@ const LEARNING_PATH = [
     color: "#EF4444",
     summary: "Master directories, binary files, serialization, and advanced file operations.",
   },
+  {
+    level: "Pro",
+    chapters: RUBY_FILE_HANDLING_CHAPTERS.filter((ch) => ch.stage === "pro").map((ch) => ch.id),
+    color: "#8B5CF6",
+    summary: "Build production-ready file workflows, secure file systems, temp file orchestration, and file locking patterns.",
+  },
 ];
 
 function lessonPlainText(lesson) {
@@ -143,7 +149,7 @@ export default function RubyFileHandlingHub() {
       </div>
 
       <div className="oops-stage-tabs" style={{ padding: "0 1.5rem", marginTop: "0.5rem" }}>
-        {[["beginner","Beginner"],["intermediate","Intermediate"],["advanced","Advanced"]].map(([id,label])=> (
+        {[ ["beginner","Beginner"],["intermediate","Intermediate"],["advanced","Advanced"],["pro","Pro"]].map(([id,label])=> (
           <button key={id} type="button" className={stage===id?"active stage-tab":"stage-tab"} onClick={()=>setStage(id)} style={{ marginRight: 8 }}>
             {label}
           </button>
@@ -206,7 +212,7 @@ export default function RubyFileHandlingHub() {
 
       <section className="matplotlib-learn-path" aria-label="Learning path">
         <div className="matplotlib-path-label">
-          <span>Your path · Beginner to Advanced</span>
+          <span>Your path · Beginner to Pro</span>
           <small>
             {RUBY_FILE_HANDLING_CHAPTERS.length} chapters ·{" "}
             {RUBY_FILE_HANDLING_LESSONS.length} lessons

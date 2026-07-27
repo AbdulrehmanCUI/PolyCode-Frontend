@@ -1033,6 +1033,7 @@ puts safe_read("nonexistent.txt")`,
   {
     id: "rfh-c3",
     title: "CSV & JSON File Handling",
+    stage: "pro",
     description: "Work with structured data formats like CSV and JSON",
     lessons: [
       {
@@ -1325,6 +1326,7 @@ end`,
   {
     id: "rfh-c4",
     title: "Working with Directories",
+    stage: "pro",
     description: "Navigate, create, and manage directories",
     lessons: [
       {
@@ -1549,6 +1551,7 @@ end`,
   {
     id: "rfh-c5",
     title: "File Permissions & Security",
+    stage: "pro",
     description: "Understand and manage file permissions",
     lessons: [
       {
@@ -1786,6 +1789,7 @@ end`,
   {
     id: "rfh-c6",
     title: "Working with Temporary Files",
+    stage: "pro",
     description: "Create and manage temporary files and directories",
     lessons: [
       {
@@ -2048,6 +2052,7 @@ end`,
   {
     id: "rfh-c7",
     title: "Advanced File Operations",
+    stage: "pro",
     description: "File locking and change monitoring",
     lessons: [
       {

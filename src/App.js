@@ -118,6 +118,12 @@ const PointersHub = lazyWithChunkRetry(
 const PointersLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/pointers-cpp/pages/PointersLessonPage"),
 );
+const FunctionsHub = lazyWithChunkRetry(
+  () => import("./features/learn/functions-cpp/pages/FunctionsHub"),
+);
+const FunctionsLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/functions-cpp/pages/FunctionsLessonPage"),
+);
 const DsaHub = lazyWithChunkRetry(
   () => import("./features/learn/dsa-cpp/pages/DsaHub"),
 );
@@ -775,7 +781,8 @@ function AppRoutes() {
       handleLanguageSelect("PHP", { stay: true });
     } else if (
       path.startsWith("/learn/oops-cpp") ||
-      path.startsWith("/learn/pointers-cpp")
+      path.startsWith("/learn/pointers-cpp") ||
+      path.startsWith("/learn/functions-cpp")
     ) {
       handleLanguageSelect("C++", { stay: true });
     } else if (
@@ -965,6 +972,51 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <PointersLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/functions-cpp"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <FunctionsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/functions-cpp/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <FunctionsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/functions-cpp/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <FunctionsLessonPage />
               </LearnShell>
             </ThemedShell>
           }

@@ -860,7 +860,7 @@ class ERB
     code = "_out = ''; "
     
     # Process ERB tags using regular expressions
-    @template.scan(/(.*?)(<%(=)?(.*?)%>|\z)/m) do |text, tag, is_eval, expr|
+    @template.scan(/(.*?)(<%(=)?(.*?)%>|\\z)/m) do |text, tag, is_eval, expr|
       # Append plain HTML text safely using inspect
       code << "_out << #{text.inspect}; " unless text.empty?
       
