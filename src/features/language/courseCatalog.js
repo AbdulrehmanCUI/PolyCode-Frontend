@@ -535,23 +535,23 @@ export const languageCourses = {
       description:
         "Read, write, and manage files in Ruby — from simple text files to CSV, JSON, YAML, and binary data with robust error handling.",
       href: "/learn/ruby-file-handling",
-      accent: "#be123c",
+      accent: "#dc2626",
     },
     {
       title: "Ruby Blocks & Modules",
       tag: "Interactive Course",
       icon: Layers3,
       description:
-        "Blocks, procs, and lambdas; yield and block parameters; modules and mixins with include/extend — with hands-on Ruby challenges.",
+        "Deep dive into Ruby blocks, procs, lambdas, modules, and mixins — the building blocks of Ruby's expressive and modular design.",
       href: "/learn/ruby-blocks-modules",
-      accent: "#dc2626",
+      accent: "#0891b2",
     },
     {
       title: "Ruby OOP",
       tag: "Interactive Course",
       icon: Boxes,
       description:
-        "Master object-oriented programming in Ruby — classes, inheritance, modules, mixins, encapsulation, polymorphism, and metaprogramming.",
+        "Master object-oriented programming in Ruby — classes, instances, and initialize; encapsulation with attr_reader/writer/accessor; inheritance, modules, and polymorphism in Ruby.",
       href: "/learn/ruby-oop",
       accent: "#9333ea",
     },
@@ -649,6 +649,45 @@ export const languageCourses = {
       accent: "#c026d3",
     },
   ],
+  // ─── ADD RUST TRACK DEFINITION ──────────────────────────────────────────────
+  rust: [
+    {
+      title: "Rust Fundamentals",
+      tag: "Core Course",
+      icon: Terminal,
+      description:
+        "Learn Rust from the ground up — variables, ownership, structs, enums, and error handling, with hands-on Rust challenges.",
+      href: "/learn/rust-fundamentals",
+      accent: "#ce422b",
+    },
+    {
+      title: "Rust Concurrency",
+      tag: "Systems Course",
+      icon: Cpu,
+      description:
+        "Master fearless concurrency — threads, channels, Mutex/Arc, sync primitives, and async/await with Tokio.",
+      href: "/learn/rust-concurrency",
+      accent: "#ce422b",
+    },
+    {
+      title: "Rust Collections",
+      tag: "Data Course",
+      icon: Database,
+      description:
+        "Master Rust's collection types — Vec, String, HashMap, sets, ordered maps, and the Iterator trait.",
+      href: "/learn/rust-collections",
+      accent: "#ce422b",
+    },
+    {
+      title: "Rust Memory",
+      tag: "Memory Course",
+      icon: HardDrive,
+      description:
+        "Go deep on memory — stack vs heap, ownership internals, lifetimes, smart pointers, and unsafe Rust.",
+      href: "/learn/rust-memory",
+      accent: "#ce422b",
+    },
+  ],
 };
 
 /** Ordered stacks for navbar grouping (one row per language, sub-courses inside). */
@@ -731,6 +770,12 @@ export const courseStackGroups = [
     label: "Quantum",
     accent: "#6366f1",
     languagePath: "/language/Quantum",
+  },
+  {
+    id: "rust",
+    label: "Rust",
+    accent: "#ce422b",
+    languagePath: "/language/Rust",
   },
 ];
 
@@ -831,6 +876,12 @@ export const learnNavByLanguage = {
     { label: "Algorithms", to: "/learn/quantum-algorithms" },
     { label: "Projects", to: "/learn/quantum-programming-projects" },
   ],
+  rust: [
+    { label: "Fundamentals", to: "/learn/rust-fundamentals" },
+    { label: "Concurrency", to: "/learn/rust-concurrency" },
+    { label: "Collections", to: "/learn/rust-collections" },
+    { label: "Memory", to: "/learn/rust-memory" },
+  ],
 };
 
 const learnNavLanguageAliases = {
@@ -913,15 +964,15 @@ export function inferLanguageFromLearnPath(pathname = "") {
     return "php";
   }
   if (
-  pathname.startsWith("/learn/ruby-fundamentals") ||
-  pathname.startsWith("/learn/ruby-gems") ||
-  pathname.startsWith("/learn/ruby-file-handling") ||
-  pathname.startsWith("/learn/ruby-oop") ||
-  pathname.startsWith("/learn/ruby-blocks-modules") ||
-  pathname.startsWith("/learn/ruby-on-rails")
-) {
-  return "ruby";
-}
+    pathname.startsWith("/learn/ruby-fundamentals") ||
+    pathname.startsWith("/learn/ruby-gems") ||
+    pathname.startsWith("/learn/ruby-file-handling") ||
+    pathname.startsWith("/learn/ruby-oop") ||
+    pathname.startsWith("/learn/ruby-blocks-modules") ||
+    pathname.startsWith("/learn/ruby-on-rails")
+  ) {
+    return "ruby";
+  }
   if (pathname.startsWith("/learn/c-sharp-fundamentals")) {
     return "csharp";
   }
@@ -954,6 +1005,14 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/quantum-programming-projects")
   ) {
     return "quantum";
+  }
+  if (
+    pathname.startsWith("/learn/rust-fundamentals") ||
+    pathname.startsWith("/learn/rust-concurrency") ||
+    pathname.startsWith("/learn/rust-collections") ||
+    pathname.startsWith("/learn/rust-memory")
+  ) {
+    return "rust";
   }
   return null;
 }
