@@ -1,9 +1,9 @@
 import useCourseProgress from "../../shared/useCourseProgress";
 
-export default function useRustFundamentalsProgress() {
+export default function useRustCollectionsProgress() {
   return useCourseProgress({
-    courseId: "rust-fundamentals",
-    storagePrefix: "rust_fundamentals",
+    courseId: "rust-collections",
+    storagePrefix: "rust-collections",
     scoped: false,
     supportsNotes: false,
   });
