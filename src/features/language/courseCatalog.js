@@ -160,6 +160,15 @@ export const languageCourses = {
       accent: "#00d4ff",
     },
     {
+      title: "C++ Functions",
+      tag: "Core Course",
+      icon: Wrench,
+      description:
+        "Functions, parameters, references, lambdas, std::function, and callbacks — beginner to advanced hands-on guide.",
+      href: "/learn/functions-cpp",
+      accent: "#60a5fa",
+    },
+    {
       title: "DSA C++",
       tag: "Advanced Course",
       icon: Database,
@@ -196,6 +205,15 @@ export const languageCourses = {
         "Addresses, dereferencing, nullptr, arrays, 2D arrays, smart pointers, callbacks, and safety.",
       href: "/learn/pointers-cpp",
       accent: "#00d4ff",
+    },
+    {
+      title: "C++ Functions",
+      tag: "Core Course",
+      icon: Wrench,
+      description:
+        "Functions, parameters, references, lambdas, std::function, and callbacks — beginner to advanced hands-on guide.",
+      href: "/learn/functions-cpp",
+      accent: "#60a5fa",
     },
     {
       title: "DSA C++",
@@ -542,9 +560,9 @@ export const languageCourses = {
       tag: "Interactive Course",
       icon: Server,
       description:
-        "Build modern web applications with Ruby on Rails — MVC architecture, REST APIs, Active Record, migrations, and full-stack development with hands-on challenges.",
+        "Build full-stack web apps with Rails: MVC architecture, routing, Active Record, views, controllers, and deployed app workflows.",
       href: "/learn/ruby-on-rails",
-      accent: "#cc0000",
+      accent: "#701516",
     },
   ],
   // ─── ADD GO TRACK DEFINITION ────────────────────────────────────────────────
