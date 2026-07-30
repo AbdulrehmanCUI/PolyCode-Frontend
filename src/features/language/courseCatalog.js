@@ -705,6 +705,15 @@ export const languageCourses = {
       href: "/learn/rust-memory",
       accent: "#ce422b",
     },
+    {
+      title: "Rust Projects",
+      tag: "Capstone Course",
+      icon: Terminal,
+      description:
+        "Apply everything to real projects — a CLI calculator, a struct-backed contact book, a file-based to-do app, and a capstone task manager.",
+      href: "/learn/rust-projects",
+      accent: "#ce422b",
+    },
   ],
 };
 
@@ -899,6 +908,7 @@ export const learnNavByLanguage = {
     { label: "Concurrency", to: "/learn/rust-concurrency" },
     { label: "Collections", to: "/learn/rust-collections" },
     { label: "Memory", to: "/learn/rust-memory" },
+    { label: "Projects", to: "/learn/rust-projects" },
   ],
 };
 
@@ -1028,7 +1038,8 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/rust-fundamentals") ||
     pathname.startsWith("/learn/rust-concurrency") ||
     pathname.startsWith("/learn/rust-collections") ||
-    pathname.startsWith("/learn/rust-memory")
+    pathname.startsWith("/learn/rust-memory") ||
+    pathname.startsWith("/learn/rust-projects")
   ) {
     return "rust";
   }

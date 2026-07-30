@@ -1,25 +1,54 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  RUST_FUNDAMENTALS_CHAPTERS,
-  RUST_FUNDAMENTALS_LESSONS,
-  RUST_FUNDAMENTALS_TOTAL_XP,
-} from "../data/rustCurriculum";
-import useRustFundamentalsProgress from "../hooks/useRustFundamentalsProgress";
-import LearnChapterIcon from "../../shared/LearnChapterIcon";
-import { CheckCircle2 } from "lucide-react";
+  RUST_PROJECTS_CHAPTERS,
+  RUST_PROJECTS_LESSONS,
+  RUST_PROJECTS_TOTAL_XP,
+} from "../data/rustProjectsCurriculum";
+import useRustProjectsProgress from "../hooks/useRustProjectsProgress";
 import CourseCertificate from "../../shared/CourseCertificate";
+import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
+import LearnChapterGrid from "../../shared/LearnChapterGrid";
+import LearnChapterIcon from "../../shared/LearnChapterIcon";
 
-const BASE_PATH = "/learn/rust-fundamentals";
+const BASE_PATH = "/learn/rust-projects";
+const ACCENT = "#ce422b";
+
+const LEARNING_PATH = [
+  {
+    level: "Beginner",
+    chapters: ["projects-cargo-setup"],
+    color: "#ce422b",
+    summary: "Cargo projects, Cargo.toml dependencies, and organizing code with modules.",
+  },
+  {
+    level: "Intermediate",
+    chapters: ["projects-cli-calculator", "projects-contact-book"],
+    color: "#f59e0b",
+    summary: "A command-line calculator, then a struct-backed contact book with search and sort.",
+  },
+  {
+    level: "Advanced",
+    chapters: ["projects-file-todo"],
+    color: "#7c3aed",
+    summary: "Persisting data to disk with std::fs and a small text serialization format.",
+  },
+  {
+    level: "Capstone",
+    chapters: ["projects-capstone"],
+    color: "#dc2626",
+    summary: "A full task-manager CLI combining structs, files, commands, and error handling.",
+  },
+];
 
 function lessonPlainText(lesson) {
   return lesson.theory
     .filter((block) => block.type === "text" || block.type === "callout")
-    .map((block) => block.content.replace(/\*\*/g, "").replace(/`/g, ""))
+    .map((block) => (block.content || "").replace(/\*\*/g, "").replace(/`/g, ""))
     .join(" ");
 }
 
-export default function RustFundamentalsHub() {
+export default function RustProjectsHub() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -28,31 +57,31 @@ export default function RustFundamentalsHub() {
     completedMap: progress,
     bookmarks,
     lastLessonId,
-  } = useRustFundamentalsProgress();
+  } = useRustProjectsProgress();
 
   const completedCount = Object.keys(progress).length;
-  const earnedXP = RUST_FUNDAMENTALS_LESSONS.filter((lesson) => progress[lesson.id]).reduce(
-    (sum, lesson) => sum + lesson.xp,
-    0,
-  );
+  const earnedXP = RUST_PROJECTS_LESSONS.filter(
+    (lesson) => progress[lesson.id],
+  ).reduce((sum, lesson) => sum + lesson.xp, 0);
   const pct =
-    Math.round((completedCount / RUST_FUNDAMENTALS_LESSONS.length) * 100) || 0;
+    Math.round((completedCount / RUST_PROJECTS_LESSONS.length) * 100) || 0;
+
   const nextLesson =
-    RUST_FUNDAMENTALS_LESSONS.find((lesson) => !progress[lesson.id]) ||
-    RUST_FUNDAMENTALS_LESSONS[0];
+    RUST_PROJECTS_LESSONS.find((lesson) => !progress[lesson.id]) ||
+    RUST_PROJECTS_LESSONS[0];
   const resumeLesson =
-    RUST_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === lastLessonId) ||
+    RUST_PROJECTS_LESSONS.find((lesson) => lesson.id === lastLessonId) ||
     nextLesson;
-  const completedChapters = RUST_FUNDAMENTALS_CHAPTERS.filter((chapter) =>
+  const completedChapters = RUST_PROJECTS_CHAPTERS.filter((chapter) =>
     chapter.lessons.every((lesson) => progress[lesson.id]),
   ).length;
   const bookmarkedLessons = bookmarks
-    .map((id) => RUST_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === id))
+    .map((id) => RUST_PROJECTS_LESSONS.find((lesson) => lesson.id === id))
     .filter(Boolean);
 
   const filteredLessons = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return RUST_FUNDAMENTALS_LESSONS.filter((lesson) => {
+    return RUST_PROJECTS_LESSONS.filter((lesson) => {
       const matchesQuery =
         !query ||
         lesson.title.toLowerCase().includes(query) ||
@@ -68,8 +97,8 @@ export default function RustFundamentalsHub() {
   }, [bookmarks, filter, progress, search]);
 
   return (
-    <div className="oops-hub rust-fundamentals-hub">
-      <div className="oops-hero rust-fundamentals-hero">
+    <div className="oops-hub matplotlib-hub">
+      <div className="oops-hero matplotlib-hero">
         <Link
           to="/language/Rust"
           className="oops-back-btn"
@@ -77,15 +106,19 @@ export default function RustFundamentalsHub() {
         >
           ← Rust courses
         </Link>
-        <div className="oops-hero-badge">Rust · CORE TRACK</div>
+        <div className="oops-hero-badge">RUST · PROJECTS COURSE</div>
         <h1 className="oops-hero-title">
           Rust
           <br />
-          <span className="oops-hero-accent">Fundamentals</span>
+          <span className="oops-hero-accent" style={{ color: ACCENT }}>
+            Projects
+          </span>
         </h1>
         <p className="oops-hero-sub">
-          From your first `println!` macro to ownership, structs, the borrow checker, 
-          and exhaustive pattern matching — simple theory, diagrams, and hands-on Rust challenges.
+          Build real, buildable Rust projects — a CLI calculator, a
+          struct-backed contact book, a file-based to-do app, and a capstone
+          task manager. {RUST_PROJECTS_CHAPTERS.length} chapters,{" "}
+          {RUST_PROJECTS_LESSONS.length} lessons, hands-on Rust challenges.
         </p>
 
         <div className="oops-hero-grid">
@@ -93,15 +126,18 @@ export default function RustFundamentalsHub() {
             <div className="oops-xp-meta">
               <span>
                 {isAuthenticated
-                  ? `${completedCount}/${RUST_FUNDAMENTALS_LESSONS.length} lessons · ${earnedXP}/${RUST_FUNDAMENTALS_TOTAL_XP} XP`
-                  : `Sign in to track progress · ${RUST_FUNDAMENTALS_LESSONS.length} lessons`}
+                  ? `${completedCount}/${RUST_PROJECTS_LESSONS.length} lessons · ${earnedXP}/${RUST_PROJECTS_TOTAL_XP} XP`
+                  : `Sign in to track progress · ${RUST_PROJECTS_LESSONS.length} lessons`}
               </span>
               <span>{isAuthenticated ? `${pct}%` : "—"}</span>
             </div>
             <div className="oops-xp-track">
               <div
                 className="oops-xp-fill"
-                style={{ width: isAuthenticated ? `${pct}%` : "0%" }}
+                style={{
+                  width: isAuthenticated ? `${pct}%` : "0%",
+                  background: ACCENT,
+                }}
               />
             </div>
           </div>
@@ -109,7 +145,7 @@ export default function RustFundamentalsHub() {
           {!isAuthenticated && (
             <div className="oops-auth-gate oops-auth-gate-hub">
               <p>
-                Create a free account to run Rust challenges, earn XP, and save
+                Create a free account to run challenges, earn XP, and save
                 your place in the course.
               </p>
               <div className="oops-auth-gate-actions">
@@ -120,7 +156,7 @@ export default function RustFundamentalsHub() {
                   to="/signup"
                   className="oops-auth-gate-btn oops-auth-gate-btn-primary"
                 >
-                  Sign up
+                  Sign up free
                 </Link>
               </div>
             </div>
@@ -138,7 +174,9 @@ export default function RustFundamentalsHub() {
             </p>
             <button
               type="button"
-              onClick={() => navigate(`${BASE_PATH}/lesson/${resumeLesson.id}`)}
+              onClick={() =>
+                navigate(`${BASE_PATH}/lesson/${resumeLesson.id}`)
+              }
             >
               {completedCount > 0 ? "Resume Rust" : "Start Rust"}
             </button>
@@ -154,12 +192,12 @@ export default function RustFundamentalsHub() {
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search ownership, structs, match, borrowing..."
-              aria-label="Search Rust lessons"
+              placeholder="Search cargo, structs, files..."
+              aria-label="Search Rust Projects lessons"
             />
             <div
               className="oops-filter-tabs"
-              aria-label="Filter Rust lessons"
+              aria-label="Filter Rust Projects lessons"
             >
               {[
                 ["all", "All"],
@@ -236,19 +274,19 @@ export default function RustFundamentalsHub() {
         <div className="oops-stat-tile">
           <span>Lessons</span>
           <strong>
-            {completedCount}/{RUST_FUNDAMENTALS_LESSONS.length}
+            {completedCount}/{RUST_PROJECTS_LESSONS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>Chapters</span>
           <strong>
-            {completedChapters}/{RUST_FUNDAMENTALS_CHAPTERS.length}
+            {completedChapters}/{RUST_PROJECTS_CHAPTERS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>XP</span>
           <strong>
-            {earnedXP}/{RUST_FUNDAMENTALS_TOTAL_XP}
+            {earnedXP}/{RUST_PROJECTS_TOTAL_XP}
           </strong>
         </div>
         <div className="oops-stat-tile">
@@ -257,106 +295,94 @@ export default function RustFundamentalsHub() {
         </div>
       </div>
 
-      <div className="oops-path-overview">
-        {RUST_FUNDAMENTALS_CHAPTERS.map((chapter, index) => {
-          const done = chapter.lessons.filter((l) => progress[l.id]).length;
-          const active = done > 0 && done < chapter.lessons.length;
-          return (
-            <button
-              key={chapter.id}
-              type="button"
-              className={`oops-path-step ${active ? "active" : ""} ${
-                done === chapter.lessons.length ? "done" : ""
-              }`}
-              style={{ "--ch-color": chapter.color }}
-              onClick={() =>
-                navigate(`${BASE_PATH}/lesson/${chapter.lessons[0].id}`)
-              }
-            >
-              <span>{index + 1}</span>
-              <strong>{chapter.title}</strong>
-              <small>
-                {done}/{chapter.lessons.length}
-              </small>
-            </button>
-          );
-        })}
-      </div>
+      <section className="matplotlib-learn-path" aria-label="Learning path">
+        <div className="matplotlib-path-label">
+          <span>Your path · Beginner to Capstone</span>
+          <small>
+            {RUST_PROJECTS_CHAPTERS.length} chapters ·{" "}
+            {RUST_PROJECTS_LESSONS.length} lessons
+          </small>
+        </div>
+        <div className="matplotlib-path-grid">
+          {LEARNING_PATH.map((stage) => {
+            const stageChapters = RUST_PROJECTS_CHAPTERS.filter((ch) =>
+              stage.chapters.includes(ch.id),
+            );
+            const stageLessons = stageChapters.flatMap((ch) => ch.lessons);
+            const stageDone = stageLessons.filter(
+              (l) => progress[l.id],
+            ).length;
+            const stagePct =
+              stageLessons.length > 0
+                ? Math.round((stageDone / stageLessons.length) * 100)
+                : 0;
 
-      <div className="oops-chapters">
-        {RUST_FUNDAMENTALS_CHAPTERS.map((chapter, index) => {
-          const done = chapter.lessons.filter((l) => progress[l.id]).length;
-          const chapterPct =
-            Math.round((done / chapter.lessons.length) * 100) || 0;
-          const firstUnfinished = chapter.lessons.find((l) => !progress[l.id]);
-          const allDone = done === chapter.lessons.length;
-
-          return (
-            <div
-              key={chapter.id}
-              className={`oops-chapter-card ${allDone ? "oops-chapter-done" : ""}`}
-              style={{ "--ch-color": chapter.color }}
-            >
-              <div className="oops-chapter-header">
-                <span className="oops-chapter-icon-wrap" aria-hidden>
-                  <LearnChapterIcon icon={chapter.icon} size={22} />
-                </span>
-                <div>
-                  <div className="oops-chapter-num">Chapter {index + 1}</div>
-                  <div className="oops-chapter-title">{chapter.title}</div>
-                </div>
-                {allDone && <span className="oops-done-badge">
-                    <CheckCircle2 size={14} strokeWidth={2.5} aria-hidden />
-                    Done
-                  </span>}
-              </div>
-              <div className="oops-chapter-progress-track">
-                <div
-                  className="oops-chapter-progress-fill"
-                  style={{ width: `${chapterPct}%` }}
-                />
-              </div>
-              <div className="oops-chapter-meta">
-                {done}/{chapter.lessons.length} lessons · {chapterPct}%
-              </div>
-              <ul className="oops-lesson-list">
-                {chapter.lessons.map((lesson) => (
-                  <li
-                    key={lesson.id}
-                    className={`oops-lesson-item ${progress[lesson.id] ? "done" : ""}`}
-                    onClick={() => navigate(`${BASE_PATH}/lesson/${lesson.id}`)}
-                  >
-                    <span className="oops-lesson-status">
-                      {progress[lesson.id] ? "✓" : "○"}
-                    </span>
-                    <span className="oops-lesson-name">{lesson.title}</span>
-                    <span className="oops-lesson-xp">+{lesson.xp} XP</span>
-                  </li>
-                ))}
-              </ul>
-              <button
-                type="button"
-                className="oops-chapter-cta"
-                onClick={() =>
-                  navigate(
-                    `${BASE_PATH}/lesson/${
-                      firstUnfinished ? firstUnfinished.id : chapter.lessons[0].id
-                    }`,
-                  )
-                }
+            return (
+              <article
+                key={stage.level}
+                className="matplotlib-path-card"
+                style={{ "--stage-color": stage.color }}
               >
-                {allDone ? "Review Chapter →" : done > 0 ? "Continue →" : "Start →"}
-              </button>
-            </div>
-          );
-        })}
-      </div>
+                <header className="matplotlib-path-card-head">
+                  <span className="matplotlib-path-level">{stage.level}</span>
+                  <span className="matplotlib-path-pct">{stagePct}%</span>
+                </header>
+                <p className="matplotlib-path-summary">{stage.summary}</p>
+                <ul className="matplotlib-path-chapters">
+                  {stageChapters.map((ch) => (
+                    <li key={ch.id}>
+                      <span className="oops-chapter-icon-wrap" aria-hidden>
+                        <LearnChapterIcon icon={ch.icon} size={14} />
+                      </span>
+                      {ch.title}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  className="matplotlib-path-cta"
+                  onClick={() => {
+                    const firstOpen =
+                      stageLessons.find((l) => !progress[l.id]) ||
+                      stageLessons[0];
+                    if (firstOpen) {
+                      navigate(`${BASE_PATH}/lesson/${firstOpen.id}`);
+                    }
+                  }}
+                >
+                  {stageDone === stageLessons.length && stageLessons.length > 0
+                    ? "Review stage →"
+                    : stageDone > 0
+                      ? "Continue stage →"
+                      : "Start stage →"}
+                </button>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <LearnChapterPathOverview
+        chapters={RUST_PROJECTS_CHAPTERS}
+        progress={progress}
+        onChapterSelect={(chapter) =>
+          navigate(`${BASE_PATH}/lesson/${chapter.lessons[0].id}`)
+        }
+      />
+
+      <LearnChapterGrid
+        chapters={RUST_PROJECTS_CHAPTERS}
+        progress={progress}
+        basePath={BASE_PATH}
+        navigate={navigate}
+      />
+
       <CourseCertificate
-        courseName="Rust Fundamentals"
-        totalLessons={RUST_FUNDAMENTALS_LESSONS.length}
+        courseName="Rust Projects"
+        totalLessons={RUST_PROJECTS_LESSONS.length}
         completedCount={completedCount}
         earnedXP={earnedXP}
-        totalXP={RUST_FUNDAMENTALS_TOTAL_XP}
+        totalXP={RUST_PROJECTS_TOTAL_XP}
       />
     </div>
   );

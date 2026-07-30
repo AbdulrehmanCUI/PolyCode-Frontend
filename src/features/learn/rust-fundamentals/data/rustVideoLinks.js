@@ -1,2 +1,0 @@
-
-export const RUST_FUNDAMENTALS_VIDEO_LINKS = {};

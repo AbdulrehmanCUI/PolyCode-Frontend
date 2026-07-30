@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import OopsSidebar from "../../oops-cpp/components/OopsSidebar";
 import LearnProfileMenu from "../../shared/LearnProfileMenu";
 import LessonContentShell from "../../shared/LessonContentShell";
-import RustLessonTheory from "../../rust-fundamentals-course/components/RustLessonTheory";
+import NumpyIntroTheory from "../../numpy-py/components/NumpyIntroTheory";
 import RustCodeChallenge from "../../rust-fundamentals-course/components/RustCodeChallenge";
 import {
   RUST_COLLECTIONS_CHAPTERS,
@@ -189,7 +189,7 @@ export default function RustCollectionsLessonPage() {
           videoTitle={`${lesson.title} — Rust Collections`}
         >
           {tab === "theory" ? (
-            <RustLessonTheory
+            <NumpyIntroTheory
               lesson={lesson}
               quizStoragePrefix={READ_GATE_PREFIX}
               confidence={confidence}
