@@ -1,24 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
+import { LEARN_ACCENT } from "../../shared/learnAccent";
 import { useNavigate, useParams } from "react-router-dom";
-import NumpyIntroTheory from "../../numpy-py/components/NumpyIntroTheory";
 import OopsSidebar from "../../oops-cpp/components/OopsSidebar";
 import LearnProfileMenu from "../../shared/LearnProfileMenu";
 import LessonContentShell from "../../shared/LessonContentShell";
-import RustFundamentalsCodeChallenge from "../components/RustFundamentalsCodeChallenge";
+import NumpyIntroTheory from "../../numpy-py/components/NumpyIntroTheory";
+import RustCodeChallenge from "../components/RustCodeChallenge";
 import {
-  RUST_FUNDAMENTALS_CHAPTERS,
-  RUST_FUNDAMENTALS_LESSONS,
-  RUST_FUNDAMENTALS_TOTAL_XP,
-} from "../data/rustCurriculum";
-import useRustFundamentalsProgress from "../hooks/useRustFundamentalsProgress";
+  RUST_PROJECTS_CHAPTERS,
+  RUST_PROJECTS_LESSONS,
+  RUST_PROJECTS_TOTAL_XP,
+} from "../data/rustProjectsCurriculum";
+import useRustProjectsProgress from "../hooks/useRustProjectsProgress";
 import useLessonReadGate from "../../shared/useLessonReadGate";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
 import { useLessonAssistantContext } from "../../../assistant/hooks/useLessonAssistantContext";
 
-const BASE_PATH = "/learn/rust-fundamentals";
-const READ_GATE_PREFIX = "rust_fundamentals";
+const BASE_PATH = "/learn/rust-projects";
+const READ_GATE_PREFIX = "rust-projects";
 
-export default function RustFundamentalsLessonPage() {
+export default function RustProjectsLessonPage() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState("theory");
@@ -37,26 +38,23 @@ export default function RustFundamentalsLessonPage() {
     isAuthenticated,
     completedMap: progress,
     savedCodeMap,
-    getLessonNote,
     bookmarks,
     completeLesson,
     rememberLesson,
     saveCode,
-    saveNote,
     toggleBookmark,
-  } = useRustFundamentalsProgress();
-  const [noteDraft, setNoteDraft] = useState("");
+  } = useRustProjectsProgress();
   const codeSaveTimer = useRef(null);
 
-  const lesson = RUST_FUNDAMENTALS_LESSONS.find((item) => item.id === lessonId);
-  const lessonIdx = RUST_FUNDAMENTALS_LESSONS.findIndex(
+  const lesson = RUST_PROJECTS_LESSONS.find((item) => item.id === lessonId);
+  const lessonIdx = RUST_PROJECTS_LESSONS.findIndex(
     (item) => item.id === lessonId,
   );
-  const prev = RUST_FUNDAMENTALS_LESSONS[lessonIdx - 1];
-  const next = RUST_FUNDAMENTALS_LESSONS[lessonIdx + 1];
+  const prev = RUST_PROJECTS_LESSONS[lessonIdx - 1];
+  const next = RUST_PROJECTS_LESSONS[lessonIdx + 1];
 
   useLessonAssistantContext({
-    course: "Rust Fundamentals",
+    course: "Rust Projects",
     language: "Rust",
     lesson,
     chapter: lesson?.chapterTitle,
@@ -72,10 +70,6 @@ export default function RustFundamentalsLessonPage() {
     if (lessonId) rememberLesson(lessonId);
   }, [lessonId, rememberLesson]);
 
-  useEffect(() => {
-    setNoteDraft(getLessonNote(lessonId));
-  }, [lessonId, getLessonNote]);
-
   useEffect(
     () => () => {
       window.clearTimeout(codeSaveTimer.current);
@@ -88,7 +82,7 @@ export default function RustFundamentalsLessonPage() {
       <div className="oops-not-found">
         <p>Rust lesson not found.</p>
         <button type="button" onClick={() => navigate(BASE_PATH)}>
-          ← Back to Rust Fundamentals
+          ← Back to Rust Projects
         </button>
       </div>
     );
@@ -97,17 +91,12 @@ export default function RustFundamentalsLessonPage() {
   const isCompleted = isAuthenticated && !!progress[lessonId];
   const isBookmarked = bookmarks.includes(lessonId);
   const completedCount = Object.keys(progress).length;
-  const earnedXP = RUST_FUNDAMENTALS_LESSONS.filter((item) => progress[item.id]).reduce(
-    (sum, item) => sum + item.xp,
-    0,
-  );
+  const earnedXP = RUST_PROJECTS_LESSONS.filter(
+    (item) => progress[item.id],
+  ).reduce((sum, item) => sum + item.xp, 0);
 
   async function handleChallengeComplete() {
     await completeLesson(lesson);
-  }
-
-  function handleSaveNote() {
-    saveNote(lessonId, noteDraft);
   }
 
   function handleCodeChange(code) {
@@ -122,9 +111,9 @@ export default function RustFundamentalsLessonPage() {
       <OopsSidebar
         currentLessonId={lessonId}
         progress={progress}
-        chapters={RUST_FUNDAMENTALS_CHAPTERS}
+        chapters={RUST_PROJECTS_CHAPTERS}
         basePath={BASE_PATH}
-        title="Rust Fundamentals"
+        title="Rust Projects"
       />
 
       <div className="oops-lesson-main">
@@ -134,10 +123,10 @@ export default function RustFundamentalsLessonPage() {
             className="oops-back-btn"
             onClick={() => navigate(BASE_PATH)}
           >
-            ← Rust Fundamentals
+            ← Rust Projects
           </button>
           <div className="oops-lesson-breadcrumb">
-            <span style={{ color: lesson.chapterColor }}>
+            <span className="learn-lesson-chapter-tag">
               {lesson.chapterTitle}
             </span>
             <span className="oops-bc-sep">›</span>
@@ -162,16 +151,16 @@ export default function RustFundamentalsLessonPage() {
           </button>
           <LearnProfileMenu
             user={user}
-            trackTitle="Rust Fundamentals"
+            trackTitle="Rust Projects"
             syncLabel={
               isAuthenticated
                 ? "Rust progress saved to your account"
                 : "Sign in to save progress"
             }
             completedCount={completedCount}
-            totalLessons={RUST_FUNDAMENTALS_LESSONS.length}
+            totalLessons={RUST_PROJECTS_LESSONS.length}
             earnedXP={earnedXP}
-            totalXP={RUST_FUNDAMENTALS_TOTAL_XP}
+            totalXP={RUST_PROJECTS_TOTAL_XP}
             bookmarksCount={bookmarks.length}
             streak={0}
           />
@@ -194,16 +183,15 @@ export default function RustFundamentalsLessonPage() {
         </div>
 
         <LessonContentShell
-          storageKey={`rust-fundamentals:${lessonId}`}
+          tab={tab}
+          storageKey={`rust-projects:${lessonId}`}
           videoUrl={lesson.videoUrl}
-          videoTitle={`${lesson.title} — Rust`}
+          videoTitle={`${lesson.title} — Rust Projects`}
         >
           {tab === "theory" ? (
             <NumpyIntroTheory
               lesson={lesson}
-              noteDraft={noteDraft}
-              onNoteChange={setNoteDraft}
-              onSaveNote={handleSaveNote}
+              quizStoragePrefix={READ_GATE_PREFIX}
               confidence={confidence}
               onConfidenceChange={handleConfidenceChange}
               markedAsRead={markedAsRead}
@@ -211,9 +199,9 @@ export default function RustFundamentalsLessonPage() {
               onGoChallenge={goToChallenge}
             />
           ) : (
-            <RustFundamentalsCodeChallenge
+            <RustCodeChallenge
               challenge={lesson.challenge}
-              accentColor={lesson.chapterColor}
+              accentColor={LEARN_ACCENT}
               isCompleted={isCompleted}
               onComplete={handleChallengeComplete}
               initialCode={savedCodeMap[lessonId]}

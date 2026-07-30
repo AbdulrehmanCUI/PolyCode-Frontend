@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import OopsSidebar from "../../oops-cpp/components/OopsSidebar";
 import LearnProfileMenu from "../../shared/LearnProfileMenu";
 import LessonContentShell from "../../shared/LessonContentShell";
-import RustLessonTheory from "../components/RustLessonTheory";
+import NumpyIntroTheory from "../../numpy-py/components/NumpyIntroTheory";
 import RustCodeChallenge from "../components/RustCodeChallenge";
 import {
   RUST_MEMORY_CHAPTERS,
@@ -189,7 +189,7 @@ export default function RustMemoryLessonPage() {
           videoTitle={`${lesson.title} — Rust Memory`}
         >
           {tab === "theory" ? (
-            <RustLessonTheory
+            <NumpyIntroTheory
               lesson={lesson}
               quizStoragePrefix={READ_GATE_PREFIX}
               confidence={confidence}
