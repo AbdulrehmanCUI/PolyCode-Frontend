@@ -121,6 +121,12 @@ const FunctionsHub = lazyWithChunkRetry(
 const FunctionsLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/functions-cpp/pages/FunctionsLessonPage"),
 );
+const StlHub = lazyWithChunkRetry(
+  () => import("./features/learn/stl-cpp/pages/StlHub"),
+);
+const StlLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/stl-cpp/pages/StlLessonPage"),
+);
 const DsaHub = lazyWithChunkRetry(
   () => import("./features/learn/dsa-cpp/pages/DsaHub"),
 );
@@ -697,7 +703,8 @@ function AppRoutes() {
     } else if (
       path.startsWith("/learn/oops-cpp") ||
       path.startsWith("/learn/pointers-cpp") ||
-      path.startsWith("/learn/functions-cpp")
+      path.startsWith("/learn/functions-cpp") ||
+      path.startsWith("/learn/stl-cpp")
     ) {
       handleLanguageSelect("C++", { stay: true });
     }
@@ -910,6 +917,51 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <FunctionsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/stl-cpp"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <StlHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/stl-cpp/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <StlLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/stl-cpp/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <StlLessonPage />
               </LearnShell>
             </ThemedShell>
           }

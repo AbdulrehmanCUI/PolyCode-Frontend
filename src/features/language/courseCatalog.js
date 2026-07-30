@@ -169,6 +169,15 @@ export const languageCourses = {
       accent: "#60a5fa",
     },
     {
+      title: "C++ STL",
+      tag: "Core Course",
+      icon: Grid3x3,
+      description:
+        "Master the Standard Template Library: containers, iterators, algorithms, functors, adapters, allocators, and advanced patterns — beginner to pro.",
+      href: "/learn/stl-cpp",
+      accent: "#14b8a6",
+    },
+    {
       title: "DSA C++",
       tag: "Advanced Course",
       icon: Database,
@@ -214,6 +223,15 @@ export const languageCourses = {
         "Functions, parameters, references, lambdas, std::function, and callbacks — beginner to advanced hands-on guide.",
       href: "/learn/functions-cpp",
       accent: "#60a5fa",
+    },
+    {
+      title: "C++ STL",
+      tag: "Core Course",
+      icon: Grid3x3,
+      description:
+        "Master the Standard Template Library: containers, iterators, algorithms, functors, adapters, allocators, and advanced patterns — beginner to pro.",
+      href: "/learn/stl-cpp",
+      accent: "#14b8a6",
     },
     {
       title: "DSA C++",
