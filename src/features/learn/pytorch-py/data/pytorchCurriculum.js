@@ -956,6 +956,19 @@ print(w.grad)`,
             explanation:
               `PyTorch records ops on that tensor so \`.backward()\` can compute gradients.`,
           },
+          {
+            type: "quiz",
+            question: `What happens if requires_grad=False?`,
+            options: [
+              `PyTorch will still calculate gradients.`,
+              `The tensor will automatically move to the GPU.`,
+              `PyTorch will not track operations for gradient computation.`,
+              `The tensor becomes read-only.`,
+            ],
+            answer: 2,
+            explanation:
+              `With \`requires_grad=False\`, PyTorch skips recording operations on that tensor, so \`.backward()\` has nothing to compute for it.`,
+          },
         ],
         challenge: {
           gradeMode: "keywords",
@@ -1055,6 +1068,19 @@ print(w.grad)`,
             answer: 1,
             explanation:
               `backward() starts from a scalar loss value.`,
+          },
+          {
+            type: "quiz",
+            question: `What is the purpose of loss.backward() in PyTorch?`,
+            options: [
+              `Updates the model weights automatically`,
+              `Calculates gradients of the loss with respect to trainable tensors`,
+              `Prints the loss value`,
+              `Clears all gradients`,
+            ],
+            answer: 1,
+            explanation:
+              `\`loss.backward()\` runs backpropagation and fills \`.grad\` on every leaf tensor with \`requires_grad=True\`. Updating weights and clearing gradients are separate steps (\`optimizer.step()\` and \`optimizer.zero_grad()\`).`,
           },
         ],
         challenge: {
