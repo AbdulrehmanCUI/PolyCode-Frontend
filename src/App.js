@@ -133,6 +133,12 @@ const DsaHub = lazyWithChunkRetry(
 const DsaLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/dsa-cpp/pages/DsaLessonPage"),
 );
+const ModernCppHub = lazyWithChunkRetry(
+  () => import("./features/learn/modern-cpp/pages/ModernCppHub"),
+);
+const ModernCppLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/modern-cpp/pages/ModernCppLessonPage"),
+);
 const NumpyHub = lazyWithChunkRetry(
   () => import("./features/learn/numpy-py/pages/NumpyHub"),
 );
@@ -704,7 +710,8 @@ function AppRoutes() {
       path.startsWith("/learn/oops-cpp") ||
       path.startsWith("/learn/pointers-cpp") ||
       path.startsWith("/learn/functions-cpp") ||
-      path.startsWith("/learn/stl-cpp")
+      path.startsWith("/learn/stl-cpp") ||
+      path.startsWith("/learn/modern-cpp")
     ) {
       handleLanguageSelect("C++", { stay: true });
     }
@@ -962,6 +969,51 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <StlLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/modern-cpp"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <ModernCppHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/modern-cpp/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <ModernCppLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/modern-cpp/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <ModernCppLessonPage />
               </LearnShell>
             </ThemedShell>
           }

@@ -5,6 +5,7 @@
 export const COURSE_PROGRESS_REGISTRY = [
   { courseId: "oops-cpp", storagePrefix: "oops", scoped: true, notes: false },
   { courseId: "pointers-cpp", storagePrefix: "pointers_cpp", scoped: true, notes: false },
+  { courseId: "modern-cpp", storagePrefix: "modern_cpp", scoped: false, notes: false },
   { courseId: "numpy-py", storagePrefix: "numpy_py", scoped: true, notes: false },
   { courseId: "pandas-py", storagePrefix: "pandas_py", scoped: true, notes: false },
   { courseId: "fastapi-py", storagePrefix: "fastapi_py", scoped: true, notes: false },

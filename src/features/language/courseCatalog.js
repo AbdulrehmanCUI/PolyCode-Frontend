@@ -169,6 +169,15 @@ export const languageCourses = {
       accent: "#60a5fa",
     },
     {
+      title: "Modern C++",
+      tag: "Modern Course",
+      icon: Atom,
+      description:
+        "Learn modern C++ features and idioms: auto, smart pointers, lambdas, constexpr, optionals, variants, threading, and clean API design.",
+      href: "/learn/modern-cpp",
+      accent: "#38bdf8",
+    },
+    {
       title: "C++ STL",
       tag: "Core Course",
       icon: Grid3x3,
@@ -223,6 +232,15 @@ export const languageCourses = {
         "Functions, parameters, references, lambdas, std::function, and callbacks — beginner to advanced hands-on guide.",
       href: "/learn/functions-cpp",
       accent: "#60a5fa",
+    },
+    {
+      title: "Modern C++",
+      tag: "Modern Course",
+      icon: Atom,
+      description:
+        "Learn modern C++ features and idioms: auto, smart pointers, lambdas, constexpr, optionals, variants, threading, and clean API design.",
+      href: "/learn/modern-cpp",
+      accent: "#38bdf8",
     },
     {
       title: "C++ STL",
