@@ -173,6 +173,12 @@ const PyTorchHub = lazyWithChunkRetry(
 const PyTorchLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/pytorch-py/pages/PytorchLessonPage"),
 );
+const OpencvHub = lazyWithChunkRetry(
+  () => import("./features/learn/opencv-py/pages/OpencvHub"),
+);
+const OpencvLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/opencv-py/pages/OpencvLessonPage"),
+);
 const RustFundamentalsHub = lazyWithChunkRetry(
   () => import("./features/learn/rust-fundamentals-course/pages/RustFundamentalsHub"),
 );
@@ -662,7 +668,8 @@ function AppRoutes() {
       path.startsWith("/learn/fastapi-py") ||
       path.startsWith("/learn/matplotlib-py") ||
       path.startsWith("/learn/ai_ml-py") ||
-      path.startsWith("/learn/pytorch-py")
+      path.startsWith("/learn/pytorch-py") ||
+      path.startsWith("/learn/opencv-py")
     ) {
       handleLanguageSelect("Python", { stay: true });
     } else if (
@@ -1198,6 +1205,37 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <PyTorchLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        {/* OpenCV Course Routes */}
+        <Route
+          path="/learn/opencv-py"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <OpencvHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/opencv-py/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <OpencvLessonPage />
               </LearnShell>
             </ThemedShell>
           }

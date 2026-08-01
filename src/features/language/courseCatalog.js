@@ -18,6 +18,7 @@ import {
   Database,
   Wrench,
   Atom,
+  ScanEye,
 } from "lucide-react";
 
 export function languageKey(value = "") {
@@ -297,6 +298,15 @@ export const languageCourses = {
         "Tensors, autograd, nn.Module, training loops, and a hands-on deep learning track — 8 chapters, 25 lessons.",
       href: "/learn/pytorch-py",
       accent: "#EE4C2C",
+    },
+    {
+      title: "OpenCV · py",
+      tag: "Computer Vision",
+      icon: ScanEye,
+      description:
+        "Beginner → Advanced: images, filters, edges, contours, features, video, detection, and a hands-on capstone — 11 chapters, 36 lessons.",
+      href: "/learn/opencv-py",
+      accent: "#5CBF2A",
     },
     {
       title: "AI/ML · py",
@@ -823,6 +833,7 @@ export const learnNavByLanguage = {
     { label: "FastAPI", to: "/learn/fastapi-py" },
     { label: "Matplotlib", to: "/learn/matplotlib-py" },
     { label: "PyTorch", to: "/learn/pytorch-py" },
+    { label: "OpenCV", to: "/learn/opencv-py" },
     { label: "AI/ML", to: "/learn/ai_ml-py" },
   ],
   javascript: [
@@ -938,6 +949,7 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/fastapi-py") ||
     pathname.startsWith("/learn/matplotlib-py") ||
     pathname.startsWith("/learn/pytorch-py") ||
+    pathname.startsWith("/learn/opencv-py") ||
     pathname.startsWith("/learn/ai_ml-py")
   ) {
     return "python";

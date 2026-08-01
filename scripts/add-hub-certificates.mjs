@@ -16,6 +16,8 @@ const COURSE_NAMES = {
   "numpy-py": "NumPy",
   "pandas-py": "Pandas",
   "fastapi-py": "FastAPI",
+  "opencv-py": "OpenCV",
+  "pytorch-py": "PyTorch",
   "python-fundamentals": "Python Fundamentals",
   "python-oop-py": "Python OOP",
   "python-file-handling-py": "Python File Handling",
