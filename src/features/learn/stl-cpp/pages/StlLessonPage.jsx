@@ -1,41 +1,29 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { LEARN_ACCENT } from "../../shared/learnAccent";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { ALL_LESSONS, TOTAL_XP, CHAPTERS } from "../data/stlCurriculum";
+import CodeChallenge from "../../oops-cpp/components/CodeChallenge";
+import NumpyIntroTheory from "../../numpy-py/components/NumpyIntroTheory";
 import OopsSidebar from "../../oops-cpp/components/OopsSidebar";
 import LearnProfileMenu from "../../shared/LearnProfileMenu";
 import LessonContentShell from "../../shared/LessonContentShell";
-import NumpyIntroTheory from "../../numpy-py/components/NumpyIntroTheory";
-import RustCodeChallenge from "../components/RustCodeChallenge";
-import {
-  RUST_MEMORY_CHAPTERS,
-  RUST_MEMORY_LESSONS,
-  RUST_MEMORY_TOTAL_XP,
-} from "../data/rustMemoryCurriculum";
-import useRustMemoryProgress from "../hooks/useRustMemoryProgress";
 import useLessonReadGate from "../../shared/useLessonReadGate";
 import LessonChallengeTab from "../../shared/LessonChallengeTab";
+import useStlProgress from "../hooks/useStlProgress";
 import { useLessonAssistantContext } from "../../../assistant/hooks/useLessonAssistantContext";
 
-const BASE_PATH = "/learn/rust-memory";
-const READ_GATE_PREFIX = "rust-memory";
+const READ_GATE_PREFIX = "stl";
+const BASE_PATH = "/learn/stl-cpp";
 
-export default function RustMemoryLessonPage() {
+export default function StlLessonPage() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState("theory");
   const [focusMode, setFocusMode] = useState(false);
   const {
-    markedAsRead,
-    markAsRead,
-    confidence,
-    handleConfidenceChange,
-    createGoToChallenge,
-    challengeTabLocked,
-  } = useLessonReadGate(READ_GATE_PREFIX, lessonId);
-  const goToChallenge = createGoToChallenge(setTab);
-  const {
     user,
-    isAuthenticated,
+    syncState,
+    remoteProgress,
     completedMap: progress,
     savedCodeMap,
     bookmarks,
@@ -43,19 +31,20 @@ export default function RustMemoryLessonPage() {
     rememberLesson,
     saveCode,
     toggleBookmark,
-  } = useRustMemoryProgress();
+  } = useStlProgress();
   const codeSaveTimer = useRef(null);
 
-  const lesson = RUST_MEMORY_LESSONS.find((item) => item.id === lessonId);
-  const lessonIdx = RUST_MEMORY_LESSONS.findIndex(
-    (item) => item.id === lessonId,
-  );
-  const prev = RUST_MEMORY_LESSONS[lessonIdx - 1];
-  const next = RUST_MEMORY_LESSONS[lessonIdx + 1];
+  const lesson = ALL_LESSONS.find((l) => l.id === lessonId);
+  const { markedAsRead, markAsRead, confidence, handleConfidenceChange, createGoToChallenge, challengeTabLocked } =
+    useLessonReadGate(READ_GATE_PREFIX, lessonId);
+  const goToChallenge = createGoToChallenge(setTab);
+  const lessonIdx = ALL_LESSONS.findIndex((l) => l.id === lessonId);
+  const prev = ALL_LESSONS[lessonIdx - 1];
+  const next = ALL_LESSONS[lessonIdx + 1];
 
   useLessonAssistantContext({
-    course: "Rust Memory",
-    language: "Rust",
+    course: "C++ STL",
+    language: "C++",
     lesson,
     chapter: lesson?.chapterTitle,
     tab,
@@ -70,30 +59,34 @@ export default function RustMemoryLessonPage() {
     if (lessonId) rememberLesson(lessonId);
   }, [lessonId, rememberLesson]);
 
-  useEffect(
-    () => () => {
-      window.clearTimeout(codeSaveTimer.current);
-    },
-    [],
-  );
+  useEffect(() => () => {
+    window.clearTimeout(codeSaveTimer.current);
+  }, []);
 
   if (!lesson) {
     return (
       <div className="oops-not-found">
-        <p>Rust lesson not found.</p>
-        <button type="button" onClick={() => navigate(BASE_PATH)}>
-          ← Back to Rust Memory
-        </button>
+        <p>Lesson not found.</p>
+        <button onClick={() => navigate("/learn/stl-cpp")}>← Back to Hub</button>
       </div>
     );
   }
 
-  const isCompleted = isAuthenticated && !!progress[lessonId];
+  const isCompleted = !!progress[lessonId];
   const isBookmarked = bookmarks.includes(lessonId);
   const completedCount = Object.keys(progress).length;
-  const earnedXP = RUST_MEMORY_LESSONS.filter(
-    (item) => progress[item.id],
-  ).reduce((sum, item) => sum + item.xp, 0);
+  const earnedXP = ALL_LESSONS.filter((item) => progress[item.id]).reduce(
+    (sum, item) => sum + item.xp,
+    0,
+  );
+  const syncLabel =
+    syncState === "synced"
+      ? "Progress saved to MongoDB"
+      : syncState === "syncing"
+        ? "Syncing progress..."
+        : user
+          ? "Progress sync pending"
+          : "Progress saved locally";
 
   async function handleChallengeComplete() {
     await completeLesson(lesson);
@@ -111,34 +104,27 @@ export default function RustMemoryLessonPage() {
       <OopsSidebar
         currentLessonId={lessonId}
         progress={progress}
-        chapters={RUST_MEMORY_CHAPTERS}
+        chapters={CHAPTERS}
         basePath={BASE_PATH}
-        title="Rust Memory"
+        title="C++ STL"
       />
 
       <div className="oops-lesson-main">
         <div className="oops-lesson-topbar">
-          <button
-            type="button"
-            className="oops-back-btn"
-            onClick={() => navigate(BASE_PATH)}
-          >
-            ← Rust Memory
+          <button className="oops-back-btn" onClick={() => navigate("/learn/stl-cpp")}>
+            ← C++ STL
           </button>
           <div className="oops-lesson-breadcrumb">
-            <span className="learn-lesson-chapter-tag">
-              {lesson.chapterTitle}
-            </span>
+            <span className="learn-lesson-chapter-tag">{lesson.chapterTitle}</span>
             <span className="oops-bc-sep">›</span>
             <span>{lesson.title}</span>
           </div>
-          {isCompleted && (
-            <span className="oops-completed-badge">✓ Completed</span>
-          )}
+          {isCompleted && <span className="oops-completed-badge">✓ Completed</span>}
           <button
             type="button"
             className={`oops-bookmark-btn ${isBookmarked ? "active" : ""}`}
             onClick={() => toggleBookmark(lessonId)}
+            title={isBookmarked ? "Remove bookmark" : "Bookmark lesson"}
           >
             {isBookmarked ? "★" : "☆"}
           </button>
@@ -151,28 +137,23 @@ export default function RustMemoryLessonPage() {
           </button>
           <LearnProfileMenu
             user={user}
-            trackTitle="Rust Memory"
-            syncLabel={
-              isAuthenticated
-                ? "Rust progress saved to your account"
-                : "Sign in to save progress"
-            }
+            trackTitle="C++ STL"
+            syncLabel={syncLabel}
             completedCount={completedCount}
-            totalLessons={RUST_MEMORY_LESSONS.length}
+            totalLessons={ALL_LESSONS.length}
             earnedXP={earnedXP}
-            totalXP={RUST_MEMORY_TOTAL_XP}
+            totalXP={TOTAL_XP}
             bookmarksCount={bookmarks.length}
-            streak={0}
+            streak={remoteProgress?.currentStreak || 0}
           />
         </div>
 
         <div className="oops-tabs">
           <button
-            type="button"
             className={`oops-tab ${tab === "theory" ? "active" : ""}`}
             onClick={() => setTab("theory")}
           >
-            Theory
+            📖 Theory
           </button>
           <LessonChallengeTab
             active={tab === "challenge"}
@@ -184,9 +165,9 @@ export default function RustMemoryLessonPage() {
 
         <LessonContentShell
           tab={tab}
-          storageKey={`rust-memory:${lessonId}`}
+          storageKey={`stl-cpp:${lessonId}`}
           videoUrl={lesson.videoUrl}
-          videoTitle={`${lesson.title} — Rust Memory`}
+          videoTitle={`${lesson.title} — C++ STL`}
         >
           {tab === "theory" ? (
             <NumpyIntroTheory
@@ -197,16 +178,18 @@ export default function RustMemoryLessonPage() {
               markedAsRead={markedAsRead}
               onMarkAsRead={markAsRead}
               onGoChallenge={goToChallenge}
+              accentColor={LEARN_ACCENT}
             />
           ) : (
-            <RustCodeChallenge
-              challenge={lesson.challenge}
-              accentColor={LEARN_ACCENT}
-              isCompleted={isCompleted}
-              onComplete={handleChallengeComplete}
-              initialCode={savedCodeMap[lessonId]}
-              onCodeChange={handleCodeChange}
-            />
+            <div className="oops-challenge-pane">
+              <CodeChallenge
+                challenge={lesson.challenge}
+                initialCode={savedCodeMap[lessonId]}
+                accentColor={LEARN_ACCENT}
+                onCodeChange={handleCodeChange}
+                onComplete={handleChallengeComplete}
+              />
+            </div>
           )}
         </LessonContentShell>
 
@@ -215,7 +198,7 @@ export default function RustMemoryLessonPage() {
             <button
               type="button"
               className="oops-nav-btn"
-              onClick={() => navigate(`${BASE_PATH}/lesson/${prev.id}`)}
+              onClick={() => navigate(`/learn/stl-cpp/lesson/${prev.id}`)}
             >
               ← {prev.title}
             </button>
@@ -226,19 +209,11 @@ export default function RustMemoryLessonPage() {
             <button
               type="button"
               className="oops-nav-btn oops-nav-next"
-              onClick={() => navigate(`${BASE_PATH}/lesson/${next.id}`)}
+              onClick={() => navigate(`/learn/stl-cpp/lesson/${next.id}`)}
             >
               {next.title} →
             </button>
-          ) : (
-            <button
-              type="button"
-              className="oops-nav-btn oops-nav-next"
-              onClick={() => navigate(BASE_PATH)}
-            >
-              Finish Course →
-            </button>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

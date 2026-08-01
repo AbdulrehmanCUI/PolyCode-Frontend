@@ -121,6 +121,12 @@ const FunctionsHub = lazyWithChunkRetry(
 const FunctionsLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/functions-cpp/pages/FunctionsLessonPage"),
 );
+const StlHub = lazyWithChunkRetry(
+  () => import("./features/learn/stl-cpp/pages/StlHub"),
+);
+const StlLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/stl-cpp/pages/StlLessonPage"),
+);
 const DsaHub = lazyWithChunkRetry(
   () => import("./features/learn/dsa-cpp/pages/DsaHub"),
 );
@@ -202,6 +208,12 @@ const RustMemoryHub = lazyWithChunkRetry(
 );
 const RustMemoryLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/rust-memory-course/pages/RustMemoryLessonPage"),
+);
+const RustProjectsHub = lazyWithChunkRetry(
+  () => import("./features/learn/rust-projects/pages/RustProjectsHub"),
+);
+const RustProjectsLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/rust-projects/pages/RustProjectsLessonPage"),
 );
 const JsFundamentalsHub = lazyWithChunkRetry(
   () => import("./features/learn/js-fundamentals/pages/JsFundamentalsHub"),
@@ -676,7 +688,8 @@ function AppRoutes() {
       path.startsWith("/learn/rust-fundamentals") ||
       path.startsWith("/learn/rust-concurrency") ||
       path.startsWith("/learn/rust-collections") ||
-      path.startsWith("/learn/rust-memory")
+      path.startsWith("/learn/rust-memory") ||
+      path.startsWith("/learn/rust-projects")
     ) {
       handleLanguageSelect("Rust", { stay: true });
     } else if (path.startsWith("/learn/js-fundamentals")) {
@@ -704,7 +717,8 @@ function AppRoutes() {
     } else if (
       path.startsWith("/learn/oops-cpp") ||
       path.startsWith("/learn/pointers-cpp") ||
-      path.startsWith("/learn/functions-cpp")
+      path.startsWith("/learn/functions-cpp") ||
+      path.startsWith("/learn/stl-cpp")
     ) {
       handleLanguageSelect("C++", { stay: true });
     }
@@ -917,6 +931,51 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <FunctionsLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/stl-cpp"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <StlHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/stl-cpp/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <StlLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/stl-cpp/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <StlLessonPage />
               </LearnShell>
             </ThemedShell>
           }
@@ -1360,6 +1419,37 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <RustMemoryLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        {/* Rust Projects Course Routes */}
+        <Route
+          path="/learn/rust-projects"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RustProjectsHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/rust-projects/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <RustProjectsLessonPage />
               </LearnShell>
             </ThemedShell>
           }
