@@ -4,7 +4,9 @@ import { ArrowRight, BookOpen, Code2, Sparkles } from "lucide-react";
 import {
   getLanguageLandingCourses,
   languageKey,
+  normalizeLearnNavLanguageKey,
 } from "../courseCatalog";
+import { getAllCoursesPath } from "../../learn/shared/allCourses";
 
 const languageMeta = {
   javascript: {
@@ -109,6 +111,8 @@ export default function LanguageLandingPage({ selectedLanguage, onLanguageSelect
       "Explore curated documentation, examples, practice tools, and learning paths for this language.",
   };
   const courses = getLanguageLandingCourses(key);
+  const stackId = normalizeLearnNavLanguageKey(key);
+  const allCoursesHref = getAllCoursesPath(stackId);
 
   React.useEffect(() => {
     if (displayLanguage && displayLanguage !== "Programming") {
@@ -127,9 +131,9 @@ export default function LanguageLandingPage({ selectedLanguage, onLanguageSelect
           <h1>{meta.name}</h1>
           <p>{meta.description}</p>
           <div className="language-hero-actions">
-            <Link className="language-primary-btn" to="/hub">
+            <Link className="language-primary-btn" to={allCoursesHref}>
               <BookOpen size={18} />
-              Docs Hub
+              All {meta.name} courses
             </Link>
             <Link className="language-secondary-btn" to="/playground">
               <Code2 size={18} />

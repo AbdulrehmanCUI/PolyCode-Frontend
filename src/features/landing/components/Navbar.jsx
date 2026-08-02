@@ -245,30 +245,23 @@ export default function Navbar({ theme = "dark", onThemeChange }) {
                                 </button>
                               );
                             })}
-                            {activeGroup.courses.length > COURSE_PANEL_LIMIT ? (
-                              <button
-                                type="button"
-                                className="ln-course-group-see-all"
-                                style={{ "--stack-accent": activeGroup.accent }}
-                                onClick={() =>
-                                  handleNav(getAllCoursesPath(activeGroup.id))
-                                }
-                              >
-                                See all {activeGroup.courses.length}{" "}
-                                {activeGroup.label} courses
-                                <ArrowRight size={13} />
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                className="ln-course-group-all"
-                                style={{ "--stack-accent": activeGroup.accent }}
-                                onClick={() => handleNav(activeGroup.languagePath)}
-                              >
-                                All {activeGroup.label} courses
-                                <ArrowRight size={13} />
-                              </button>
-                            )}
+                            <button
+                              type="button"
+                              className={
+                                activeGroup.courses.length > COURSE_PANEL_LIMIT
+                                  ? "ln-course-group-see-all"
+                                  : "ln-course-group-all"
+                              }
+                              style={{ "--stack-accent": activeGroup.accent }}
+                              onClick={() =>
+                                handleNav(getAllCoursesPath(activeGroup.id))
+                              }
+                            >
+                              {activeGroup.courses.length > COURSE_PANEL_LIMIT
+                                ? `See all ${activeGroup.courses.length} ${activeGroup.label} courses`
+                                : `All ${activeGroup.label} courses`}
+                              <ArrowRight size={13} />
+                            </button>
                           </div>
                         ) : null}
                       </div>
@@ -446,27 +439,23 @@ export default function Navbar({ theme = "dark", onThemeChange }) {
                             </button>
                           );
                         })}
-                        {group.courses.length > COURSE_PANEL_LIMIT ? (
-                          <button
-                            type="button"
-                            className="landing-mobile-course-group-see-all"
-                            style={{ "--stack-accent": group.accent }}
-                            onClick={() =>
-                              handleNav(getAllCoursesPath(group.id))
-                            }
-                          >
-                            See all {group.courses.length} courses
-                            <ArrowRight size={14} />
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            className="landing-mobile-course-group-all"
-                            onClick={() => handleNav(group.languagePath)}
-                          >
-                            All {group.label} courses →
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          className={
+                            group.courses.length > COURSE_PANEL_LIMIT
+                              ? "landing-mobile-course-group-see-all"
+                              : "landing-mobile-course-group-all"
+                          }
+                          style={{ "--stack-accent": group.accent }}
+                          onClick={() =>
+                            handleNav(getAllCoursesPath(group.id))
+                          }
+                        >
+                          {group.courses.length > COURSE_PANEL_LIMIT
+                            ? `See all ${group.courses.length} courses`
+                            : `All ${group.label} courses`}
+                          <ArrowRight size={14} />
+                        </button>
                       </div>
                     ) : null}
                   </div>

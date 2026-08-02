@@ -140,6 +140,7 @@ cv2.imwrite("out.jpg", img)`,
         xp: 10,
         theory: [
           { type: "text", content: `A color image is a 3D NumPy array: **height × width × channels**. \`img.shape\` tells you \`(h, w, c)\`. \`img.dtype\` is usually \`uint8\` (0–255).` },
+          { type: "callout", variant: "tip", content: `Always print **shape** and **dtype** right after **imread** — most CV bugs start with the wrong size or float vs uint8.` },
           { type: "code", lang: "python", label: `Inspect an image`, content: `import cv2
 
 img = cv2.imread("photo.jpg")
@@ -210,6 +211,7 @@ rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)`,
         xp: 10,
         theory: [
           { type: "text", content: `Pixels are array entries. Color: \`img[y, x]\` → \`(B, G, R)\`. Gray: a single number. Remember OpenCV indexing is **row (y), column (x)**.` },
+          { type: "scenario", title: `Fix a bad pixel`, content: `A barcode reader fails on one speck of glare. You jump to that **[y, x]** location, replace the BGR value, and re-run detection without reloading the whole image.` },
           { type: "code", lang: "python", label: `Get and set a pixel`, content: `import cv2
 import numpy as np
 
@@ -244,6 +246,7 @@ img[50, 80] = (0, 255, 0)`,
         xp: 10,
         theory: [
           { type: "text", content: `Build canvases with NumPy: \`np.zeros((h, w, 3), dtype=np.uint8)\` for black, or fill with a color. Useful for drawings and overlays.` },
+          { type: "callout", variant: "info", content: `Blank canvases are perfect scratchpads for drawing annotations before blending them onto a real photo.` },
           { type: "code", lang: "python", label: `Black and blue canvases`, content: `import numpy as np
 
 h, w = 200, 300
@@ -285,6 +288,7 @@ canvas = np.zeros((120, 160, 3), dtype=np.uint8)`,
         xp: 10,
         theory: [
           { type: "text", content: `Draw with \`cv2.line\`, \`cv2.rectangle\`, \`cv2.circle\`, and \`cv2.putText\`. Points are \`(x, y)\` — opposite of array indexing order.` },
+          { type: "scenario", title: `Label a detection`, content: `After finding a box around a package, you draw the rectangle and **putText** the tracking ID so operators can see results on a monitor.` },
           { type: "code", lang: "python", label: `Draw shapes`, content: `import cv2
 import numpy as np
 
@@ -324,6 +328,7 @@ cv2.circle(img, (100, 80), 30, (0, 0, 255), -1)`,
         xp: 10,
         theory: [
           { type: "text", content: `A **region of interest (ROI)** is a crop: \`roi = img[y1:y2, x1:x2]\`. Slicing shares memory with the parent unless you \`.copy()\`.` },
+          { type: "callout", variant: "tip", content: `Crop generously at first, then tighten — lost context at the crop border is hard to recover later.` },
           { type: "code", lang: "python", label: `Crop a face box`, content: `import cv2
 
 img = cv2.imread("photo.jpg")
@@ -399,6 +404,7 @@ patch = img[0:40, 0:40].copy()`,
         xp: 10,
         theory: [
           { type: "text", content: `\`cv2.cvtColor\` switches color spaces: BGR↔RGB, BGR→GRAY, BGR→HSV, and more. Grayscale drops to 2D \`(H, W)\`.` },
+          { type: "table", title: `Common cvtColor flags`, columns: [`Flag`, `Result`], rows: [ { label: `BGR2GRAY`, values: [`BGR2GRAY`, `Single-channel gray`] }, { label: `BGR2HSV`, values: [`BGR2HSV`, `Hue/Sat/Value for color picks`] }, { label: `BGR2RGB`, values: [`BGR2RGB`, `Match Matplotlib / web order`] } ] },
           { type: "code", lang: "python", label: `Gray and HSV`, content: `import cv2
 
 bgr = cv2.imread("photo.jpg")
@@ -432,6 +438,7 @@ gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)`,
         xp: 10,
         theory: [
           { type: "text", content: `\`cv2.split(img)\` returns B, G, R planes. \`cv2.merge([b, g, r])\` rebuilds a color image. Handy for per-channel filters.` },
+          { type: "callout", variant: "info", content: `Editing one channel (for example boosting blue) then **merge** is a classic color-correction trick.` },
           { type: "code", lang: "python", label: `Split / merge`, content: `import cv2
 
 img = cv2.imread("photo.jpg")
@@ -518,6 +525,7 @@ mask = cv2.inRange(hsv, lower, upper)`,
         xp: 10,
         theory: [
           { type: "text", content: `\`cv2.add\` saturates at 255 (safer for images). NumPy \`+\` can wrap around with \`uint8\`. Use \`cv2.subtract\` similarly.` },
+          { type: "scenario", title: `Exposure blend`, content: `Two bracketed shots of a room — **cv2.add** (or weighted blend) can lift shadows without clipping highlights the way raw NumPy wrap would.` },
           { type: "code", lang: "python", label: `Saturated add`, content: `import cv2
 
 a = cv2.imread("a.jpg")
@@ -553,6 +561,7 @@ out = cv2.add(a, b)`,
         xp: 10,
         theory: [
           { type: "text", content: `\`cv2.addWeighted(src1, alpha, src2, beta, gamma)\` blends two images: \`out = α·src1 + β·src2 + γ\`. Great for smooth overlays.` },
+          { type: "callout", variant: "tip", content: `Keep alpha + beta near 1.0 total for a natural mix; gamma is a final brightness nudge.` },
           { type: "code", lang: "python", label: `50/50 blend`, content: `import cv2
 
 a = cv2.imread("a.jpg")
@@ -588,6 +597,7 @@ blend = cv2.addWeighted(a, 0.6, b, 0.4, 0)`,
         xp: 10,
         theory: [
           { type: "text", content: `\`bitwise_and\`, \`bitwise_or\`, \`bitwise_not\` combine images with masks. Masks let you keep only selected regions when compositing logos or filtered colors.` },
+          { type: "scenario", title: `Logo on a jersey`, content: `A logo mask keeps only the emblem pixels; **bitwise_and** pastes that region onto the jersey without a rectangular smear.` },
           { type: "code", lang: "python", label: `Mask composite`, content: `import cv2
 
 img = cv2.imread("photo.jpg")
@@ -664,6 +674,7 @@ soft = cv2.GaussianBlur(img, (5, 5), 0)`,
         xp: 10,
         theory: [
           { type: "text", content: `\`cv2.medianBlur\` is great for salt-and-pepper noise. \`cv2.bilateralFilter\` smooths while trying to keep edges sharp — slower but useful for beautify / denoise.` },
+          { type: "callout", variant: "warning", content: `Median blur needs an odd kernel size. Even sizes raise an OpenCV error.` },
           { type: "code", lang: "python", label: `Median and bilateral`, content: `import cv2
 
 img = cv2.imread("photo.jpg")
@@ -697,6 +708,7 @@ med = cv2.medianBlur(img, 5)`,
         xp: 10,
         theory: [
           { type: "text", content: `**Morphology** uses a kernel to shrink (\`erode\`) or grow (\`dilate\`) white regions in a binary image. Opening = erode then dilate (remove speckles). Closing = dilate then erode (fill holes).` },
+          { type: "diagram", title: `Open vs close`, nodes: [ { id: "open", label: `MORPH_OPEN`, color: "#5CBF2A", items: [`Erode then dilate`, `Kill speckles`] }, { id: "close", label: `MORPH_CLOSE`, color: "#7AD645", items: [`Dilate then erode`, `Fill holes`] } ] },
           { type: "code", lang: "python", label: `Morphology`, content: `import cv2
 import numpy as np
 
@@ -746,6 +758,7 @@ opened = cv2.morphologyEx(mask, cv2.MORPH_OPEN, k)`,
         xp: 10,
         theory: [
           { type: "text", content: `\`cv2.threshold\` turns gray images into binary masks. **Otsu** (\`THRESH_OTSU\`) picks a threshold automatically from the histogram.` },
+          { type: "scenario", title: `Scan a receipt`, content: `Otsu finds a good cut between paper and ink automatically when lighting is even — great for document binarization.` },
           { type: "code", lang: "python", label: `Otsu threshold`, content: `import cv2
 
 gray = cv2.imread("photo.jpg", 0)
@@ -779,6 +792,7 @@ t, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)`,
         xp: 10,
         theory: [
           { type: "text", content: `When lighting varies across the image, \`cv2.adaptiveThreshold\` computes local thresholds — better for documents and uneven shadows.` },
+          { type: "callout", variant: "tip", content: `If one global threshold leaves half the page black, switch to adaptive — local neighborhoods handle shadows.` },
           { type: "code", lang: "python", label: `Adaptive mean`, content: `import cv2
 
 gray = cv2.imread("doc.jpg", 0)
@@ -815,6 +829,7 @@ adapt = cv2.adaptiveThreshold(
         xp: 10,
         theory: [
           { type: "text", content: `Gradient operators highlight intensity changes. \`cv2.Sobel\` can emphasize X or Y edges; \`cv2.Laplacian\` responds to second derivatives (often noisy — blur first).` },
+          { type: "callout", variant: "info", content: `Convert Sobel output with **convertScaleAbs** before displaying — raw CV_64F values look washed out or empty.` },
           { type: "code", lang: "python", label: `Sobel X`, content: `import cv2
 
 gray = cv2.imread("photo.jpg", 0)
@@ -848,6 +863,7 @@ sx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)`,
         xp: 10,
         theory: [
           { type: "text", content: `\`cv2.Canny(image, threshold1, threshold2)\` is the go-to multi-stage edge detector. Lower/upper hysteresis thresholds control sensitivity.` },
+          { type: "scenario", title: `Lane sketch`, content: `Self-driving demos often blur, then Canny, then Hough lines — Canny is the crisp edge map in the middle.` },
           { type: "code", lang: "python", label: `Canny`, content: `import cv2
 
 gray = cv2.imread("photo.jpg", 0)
@@ -889,6 +905,7 @@ edges = cv2.Canny(gray, 50, 150)`,
         xp: 10,
         theory: [
           { type: "text", content: `\`cv2.findContours\` finds connected boundaries on a **binary** image. Draw with \`cv2.drawContours\`. (Return signature differs slightly by OpenCV version — unpack carefully.)` },
+          { type: "callout", variant: "warning", content: `Older OpenCV returns (image, contours, hierarchy). Newer ones return (contours, hierarchy). Unpack to match your version.` },
           { type: "code", lang: "python", label: `Find and draw`, content: `import cv2
 
 binary = cv2.imread("mask.png", 0)
@@ -927,6 +944,7 @@ contours, hierarchy = cv2.findContours(
         xp: 10,
         theory: [
           { type: "text", content: `\`cv2.contourArea\` and \`cv2.arcLength\` measure size. \`cv2.approxPolyDP\` simplifies a contour to fewer points — useful to classify triangles vs rectangles.` },
+          { type: "scenario", title: `Sort nuts and bolts`, content: `After **approxPolyDP**, vertex count separates triangles (3), rectangles (4), and circles (many).` },
           { type: "code", lang: "python", label: `Approximate shape`, content: `import cv2
 
 cnt = contours[0]
@@ -963,6 +981,7 @@ area = cv2.contourArea(cnt)`,
         xp: 10,
         theory: [
           { type: "text", content: `\`cv2.boundingRect\` gives an upright box. \`cv2.minAreaRect\` can rotate. **Moments** (\`cv2.moments\`) yield the centroid: \`cx = M['m10']/M['m00']\`.` },
+          { type: "callout", variant: "tip", content: `Always guard **M["m00"] != 0** before dividing — empty contours crash centroid math.` },
           { type: "code", lang: "python", label: `Box and center`, content: `import cv2
 
 x, y, w, h = cv2.boundingRect(cnt)
@@ -1006,6 +1025,7 @@ x, y, w, h = cv2.boundingRect(cnt)`,
         xp: 10,
         theory: [
           { type: "text", content: `\`cv2.resize\` changes size. Build a 2×3 affine matrix with \`cv2.getRotationMatrix2D\` or \`getAffineTransform\`, then \`cv2.warpAffine\`.` },
+          { type: "table", title: `Geometry helpers`, columns: [`Need`, `API`], rows: [ { label: `New size`, values: [`New size`, `cv2.resize`] }, { label: `Rotate / shear`, values: [`Rotate / shear`, `getRotationMatrix2D + warpAffine`] }, { label: `Document straighten`, values: [`Document straighten`, `warpPerspective`] } ] },
           { type: "code", lang: "python", label: `Resize and rotate`, content: `import cv2
 
 img = cv2.imread("photo.jpg")
@@ -1041,6 +1061,7 @@ small = cv2.resize(img, (320, 240))`,
         xp: 10,
         theory: [
           { type: "text", content: `\`cv2.getPerspectiveTransform\` + \`cv2.warpPerspective\` straighten documents or bird's-eye views using four point correspondences.` },
+          { type: "scenario", title: `Bird's-eye parking lot`, content: `Four corner clicks on a lot camera define **src**; a rectangle **dst** gives a top-down map for measuring stall sizes.` },
           { type: "code", lang: "python", label: `Four-point warp`, content: `import cv2
 import numpy as np
 
@@ -1080,6 +1101,7 @@ warped = cv2.warpPerspective(img, M, (300, 400))`,
         xp: 10,
         theory: [
           { type: "text", content: `**ORB** detects keypoints and descriptors without patent issues. Match with \`BFMatcher\` and draw using \`cv2.drawMatches\`.` },
+          { type: "callout", variant: "info", content: `ORB is patent-free and fast — a solid default before jumping to SIFT or deep descriptors.` },
           { type: "code", lang: "python", label: `ORB match sketch`, content: `import cv2
 
 orb = cv2.ORB_create()
@@ -1164,6 +1186,7 @@ cap.release()`,
         xp: 10,
         theory: [
           { type: "text", content: `Real-time pipelines often resize frames for speed. Track time between frames to estimate FPS. Keep processing light inside the loop.` },
+          { type: "callout", variant: "tip", content: `Resize early in the loop so every later step (blur, detect) runs on fewer pixels.` },
           { type: "code", lang: "python", label: `Resize each frame`, content: `import cv2
 
 cap = cv2.VideoCapture(0)
@@ -1201,6 +1224,7 @@ small = cv2.resize(frame, (640, 360))`,
         xp: 10,
         theory: [
           { type: "text", content: `\`cv2.createBackgroundSubtractorMOG2()\` estimates a background model and returns a foreground mask per frame — a classic first step for motion detection.` },
+          { type: "scenario", title: `Security cam motion`, content: `MOG2 learns the empty hallway; when someone walks through, the foreground mask lights up for an alert.` },
           { type: "code", lang: "python", label: `MOG2`, content: `import cv2
 
 subtractor = cv2.createBackgroundSubtractorMOG2()
@@ -1320,6 +1344,7 @@ roi = img[y:y + h, x:x + w].copy()`,
         xp: 15,
         theory: [
           { type: "text", content: `Track a colored object: BGR→HSV → \`inRange\` → morph cleanup → contours → largest contour → centroid → draw. Same pattern powers simple robot followers.` },
+          { type: "callout", variant: "success", content: `Largest-contour + moments is enough for many classroom trackers — no neural net required.` },
           { type: "code", lang: "python", label: `Tracker core`, content: `import cv2
 import numpy as np
 

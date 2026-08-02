@@ -20,6 +20,8 @@ import { FASTAPI_LESSONS } from "../learn/fastapi-py/data/fastapiCurriculum";
 import useFastapiProgress from "../learn/fastapi-py/hooks/useFastapiProgress";
 import { PYTORCH_LESSONS } from "../learn/pytorch-py/data/pytorchCurriculum";
 import usePytorchProgress from "../learn/pytorch-py/hooks/usePytorchProgress";
+import { OPENCV_LESSONS } from "../learn/opencv-py/data/opencvCurriculum";
+import useOpencvProgress from "../learn/opencv-py/hooks/useOpencvProgress";
 import CourseCertificate from "../learn/shared/CourseCertificate";
 import useProfileLearnProgress from "./hooks/useProfileLearnProgress";
 import {
@@ -278,6 +280,7 @@ export default function ProfilePage() {
   const pandas = usePandasProgress();
   const fastapi = useFastapiProgress();
   const pytorch = usePytorchProgress();
+  const opencv = useOpencvProgress();
   const remoteLearn = useProfileLearnProgress({
     enabled: Boolean(profileUser?.username || isOwnProfile),
     isOwnProfile,
@@ -305,6 +308,8 @@ export default function ProfilePage() {
       remoteLearn.byCourseId["fastapi-py"]?.completedMap || fastapi.completedMap,
     "pytorch-py":
       remoteLearn.byCourseId["pytorch-py"]?.completedMap || pytorch.completedMap,
+    "opencv-py":
+      remoteLearn.byCourseId["opencv-py"]?.completedMap || opencv.completedMap,
   };
   const trackBookmarks = {
     "oops-cpp":
@@ -319,6 +324,8 @@ export default function ProfilePage() {
       remoteLearn.byCourseId["fastapi-py"]?.bookmarks || fastapi.bookmarks,
     "pytorch-py":
       remoteLearn.byCourseId["pytorch-py"]?.bookmarks || pytorch.bookmarks,
+    "opencv-py":
+      remoteLearn.byCourseId["opencv-py"]?.bookmarks || opencv.bookmarks,
   };
 
   const totalCompleted = Object.values(trackMaps).reduce(
@@ -331,7 +338,8 @@ export default function ProfilePage() {
     NUMPY_LESSONS.length +
     PANDAS_LESSONS.length +
     FASTAPI_LESSONS.length +
-    PYTORCH_LESSONS.length;
+    PYTORCH_LESSONS.length +
+    OPENCV_LESSONS.length;
   const totalPct = Math.round((totalCompleted / totalLessons) * 100) || 0;
   const totalStreak = Math.max(
     learnDashboard.overview?.activeStreak || 0,

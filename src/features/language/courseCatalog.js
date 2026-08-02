@@ -933,6 +933,8 @@ function normalizeLearnNavLanguageKey(key = "") {
   return learnNavLanguageAliases[key] || key;
 }
 
+export { normalizeLearnNavLanguageKey };
+
 /** Infer stack from an active /learn/* route when language is not set. */
 export function inferLanguageFromLearnPath(pathname = "") {
   if (
@@ -1094,5 +1096,5 @@ export function getActiveLearnNavGroup(selectedLanguage, pathname = "") {
 }
 
 export function getLanguageLandingCourses(languageKeyValue) {
-  return [...(languageCourses[languageKeyValue] || []), ...generalCourses];
+  return [...(languageCourses[languageKeyValue] || [])];
 }

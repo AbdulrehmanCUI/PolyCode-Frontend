@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { getAllCoursesPath } from "../../learn/shared/allCourses";
 
 function pathIsActive(pathname, path) {
   return pathname === path || pathname.startsWith(`${path}/`);
@@ -26,7 +27,8 @@ export default function LearnNavDropdown({ group, pathname }) {
 
   if (!group?.courses?.length) return null;
 
-  const { label, languagePath, courses, accent } = group;
+  const { id, label, courses, accent } = group;
+  const allCoursesPath = getAllCoursesPath(id);
   const groupActive = courses.some((item) => pathIsActive(pathname, item.to));
 
   if (courses.length === 1) {
@@ -63,7 +65,7 @@ export default function LearnNavDropdown({ group, pathname }) {
       {open ? (
         <div className="navbar-learn-panel" role="menu" aria-label={`${label} courses`}>
           <Link
-            to={languagePath}
+            to={allCoursesPath}
             className="navbar-learn-panel-all"
             role="menuitem"
             onClick={() => setOpen(false)}

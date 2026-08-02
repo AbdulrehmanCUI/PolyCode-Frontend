@@ -19,6 +19,10 @@ import {
   PYTORCH_LESSONS,
   PYTORCH_TOTAL_XP,
 } from "../learn/pytorch-py/data/pytorchCurriculum";
+import {
+  OPENCV_LESSONS,
+  OPENCV_TOTAL_XP,
+} from "../learn/opencv-py/data/opencvCurriculum";
 
 /** Featured profile tracks with full curricula (for cards + certificates). */
 export const PROFILE_FEATURED_TRACKS = [
@@ -80,6 +84,16 @@ export const PROFILE_FEATURED_TRACKS = [
     href: "/learn/pytorch-py",
     accent: "#EE4C2C",
   },
+  {
+    courseId: "opencv-py",
+    courseName: "OpenCV for Python",
+    hubTitle: "OpenCV · py",
+    subtitle: "Python computer vision track",
+    lessons: OPENCV_LESSONS,
+    totalXP: OPENCV_TOTAL_XP,
+    href: "/learn/opencv-py",
+    accent: "#5CBF2A",
+  },
 ];
 
 /** Display names for certificates from Mongo progress without local curriculum. */
@@ -90,6 +104,7 @@ export const COURSE_DISPLAY_NAMES = {
   "pandas-py": "Pandas for Python",
   "fastapi-py": "FastAPI for Python",
   "pytorch-py": "PyTorch for Python",
+  "opencv-py": "OpenCV for Python",
   "python-fundamentals": "Python Fundamentals",
   "python-oop-py": "Python OOP",
   "python-file-handling-py": "Python File Handling",

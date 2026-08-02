@@ -8723,6 +8723,25 @@ body {
   );
 }
 
+.opencv-hub .opencv-hero {
+  background:
+    linear-gradient(135deg, rgba(92, 191, 42, 0.2), transparent 48%),
+    linear-gradient(180deg, rgba(122, 214, 69, 0.08), transparent 60%),
+    var(--vscode-panel, #252526);
+}
+
+.opencv-hub .oops-hero-accent {
+  color: #5cbf2a;
+}
+
+.opencv-hub .opencv-hero::before {
+  background: radial-gradient(
+    circle,
+    rgba(92, 191, 42, 0.14) 0%,
+    transparent 70%
+  );
+}
+
 .matplotlib-learn-path {
   display: flex;
   flex-direction: column;

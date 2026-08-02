@@ -86,9 +86,9 @@ export default function CoursesPage() {
             on the left, then open any course card to start learning.
           </p>
           <div className="language-hero-actions">
-            <Link className="language-primary-btn" to={activeGroup.languagePath}>
+            <Link className="language-primary-btn" to="/courses">
               <BookOpen size={18} />
-              {activeGroup.label} hub
+              All courses
             </Link>
             <Link className="language-secondary-btn" to="/select-language">
               All stacks

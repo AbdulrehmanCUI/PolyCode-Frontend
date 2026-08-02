@@ -319,6 +319,532 @@ const CsharpHub = lazyWithChunkRetry(
 const CsharpLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/csharp-fundamentals/pages/CsharpLessonPage"),
 );
+const CoursesPage = lazyWithChunkRetry(
+  () => import("./features/language/pages/CoursesPage"),
+);
+
+/** Learn courses declared as data instead of hand-written <Route> triples.
+ *  Every entry gets /learn/<slug>, /learn/<slug>/lesson/:lessonId and the
+ *  /learn/<slug>/:lessonId alias, plus the language the sidebar switches to.
+ *  Keep in sync with the hrefs in features/language/courseCatalog.js. */
+const LEARN_COURSE_ROUTES = [
+  {
+    slug: "c-fundamentals",
+    language: "C",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/c-fundamentals/pages/CFundamentalsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/c-fundamentals/pages/CFundamentalsLessonPage"),
+    ),
+  },
+  {
+    slug: "c-functions",
+    language: "C",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/c-functions/pages/CFunctionsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/c-functions/pages/CFunctionsLessonPage"),
+    ),
+  },
+  {
+    slug: "c-pointers",
+    language: "C",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/c-pointers/pages/CPointersHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/c-pointers/pages/CPointersLessonPage"),
+    ),
+  },
+  {
+    slug: "c-memory-management",
+    language: "C",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/c-memory-management/pages/CMemoryManagementHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/c-memory-management/pages/CMemoryManagementLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "c-data-structures",
+    language: "C",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/c-data-structures/pages/CDataStructuresHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/c-data-structures/pages/CDataStructuresLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "c-file-handling",
+    language: "C",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/c-file-handling/pages/CFileHandlingHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/c-file-handling/pages/CFileHandlingLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "c-projects",
+    language: "C",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/c-projects/pages/CProjectsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/c-projects/pages/CProjectsLessonPage"),
+    ),
+  },
+  {
+    slug: "cpp-fundamentals",
+    language: "C++",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/cpp-fundamentals/pages/CppFundamentalsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/cpp-fundamentals/pages/CppFundamentalsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "sql-fundamentals",
+    language: "SQL",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/sql-fundamentals/pages/SqlFundamentalsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/sql-fundamentals/pages/SqlFundamentalsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "sql-queries",
+    language: "SQL",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/sql-queries/pages/SqlQueriesHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/sql-queries/pages/SqlQueriesLessonPage"),
+    ),
+  },
+  {
+    slug: "sql-joins",
+    language: "SQL",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/sql-joins/pages/SqlJoinsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/sql-joins/pages/SqlJoinsLessonPage"),
+    ),
+  },
+  {
+    slug: "sql-aggregate-functions",
+    language: "SQL",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/sql-aggregate-functions/pages/SqlAggregateFunctionsHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/sql-aggregate-functions/pages/SqlAggregateFunctionsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "sql-subqueries",
+    language: "SQL",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/sql-subqueries/pages/SqlSubqueriesHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/sql-subqueries/pages/SqlSubqueriesLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "sql-views",
+    language: "SQL",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/sql-views/pages/SqlViewsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/sql-views/pages/SqlViewsLessonPage"),
+    ),
+  },
+  {
+    slug: "sql-indexes",
+    language: "SQL",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/sql-indexes/pages/SqlIndexesHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/sql-indexes/pages/SqlIndexesLessonPage"),
+    ),
+  },
+  {
+    slug: "sql-stored-procedures",
+    language: "SQL",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/sql-stored-procedures/pages/SqlStoredProceduresHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/sql-stored-procedures/pages/SqlStoredProceduresLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "sql-projects",
+    language: "SQL",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/sql-projects/pages/SqlProjectsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/sql-projects/pages/SqlProjectsLessonPage"),
+    ),
+  },
+  {
+    slug: "python-oop-py",
+    language: "Python",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/python-oop-py/pages/PythonOopHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/python-oop-py/pages/PythonOopLessonPage"),
+    ),
+  },
+  {
+    slug: "python-file-handling-py",
+    language: "Python",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/python-file-handling-py/pages/PythonFileHandlingHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/python-file-handling-py/pages/PythonFileHandlingLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "js-dom",
+    language: "JavaScript",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/js-dom/pages/JsDomHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/js-dom/pages/JsDomLessonPage"),
+    ),
+  },
+  {
+    slug: "js-web-dev",
+    language: "JavaScript",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/js-web-dev/pages/JsWebDevHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/js-web-dev/pages/JsWebDevLessonPage"),
+    ),
+  },
+  {
+    slug: "node-npm",
+    language: "JavaScript",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/node-npm/pages/NodeNpmHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/node-npm/pages/NodeNpmLessonPage"),
+    ),
+  },
+  {
+    slug: "html-css-foundation",
+    language: "HTML & CSS",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/html-css-foundation/pages/HtmlCssFoundationHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/html-css-foundation/pages/HtmlCssFoundationLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "php-projects",
+    language: "PHP",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/php-projects/pages/phpProjectsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/php-projects/pages/phpProjectsLessonPage"),
+    ),
+  },
+  {
+    slug: "laravel-basics",
+    language: "PHP",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/laravel-basics/pages/laravelBasicsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/laravel-basics/pages/laravelBasicsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "ruby-fundamentals",
+    language: "Ruby",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/ruby-fundamentals/pages/rubyFundamentalsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/ruby-fundamentals/pages/rubyFundamentalsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "ruby-oop",
+    language: "Ruby",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/ruby-oop/pages/rubyOopHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/ruby-oop/pages/rubyOopLessonPage"),
+    ),
+  },
+  {
+    slug: "ruby-blocks-modules",
+    language: "Ruby",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/ruby-blocks-modules/pages/rubyBlocksModulesHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/ruby-blocks-modules/pages/rubyBlocksModulesLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "ruby-file-handling",
+    language: "Ruby",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/ruby-file-handling/pages/RubyFileHandlingHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/ruby-file-handling/pages/RubyFileHandlingLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "ruby-gems",
+    language: "Ruby",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/ruby-gems/pages/RubyGemsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/ruby-gems/pages/RubyGemsLessonPage"),
+    ),
+  },
+  {
+    slug: "ruby-on-rails",
+    language: "Ruby",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/ruby-on-rails/pages/rubyOnRailsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/ruby-on-rails/pages/rubyOnRailsLessonPage"),
+    ),
+  },
+  {
+    slug: "golang-fundamentals",
+    language: "Go",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/golang-fundamentals/pages/GoFundamentalsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/golang-fundamentals/pages/GoFundamentalsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "powershell-fundamentals",
+    language: "PowerShell",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/powershell-fundamentals/pages/PowershellFundamentalsHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/powershell-fundamentals/pages/PowershellFundamentalsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "powershell-scripting",
+    language: "PowerShell",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/powershell-scripting/pages/PowershellScriptingHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/powershell-scripting/pages/PowershellScriptingLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "powershell-administration",
+    language: "PowerShell",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/powershell-administration/pages/PowershellAdministrationHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/powershell-administration/pages/PowershellAdministrationLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "powershell-projects",
+    language: "PowerShell",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/powershell-projects/pages/PowershellProjectsHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/powershell-projects/pages/PowershellProjectsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "quantum-computing-fundamentals",
+    language: "Quantum",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/quantum-computing-fundamentals/pages/QuantumComputingFundamentalsHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/quantum-computing-fundamentals/pages/QuantumComputingFundamentalsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "quantum-mechanics-for-programmers",
+    language: "Quantum",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/quantum-mechanics-for-programmers/pages/QuantumMechanicsForProgrammersHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/quantum-mechanics-for-programmers/pages/QuantumMechanicsForProgrammersLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "quantum-algorithms",
+    language: "Quantum",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/quantum-algorithms/pages/QuantumAlgorithmsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/quantum-algorithms/pages/QuantumAlgorithmsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "quantum-programming-projects",
+    language: "Quantum",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/quantum-programming-projects/pages/QuantumProgrammingProjectsHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/quantum-programming-projects/pages/QuantumProgrammingProjectsLessonPage"
+        ),
+    ),
+  },
+];
 
 const PageFallback = () => (
   <div className="loading">
@@ -543,6 +1069,28 @@ function LearnShell({
   );
 }
 
+/** The ThemedShell + LearnShell pair every /learn/* route renders. */
+function LearnRoute({
+  theme,
+  onThemeChange,
+  onGoToStackPicker,
+  selectedLanguage,
+  children,
+}) {
+  return (
+    <ThemedShell theme={theme}>
+      <LearnShell
+        theme={theme}
+        onThemeChange={onThemeChange}
+        onGoToStackPicker={onGoToStackPicker}
+        selectedLanguage={selectedLanguage}
+      >
+        {children}
+      </LearnShell>
+    </ThemedShell>
+  );
+}
+
 function ProfileOrMainFallback({
   theme,
   onThemeChange,
@@ -672,6 +1220,13 @@ function AppRoutes() {
 
   React.useEffect(() => {
     const path = location.pathname;
+    const tableRoute = LEARN_COURSE_ROUTES.find((route) =>
+      path.startsWith(`/learn/${route.slug}`),
+    );
+    if (tableRoute) {
+      handleLanguageSelect(tableRoute.language, { stay: true });
+      return;
+    }
     if (
       path.startsWith("/learn/python-fundamentals") ||
       path.startsWith("/learn/numpy-py") ||
@@ -1974,6 +2529,49 @@ function AppRoutes() {
                 <CsharpLessonPage />
               </LearnShell>
             </ThemedShell>
+          }
+        />
+        {LEARN_COURSE_ROUTES.flatMap(({ slug, Hub, Lesson }) => {
+          const shell = (children) => (
+            <LearnRoute
+              theme={theme}
+              onThemeChange={handleThemeChange}
+              onGoToStackPicker={goToStackPicker}
+              selectedLanguage={selectedLanguage}
+            >
+              {children}
+            </LearnRoute>
+          );
+
+          return [
+            <Route
+              key={slug}
+              path={`/learn/${slug}`}
+              element={shell(<Hub />)}
+            />,
+            <Route
+              key={`${slug}-lesson`}
+              path={`/learn/${slug}/lesson/:lessonId`}
+              element={shell(<Lesson />)}
+            />,
+            <Route
+              key={`${slug}-lesson-alias`}
+              path={`/learn/${slug}/:lessonId`}
+              element={shell(<Lesson />)}
+            />,
+          ];
+        })}
+        <Route
+          path="/courses"
+          element={
+            <LearnRoute
+              theme={theme}
+              onThemeChange={handleThemeChange}
+              onGoToStackPicker={goToStackPicker}
+              selectedLanguage={selectedLanguage}
+            >
+              <CoursesPage />
+            </LearnRoute>
           }
         />
         <Route path="/profile" element={<ProfileRedirect />} />
