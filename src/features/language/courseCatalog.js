@@ -383,6 +383,15 @@ export const languageCourses = {
       accent: "#22c55e",
     },
     {
+      title: "JS ES6+",
+      tag: "Modern JS",
+      icon: Grid3x3,
+      description:
+        "Focused ES6+ path: modern syntax, destructuring, spread, modules, async/await, classes, and advanced collections with runnable examples.",
+      href: "/learn/js-es6-plus",
+      accent: "#f59e0b",
+    },
+    {
       title: "Node.js & npm",
       tag: "Server Course",
       icon: Server,
