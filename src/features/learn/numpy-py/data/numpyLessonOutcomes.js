@@ -167,9 +167,9 @@ export const NUMPY_LESSON_OUTCOMES = {
     "Practice the full “read → clean → summarize” flow",
   ],
   "numpy-28": [
-    "Chain filter → sort → summarize on one score list",
-    "Turn messy inputs into a clear pipeline",
-    "Document each step so others can follow your work",
+    "Explain a score pipeline in plain words: filter → z-score → sort",
+    "Filter passers with a boolean mask, then normalize and rank them",
+    "Know why filtering before z-score keeps comparisons fair",
   ],
   "numpy-29": [
     "Analyze a week of temperatures with min, max, and average",

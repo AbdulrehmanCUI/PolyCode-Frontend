@@ -5380,61 +5380,214 @@ print(np.argmax(totals))`,
         xp: 20,
         theory: [
           {
-            type: "text",
+            type: "scenario",
+            title: "Real life: a school game tournament",
             content:
-              "Bridge lesson before the final boss! Take raw **game scores**, filter out lows with a boolean mask, normalize survivors with a z-score, and sort them. Four NumPy moves, one pipeline.",
+              "Your school runs a game tournament. Seven players finish with these scores:\n\n**45, 88, 52, 95, 70, 38, 91**\n\nThe coach says:\n\n1. Only players who scored **60 or more** move to the next round.\n2. Compare the remaining players **fairly** (not just by raw points).\n3. Rank them from low to high.\n\nDoing this by hand is slow. In NumPy, we build a **score pipeline** — a short chain of steps that cleans, compares, and ranks the numbers automatically.",
           },
           {
-            type: "code",
-            lang: "python",
-            label: "Filter → normalize → sort",
-            content: `import numpy as np
-
-scores = np.array([45, 88, 52, 95, 70, 38, 91])
-passed = scores[scores >= 60]
-z = (passed - passed.mean()) / passed.std()
-ranked = np.sort(z)
-print(passed, z, ranked)`,
+            type: "text",
+            content:
+              "**What is a score pipeline?**\n\nA **pipeline** is a clear sequence of data steps. Each step takes the result of the previous step and improves it.\n\nIn this lesson, the pipeline has three main moves:\n\n1. **Filter** — keep only useful scores (pass mark ≥ 60)\n2. **Normalize (z-score)** — put survivors on a fair comparison scale\n3. **Sort** — rank the fair scores from smallest to largest\n\nYou already learned each tool alone. Now we connect them into one useful workflow.",
           },
           {
             type: "diagram",
-            title: "Pipeline steps",
+            title: "The score pipeline at a glance",
             nodes: [
               {
+                id: "raw",
+                label: "1. Raw scores",
+                color: "#6366f1",
+                items: ["All player scores", "Mixed high & low", "Some below 60"],
+              },
+              {
                 id: "filter",
-                label: "1. Filter",
+                label: "2. Filter",
                 color: "#10b981",
-                items: ["scores >= 60", "Boolean mask"],
+                items: ["Keep score ≥ 60", "Boolean mask", "Drop failed players"],
               },
               {
                 id: "norm",
-                label: "2. Z-score",
+                label: "3. Z-score",
                 color: "#0ea5e9",
-                items: ["(x - mean) / std", "Compare fairly"],
+                items: ["(x − mean) / std", "Fair scale", "Mean ≈ 0"],
               },
               {
                 id: "sort",
-                label: "3. Sort",
-                color: "#6366f1",
-                items: ["np.sort", "Final ranking"],
+                label: "4. Sort",
+                color: "#4f46e5",
+                items: ["np.sort(...)", "Low → high", "Ready to rank"],
               },
             ],
           },
           {
+            type: "table",
+            title: "Step-by-step with tournament scores",
+            columns: ["Step", "What happens", "Result idea"],
+            rows: [
+              {
+                label: "Start",
+                values: [
+                  "Start",
+                  "Raw scores: 45, 88, 52, 95, 70, 38, 91",
+                  "Everyone included",
+                ],
+              },
+              {
+                label: "Filter",
+                values: [
+                  "Filter",
+                  "Keep only scores ≥ 60",
+                  "88, 95, 70, 91 (passers)",
+                ],
+              },
+              {
+                label: "Z-score",
+                values: [
+                  "Z-score",
+                  "Ask: how far is each passer from the average?",
+                  "Some below 0, some above 0",
+                ],
+              },
+              {
+                label: "Sort",
+                values: [
+                  "Sort",
+                  "Arrange z-scores from small to large",
+                  "A clean ranking list",
+                ],
+              },
+            ],
+          },
+          {
+            type: "callout",
+            variant: "info",
+            content:
+              "**Quick reminder — z-score:**  \n`z = (x − mean) ÷ std`  \n\n• **z = 0** → exactly average among the passers  \n• **z > 0** → above average  \n• **z < 0** → below average  \n\nWe apply z-scores **after filtering**, so we only compare players who actually passed.",
+          },
+          {
+            type: "code",
+            lang: "python",
+            label: "Full pipeline: filter → z-score → sort",
+            content: `import numpy as np
+
+# Raw tournament scores
+scores = np.array([45, 88, 52, 95, 70, 38, 91])
+
+# Step 1: keep only players who passed (score >= 60)
+passed = scores[scores >= 60]
+print("Passed:", passed)
+
+# Step 2: fair comparison with z-scores
+z = (passed - passed.mean()) / passed.std()
+print("Z-scores:", z)
+
+# Step 3: rank from low to high
+ranked = np.sort(z)
+print("Ranked:", ranked)`,
+          },
+          {
+            type: "table",
+            title: "What each line does",
+            columns: ["Code", "Plain English"],
+            rows: [
+              {
+                label: "scores",
+                values: [
+                  "`scores = np.array([...])`",
+                  "Stores all player scores in one array.",
+                ],
+              },
+              {
+                label: "filter",
+                values: [
+                  "`scores[scores >= 60]`",
+                  "Boolean mask: keep True values only (passers).",
+                ],
+              },
+              {
+                label: "z",
+                values: [
+                  "`(passed - mean) / std`",
+                  "Turns each passer score into a fair z-score.",
+                ],
+              },
+              {
+                label: "sort",
+                values: [
+                  "`np.sort(z)`",
+                  "Orders z-scores from smallest to largest.",
+                ],
+              },
+            ],
+          },
+          {
+            type: "scenario",
+            title: "Where else this pipeline helps",
+            content:
+              "**Exam results:** drop failing marks, then compare remaining students fairly.\n\n**Fitness app:** keep only workouts above a goal, then rank relative effort.\n\n**Sales data:** remove tiny orders, normalize store sales, then sort best to worst.\n\nSame idea every time: **clean → compare fairly → rank.**",
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              "**Order matters.** Filter first, then normalize. If you z-score *before* filtering, failed scores can pull the mean down and make the ranking unfair.",
+          },
+          {
+            type: "callout",
+            variant: "success",
+            content:
+              "**Key takeaways:**\n\n• A **pipeline** chains NumPy steps for a real task.\n• **Filter** with a boolean mask (`scores >= 60`).\n• **Z-score** makes remaining values comparable.\n• **`np.sort`** ranks the fair scores.\n• Always **filter before** you normalize when pass/fail rules exist.",
+          },
+          {
             type: "quiz",
-            question: "After filtering with scores >= 60, what's the next step in this pipeline?",
-            options: ["np.save", "Z-score normalize", "np.random.seed", "reshape"],
+            question: "In this score pipeline, what is the first useful step?",
+            options: [
+              "Sort all raw scores",
+              "Filter scores that meet the pass rule",
+              "Save the array to a file",
+              "Reshape into 2D",
+            ],
             answer: 1,
-            explanation: "Normalize filtered scores so they share a common scale before sorting.",
+            explanation:
+              "First keep only the scores that matter (for example, ≥ 60). Then normalize and sort those survivors.",
+          },
+          {
+            type: "quiz",
+            question: "After filtering with scores >= 60, what comes next in this pipeline?",
+            options: [
+              "np.save",
+              "Z-score normalize",
+              "np.random.seed",
+              "reshape",
+            ],
+            answer: 1,
+            explanation:
+              "Normalize the filtered scores so they share a common scale before sorting.",
+          },
+          {
+            type: "quiz",
+            question: "Why filter before computing z-scores?",
+            options: [
+              "Because sorting only works on filtered arrays",
+              "So failed scores do not distort the mean and std of the group you care about",
+              "Because NumPy cannot z-score raw arrays",
+              "Because print() needs a filtered list",
+            ],
+            answer: 1,
+            explanation:
+              "Low/failed scores change the average and spread. Filtering first keeps the comparison fair among passers only.",
           },
         ],
         challenge: {
           title: "Run the Pipeline",
           description:
-            "From `scores = np.array([55, 80, 45, 90, 72])`, keep only values >= 60, print the z-scores `(x - x.mean()) / x.std()` of the filtered array.",
+            "From `scores = np.array([55, 80, 45, 90, 72])`, keep only values >= 60, then print the z-scores `(x - x.mean()) / x.std()` of the filtered array.",
           starterCode: `import numpy as np
 
 scores = np.array([55, 80, 45, 90, 72])
+# 1) Keep scores >= 60
+# 2) Print their z-scores
 `,
           solutionCode: `import numpy as np
 
