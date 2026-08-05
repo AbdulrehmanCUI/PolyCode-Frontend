@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import { useAuth } from "../../../auth/context/AuthContext";
@@ -106,6 +106,7 @@ export default function PythonCodeChallenge({
   const [submitGeneration, setSubmitGeneration] = useState(0);
   const activeChallengeKey = useRef(challengeKey);
   const runTestsRef = useRef(null);
+  const runTimerRef = useRef(null);
   const { showCelebration, triggerCelebration, dismissCelebration } =
     useChallengeCelebration(challengeKey);
 
@@ -132,6 +133,29 @@ export default function PythonCodeChallenge({
       );
     }
   }, [challengeKey, challenge.starterCode, initialCode]);
+
+  const stopRunTimer = useCallback(() => {
+    if (runTimerRef.current) {
+      window.clearInterval(runTimerRef.current);
+      runTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => stopRunTimer, [stopRunTimer]);
+
+  function startRunTimer(message) {
+    stopRunTimer();
+    const startedAt = Date.now();
+    setOutput({ status: "running", stdout: message });
+    runTimerRef.current = window.setInterval(() => {
+      const seconds = Math.round((Date.now() - startedAt) / 1000);
+      if (seconds < 6) return;
+      setOutput({
+        status: "running",
+        stdout: `${message} (${seconds}s)\n\nThe first run downloads the Python runtime, so it can take up to a minute.`,
+      });
+    }, 1000);
+  }
 
   function runTests() {
     if (!canRun || running || showSolution) return;
@@ -180,24 +204,27 @@ export default function PythonCodeChallenge({
       return;
     }
 
-    setOutput({
-      status: "running",
-      stdout: "Running Python checks…",
-    });
+    startRunTimer("Running Python checks…");
 
     window.setTimeout(async () => {
-      let expectedOutput = "";
-      try {
-        const expectedRun = await runPythonCode(challenge.solutionCode);
-        expectedOutput = formatPythonOutput(expectedRun.result);
-      } catch {
-        expectedOutput = "";
-      }
+      // Run the reference solution alongside the learner's code instead of
+      // before it, and never let it hold up the verdict.
+      const expectedPromise = Promise.race([
+        runPythonCode(challenge.solutionCode)
+          .then((expectedRun) => formatPythonOutput(expectedRun.result))
+          .catch(() => ""),
+        new Promise((resolve) => window.setTimeout(() => resolve(""), 20000)),
+      ]);
 
       let runPayload;
+      let expectedOutput = "";
       try {
         runPayload = await runPythonCode(code);
+        expectedOutput = await expectedPromise;
+        stopRunTimer();
       } catch (error) {
+        expectedOutput = await expectedPromise;
+        stopRunTimer();
         const failureResults = buildRuntimeFailureResults(
           challenge,
           code,

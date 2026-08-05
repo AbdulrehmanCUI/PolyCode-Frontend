@@ -139,7 +139,7 @@ export async function runSQL(code) {
 // ─── Python (Pyodide) — 100% in-browser ─────────────────────────────────────
 
 let pyodideInstance = null;
-let pyodideLoading = false;
+let pyodideInitPromise = null;
 const pyodideLoadedPackages = new Set();
 let matplotlibPyodideReady = false;
 let torchShimReady = false;
@@ -221,13 +221,34 @@ function getPyodideWheelPackages(code = '') {
   return [...wheels];
 }
 
+const PYODIDE_PACKAGE_TIMEOUT_MS = 60000;
+const pyodidePackagePromises = new Map();
+
+function loadPyodidePackageOnce(py, pkg) {
+  // Concurrent runs (learner code + reference solution) must share one download.
+  if (!pyodidePackagePromises.has(pkg)) {
+    pyodidePackagePromises.set(
+      pkg,
+      Promise.resolve(py.loadPackage(pkg)).catch((error) => {
+        pyodidePackagePromises.delete(pkg);
+        throw error;
+      }),
+    );
+  }
+  return withPyodideTimeout(
+    pyodidePackagePromises.get(pkg),
+    PYODIDE_PACKAGE_TIMEOUT_MS,
+    `Timed out downloading the '${pkg}' package`,
+  );
+}
+
 async function ensurePyodidePackages(py, code = '') {
   const needed = getPyodideWheelPackages(code);
 
   for (const pkg of needed) {
     if (pyodideLoadedPackages.has(pkg)) continue;
     try {
-      await py.loadPackage(pkg);
+      await loadPyodidePackageOnce(py, pkg);
       pyodideLoadedPackages.add(pkg);
       if (pkg === "scikit-learn") {
         pyodideLoadedPackages.add("joblib");
@@ -279,7 +300,7 @@ function codeUsesMatplotlib(source = '') {
 
 async function ensureMatplotlibPyodideSetup(py) {
   if (matplotlibPyodideReady) return;
-  await py.loadPackage('matplotlib');
+  await loadPyodidePackageOnce(py, 'matplotlib');
   pyodideLoadedPackages.add('matplotlib');
   py.runPython(MATPLOTLIB_PYODIDE_SETUP);
   matplotlibPyodideReady = true;
@@ -295,45 +316,62 @@ function extractPyodidePlotImages(py) {
   }
 }
 
-async function ensurePyodide() {
-  if (pyodideInstance) return pyodideInstance;
-  if (pyodideLoading) {
-    // Wait for existing load
-    while (pyodideLoading) {
-      await new Promise(r => setTimeout(r, 100));
-    }
-    return pyodideInstance;
-  }
-  
-  pyodideLoading = true;
-  try {
-    if (!window.loadPyodide) {
-      await new Promise((resolve, reject) => {
+const PYODIDE_SCRIPT_TIMEOUT_MS = 30000;
+const PYODIDE_INIT_TIMEOUT_MS = 75000;
+
+function withPyodideTimeout(promise, ms, message) {
+  let timer = null;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(message)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+async function loadPyodideRuntime() {
+  if (!window.loadPyodide) {
+    await withPyodideTimeout(
+      new Promise((resolve, reject) => {
         const script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js';
         script.onload = resolve;
         script.onerror = () => reject(new Error('Failed to load Pyodide'));
         document.head.appendChild(script);
-      });
-    }
-    
-    pyodideInstance = await window.loadPyodide({
-      indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/',
-    });
-    
-    resetPyodideIO(pyodideInstance);
-    
-    pyodideLoading = false;
-    return pyodideInstance;
-  } catch (e) {
-    pyodideLoading = false;
-    throw e;
+      }),
+      PYODIDE_SCRIPT_TIMEOUT_MS,
+      'Timed out downloading the Python runtime (Pyodide).',
+    );
   }
+
+  const py = await window.loadPyodide({
+    indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/',
+  });
+  resetPyodideIO(py);
+  pyodideInstance = py;
+  return py;
+}
+
+async function ensurePyodide() {
+  if (pyodideInstance) return pyodideInstance;
+
+  // Share one load across concurrent callers. A caller that times out leaves the
+  // download running, so the next attempt rejoins it instead of starting over.
+  if (!pyodideInitPromise) {
+    pyodideInitPromise = loadPyodideRuntime().catch((e) => {
+      pyodideInitPromise = null;
+      throw e;
+    });
+  }
+
+  return withPyodideTimeout(
+    pyodideInitPromise,
+    PYODIDE_INIT_TIMEOUT_MS,
+    'Timed out starting the Python runtime (Pyodide). Check your connection and run again.',
+  );
 }
 
 async function ensureTorchBrowserShim(py) {
   if (torchShimReady) return;
-  await py.loadPackage("numpy");
+  await loadPyodidePackageOnce(py, "numpy");
   pyodideLoadedPackages.add("numpy");
   py.runPython(TORCH_BROWSER_SHIM);
   torchShimReady = true;
