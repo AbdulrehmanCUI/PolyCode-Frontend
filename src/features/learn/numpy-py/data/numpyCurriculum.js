@@ -5625,78 +5625,134 @@ print((passed - passed.mean()) / passed.std())`,
         xp: 20,
         theory: [
           {
-            type: "scenario",
-            title: "Real life: a broken weather thermometer",
-            content:
-              "You track daily high temperatures for one week. On Tuesday the sensor failed, so that day is **missing**.\n\nYour readings look like this (°F):\n\n**Mon 72 · Tue ??? · Wed 78 · Thu 80 · Fri 68 · Sat 76 · Sun 74**\n\nYour teacher asks three simple questions:\n\n1. What was the **average** high for the week?\n2. What was the **hottest** day?\n3. How many days were **hotter than 75°F**?\n\nYou cannot average a missing day. First you must **clean** the data, then answer the questions. That is today’s mini project.",
-          },
-          {
             type: "text",
             content:
-              "**What is a temperature-stats pipeline?**\n\nA short chain of steps for messy weather numbers:\n\n1. **Clean** — remove missing values (`NaN`)\n2. **Summarize** — find mean and max\n3. **Count** — how many days passed a heat rule (for example, `> 75`)\n\nIn NumPy, `np.nan` means “not a number” — a blank cell. Real sensors, spreadsheets, and surveys create blanks like this all the time.",
+              "**Introduction**\n\nIn this mini project, you are a **weather analyst**. Your job is to study one week of real-world temperature data and prepare a simple weather report.\n\nThere is one problem: the thermometer failed on Tuesday, so that day has no reading. Before analyzing the week, you must first **clean the missing value**.\n\nBy the end of this lesson, you will know how to:\n\n• Remove a missing value\n• Calculate the average temperature\n• Find the highest temperature\n• Count how many days were hotter than 75°F",
           },
           {
-            type: "diagram",
-            title: "Weather pipeline at a glance",
-            nodes: [
+            type: "scenario",
+            title: "Think of it Like This",
+            content:
+              "Imagine that you write the temperature down every afternoon. The thermometer works on six days, but it gives no reading on Tuesday.\n\nYou should not guess Tuesday’s temperature. Instead, store it as **missing**, remove it from the calculations, and analyze only the temperatures that were actually measured.",
+          },
+          {
+            type: "table",
+            title: "Weekly temperature readings",
+            columns: ["Day", "Temperature", "Meaning"],
+            rows: [
               {
-                id: "raw",
-                label: "1. Raw temps",
-                color: "#6366f1",
-                items: ["7 daily highs", "One day is NaN", "Cannot average yet"],
+                label: "Monday",
+                values: ["Monday", "72°F", "Valid reading"],
               },
               {
-                id: "clean",
-                label: "2. Clean",
-                color: "#10b981",
-                items: ["Find NaN days", "~np.isnan(...)", "Keep real numbers only"],
+                label: "Tuesday",
+                values: ["Tuesday", "Missing", "Stored as `np.nan`"],
               },
               {
-                id: "stats",
-                label: "3. Stats",
-                color: "#0ea5e9",
-                items: ["Mean (average)", "Max (hottest)", "Honest summary"],
+                label: "Wednesday",
+                values: ["Wednesday", "78°F", "Valid reading"],
               },
               {
-                id: "count",
-                label: "4. Count hot days",
-                color: "#4f46e5",
-                items: ["clean > 75", "np.sum(...)", "How many True?"],
+                label: "Thursday",
+                values: ["Thursday", "80°F", "Valid reading"],
+              },
+              {
+                label: "Friday",
+                values: ["Friday", "68°F", "Valid reading"],
+              },
+              {
+                label: "Saturday",
+                values: ["Saturday", "76°F", "Valid reading"],
+              },
+              {
+                label: "Sunday",
+                values: ["Sunday", "74°F", "Valid reading"],
               },
             ],
           },
           {
+            type: "text",
+            content:
+              "**What is `np.nan`?**\n\n`np.nan` stands for **Not a Number**. NumPy uses it to represent data that is missing or unavailable.\n\nFor example, a teacher may record marks for a class. If one student was absent, there is no mark to enter. The teacher can store that missing mark as `np.nan` instead of pretending it is 0.\n\nIn this weather project, `np.nan` means the thermometer did not provide a temperature for Tuesday.",
+          },
+          {
             type: "table",
-            title: "Week of highs — before and after cleaning",
-            columns: ["Day", "Raw reading", "After clean"],
+            title: "How NumPy finds the missing reading",
+            columns: ["Expression", "Result", "What it means"],
             rows: [
               {
-                label: "Mon",
-                values: ["Mon", "72", "72"],
+                label: "Raw",
+                values: [
+                  "`temps`",
+                  "[72, NaN, 78, 80, 68, 76, 74]",
+                  "The original week",
+                ],
               },
               {
-                label: "Tue",
-                values: ["Tue", "NaN (missing)", "removed"],
+                label: "isnan",
+                values: [
+                  "`np.isnan(temps)`",
+                  "[False, True, False, False, False, False, False]",
+                  "True marks the missing value",
+                ],
               },
               {
-                label: "Wed",
-                values: ["Wed", "78", "78"],
+                label: "NOT",
+                values: [
+                  "`~np.isnan(temps)`",
+                  "[True, False, True, True, True, True, True]",
+                  "`~` means NOT and flips every Boolean",
+                ],
               },
               {
-                label: "Thu",
-                values: ["Thu", "80", "80"],
+                label: "Clean",
+                values: [
+                  "`temps[~np.isnan(temps)]`",
+                  "[72, 78, 80, 68, 76, 74]",
+                  "Boolean masking keeps valid readings",
+                ],
+              },
+            ],
+          },
+          {
+            type: "diagram",
+            title: "The complete weather-analysis pipeline",
+            nodes: [
+              {
+                id: "raw",
+                label: "Raw Temperature Data",
+                color: "#6366f1",
+                items: ["Seven days", "One `np.nan`", "Not ready yet"],
               },
               {
-                label: "Fri",
-                values: ["Fri", "68", "68"],
+                id: "clean",
+                label: "Remove Missing Values",
+                color: "#10b981",
+                items: ["Use `np.isnan()`", "Apply `~`", "Keep valid data"],
               },
               {
-                label: "Sat",
-                values: ["Sat", "76", "76"],
+                id: "mean",
+                label: "Calculate Average",
+                color: "#0ea5e9",
+                items: ["Use `np.mean()`", "Typical temperature", "Valid days only"],
               },
               {
-                label: "Sun",
-                values: ["Sun", "74", "74"],
+                id: "max",
+                label: "Find Maximum",
+                color: "#f97316",
+                items: ["Use `.max()`", "Highest reading", "Hottest day"],
+              },
+              {
+                id: "count",
+                label: "Count Hot Days",
+                color: "#4f46e5",
+                items: ["Use `clean > 75`", "Sum True values", "Days above 75°F"],
+              },
+              {
+                id: "report",
+                label: "Final Weather Report",
+                color: "#14b8a6",
+                items: ["Average", "Maximum", "Hot-day count"],
               },
             ],
           },
@@ -5704,7 +5760,7 @@ print((passed - passed.mean()) / passed.std())`,
             type: "callout",
             variant: "info",
             content:
-              "**Why remove NaN first?**\n\nIf you call a normal `.mean()` on an array that still contains `NaN`, the result can become `NaN` too — one blank breaks the average.\n\nCleaning first keeps the stats honest: average only the days you actually measured.",
+              "**Why clean first?** A normal average cannot give a useful result while `np.nan` is still present. Remove the missing value first so every later step uses only real measurements.",
           },
           {
             type: "code",
@@ -5728,70 +5784,136 @@ print("Hot days:", np.sum(clean > 75))`,
           },
           {
             type: "table",
-            title: "What each line does",
-            columns: ["Code", "Plain English"],
+            title: "Every line explained",
+            columns: ["Line", "Code", "Simple explanation"],
             rows: [
               {
-                label: "temps",
+                label: "1",
                 values: [
+                  "1",
+                  "`import numpy as np`",
+                  "Imports the NumPy library and gives it the short name `np`.",
+                ],
+              },
+              {
+                label: "2",
+                values: [
+                  "2",
                   "`temps = np.array([...])`",
-                  "Stores the week’s highs, including one missing day.",
+                  "Creates a NumPy array containing one week of temperatures. Tuesday is stored as `np.nan` because its reading is missing.",
                 ],
               },
               {
-                label: "isnan",
+                label: "3a",
                 values: [
+                  "3a",
                   "`np.isnan(temps)`",
-                  "True where the value is missing, False elsewhere.",
+                  "Checks every item. It returns True for `np.nan` and False for a normal temperature.",
                 ],
               },
               {
-                label: "clean",
+                label: "3b",
                 values: [
+                  "3b",
+                  "`~`",
+                  "Means NOT. It changes True to False and False to True, selecting values that are not missing.",
+                ],
+              },
+              {
+                label: "3c",
+                values: [
+                  "3c",
                   "`temps[~np.isnan(temps)]`",
-                  "`~` flips True/False — keep the days that are NOT missing.",
+                  "Uses Boolean masking to keep valid temperatures. The result is `[72, 78, 80, 68, 76, 74]`.",
                 ],
               },
               {
-                label: "mean",
+                label: "4",
                 values: [
+                  "4",
                   "`np.mean(clean)`",
-                  "Average of the real temperatures.",
+                  "Adds the valid temperatures and divides by their count to find the average.",
                 ],
               },
               {
-                label: "max",
+                label: "5",
                 values: [
+                  "5",
                   "`clean.max()`",
-                  "Hottest measured day.",
+                  "Returns the highest temperature: the hottest measured day.",
                 ],
               },
               {
-                label: "hot",
+                label: "6a",
                 values: [
+                  "6a",
+                  "`clean > 75`",
+                  "Creates a Boolean array. True means hotter than 75°F; False means not hotter.",
+                ],
+              },
+              {
+                label: "6b",
+                values: [
+                  "6b",
                   "`np.sum(clean > 75)`",
-                  "Counts how many days are hotter than 75°F.",
+                  "Counts True values. NumPy treats True as 1 and False as 0, so their sum is the number of hot days.",
                 ],
               },
             ],
           },
           {
-            type: "scenario",
-            title: "Where else this helps",
-            content:
-              "**Step counters:** a phone missed one day — clean, then average weekly steps.\n\n**Class attendance:** empty cells for absent days — drop blanks before computing averages.\n\n**Shop sensors:** a broken fridge sensor — remove NaN, then count “too warm” hours.\n\nSame recipe: **clean → summarize → count.**",
+            type: "diagram",
+            title: "Real-world applications",
+            nodes: [
+              {
+                id: "forecast",
+                label: "Weather Forecasting",
+                color: "#0ea5e9",
+                items: ["Clean station readings", "Compare daily highs", "Prepare forecasts"],
+              },
+              {
+                id: "climate",
+                label: "Climate Research",
+                color: "#6366f1",
+                items: ["Study long-term records", "Handle missing years", "Find trends"],
+              },
+              {
+                id: "sensors",
+                label: "Sensor Analysis",
+                color: "#10b981",
+                items: ["Detect missing readings", "Monitor machines", "Count unsafe values"],
+              },
+              {
+                id: "agriculture",
+                label: "Agriculture",
+                color: "#84cc16",
+                items: ["Track soil temperature", "Protect crops", "Plan watering"],
+              },
+              {
+                id: "environment",
+                label: "Environmental Monitoring",
+                color: "#14b8a6",
+                items: ["Air and water sensors", "Remove bad readings", "Measure conditions"],
+              },
+              {
+                id: "data",
+                label: "Data Science & ML",
+                color: "#4f46e5",
+                items: ["Clean training data", "Calculate features", "Build reliable models"],
+              },
+            ],
           },
           {
             type: "callout",
             variant: "tip",
             content:
-              "**Remember the `~` flip.**  \n`np.isnan(temps)` marks missing days as True.  \n`~np.isnan(temps)` means “keep the days that are present.”",
+              "**Helpful tip:** Break every data-analysis problem into small steps:  \n**Clean Data → Calculate Statistics → Filter Data → Count Results**  \n\nNumPy provides simple functions for each step, making data analysis easy and efficient.",
           },
           {
             type: "callout",
             variant: "success",
             content:
-              "**Key takeaways:**\n\n• Real data often has **missing values** (`np.nan`).\n• **Clean first**, then compute mean/max.\n• `temps[~np.isnan(temps)]` keeps only real numbers.\n• `np.sum(clean > 75)` counts hot days with a boolean mask.\n• Break weather (and any messy data) into: **clean → aggregate → filter → count.**",
+              "**Key Takeaways**\n\n• `np.nan` represents missing or unavailable data.\n• `np.isnan()` finds missing values.\n• `~` means NOT and helps select values that are not missing.\n• Boolean masking creates a clean array of valid temperatures.\n• `np.mean()` calculates the average.\n• `.max()` finds the highest value.\n• `clean > 75` marks hot days with True or False.\n• `np.sum()` counts the True values.\n• Each pipeline step uses the cleaned result from the step before it.",
           },
           {
             type: "quiz",
