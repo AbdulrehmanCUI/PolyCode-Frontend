@@ -172,9 +172,9 @@ export const NUMPY_LESSON_OUTCOMES = {
     "Know why filtering before z-score keeps comparisons fair",
   ],
   "numpy-29": [
-    "Analyze a week of temperatures with min, max, and average",
-    "Handle a realistic mini dataset from start to finish",
-    "Present results a classmate could understand",
+    "Explain why missing temperatures (NaN) must be cleaned before averaging",
+    "Build a weather pipeline: clean → mean/max → count hot days",
+    "Use `~np.isnan` and `np.sum(clean > 75)` on real weekly data",
   ],
   "numpy-30": [
     "Mix indexing, stats, linear algebra, and cleaning in one project",
