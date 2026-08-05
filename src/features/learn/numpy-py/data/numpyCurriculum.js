@@ -5625,43 +5625,224 @@ print((passed - passed.mean()) / passed.std())`,
         xp: 20,
         theory: [
           {
+            type: "scenario",
+            title: "Real life: a broken weather thermometer",
+            content:
+              "You track daily high temperatures for one week. On Tuesday the sensor failed, so that day is **missing**.\n\nYour readings look like this (°F):\n\n**Mon 72 · Tue ??? · Wed 78 · Thu 80 · Fri 68 · Sat 76 · Sun 74**\n\nYour teacher asks three simple questions:\n\n1. What was the **average** high for the week?\n2. What was the **hottest** day?\n3. How many days were **hotter than 75°F**?\n\nYou cannot average a missing day. First you must **clean** the data, then answer the questions. That is today’s mini project.",
+          },
+          {
             type: "text",
             content:
-              "Let's combine skills on **weather data**! Given a week of daily highs (with one missing reading), you'll clean NaN, compute mean and max, and find how many days exceeded 75°F. Real data science in miniature.",
+              "**What is a temperature-stats pipeline?**\n\nA short chain of steps for messy weather numbers:\n\n1. **Clean** — remove missing values (`NaN`)\n2. **Summarize** — find mean and max\n3. **Count** — how many days passed a heat rule (for example, `> 75`)\n\nIn NumPy, `np.nan` means “not a number” — a blank cell. Real sensors, spreadsheets, and surveys create blanks like this all the time.",
+          },
+          {
+            type: "diagram",
+            title: "Weather pipeline at a glance",
+            nodes: [
+              {
+                id: "raw",
+                label: "1. Raw temps",
+                color: "#6366f1",
+                items: ["7 daily highs", "One day is NaN", "Cannot average yet"],
+              },
+              {
+                id: "clean",
+                label: "2. Clean",
+                color: "#10b981",
+                items: ["Find NaN days", "~np.isnan(...)", "Keep real numbers only"],
+              },
+              {
+                id: "stats",
+                label: "3. Stats",
+                color: "#0ea5e9",
+                items: ["Mean (average)", "Max (hottest)", "Honest summary"],
+              },
+              {
+                id: "count",
+                label: "4. Count hot days",
+                color: "#4f46e5",
+                items: ["clean > 75", "np.sum(...)", "How many True?"],
+              },
+            ],
+          },
+          {
+            type: "table",
+            title: "Week of highs — before and after cleaning",
+            columns: ["Day", "Raw reading", "After clean"],
+            rows: [
+              {
+                label: "Mon",
+                values: ["Mon", "72", "72"],
+              },
+              {
+                label: "Tue",
+                values: ["Tue", "NaN (missing)", "removed"],
+              },
+              {
+                label: "Wed",
+                values: ["Wed", "78", "78"],
+              },
+              {
+                label: "Thu",
+                values: ["Thu", "80", "80"],
+              },
+              {
+                label: "Fri",
+                values: ["Fri", "68", "68"],
+              },
+              {
+                label: "Sat",
+                values: ["Sat", "76", "76"],
+              },
+              {
+                label: "Sun",
+                values: ["Sun", "74", "74"],
+              },
+            ],
+          },
+          {
+            type: "callout",
+            variant: "info",
+            content:
+              "**Why remove NaN first?**\n\nIf you call a normal `.mean()` on an array that still contains `NaN`, the result can become `NaN` too — one blank breaks the average.\n\nCleaning first keeps the stats honest: average only the days you actually measured.",
           },
           {
             type: "code",
             lang: "python",
-            label: "Full workflow",
+            label: "Full weather report in NumPy",
             content: `import numpy as np
 
+# One week of highs — Tuesday is missing
 temps = np.array([72, np.nan, 78, 80, 68, 76, 74])
+
+# Step 1: keep only real numbers (drop NaN)
 clean = temps[~np.isnan(temps)]
+print("Clean temps:", clean)
+
+# Step 2: summarize
 print("Mean:", np.mean(clean))
 print("Max:", clean.max())
+
+# Step 3: count hot days (above 75°F)
 print("Hot days:", np.sum(clean > 75))`,
+          },
+          {
+            type: "table",
+            title: "What each line does",
+            columns: ["Code", "Plain English"],
+            rows: [
+              {
+                label: "temps",
+                values: [
+                  "`temps = np.array([...])`",
+                  "Stores the week’s highs, including one missing day.",
+                ],
+              },
+              {
+                label: "isnan",
+                values: [
+                  "`np.isnan(temps)`",
+                  "True where the value is missing, False elsewhere.",
+                ],
+              },
+              {
+                label: "clean",
+                values: [
+                  "`temps[~np.isnan(temps)]`",
+                  "`~` flips True/False — keep the days that are NOT missing.",
+                ],
+              },
+              {
+                label: "mean",
+                values: [
+                  "`np.mean(clean)`",
+                  "Average of the real temperatures.",
+                ],
+              },
+              {
+                label: "max",
+                values: [
+                  "`clean.max()`",
+                  "Hottest measured day.",
+                ],
+              },
+              {
+                label: "hot",
+                values: [
+                  "`np.sum(clean > 75)`",
+                  "Counts how many days are hotter than 75°F.",
+                ],
+              },
+            ],
+          },
+          {
+            type: "scenario",
+            title: "Where else this helps",
+            content:
+              "**Step counters:** a phone missed one day — clean, then average weekly steps.\n\n**Class attendance:** empty cells for absent days — drop blanks before computing averages.\n\n**Shop sensors:** a broken fridge sensor — remove NaN, then count “too warm” hours.\n\nSame recipe: **clean → summarize → count.**",
           },
           {
             type: "callout",
             variant: "tip",
             content:
-              "Break problems into steps: clean → aggregate → filter → count. NumPy makes each step one line.",
+              "**Remember the `~` flip.**  \n`np.isnan(temps)` marks missing days as True.  \n`~np.isnan(temps)` means “keep the days that are present.”",
+          },
+          {
+            type: "callout",
+            variant: "success",
+            content:
+              "**Key takeaways:**\n\n• Real data often has **missing values** (`np.nan`).\n• **Clean first**, then compute mean/max.\n• `temps[~np.isnan(temps)]` keeps only real numbers.\n• `np.sum(clean > 75)` counts hot days with a boolean mask.\n• Break weather (and any messy data) into: **clean → aggregate → filter → count.**",
           },
           {
             type: "quiz",
-            question: "After removing NaN, which counts days above 75?",
-            options: ["clean.count()", "np.sum(clean > 75)", "len(clean)", "clean.max()"],
+            question: "Why clean NaN values before calling a normal mean?",
+            options: [
+              "Because NumPy cannot store temperatures",
+              "One missing value can make the whole average become NaN",
+              "Because max() only works on strings",
+              "Because print() rejects NaN",
+            ],
             answer: 1,
-            explanation: "Boolean mask + sum counts True values.",
+            explanation:
+              "A single NaN can poison a normal mean. Remove missing days first, then average the real readings.",
+          },
+          {
+            type: "quiz",
+            question: "After removing NaN, which expression counts days above 75?",
+            options: [
+              "clean.count()",
+              "np.sum(clean > 75)",
+              "len(clean)",
+              "clean.max()",
+            ],
+            answer: 1,
+            explanation:
+              "A boolean mask (`clean > 75`) plus `np.sum` counts how many True values there are.",
+          },
+          {
+            type: "quiz",
+            question: "What does `temps[~np.isnan(temps)]` keep?",
+            options: [
+              "Only the missing days",
+              "Only the real (non-missing) temperatures",
+              "Only values greater than 75",
+              "The hottest day only",
+            ],
+            answer: 1,
+            explanation:
+              "`np.isnan` finds missing values; the `~` flips the mask so you keep present days.",
           },
         ],
         challenge: {
           title: "Weekly Weather Report",
           description:
-            "Given `temps = np.array([70, np.nan, 82, 76, 68, 79, 74])`, print the mean of non-NaN values (use `~np.isnan` mask and `.mean()`), then print how many values are > 75.",
+            "Given `temps = np.array([70, np.nan, 82, 76, 68, 79, 74])`, print the mean of non-NaN values (use a `~np.isnan` mask and `.mean()`), then print how many values are > 75.",
           starterCode: `import numpy as np
 
 temps = np.array([70, np.nan, 82, 76, 68, 79, 74])
+# 1) Clean NaN days
+# 2) Print mean
+# 3) Print count of days > 75
 `,
           solutionCode: `import numpy as np
 
