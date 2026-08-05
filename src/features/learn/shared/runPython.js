@@ -6,6 +6,19 @@ import {
 } from "./pythonPlotOutput";
 import { codeUsesTorch } from "./torchBrowserShim";
 
+// Each hop must be bounded, otherwise a slow API or a stalled Pyodide download
+// leaves the challenge stuck on "Running…" with no result.
+const SERVER_TIMEOUT_MS = 15000;
+const BROWSER_TIMEOUT_MS = 90000;
+
+function withTimeout(promise, ms, message) {
+  let timer = null;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(message)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
 async function readJsonResponse(response) {
   const text = await response.text();
   const trimmed = text.trim();
@@ -28,7 +41,7 @@ async function runPythonOnServer(source) {
 
   for (const path of endpoints) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 45000);
+    const timeout = setTimeout(() => controller.abort(), SERVER_TIMEOUT_MS);
 
     try {
       const response = await fetch(`${getApiBase()}${path}`, {
@@ -47,6 +60,14 @@ async function runPythonOnServer(source) {
       }
       return mergePythonRunResult(payload);
     } catch (error) {
+      if (error?.name === "AbortError") {
+        // Both endpoints live on the same server, so retrying after a timeout
+        // just doubles the wait. Fall back to the browser runtime instead.
+        clearTimeout(timeout);
+        throw new Error(
+          `Python API timed out after ${SERVER_TIMEOUT_MS / 1000}s.`,
+        );
+      }
       lastError = error;
     } finally {
       clearTimeout(timeout);
@@ -57,7 +78,12 @@ async function runPythonOnServer(source) {
 }
 
 async function runPythonInBrowser(source) {
-  return mergePythonRunResult(await executeCode(source, "python"));
+  const result = await withTimeout(
+    executeCode(source, "python"),
+    BROWSER_TIMEOUT_MS,
+    "The in-browser Python runtime did not respond in time. Check your connection and run again.",
+  );
+  return mergePythonRunResult(result);
 }
 
 async function runPythonWithServerFirst(source) {
