@@ -177,8 +177,8 @@ export const NUMPY_LESSON_OUTCOMES = {
     "Use `~np.isnan` and `np.sum(clean > 75)` on real weekly data",
   ],
   "numpy-30": [
-    "Mix indexing, stats, linear algebra, and cleaning in one project",
-    "Build a class report card from raw arrays",
-    "Show you can use NumPy without peeking at hints",
+    "Normalize scores with a Z-score using mean() and std()",
+    "Calculate a weighted average with np.dot() and weights.sum()",
+    "Rank students with np.argsort() and explain how it differs from np.sort()",
   ],
 };
