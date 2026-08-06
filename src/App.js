@@ -588,6 +588,16 @@ const LEARN_COURSE_ROUTES = [
     ),
   },
   {
+    slug: "js-es6-plus",
+    language: "JavaScript",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/js-es6-plus/pages/JsEs6Hub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/js-es6-plus/pages/JsEs6LessonPage"),
+    ),
+  },
+  {
     slug: "node-npm",
     language: "JavaScript",
     Hub: lazyWithChunkRetry(
