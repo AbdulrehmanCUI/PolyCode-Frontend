@@ -11,6 +11,7 @@ const COURSE_BY_PREFIX = [
   { prefix: "/learn/js-fundamentals", course: "JavaScript Fundamentals", language: "JavaScript" },
   { prefix: "/learn/html-css-foundation", course: "HTML & CSS Foundation", language: "HTML & CSS" },
   { prefix: "/learn/js-web-dev", course: "JavaScript Web Development", language: "JavaScript" },
+  { prefix: "/learn/js-async", course: "Asynchronous JS", language: "JavaScript" },
   { prefix: "/learn/cpp-fundamentals", course: "C++ Fundamentals", language: "C++" },
   { prefix: "/learn/oops-cpp", course: "OOP C++", language: "C++" },
   { prefix: "/learn/pointers-cpp", course: "Pointers C++", language: "C++" },

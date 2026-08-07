@@ -5380,61 +5380,214 @@ print(np.argmax(totals))`,
         xp: 20,
         theory: [
           {
-            type: "text",
+            type: "scenario",
+            title: "Real life: a school game tournament",
             content:
-              "Bridge lesson before the final boss! Take raw **game scores**, filter out lows with a boolean mask, normalize survivors with a z-score, and sort them. Four NumPy moves, one pipeline.",
+              "Your school runs a game tournament. Seven players finish with these scores:\n\n**45, 88, 52, 95, 70, 38, 91**\n\nThe coach says:\n\n1. Only players who scored **60 or more** move to the next round.\n2. Compare the remaining players **fairly** (not just by raw points).\n3. Rank them from low to high.\n\nDoing this by hand is slow. In NumPy, we build a **score pipeline** — a short chain of steps that cleans, compares, and ranks the numbers automatically.",
           },
           {
-            type: "code",
-            lang: "python",
-            label: "Filter → normalize → sort",
-            content: `import numpy as np
-
-scores = np.array([45, 88, 52, 95, 70, 38, 91])
-passed = scores[scores >= 60]
-z = (passed - passed.mean()) / passed.std()
-ranked = np.sort(z)
-print(passed, z, ranked)`,
+            type: "text",
+            content:
+              "**What is a score pipeline?**\n\nA **pipeline** is a clear sequence of data steps. Each step takes the result of the previous step and improves it.\n\nIn this lesson, the pipeline has three main moves:\n\n1. **Filter** — keep only useful scores (pass mark ≥ 60)\n2. **Normalize (z-score)** — put survivors on a fair comparison scale\n3. **Sort** — rank the fair scores from smallest to largest\n\nYou already learned each tool alone. Now we connect them into one useful workflow.",
           },
           {
             type: "diagram",
-            title: "Pipeline steps",
+            title: "The score pipeline at a glance",
             nodes: [
               {
+                id: "raw",
+                label: "1. Raw scores",
+                color: "#6366f1",
+                items: ["All player scores", "Mixed high & low", "Some below 60"],
+              },
+              {
                 id: "filter",
-                label: "1. Filter",
+                label: "2. Filter",
                 color: "#10b981",
-                items: ["scores >= 60", "Boolean mask"],
+                items: ["Keep score ≥ 60", "Boolean mask", "Drop failed players"],
               },
               {
                 id: "norm",
-                label: "2. Z-score",
+                label: "3. Z-score",
                 color: "#0ea5e9",
-                items: ["(x - mean) / std", "Compare fairly"],
+                items: ["(x − mean) / std", "Fair scale", "Mean ≈ 0"],
               },
               {
                 id: "sort",
-                label: "3. Sort",
-                color: "#6366f1",
-                items: ["np.sort", "Final ranking"],
+                label: "4. Sort",
+                color: "#4f46e5",
+                items: ["np.sort(...)", "Low → high", "Ready to rank"],
               },
             ],
           },
           {
+            type: "table",
+            title: "Step-by-step with tournament scores",
+            columns: ["Step", "What happens", "Result idea"],
+            rows: [
+              {
+                label: "Start",
+                values: [
+                  "Start",
+                  "Raw scores: 45, 88, 52, 95, 70, 38, 91",
+                  "Everyone included",
+                ],
+              },
+              {
+                label: "Filter",
+                values: [
+                  "Filter",
+                  "Keep only scores ≥ 60",
+                  "88, 95, 70, 91 (passers)",
+                ],
+              },
+              {
+                label: "Z-score",
+                values: [
+                  "Z-score",
+                  "Ask: how far is each passer from the average?",
+                  "Some below 0, some above 0",
+                ],
+              },
+              {
+                label: "Sort",
+                values: [
+                  "Sort",
+                  "Arrange z-scores from small to large",
+                  "A clean ranking list",
+                ],
+              },
+            ],
+          },
+          {
+            type: "callout",
+            variant: "info",
+            content:
+              "**Quick reminder — z-score:**  \n`z = (x − mean) ÷ std`  \n\n• **z = 0** → exactly average among the passers  \n• **z > 0** → above average  \n• **z < 0** → below average  \n\nWe apply z-scores **after filtering**, so we only compare players who actually passed.",
+          },
+          {
+            type: "code",
+            lang: "python",
+            label: "Full pipeline: filter → z-score → sort",
+            content: `import numpy as np
+
+# Raw tournament scores
+scores = np.array([45, 88, 52, 95, 70, 38, 91])
+
+# Step 1: keep only players who passed (score >= 60)
+passed = scores[scores >= 60]
+print("Passed:", passed)
+
+# Step 2: fair comparison with z-scores
+z = (passed - passed.mean()) / passed.std()
+print("Z-scores:", z)
+
+# Step 3: rank from low to high
+ranked = np.sort(z)
+print("Ranked:", ranked)`,
+          },
+          {
+            type: "table",
+            title: "What each line does",
+            columns: ["Code", "Plain English"],
+            rows: [
+              {
+                label: "scores",
+                values: [
+                  "`scores = np.array([...])`",
+                  "Stores all player scores in one array.",
+                ],
+              },
+              {
+                label: "filter",
+                values: [
+                  "`scores[scores >= 60]`",
+                  "Boolean mask: keep True values only (passers).",
+                ],
+              },
+              {
+                label: "z",
+                values: [
+                  "`(passed - mean) / std`",
+                  "Turns each passer score into a fair z-score.",
+                ],
+              },
+              {
+                label: "sort",
+                values: [
+                  "`np.sort(z)`",
+                  "Orders z-scores from smallest to largest.",
+                ],
+              },
+            ],
+          },
+          {
+            type: "scenario",
+            title: "Where else this pipeline helps",
+            content:
+              "**Exam results:** drop failing marks, then compare remaining students fairly.\n\n**Fitness app:** keep only workouts above a goal, then rank relative effort.\n\n**Sales data:** remove tiny orders, normalize store sales, then sort best to worst.\n\nSame idea every time: **clean → compare fairly → rank.**",
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              "**Order matters.** Filter first, then normalize. If you z-score *before* filtering, failed scores can pull the mean down and make the ranking unfair.",
+          },
+          {
+            type: "callout",
+            variant: "success",
+            content:
+              "**Key takeaways:**\n\n• A **pipeline** chains NumPy steps for a real task.\n• **Filter** with a boolean mask (`scores >= 60`).\n• **Z-score** makes remaining values comparable.\n• **`np.sort`** ranks the fair scores.\n• Always **filter before** you normalize when pass/fail rules exist.",
+          },
+          {
             type: "quiz",
-            question: "After filtering with scores >= 60, what's the next step in this pipeline?",
-            options: ["np.save", "Z-score normalize", "np.random.seed", "reshape"],
+            question: "In this score pipeline, what is the first useful step?",
+            options: [
+              "Sort all raw scores",
+              "Filter scores that meet the pass rule",
+              "Save the array to a file",
+              "Reshape into 2D",
+            ],
             answer: 1,
-            explanation: "Normalize filtered scores so they share a common scale before sorting.",
+            explanation:
+              "First keep only the scores that matter (for example, ≥ 60). Then normalize and sort those survivors.",
+          },
+          {
+            type: "quiz",
+            question: "After filtering with scores >= 60, what comes next in this pipeline?",
+            options: [
+              "np.save",
+              "Z-score normalize",
+              "np.random.seed",
+              "reshape",
+            ],
+            answer: 1,
+            explanation:
+              "Normalize the filtered scores so they share a common scale before sorting.",
+          },
+          {
+            type: "quiz",
+            question: "Why filter before computing z-scores?",
+            options: [
+              "Because sorting only works on filtered arrays",
+              "So failed scores do not distort the mean and std of the group you care about",
+              "Because NumPy cannot z-score raw arrays",
+              "Because print() needs a filtered list",
+            ],
+            answer: 1,
+            explanation:
+              "Low/failed scores change the average and spread. Filtering first keeps the comparison fair among passers only.",
           },
         ],
         challenge: {
           title: "Run the Pipeline",
           description:
-            "From `scores = np.array([55, 80, 45, 90, 72])`, keep only values >= 60, print the z-scores `(x - x.mean()) / x.std()` of the filtered array.",
+            "From `scores = np.array([55, 80, 45, 90, 72])`, keep only values >= 60, then print the z-scores `(x - x.mean()) / x.std()` of the filtered array.",
           starterCode: `import numpy as np
 
 scores = np.array([55, 80, 45, 90, 72])
+# 1) Keep scores >= 60
+# 2) Print their z-scores
 `,
           solutionCode: `import numpy as np
 
@@ -5474,41 +5627,344 @@ print((passed - passed.mean()) / passed.std())`,
           {
             type: "text",
             content:
-              "Let's combine skills on **weather data**! Given a week of daily highs (with one missing reading), you'll clean NaN, compute mean and max, and find how many days exceeded 75°F. Real data science in miniature.",
+              "**Introduction**\n\nIn this mini project, you are a **weather analyst**. Your job is to study one week of real-world temperature data and prepare a simple weather report.\n\nThere is one problem: the thermometer failed on Tuesday, so that day has no reading. Before analyzing the week, you must first **clean the missing value**.\n\nBy the end of this lesson, you will know how to:\n\n• Remove a missing value\n• Calculate the average temperature\n• Find the highest temperature\n• Count how many days were hotter than 75°F",
+          },
+          {
+            type: "scenario",
+            title: "Think of it Like This",
+            content:
+              "Imagine that you write the temperature down every afternoon. The thermometer works on six days, but it gives no reading on Tuesday.\n\nYou should not guess Tuesday’s temperature. Instead, store it as **missing**, remove it from the calculations, and analyze only the temperatures that were actually measured.",
+          },
+          {
+            type: "table",
+            title: "Weekly temperature readings",
+            columns: ["Day", "Temperature", "Meaning"],
+            rows: [
+              {
+                label: "Monday",
+                values: ["Monday", "72°F", "Valid reading"],
+              },
+              {
+                label: "Tuesday",
+                values: ["Tuesday", "Missing", "Stored as `np.nan`"],
+              },
+              {
+                label: "Wednesday",
+                values: ["Wednesday", "78°F", "Valid reading"],
+              },
+              {
+                label: "Thursday",
+                values: ["Thursday", "80°F", "Valid reading"],
+              },
+              {
+                label: "Friday",
+                values: ["Friday", "68°F", "Valid reading"],
+              },
+              {
+                label: "Saturday",
+                values: ["Saturday", "76°F", "Valid reading"],
+              },
+              {
+                label: "Sunday",
+                values: ["Sunday", "74°F", "Valid reading"],
+              },
+            ],
+          },
+          {
+            type: "text",
+            content:
+              "**What is `np.nan`?**\n\n`np.nan` stands for **Not a Number**. NumPy uses it to represent data that is missing or unavailable.\n\nFor example, a teacher may record marks for a class. If one student was absent, there is no mark to enter. The teacher can store that missing mark as `np.nan` instead of pretending it is 0.\n\nIn this weather project, `np.nan` means the thermometer did not provide a temperature for Tuesday.",
+          },
+          {
+            type: "table",
+            title: "How NumPy finds the missing reading",
+            columns: ["Expression", "Result", "What it means"],
+            rows: [
+              {
+                label: "Raw",
+                values: [
+                  "`temps`",
+                  "[72, NaN, 78, 80, 68, 76, 74]",
+                  "The original week",
+                ],
+              },
+              {
+                label: "isnan",
+                values: [
+                  "`np.isnan(temps)`",
+                  "[False, True, False, False, False, False, False]",
+                  "True marks the missing value",
+                ],
+              },
+              {
+                label: "NOT",
+                values: [
+                  "`~np.isnan(temps)`",
+                  "[True, False, True, True, True, True, True]",
+                  "`~` means NOT and flips every Boolean",
+                ],
+              },
+              {
+                label: "Clean",
+                values: [
+                  "`temps[~np.isnan(temps)]`",
+                  "[72, 78, 80, 68, 76, 74]",
+                  "Boolean masking keeps valid readings",
+                ],
+              },
+            ],
+          },
+          {
+            type: "diagram",
+            title: "The complete weather-analysis pipeline",
+            nodes: [
+              {
+                id: "raw",
+                label: "Raw Temperature Data",
+                color: "#6366f1",
+                items: ["Seven days", "One `np.nan`", "Not ready yet"],
+              },
+              {
+                id: "clean",
+                label: "Remove Missing Values",
+                color: "#10b981",
+                items: ["Use `np.isnan()`", "Apply `~`", "Keep valid data"],
+              },
+              {
+                id: "mean",
+                label: "Calculate Average",
+                color: "#0ea5e9",
+                items: ["Use `np.mean()`", "Typical temperature", "Valid days only"],
+              },
+              {
+                id: "max",
+                label: "Find Maximum",
+                color: "#f97316",
+                items: ["Use `.max()`", "Highest reading", "Hottest day"],
+              },
+              {
+                id: "count",
+                label: "Count Hot Days",
+                color: "#4f46e5",
+                items: ["Use `clean > 75`", "Sum True values", "Days above 75°F"],
+              },
+              {
+                id: "report",
+                label: "Final Weather Report",
+                color: "#14b8a6",
+                items: ["Average", "Maximum", "Hot-day count"],
+              },
+            ],
+          },
+          {
+            type: "callout",
+            variant: "info",
+            content:
+              "**Why clean first?** A normal average cannot give a useful result while `np.nan` is still present. Remove the missing value first so every later step uses only real measurements.",
           },
           {
             type: "code",
             lang: "python",
-            label: "Full workflow",
+            label: "Full weather report in NumPy",
             content: `import numpy as np
 
+# One week of highs — Tuesday is missing
 temps = np.array([72, np.nan, 78, 80, 68, 76, 74])
+
+# Step 1: keep only real numbers (drop NaN)
 clean = temps[~np.isnan(temps)]
+print("Clean temps:", clean)
+
+# Step 2: summarize
 print("Mean:", np.mean(clean))
 print("Max:", clean.max())
+
+# Step 3: count hot days (above 75°F)
 print("Hot days:", np.sum(clean > 75))`,
+          },
+          {
+            type: "table",
+            title: "Every line explained",
+            columns: ["Line", "Code", "Simple explanation"],
+            rows: [
+              {
+                label: "1",
+                values: [
+                  "1",
+                  "`import numpy as np`",
+                  "Imports the NumPy library and gives it the short name `np`.",
+                ],
+              },
+              {
+                label: "2",
+                values: [
+                  "2",
+                  "`temps = np.array([...])`",
+                  "Creates a NumPy array containing one week of temperatures. Tuesday is stored as `np.nan` because its reading is missing.",
+                ],
+              },
+              {
+                label: "3a",
+                values: [
+                  "3a",
+                  "`np.isnan(temps)`",
+                  "Checks every item. It returns True for `np.nan` and False for a normal temperature.",
+                ],
+              },
+              {
+                label: "3b",
+                values: [
+                  "3b",
+                  "`~`",
+                  "Means NOT. It changes True to False and False to True, selecting values that are not missing.",
+                ],
+              },
+              {
+                label: "3c",
+                values: [
+                  "3c",
+                  "`temps[~np.isnan(temps)]`",
+                  "Uses Boolean masking to keep valid temperatures. The result is `[72, 78, 80, 68, 76, 74]`.",
+                ],
+              },
+              {
+                label: "4",
+                values: [
+                  "4",
+                  "`np.mean(clean)`",
+                  "Adds the valid temperatures and divides by their count to find the average.",
+                ],
+              },
+              {
+                label: "5",
+                values: [
+                  "5",
+                  "`clean.max()`",
+                  "Returns the highest temperature: the hottest measured day.",
+                ],
+              },
+              {
+                label: "6a",
+                values: [
+                  "6a",
+                  "`clean > 75`",
+                  "Creates a Boolean array. True means hotter than 75°F; False means not hotter.",
+                ],
+              },
+              {
+                label: "6b",
+                values: [
+                  "6b",
+                  "`np.sum(clean > 75)`",
+                  "Counts True values. NumPy treats True as 1 and False as 0, so their sum is the number of hot days.",
+                ],
+              },
+            ],
+          },
+          {
+            type: "diagram",
+            title: "Real-world applications",
+            nodes: [
+              {
+                id: "forecast",
+                label: "Weather Forecasting",
+                color: "#0ea5e9",
+                items: ["Clean station readings", "Compare daily highs", "Prepare forecasts"],
+              },
+              {
+                id: "climate",
+                label: "Climate Research",
+                color: "#6366f1",
+                items: ["Study long-term records", "Handle missing years", "Find trends"],
+              },
+              {
+                id: "sensors",
+                label: "Sensor Analysis",
+                color: "#10b981",
+                items: ["Detect missing readings", "Monitor machines", "Count unsafe values"],
+              },
+              {
+                id: "agriculture",
+                label: "Agriculture",
+                color: "#84cc16",
+                items: ["Track soil temperature", "Protect crops", "Plan watering"],
+              },
+              {
+                id: "environment",
+                label: "Environmental Monitoring",
+                color: "#14b8a6",
+                items: ["Air and water sensors", "Remove bad readings", "Measure conditions"],
+              },
+              {
+                id: "data",
+                label: "Data Science & ML",
+                color: "#4f46e5",
+                items: ["Clean training data", "Calculate features", "Build reliable models"],
+              },
+            ],
           },
           {
             type: "callout",
             variant: "tip",
             content:
-              "Break problems into steps: clean → aggregate → filter → count. NumPy makes each step one line.",
+              "**Helpful tip:** Break every data-analysis problem into small steps:  \n**Clean Data → Calculate Statistics → Filter Data → Count Results**  \n\nNumPy provides simple functions for each step, making data analysis easy and efficient.",
+          },
+          {
+            type: "callout",
+            variant: "success",
+            content:
+              "**Key Takeaways**\n\n• `np.nan` represents missing or unavailable data.\n• `np.isnan()` finds missing values.\n• `~` means NOT and helps select values that are not missing.\n• Boolean masking creates a clean array of valid temperatures.\n• `np.mean()` calculates the average.\n• `.max()` finds the highest value.\n• `clean > 75` marks hot days with True or False.\n• `np.sum()` counts the True values.\n• Each pipeline step uses the cleaned result from the step before it.",
           },
           {
             type: "quiz",
-            question: "After removing NaN, which counts days above 75?",
-            options: ["clean.count()", "np.sum(clean > 75)", "len(clean)", "clean.max()"],
+            question: "Why clean NaN values before calling a normal mean?",
+            options: [
+              "Because NumPy cannot store temperatures",
+              "One missing value can make the whole average become NaN",
+              "Because max() only works on strings",
+              "Because print() rejects NaN",
+            ],
             answer: 1,
-            explanation: "Boolean mask + sum counts True values.",
+            explanation:
+              "A single NaN can poison a normal mean. Remove missing days first, then average the real readings.",
+          },
+          {
+            type: "quiz",
+            question: "After removing NaN, which expression counts days above 75?",
+            options: [
+              "clean.count()",
+              "np.sum(clean > 75)",
+              "len(clean)",
+              "clean.max()",
+            ],
+            answer: 1,
+            explanation:
+              "A boolean mask (`clean > 75`) plus `np.sum` counts how many True values there are.",
+          },
+          {
+            type: "quiz",
+            question: "What does `temps[~np.isnan(temps)]` keep?",
+            options: [
+              "Only the missing days",
+              "Only the real (non-missing) temperatures",
+              "Only values greater than 75",
+              "The hottest day only",
+            ],
+            answer: 1,
+            explanation:
+              "`np.isnan` finds missing values; the `~` flips the mask so you keep present days.",
           },
         ],
         challenge: {
           title: "Weekly Weather Report",
           description:
-            "Given `temps = np.array([70, np.nan, 82, 76, 68, 79, 74])`, print the mean of non-NaN values (use `~np.isnan` mask and `.mean()`), then print how many values are > 75.",
+            "Given `temps = np.array([70, np.nan, 82, 76, 68, 79, 74])`, print the mean of non-NaN values (use a `~np.isnan` mask and `.mean()`), then print how many values are > 75.",
           starterCode: `import numpy as np
 
 temps = np.array([70, np.nan, 82, 76, 68, 79, 74])
+# 1) Clean NaN days
+# 2) Print mean
+# 3) Print count of days > 75
 `,
           solutionCode: `import numpy as np
 

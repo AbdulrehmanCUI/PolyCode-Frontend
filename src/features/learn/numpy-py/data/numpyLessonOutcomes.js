@@ -167,14 +167,14 @@ export const NUMPY_LESSON_OUTCOMES = {
     "Practice the full “read → clean → summarize” flow",
   ],
   "numpy-28": [
-    "Chain filter → sort → summarize on one score list",
-    "Turn messy inputs into a clear pipeline",
-    "Document each step so others can follow your work",
+    "Explain a score pipeline in plain words: filter → z-score → sort",
+    "Filter passers with a boolean mask, then normalize and rank them",
+    "Know why filtering before z-score keeps comparisons fair",
   ],
   "numpy-29": [
-    "Analyze a week of temperatures with min, max, and average",
-    "Handle a realistic mini dataset from start to finish",
-    "Present results a classmate could understand",
+    "Explain why missing temperatures (NaN) must be cleaned before averaging",
+    "Build a weather pipeline: clean → mean/max → count hot days",
+    "Use `~np.isnan` and `np.sum(clean > 75)` on real weekly data",
   ],
   "numpy-30": [
     "Mix indexing, stats, linear algebra, and cleaning in one project",
