@@ -8,12 +8,24 @@ const resizeObserverLoopMessages = [
   "ResizeObserver loop limit exceeded",
 ];
 
+function isHtmlAsScriptSyntaxError(event) {
+  // Pyodide/CDN sometimes returns an HTML error page for a .js URL. The browser
+  // then reports: SyntaxError: Unexpected token '<'.
+  const message = event?.message || "";
+  if (!/Unexpected token\s*['"]?</i.test(message)) return false;
+  const target = event.target;
+  if (!target || typeof target.tagName !== "string") return true;
+  const tag = target.tagName.toUpperCase();
+  return tag === "SCRIPT" || tag === "LINK" || !event.filename;
+}
+
 function isBenignResourceError(event) {
   // Script/link load failures are ErrorEvents with an empty message. CRA's
   // overlay then prints "[object Event]" and blocks the UI even though the app
   // can recover (Monaco CDN, chunk retries, etc.).
   if (!event) return false;
   if (resizeObserverLoopMessages.includes(event.message)) return true;
+  if (isHtmlAsScriptSyntaxError(event)) return true;
   if (event.message && event.message !== "[object Event]") return false;
   const target = event.target;
   if (!target || typeof target.tagName !== "string") return false;
@@ -42,7 +54,8 @@ window.addEventListener("unhandledrejection", (event) => {
   if (
     resizeObserverLoopMessages.includes(message) ||
     reason instanceof Event ||
-    message === "[object Event]"
+    message === "[object Event]" ||
+    /Unexpected token\s*['"]?</i.test(message)
   ) {
     event.preventDefault();
   }
