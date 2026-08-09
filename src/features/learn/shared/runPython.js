@@ -19,6 +19,23 @@ function withTimeout(promise, ms, message) {
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
+export function codeUsesScipy(source = "") {
+  return /(?:^|\n)\s*(?:import|from)\s+scipy\b/m.test(source);
+}
+
+function friendlyPythonRuntimeMessage(message = "", { usesScipy = false } = {}) {
+  const text = String(message || "");
+  if (/Unexpected token\s*['"]?</i.test(text) || /received HTML/i.test(text)) {
+    return usesScipy
+      ? "Could not load SciPy in the browser (a download returned a web page instead of a package).\n\nFix: on the backend machine run\n  pip install -r requirements-learn-python.txt\nthen restart the server on port 5000."
+      : "Could not load the in-browser Python runtime (received a web page instead of a script/package). Check your network, or start the backend on port 5000.";
+  }
+  if (/ModuleNotFoundError:\s*No module named ['\"]scipy['\"]/i.test(text)) {
+    return "SciPy is not installed for the PolyCode backend Python.\n\nFix: run\n  pip install scipy\nor\n  pip install -r requirements-learn-python.txt\nthen restart the server.";
+  }
+  return text;
+}
+
 async function readJsonResponse(response) {
   const text = await response.text();
   const trimmed = text.trim();
@@ -61,8 +78,6 @@ async function runPythonOnServer(source) {
       return mergePythonRunResult(payload);
     } catch (error) {
       if (error?.name === "AbortError") {
-        // Both endpoints live on the same server, so retrying after a timeout
-        // just doubles the wait. Fall back to the browser runtime instead.
         clearTimeout(timeout);
         throw new Error(
           `Python API timed out after ${SERVER_TIMEOUT_MS / 1000}s.`,
@@ -78,15 +93,24 @@ async function runPythonOnServer(source) {
 }
 
 async function runPythonInBrowser(source) {
-  const result = await withTimeout(
-    executeCode(source, "python"),
-    BROWSER_TIMEOUT_MS,
-    "The in-browser Python runtime did not respond in time. Check your connection and run again.",
-  );
-  return mergePythonRunResult(result);
+  try {
+    const result = await withTimeout(
+      executeCode(source, "python"),
+      BROWSER_TIMEOUT_MS,
+      "The in-browser Python runtime did not respond in time. Check your connection and run again.",
+    );
+    return mergePythonRunResult(result);
+  } catch (error) {
+    throw new Error(
+      friendlyPythonRuntimeMessage(error?.message || String(error), {
+        usesScipy: codeUsesScipy(source),
+      }),
+    );
+  }
 }
 
 async function runPythonWithServerFirst(source) {
+  const usesScipy = codeUsesScipy(source);
   try {
     const result = await runPythonOnServer(source);
     const runtimeError = getPythonRuntimeError(result);
@@ -95,17 +119,35 @@ async function runPythonWithServerFirst(source) {
     }
     return { result, runtime: "server" };
   } catch (serverError) {
+    const serverMessage = friendlyPythonRuntimeMessage(
+      serverError?.message || String(serverError),
+      { usesScipy },
+    );
+
+    // Missing server SciPy: prefer a clear install hint over a huge Pyodide
+    // download that often fails with "Unexpected token '<'".
+    if (
+      usesScipy &&
+      /No module named ['\"]scipy['\"]/i.test(serverError?.message || "")
+    ) {
+      throw new Error(serverMessage);
+    }
+
     try {
       const browserResult = await runPythonInBrowser(source);
       const browserError = getPythonRuntimeError(browserResult);
       if (browserError) {
-        throw new Error(browserError);
+        throw new Error(
+          friendlyPythonRuntimeMessage(browserError, { usesScipy }),
+        );
       }
       return { result: browserResult, runtime: "browser" };
     } catch (browserError) {
       throw new Error(
-        browserError.message ||
-          serverError.message ||
+        friendlyPythonRuntimeMessage(
+          browserError.message || serverMessage,
+          { usesScipy },
+        ) ||
           "Could not run Python. Start the backend on port 5000 or check your network for Pyodide.",
       );
     }
@@ -113,6 +155,7 @@ async function runPythonWithServerFirst(source) {
 }
 
 async function runPythonWithBrowserFirst(source) {
+  const usesScipy = codeUsesScipy(source);
   try {
     return { result: await runPythonInBrowser(source), runtime: "browser" };
   } catch (browserError) {
@@ -125,8 +168,10 @@ async function runPythonWithBrowserFirst(source) {
       return { result, runtime: "server" };
     } catch (serverError) {
       throw new Error(
-        browserError.message ||
-          serverError.message ||
+        friendlyPythonRuntimeMessage(
+          browserError.message || serverError.message,
+          { usesScipy },
+        ) ||
           "Could not run Python. Matplotlib needs the in-browser runtime (Pyodide) or matplotlib installed on the server.",
       );
     }
