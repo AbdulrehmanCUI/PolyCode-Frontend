@@ -19,6 +19,7 @@ import {
   Wrench,
   Atom,
   ScanEye,
+  Clock,
 } from "lucide-react";
 
 export function languageKey(value = "") {
@@ -398,6 +399,15 @@ export const languageCourses = {
       description:
         "Focused ES6+ path: modern syntax, destructuring, spread, modules, async/await, classes, and advanced collections with runnable examples.",
       href: "/learn/js-es6-plus",
+      accent: "#f59e0b",
+    },
+    {
+      title: "Asynchronous JS",
+      tag: "Async Course",
+      icon: Clock,
+      description:
+        "Deep dive into async JavaScript: callbacks, promises, async/await, fetch, error handling, and concurrency patterns.",
+      href: "/learn/js-async",
       accent: "#f59e0b",
     },
     {
@@ -922,6 +932,7 @@ export const learnNavByLanguage = {
     { label: "Fundamentals", to: "/learn/js-fundamentals" },
     { label: "DOM", to: "/learn/js-dom" },
     { label: "Web Dev", to: "/learn/js-web-dev" },
+    { label: "Asynchronous JS", to: "/learn/js-async" },
     { label: "Node & npm", to: "/learn/node-npm" },
   ],
   htmlCss: [

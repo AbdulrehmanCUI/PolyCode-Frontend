@@ -604,6 +604,16 @@ const LEARN_COURSE_ROUTES = [
     ),
   },
   {
+    slug: "js-async",
+    language: "JavaScript",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/js-async/pages/JsAsyncHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/js-async/pages/JsAsyncLessonPage"),
+    ),
+  },
+  {
     slug: "node-npm",
     language: "JavaScript",
     Hub: lazyWithChunkRetry(
