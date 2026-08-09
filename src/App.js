@@ -185,6 +185,12 @@ const PyTorchHub = lazyWithChunkRetry(
 const PyTorchLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/pytorch-py/pages/PytorchLessonPage"),
 );
+const ScipyHub = lazyWithChunkRetry(
+  () => import("./features/learn/scipy-py/pages/ScipyHub"),
+);
+const ScipyLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/scipy-py/pages/ScipyLessonPage"),
+);
 const OpencvHub = lazyWithChunkRetry(
   () => import("./features/learn/opencv-py/pages/OpencvHub"),
 );
@@ -1262,6 +1268,7 @@ function AppRoutes() {
       path.startsWith("/learn/matplotlib-py") ||
       path.startsWith("/learn/ai_ml-py") ||
       path.startsWith("/learn/pytorch-py") ||
+      path.startsWith("/learn/scipy-py") ||
       path.startsWith("/learn/opencv-py")
     ) {
       handleLanguageSelect("Python", { stay: true });
@@ -1891,6 +1898,37 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <PyTorchLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        {/* SciPy Course Routes */}
+        <Route
+          path="/learn/scipy-py"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <ScipyHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/scipy-py/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <ScipyLessonPage />
               </LearnShell>
             </ThemedShell>
           }

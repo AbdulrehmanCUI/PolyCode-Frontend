@@ -230,7 +230,9 @@ export default function RunnableCodeBlock({
     } catch (error) {
       setOutput({
         status: "fail",
-        stdout: error.message || "Could not run this example.",
+        stdout:
+          error?.message ||
+          (typeof error === "string" ? error : "Could not run this example."),
       });
     } finally {
       setRunning(false);

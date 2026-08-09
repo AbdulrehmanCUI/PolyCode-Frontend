@@ -6002,25 +6002,46 @@ print(np.sum(clean > 75))`,
           {
             type: "text",
             content:
-              "**Final boss time!** You'll normalize student **game scores**, compute a weighted class average, and rank students — broadcasting, stats, dot products, and argsort in one pipeline. You've got this.",
+              "**Introduction**\n\nCongratulations — you made it to the **final lesson** of NumPy Mastery!\n\nThis is your final project. You will combine skills from the whole course into one complete analysis: **normalize** student scores with a Z-score, calculate a **weighted average**, and **rank** the students.\n\nThink of it as writing a class report card with NumPy. Each step uses an idea you have already practiced, and now they work together as one pipeline.",
           },
           {
-            type: "diagram",
-            title: "Pipeline",
-            nodes: [
+            type: "text",
+            content:
+              "**Learning Objectives**\n\nAfter this lesson, you will be able to:\n\n• Normalize data with a **Z-score**\n• Calculate a **weighted average**\n• Rank data using **`np.argsort()`**\n• Build a complete **NumPy data-analysis pipeline**",
+          },
+          {
+            type: "scenario",
+            title: "Think of it Like This",
+            content:
+              "Four students finished a game challenge. Their scores are 85, 92, 78, and 95. You want three answers:\n\n1. How does each score compare to the group average?\n2. What is the class average when every score has equal weight?\n3. Who ranks from lowest to highest?\n\nNumPy can answer all three without writing long loops.",
+          },
+          {
+            type: "table",
+            title: "Student scores for the final project",
+            columns: ["Student index", "Score", "Equal weight"],
+            rows: [
               {
-                id: "step1",
-                label: "1. Normalize",
-                color: "#10b981",
-                items: ["Z-score each score", "(x - mean) / std"],
+                label: "0",
+                values: ["0", "85.0", "0.25"],
               },
               {
-                id: "step2",
-                label: "2. Weight & rank",
-                color: "#0ea5e9",
-                items: ["Weighted avg", "argsort for rank"],
+                label: "1",
+                values: ["1", "92.0", "0.25"],
+              },
+              {
+                label: "2",
+                values: ["2", "78.0", "0.25"],
+              },
+              {
+                label: "3",
+                values: ["3", "95.0", "0.25"],
               },
             ],
+          },
+          {
+            type: "text",
+            content:
+              "**Quick reminders before the code**\n\n• **Z-score** = `(value − mean) / standard deviation`. It shows how far a score sits from the average.\n• **Weighted average** = multiply each value by its weight, add the products, then divide by the total of the weights.\n• **`np.argsort()`** does not return the sorted values. It returns the **indexes** that would put the array in order.",
           },
           {
             type: "code",
@@ -6034,6 +6055,199 @@ z = (scores - scores.mean()) / scores.std()
 avg = np.dot(scores, weights) / weights.sum()
 rank = np.argsort(scores)
 print(z, avg, rank)`,
+          },
+          {
+            type: "table",
+            title: "Every line explained",
+            columns: ["Line", "Code", "Simple explanation"],
+            rows: [
+              {
+                label: "1",
+                values: [
+                  "1",
+                  "`import numpy as np`",
+                  "Imports the NumPy library and gives it the short name `np`.",
+                ],
+              },
+              {
+                label: "2",
+                values: [
+                  "2",
+                  "`scores = np.array([...])`",
+                  "Creates an array of four student scores. Index 0 is the first student, index 1 is the second, and so on.",
+                ],
+              },
+              {
+                label: "3",
+                values: [
+                  "3",
+                  "`weights = np.array([...])`",
+                  "Creates equal weights of 0.25 for each student. Equal weights mean every score matters the same amount.",
+                ],
+              },
+              {
+                label: "4",
+                values: [
+                  "4",
+                  "`z = (scores - scores.mean()) / scores.std()`",
+                  "`mean()` finds the average. `std()` finds the standard deviation. Subtracting and dividing turns every score into a Z-score.",
+                ],
+              },
+              {
+                label: "5",
+                values: [
+                  "5",
+                  "`avg = np.dot(scores, weights) / weights.sum()`",
+                  "`np.dot()` multiplies each score by its weight and adds the results. Dividing by `weights.sum()` finishes the weighted average.",
+                ],
+              },
+              {
+                label: "6",
+                values: [
+                  "6",
+                  "`rank = np.argsort(scores)`",
+                  "Returns the indexes that would sort the scores from low to high. That is how you rank the students.",
+                ],
+              },
+              {
+                label: "7",
+                values: [
+                  "7",
+                  "`print(z, avg, rank)`",
+                  "Shows the Z-scores, the weighted average, and the ranking indexes together.",
+                ],
+              },
+            ],
+          },
+          {
+            type: "text",
+            content:
+              "**What is `np.argsort()`?**\n\n`argsort` means **Argument Sort**. The “argument” is the **index** of each value.\n\nSo `np.argsort(scores)` answers this question: *“In what order should I visit the indexes to read the scores from smallest to largest?”*\n\nIt does **not** rearrange the scores themselves. It only returns the indexes.",
+          },
+          {
+            type: "table",
+            title: "`np.sort()` vs `np.argsort()`",
+            columns: ["Function", "What it returns", "Example with [85, 92, 78, 95]"],
+            rows: [
+              {
+                label: "sort",
+                values: [
+                  "`np.sort(scores)`",
+                  "The sorted values",
+                  "[78, 85, 92, 95]",
+                ],
+              },
+              {
+                label: "argsort",
+                values: [
+                  "`np.argsort(scores)`",
+                  "The indexes that create that order",
+                  "[2, 0, 1, 3]",
+                ],
+              },
+            ],
+          },
+          {
+            type: "callout",
+            variant: "info",
+            content:
+              "**How to read `[2, 0, 1, 3]`:** Index **2** has the lowest score (78), then index **0** (85), then index **1** (92), then index **3** (95). The original `scores` array stays unchanged.",
+          },
+          {
+            type: "diagram",
+            title: "The complete final-boss pipeline",
+            nodes: [
+              {
+                id: "scores",
+                label: "Student Scores",
+                color: "#6366f1",
+                items: ["Raw score array", "Four students", "Starting point"],
+              },
+              {
+                id: "normalize",
+                label: "Normalize Scores",
+                color: "#10b981",
+                items: ["Use mean()", "Use std()", "Create Z-scores"],
+              },
+              {
+                id: "weighted",
+                label: "Calculate Weighted Average",
+                color: "#0ea5e9",
+                items: ["Use np.dot()", "Divide by weights.sum()", "One class average"],
+              },
+              {
+                id: "rank",
+                label: "Rank Students",
+                color: "#f97316",
+                items: ["Use np.argsort()", "Indexes low → high", "Keep original order"],
+              },
+              {
+                id: "report",
+                label: "Final Grade Report",
+                color: "#14b8a6",
+                items: ["Z-scores", "Weighted average", "Student ranks"],
+              },
+            ],
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              "**Why a pipeline?** Each step uses the output of the step before it. First you store the scores. Then you normalize them. Then you compute the weighted average. Then you rank the students. At the end, you print one complete grade report.",
+          },
+          {
+            type: "diagram",
+            title: "Real-world applications",
+            nodes: [
+              {
+                id: "students",
+                label: "Student Result Analysis",
+                color: "#10b981",
+                items: ["Normalize quiz scores", "Weight assignments", "Rank the class"],
+              },
+              {
+                id: "datascience",
+                label: "Data Science",
+                color: "#6366f1",
+                items: ["Clean number pipelines", "Compare features fairly", "Sort and report"],
+              },
+              {
+                id: "ml",
+                label: "Machine Learning",
+                color: "#4f46e5",
+                items: ["Feature scaling", "Sample weights", "Model inputs"],
+              },
+              {
+                id: "healthcare",
+                label: "Healthcare Analytics",
+                color: "#0ea5e9",
+                items: ["Compare patient scores", "Weighted risk factors", "Rank priority cases"],
+              },
+              {
+                id: "finance",
+                label: "Financial Analytics",
+                color: "#f97316",
+                items: ["Normalize returns", "Portfolio weights", "Rank investments"],
+              },
+              {
+                id: "sports",
+                label: "Sports Analytics",
+                color: "#84cc16",
+                items: ["Normalize player stats", "Weighted ratings", "League rankings"],
+              },
+              {
+                id: "bi",
+                label: "Business Intelligence",
+                color: "#14b8a6",
+                items: ["Score sales teams", "Weighted KPIs", "Leaderboard reports"],
+              },
+            ],
+          },
+          {
+            type: "callout",
+            variant: "success",
+            content:
+              "**Key Takeaways**\n\n• A **Z-score** normalizes values with `(x − mean) / std`.\n• A **weighted average** uses `np.dot(values, weights) / weights.sum()`.\n• **`np.sort()`** returns sorted values.\n• **`np.argsort()`** returns the indexes that would sort the array.\n• Ranking with indexes keeps the original data in place.\n• A NumPy pipeline connects small steps into one complete analysis.\n• The same pattern appears in school grades, data science, machine learning, healthcare, finance, sports, and business reports.",
           },
           {
             type: "quiz",

@@ -20,6 +20,10 @@ import {
   PYTORCH_TOTAL_XP,
 } from "../learn/pytorch-py/data/pytorchCurriculum";
 import {
+  SCIPY_LESSONS,
+  SCIPY_TOTAL_XP,
+} from "../learn/scipy-py/data/scipyCurriculum";
+import {
   OPENCV_LESSONS,
   OPENCV_TOTAL_XP,
 } from "../learn/opencv-py/data/opencvCurriculum";
@@ -85,6 +89,16 @@ export const PROFILE_FEATURED_TRACKS = [
     accent: "#EE4C2C",
   },
   {
+    courseId: "scipy-py",
+    courseName: "SciPy for Python",
+    hubTitle: "SciPy · py",
+    subtitle: "Python science lab track",
+    lessons: SCIPY_LESSONS,
+    totalXP: SCIPY_TOTAL_XP,
+    href: "/learn/scipy-py",
+    accent: "#0d9488",
+  },
+  {
     courseId: "opencv-py",
     courseName: "OpenCV for Python",
     hubTitle: "OpenCV · py",
@@ -104,6 +118,7 @@ export const COURSE_DISPLAY_NAMES = {
   "pandas-py": "Pandas for Python",
   "fastapi-py": "FastAPI for Python",
   "pytorch-py": "PyTorch for Python",
+  "scipy-py": "SciPy for Python",
   "opencv-py": "OpenCV for Python",
   "python-fundamentals": "Python Fundamentals",
   "python-oop-py": "Python OOP",

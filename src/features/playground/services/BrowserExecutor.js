@@ -255,9 +255,12 @@ async function ensurePyodidePackages(py, code = '') {
       }
     } catch (error) {
       const message = error?.message || String(error);
+      const friendly = /Unexpected token\s*['"]?</i.test(message)
+        ? `Could not download '${pkg}' for the in-browser runtime (received a web page instead of a package).`
+        : message;
       throw new Error(
-        `Could not load ${pkg} in the browser (${message}). ` +
-          "Start the PolyCode backend (port 5000) so this lesson can run with server Python.",
+        `Could not load ${pkg} in the browser (${friendly}). ` +
+          "Start the PolyCode backend (port 5000) with SciPy installed: pip install -r requirements-learn-python.txt",
       );
     }
   }
