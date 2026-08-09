@@ -11767,17 +11767,34 @@ body {
   background: #fff;
 }
 
-.lesson-whiteboard-canvas .excalidraw {
-  height: 100% !important;
+.lesson-whiteboard-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
 }
 
 .lesson-whiteboard-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   display: grid;
   place-items: center;
   height: 100%;
   color: #64748b;
   font-size: 0.9rem;
   font-weight: 600;
+  background: #fff;
+  pointer-events: none;
+}
+
+.lesson-whiteboard-loading--error {
+  color: #b91c1c;
+  pointer-events: auto;
+  padding: 24px;
+  text-align: center;
 }
 
 .lesson-whiteboard-handle {
