@@ -1,6 +1,4 @@
 import React, {
-  Suspense,
-  lazy,
   useCallback,
   useEffect,
   useMemo,
@@ -10,16 +8,12 @@ import React, {
 import { createPortal } from "react-dom";
 import { Maximize2, Minimize2, X } from "lucide-react";
 
-const Excalidraw = lazy(async () => {
-  const mod = await import("@excalidraw/excalidraw");
-  return { default: mod.Excalidraw };
-});
-
 const MIN_W = 360;
 const MIN_H = 280;
 const DEFAULT_W = 720;
 const DEFAULT_H = 520;
 const EDGE = 10;
+const MSG_SOURCE = "polycode-excalidraw";
 
 function whiteboardStorageKey(storageKey) {
   return `polycode_whiteboard_${storageKey || "default"}`;
@@ -85,13 +79,12 @@ function loadScene(storageKey) {
     const parsed = JSON.parse(raw);
     return {
       elements: Array.isArray(parsed.elements) ? parsed.elements : [],
-      appState: parsed.appState && typeof parsed.appState === "object"
-        ? {
-            ...parsed.appState,
-            collaborators: undefined,
-          }
-        : undefined,
-      files: parsed.files && typeof parsed.files === "object" ? parsed.files : {},
+      appState:
+        parsed.appState && typeof parsed.appState === "object"
+          ? parsed.appState
+          : undefined,
+      files:
+        parsed.files && typeof parsed.files === "object" ? parsed.files : {},
     };
   } catch {
     return null;
@@ -100,33 +93,11 @@ function loadScene(storageKey) {
 
 function saveScene(storageKey, elements, appState, files) {
   try {
-    const slimAppState = appState
-      ? {
-          viewBackgroundColor: appState.viewBackgroundColor,
-          currentItemStrokeColor: appState.currentItemStrokeColor,
-          currentItemBackgroundColor: appState.currentItemBackgroundColor,
-          currentItemFillStyle: appState.currentItemFillStyle,
-          currentItemStrokeWidth: appState.currentItemStrokeWidth,
-          currentItemStrokeStyle: appState.currentItemStrokeStyle,
-          currentItemRoughness: appState.currentItemRoughness,
-          currentItemOpacity: appState.currentItemOpacity,
-          currentItemFontFamily: appState.currentItemFontFamily,
-          currentItemFontSize: appState.currentItemFontSize,
-          currentItemTextAlign: appState.currentItemTextAlign,
-          currentItemStartArrowhead: appState.currentItemStartArrowhead,
-          currentItemEndArrowhead: appState.currentItemEndArrowhead,
-          scrollX: appState.scrollX,
-          scrollY: appState.scrollY,
-          zoom: appState.zoom,
-          gridSize: appState.gridSize,
-          theme: appState.theme,
-        }
-      : undefined;
     localStorage.setItem(
       whiteboardStorageKey(storageKey),
       JSON.stringify({
         elements,
-        appState: slimAppState,
+        appState,
         files: files || {},
       }),
     );
@@ -166,41 +137,96 @@ const CURSOR_FOR_DIR = {
 };
 
 /**
- * Resizable floating Excalidraw whiteboard (infinite canvas + full toolset).
+ * Resizable floating whiteboard.
+ * Excalidraw runs in an iframe (own React) to avoid CRA + React 19 conflicts.
  */
-export default function LessonWhiteboard({
-  open,
-  onClose,
-  storageKey,
-}) {
+export default function LessonWhiteboard({ open, onClose, storageKey }) {
   const panelRef = useRef(null);
+  const iframeRef = useRef(null);
   const dragRef = useRef(null);
   const resizeRef = useRef(null);
   const saveTimerRef = useRef(null);
-  const initialSceneRef = useRef(null);
+  const sceneRef = useRef(null);
 
   const [layout, setLayout] = useState(() => loadLayout(storageKey));
   const [maximized, setMaximized] = useState(false);
   const [edgeCursor, setEdgeCursor] = useState(undefined);
-  const [ready, setReady] = useState(false);
+  const [frameStatus, setFrameStatus] = useState("loading");
+  const [iframeKey, setIframeKey] = useState(0);
+
+  const hostSrc = useMemo(
+    () => `${process.env.PUBLIC_URL || ""}/excalidraw-host.html`,
+    [],
+  );
+
+  const sendInit = useCallback(() => {
+    const win = iframeRef.current?.contentWindow;
+    if (!win) return;
+    win.postMessage(
+      {
+        source: MSG_SOURCE,
+        type: "init",
+        scene: sceneRef.current || {
+          elements: [],
+          appState: { viewBackgroundColor: "#ffffff" },
+          files: {},
+        },
+      },
+      "*",
+    );
+  }, []);
 
   useEffect(() => {
     if (!open) return undefined;
-    initialSceneRef.current = loadScene(storageKey);
+
+    sceneRef.current = loadScene(storageKey) || {
+      elements: [],
+      appState: { viewBackgroundColor: "#ffffff" },
+      files: {},
+    };
     setLayout(loadLayout(storageKey));
     setMaximized(false);
-    setReady(true);
+    setFrameStatus("loading");
+    setIframeKey((k) => k + 1);
 
-    if (typeof window !== "undefined" && !window.EXCALIDRAW_ASSET_PATH) {
-      // Assets are copied into public/excalidraw-assets{,-dev} by prestart/prebuild.
-      window.EXCALIDRAW_ASSET_PATH = `${process.env.PUBLIC_URL || ""}/`;
-    }
+    const onMessage = (event) => {
+      const data = event.data;
+      if (!data || data.source !== MSG_SOURCE) return;
 
+      if (data.type === "host-ready") {
+        sendInit();
+        return;
+      }
+
+      if (data.type === "ready") {
+        setFrameStatus("ready");
+        return;
+      }
+
+      if (data.type === "error") {
+        setFrameStatus("error");
+        return;
+      }
+
+      if (data.type === "change") {
+        window.clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = window.setTimeout(() => {
+          saveScene(
+            storageKey,
+            data.elements || [],
+            data.appState,
+            data.files || {},
+          );
+        }, 200);
+      }
+    };
+
+    window.addEventListener("message", onMessage);
     return () => {
-      setReady(false);
+      window.removeEventListener("message", onMessage);
       window.clearTimeout(saveTimerRef.current);
     };
-  }, [open, storageKey]);
+  }, [open, storageKey, sendInit]);
 
   useEffect(() => {
     if (!open || maximized) return;
@@ -224,31 +250,6 @@ export default function LessonWhiteboard({
       cursor: edgeCursor || undefined,
     };
   }, [layout, maximized, edgeCursor]);
-
-  const initialData = useMemo(() => {
-    const saved = initialSceneRef.current;
-    return {
-      elements: saved?.elements || [],
-      appState: {
-        viewBackgroundColor: "#ffffff",
-        currentItemFontFamily: 1,
-        ...(saved?.appState || {}),
-        collaborators: new Map(),
-      },
-      files: saved?.files || {},
-      scrollToContent: Boolean(saved?.elements?.length),
-    };
-  }, [ready]); // eslint-disable-line react-hooks/exhaustive-deps -- remount per open
-
-  const handleChange = useCallback(
-    (elements, appState, files) => {
-      window.clearTimeout(saveTimerRef.current);
-      saveTimerRef.current = window.setTimeout(() => {
-        saveScene(storageKey, elements, appState, files);
-      }, 400);
-    },
-    [storageKey],
-  );
 
   const startMove = (event) => {
     if (maximized) return;
@@ -342,7 +343,7 @@ export default function LessonWhiteboard({
   const handlePanelPointerDown = (event) => {
     if (maximized) return;
     if (event.target.closest(".lesson-whiteboard-chrome")) return;
-    if (event.target.closest(".excalidraw")) return;
+    if (event.target.closest(".lesson-whiteboard-frame")) return;
     const panel = panelRef.current;
     if (!panel) return;
     const dir = getResizeDir(event, panel);
@@ -353,7 +354,7 @@ export default function LessonWhiteboard({
     if (maximized || resizeRef.current || dragRef.current) return;
     const panel = panelRef.current;
     if (!panel) return;
-    if (event.target.closest(".excalidraw")) {
+    if (event.target.closest(".lesson-whiteboard-frame")) {
       setEdgeCursor(undefined);
       return;
     }
@@ -392,7 +393,9 @@ export default function LessonWhiteboard({
             className="lesson-whiteboard-icon-btn"
             onClick={() => setMaximized((v) => !v)}
             title={maximized ? "Restore size" : "Maximize"}
-            aria-label={maximized ? "Restore whiteboard size" : "Maximize whiteboard"}
+            aria-label={
+              maximized ? "Restore whiteboard size" : "Maximize whiteboard"
+            }
           >
             {maximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
           </button>
@@ -409,30 +412,23 @@ export default function LessonWhiteboard({
       </div>
 
       <div className="lesson-whiteboard-canvas">
-        {ready ? (
-          <Suspense
-            fallback={
-              <div className="lesson-whiteboard-loading">Loading whiteboard…</div>
-            }
-          >
-            <Excalidraw
-              key={storageKey}
-              initialData={initialData}
-              onChange={handleChange}
-              theme="light"
-              UIOptions={{
-                canvasActions: {
-                  loadScene: true,
-                  export: { saveFileToDisk: true },
-                  saveAsImage: true,
-                  clearCanvas: true,
-                  changeViewBackgroundColor: true,
-                  toggleTheme: true,
-                },
-              }}
-            />
-          </Suspense>
+        {frameStatus === "loading" ? (
+          <div className="lesson-whiteboard-loading">Loading whiteboard…</div>
         ) : null}
+        {frameStatus === "error" ? (
+          <div className="lesson-whiteboard-loading lesson-whiteboard-loading--error">
+            Could not load whiteboard. Check your connection, then close and
+            reopen.
+          </div>
+        ) : null}
+        <iframe
+          key={iframeKey}
+          ref={iframeRef}
+          className="lesson-whiteboard-frame"
+          title="Excalidraw whiteboard"
+          src={hostSrc}
+          onLoad={sendInit}
+        />
       </div>
 
       {!maximized

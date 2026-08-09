@@ -11,8 +11,6 @@
 # production
 /build
 /public/ruby/ruby-stdlib.wasm
-/public/excalidraw-assets/
-/public/excalidraw-assets-dev/
 
 # misc
 .DS_Store
