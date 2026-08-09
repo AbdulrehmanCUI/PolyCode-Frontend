@@ -692,21 +692,41 @@ html[data-theme="light"] .lesson-annotator-fab-close,
 
 .app.theme-light .scipy-hub .scipy-hero-badge,
 .app.theme-light .scipy-hub .oops-hero-badge.scipy-hero-badge {
-  background: rgba(13, 148, 136, 0.12) !important;
-  color: #0f766e !important;
-  border-color: rgba(13, 148, 136, 0.28) !important;
+  background: #0d9488 !important;
+  color: #ffffff !important;
+  border: 1px solid #0f766e !important;
+  letter-spacing: 0.1em;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25);
 }
 
 .app.theme-light .scipy-hub .scipy-level-chip {
-  color: #5b21b6 !important;
-  background: rgba(124, 58, 237, 0.1) !important;
-  border-color: rgba(124, 58, 237, 0.25) !important;
+  color: #ffffff !important;
+  background: #7c3aed !important;
+  border: 1px solid #6d28d9 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.22);
+}
+
+.app.theme-light .scipy-hub .oops-back-btn {
+  color: #0f172a !important;
+  border: 1px solid #94a3b8 !important;
+  background: #ffffff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.app.theme-light .scipy-hub .oops-back-btn:hover {
+  color: #0f172a !important;
+  border-color: #0d9488 !important;
+  background: #f0fdfa !important;
 }
 
 .app.theme-light .scipy-hub .scipy-module-pill {
-  color: #0f766e !important;
-  background: rgba(13, 148, 136, 0.1) !important;
-  border-color: rgba(13, 148, 136, 0.22) !important;
+  color: #134e4a !important;
+  background: #ccfbf1 !important;
+  border: 1px solid #5eead4 !important;
+  font-weight: 600 !important;
 }
 
 .app.theme-light .scipy-hub .scipy-hero-orbit {
