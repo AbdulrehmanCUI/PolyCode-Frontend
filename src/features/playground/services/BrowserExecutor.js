@@ -222,7 +222,15 @@ function getPyodideWheelPackages(code = '') {
 }
 
 const PYODIDE_PACKAGE_TIMEOUT_MS = 60000;
+const PYODIDE_LARGE_PACKAGE_TIMEOUT_MS = 240000;
+const PYODIDE_LARGE_PACKAGES = new Set(["scipy", "scikit-learn", "scikit-image"]);
 const pyodidePackagePromises = new Map();
+
+function packageLoadTimeoutMs(pkg) {
+  return PYODIDE_LARGE_PACKAGES.has(pkg)
+    ? PYODIDE_LARGE_PACKAGE_TIMEOUT_MS
+    : PYODIDE_PACKAGE_TIMEOUT_MS;
+}
 
 function loadPyodidePackageOnce(py, pkg) {
   // Concurrent runs (learner code + reference solution) must share one download.
@@ -237,7 +245,7 @@ function loadPyodidePackageOnce(py, pkg) {
   }
   return withPyodideTimeout(
     pyodidePackagePromises.get(pkg),
-    PYODIDE_PACKAGE_TIMEOUT_MS,
+    packageLoadTimeoutMs(pkg),
     `Timed out downloading the '${pkg}' package`,
   );
 }
@@ -258,10 +266,11 @@ async function ensurePyodidePackages(py, code = '') {
       const friendly = /Unexpected token\s*['"]?</i.test(message)
         ? `Could not download '${pkg}' for the in-browser runtime (received a web page instead of a package).`
         : message;
-      throw new Error(
-        `Could not load ${pkg} in the browser (${friendly}). ` +
-          "Start the PolyCode backend (port 5000) with SciPy installed: pip install -r requirements-learn-python.txt",
-      );
+      const hint =
+        pkg === "scipy"
+          ? "SciPy is large — check your network and try again. On a local backend you can also install it with: pip install -r requirements-learn-python.txt"
+          : "Check your network and try again. For local development, install packages on the PolyCode backend with: pip install -r requirements-learn-python.txt";
+      throw new Error(`Could not load ${pkg} in the browser (${friendly}). ${hint}`);
     }
   }
 }
