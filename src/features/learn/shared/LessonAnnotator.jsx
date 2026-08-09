@@ -12,6 +12,7 @@ import {
   MousePointer2,
   Pencil,
   PenLine,
+  Presentation,
   Trash2,
   Type,
   X,
@@ -30,9 +31,15 @@ import {
   getLessonAnnotation,
   putLessonAnnotation,
 } from "./courseProgressApi";
+import LessonWhiteboard from "./LessonWhiteboard";
 
 const STAGE_INTERACTIVE_SELECTOR =
-  ".lesson-annotator-text-input, .lesson-annotator-label, .lesson-annotator-fab-wrap, .numpy-lesson-outcomes, .numpy-confidence-panel, .numpy-mark-read-panel, .numpy-theory-actions, .lesson-read-gate, .lesson-confidence-panel, .lesson-read-actions, textarea, input, select, button, a";
+  ".lesson-annotator-text-input, .lesson-annotator-label, .lesson-annotator-fab-wrap, .lesson-whiteboard, .numpy-lesson-outcomes, .numpy-confidence-panel, .numpy-mark-read-panel, .numpy-theory-actions, .lesson-read-gate, .lesson-confidence-panel, .lesson-read-actions, textarea, input, select, button, a";
+
+const LABEL_MIN_W = 120;
+const LABEL_MIN_H = 36;
+const TEXT_INPUT_MIN_W = 160;
+const TEXT_INPUT_MIN_H = 88;
 
 const TOOLS = {
   POINTER: "pointer",
@@ -250,11 +257,14 @@ function AnnotationLabel({
   onSave,
   onDelete,
   onMove,
+  onResize,
   stageRef,
 }) {
   const [draft, setDraft] = useState(label.text);
   const [livePos, setLivePos] = useState(null);
+  const [liveSize, setLiveSize] = useState(null);
   const dragState = useRef(null);
+  const resizeState = useRef(null);
 
   useEffect(() => {
     if (isEditing) setDraft(label.text);
@@ -279,30 +289,72 @@ function AnnotationLabel({
     [label.id, onMove, stageRef],
   );
 
-  useEffect(() => {
-    const onMoveEvent = (event) => {
-      const state = dragState.current;
-      if (!state) return;
+  const finishResize = useCallback(
+    (event) => {
+      const state = resizeState.current;
+      resizeState.current = null;
+      setLiveSize(null);
+      if (!state?.moved) return;
 
       const stage = stageRef.current;
       if (!stage) return;
       const point = getPoint(event, stage);
-      const dx = point.x - state.startX;
-      const dy = point.y - state.startY;
+      const width = Math.max(
+        LABEL_MIN_W,
+        state.originW + (point.x - state.startX),
+      );
+      const height = Math.max(
+        LABEL_MIN_H,
+        state.originH + (point.y - state.startY),
+      );
+      onResize?.(label.id, { width, height });
+    },
+    [label.id, onResize, stageRef],
+  );
 
-      if (!state.moved && Math.hypot(dx, dy) >= DRAG_THRESHOLD) {
-        state.moved = true;
+  useEffect(() => {
+    const onMoveEvent = (event) => {
+      const drag = dragState.current;
+      const resize = resizeState.current;
+      const stage = stageRef.current;
+      if (!stage) return;
+      const point = getPoint(event, stage);
+
+      if (resize) {
+        const dx = point.x - resize.startX;
+        const dy = point.y - resize.startY;
+        if (!resize.moved && Math.hypot(dx, dy) >= DRAG_THRESHOLD) {
+          resize.moved = true;
+        }
+        if (resize.moved) {
+          setLiveSize({
+            width: Math.max(LABEL_MIN_W, resize.originW + dx),
+            height: Math.max(LABEL_MIN_H, resize.originH + dy),
+          });
+        }
+        return;
       }
 
-      if (state.moved) {
+      if (!drag) return;
+      const dx = point.x - drag.startX;
+      const dy = point.y - drag.startY;
+
+      if (!drag.moved && Math.hypot(dx, dy) >= DRAG_THRESHOLD) {
+        drag.moved = true;
+      }
+
+      if (drag.moved) {
         setLivePos({
-          x: state.originX + dx,
-          y: state.originY + dy,
+          x: drag.originX + dx,
+          y: drag.originY + dy,
         });
       }
     };
 
-    const onUp = (event) => finishDrag(event);
+    const onUp = (event) => {
+      if (resizeState.current) finishResize(event);
+      else finishDrag(event);
+    };
 
     window.addEventListener("mousemove", onMoveEvent);
     window.addEventListener("mouseup", onUp);
@@ -315,11 +367,12 @@ function AnnotationLabel({
       window.removeEventListener("touchmove", onMoveEvent);
       window.removeEventListener("touchend", onUp);
     };
-  }, [finishDrag, stageRef]);
+  }, [finishDrag, finishResize, stageRef]);
 
   const handleDragStart = (event) => {
     if (!canAdjust || isEditing) return;
     if (event.target.closest(".lesson-annotator-label-edit")) return;
+    if (event.target.closest(".lesson-annotator-label-resize")) return;
     event.stopPropagation();
     event.preventDefault();
 
@@ -335,13 +388,42 @@ function AnnotationLabel({
     };
   };
 
+  const handleResizeStart = (event) => {
+    if (!canAdjust && !isEditing) return;
+    event.stopPropagation();
+    event.preventDefault();
+
+    const stage = stageRef.current;
+    if (!stage) return;
+    const point = getPoint(event, stage);
+    const el = event.currentTarget.parentElement;
+    const rect = el?.getBoundingClientRect();
+    resizeState.current = {
+      startX: point.x,
+      startY: point.y,
+      originW: label.width || rect?.width || 180,
+      originH: label.height || rect?.height || 56,
+      moved: false,
+    };
+  };
+
   const position = livePos || { x: label.x, y: label.y };
+  const size = liveSize || {
+    width: label.width || undefined,
+    height: label.height || undefined,
+  };
+  const boxStyle = {
+    left: position.x,
+    top: position.y,
+    ...(size.width ? { width: size.width, maxWidth: "none" } : null),
+    ...(size.height ? { minHeight: size.height, height: size.height } : null),
+  };
 
   if (isEditing) {
     return (
       <div
         className="lesson-annotator-label lesson-annotator-label--editing"
-        style={{ left: position.x, top: position.y }}
+        style={boxStyle}
         onMouseDown={(event) => event.stopPropagation()}
         onTouchStart={(event) => event.stopPropagation()}
       >
@@ -351,6 +433,11 @@ function AnnotationLabel({
           rows={3}
           autoFocus
           aria-label="Edit note"
+          style={
+            size.height
+              ? { height: `calc(${size.height}px - 52px)`, minHeight: 48 }
+              : undefined
+          }
         />
         <div className="lesson-annotator-label-actions">
           <button
@@ -371,14 +458,22 @@ function AnnotationLabel({
             Delete
           </button>
         </div>
+        <button
+          type="button"
+          className="lesson-annotator-label-resize"
+          aria-label="Resize note"
+          title="Drag to resize"
+          onMouseDown={handleResizeStart}
+          onTouchStart={handleResizeStart}
+        />
       </div>
     );
   }
 
   return (
     <div
-      className={`lesson-annotator-label${canAdjust ? " lesson-annotator-label--interactive" : ""}${livePos ? " lesson-annotator-label--dragging" : ""}`}
-      style={{ left: position.x, top: position.y }}
+      className={`lesson-annotator-label${canAdjust ? " lesson-annotator-label--interactive" : ""}${livePos || liveSize ? " lesson-annotator-label--dragging" : ""}`}
+      style={boxStyle}
       onMouseDown={handleDragStart}
       onTouchStart={handleDragStart}
       onDoubleClick={(event) => {
@@ -407,6 +502,16 @@ function AnnotationLabel({
         >
           <PenLine size={12} />
         </button>
+      ) : null}
+      {canAdjust ? (
+        <button
+          type="button"
+          className="lesson-annotator-label-resize"
+          aria-label="Resize note"
+          title="Drag to resize"
+          onMouseDown={handleResizeStart}
+          onTouchStart={handleResizeStart}
+        />
       ) : null}
     </div>
   );
@@ -450,6 +555,12 @@ export default function LessonAnnotator({
   const [laserPoint, setLaserPoint] = useState(null);
   const [editingLabelId, setEditingLabelId] = useState(null);
   const [fabPosition, setFabPosition] = useState(() => loadFabPosition());
+  const [whiteboardOpen, setWhiteboardOpen] = useState(false);
+  const [pendingTextSize, setPendingTextSize] = useState({
+    width: 220,
+    height: 120,
+  });
+  const pendingResizeRef = useRef(null);
 
   const fabWrapStyle = useMemo(() => {
     if (!fabPosition) return undefined;
@@ -717,6 +828,7 @@ export default function LessonAnnotator({
     if (tool === TOOLS.TEXT) {
       setPendingTextPoint(point);
       setTextDraft("");
+      setPendingTextSize({ width: 220, height: 120 });
       setEditingLabelId(null);
     }
   };
@@ -781,10 +893,13 @@ export default function LessonAnnotator({
         x: pendingTextPoint.x,
         y: pendingTextPoint.y,
         text,
+        width: pendingTextSize.width,
+        height: pendingTextSize.height,
       },
     ]);
     setPendingTextPoint(null);
     setTextDraft("");
+    setPendingTextSize({ width: 220, height: 120 });
     setTool(TOOLS.POINTER);
     setEditingLabelId(newId);
   };
@@ -806,6 +921,57 @@ export default function LessonAnnotator({
         label.id === labelId ? { ...label, ...position } : label,
       ),
     );
+  };
+
+  const handleResizeLabel = (labelId, size) => {
+    setLabels((prev) =>
+      prev.map((label) =>
+        label.id === labelId ? { ...label, ...size } : label,
+      ),
+    );
+  };
+
+  const handlePendingTextResizeStart = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    const stage = stageRef.current;
+    if (!stage || !pendingTextPoint) return;
+    const point = getPoint(event, stage);
+    pendingResizeRef.current = {
+      startX: point.x,
+      startY: point.y,
+      originW: pendingTextSize.width,
+      originH: pendingTextSize.height,
+    };
+
+    const onMove = (moveEvent) => {
+      const state = pendingResizeRef.current;
+      if (!state) return;
+      const p = getPoint(moveEvent, stage);
+      setPendingTextSize({
+        width: Math.max(
+          TEXT_INPUT_MIN_W,
+          state.originW + (p.x - state.startX),
+        ),
+        height: Math.max(
+          TEXT_INPUT_MIN_H,
+          state.originH + (p.y - state.startY),
+        ),
+      });
+    };
+
+    const onUp = () => {
+      pendingResizeRef.current = null;
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("touchmove", onMove);
+      window.removeEventListener("touchend", onUp);
+    };
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchmove", onMove, { passive: false });
+    window.addEventListener("touchend", onUp);
   };
 
   const handleDeleteLabel = (labelId) => {
@@ -964,6 +1130,19 @@ export default function LessonAnnotator({
 
             <button
               type="button"
+              className="lesson-annotator-fab-whiteboard"
+              onClick={() => {
+                setWhiteboardOpen(true);
+                setMenuOpen(false);
+                setTool(TOOLS.POINTER);
+              }}
+            >
+              <Presentation size={14} aria-hidden />
+              Open whiteboard
+            </button>
+
+            <button
+              type="button"
               className="lesson-annotator-fab-clear"
               onClick={handleClearAll}
             >
@@ -973,7 +1152,8 @@ export default function LessonAnnotator({
 
             {canAdjustLabels ? (
               <p className="lesson-annotator-fab-hint">
-                Drag notes to move · double-click or ✎ to edit
+                Drag notes to move · corner to resize · double-click or ✎ to
+                edit
               </p>
             ) : null}
           </div>
@@ -1038,6 +1218,7 @@ export default function LessonAnnotator({
               onSave={handleSaveLabel}
               onDelete={handleDeleteLabel}
               onMove={handleMoveLabel}
+              onResize={handleResizeLabel}
               stageRef={stageRef}
             />
           ))}
@@ -1046,7 +1227,13 @@ export default function LessonAnnotator({
         {pendingTextPoint ? (
           <div
             className="lesson-annotator-text-input"
-            style={{ left: pendingTextPoint.x, top: pendingTextPoint.y }}
+            style={{
+              left: pendingTextPoint.x,
+              top: pendingTextPoint.y,
+              width: pendingTextSize.width,
+              height: pendingTextSize.height,
+              maxWidth: "none",
+            }}
             onMouseDown={(event) => event.stopPropagation()}
             onTouchStart={(event) => event.stopPropagation()}
           >
@@ -1063,6 +1250,11 @@ export default function LessonAnnotator({
               placeholder="Type a note..."
               rows={3}
               autoFocus
+              style={{
+                height: `calc(${pendingTextSize.height}px - 48px)`,
+                minHeight: 48,
+                resize: "none",
+              }}
             />
             <div className="lesson-annotator-label-actions">
               <button
@@ -1076,11 +1268,24 @@ export default function LessonAnnotator({
                 Cancel
               </button>
             </div>
+            <button
+              type="button"
+              className="lesson-annotator-label-resize"
+              aria-label="Resize text box"
+              title="Drag to resize"
+              onMouseDown={handlePendingTextResizeStart}
+              onTouchStart={handlePendingTextResizeStart}
+            />
           </div>
         ) : null}
       </div>
 
       {fabUi ? createPortal(fabUi, document.body) : null}
+      <LessonWhiteboard
+        open={whiteboardOpen}
+        onClose={() => setWhiteboardOpen(false)}
+        storageKey={storageKey}
+      />
     </div>
   );
 }

@@ -337,6 +337,15 @@ export const languageCourses = {
       accent: "#EE4C2C",
     },
     {
+      title: "SciPy · py",
+      tag: "Science Lab",
+      icon: Atom,
+      description:
+        "Beginner → capstone scientific Python: integrate, optimize, interpolate, stats, linalg, FFT — 8 chapters, 25 lessons.",
+      href: "/learn/scipy-py",
+      accent: "#0d9488",
+    },
+    {
       title: "OpenCV · py",
       tag: "Computer Vision",
       icon: ScanEye,
@@ -906,6 +915,7 @@ export const learnNavByLanguage = {
     { label: "FastAPI", to: "/learn/fastapi-py" },
     { label: "Matplotlib", to: "/learn/matplotlib-py" },
     { label: "PyTorch", to: "/learn/pytorch-py" },
+    { label: "SciPy", to: "/learn/scipy-py" },
     { label: "OpenCV", to: "/learn/opencv-py" },
     { label: "AI/ML", to: "/learn/ai_ml-py" },
   ],
@@ -1028,6 +1038,7 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/fastapi-py") ||
     pathname.startsWith("/learn/matplotlib-py") ||
     pathname.startsWith("/learn/pytorch-py") ||
+    pathname.startsWith("/learn/scipy-py") ||
     pathname.startsWith("/learn/opencv-py") ||
     pathname.startsWith("/learn/ai_ml-py")
   ) {
