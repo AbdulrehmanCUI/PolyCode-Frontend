@@ -30,7 +30,7 @@ function friendlyPythonRuntimeMessage(message = "", { usesScipy = false } = {}) 
       ? "Could not load SciPy in the browser (a download returned a web page instead of a package).\n\nFix: on the backend machine run\n  pip install -r requirements-learn-python.txt\nthen restart the server on port 5000."
       : "Could not load the in-browser Python runtime (received a web page instead of a script/package). Check your network, or start the backend on port 5000.";
   }
-  if (/ModuleNotFoundError:\s*No module named ['\"]scipy['\"]/i.test(text)) {
+  if (/ModuleNotFoundError:\s*No module named ['"]scipy['"]/i.test(text)) {
     return "SciPy is not installed for the PolyCode backend Python.\n\nFix: run\n  pip install scipy\nor\n  pip install -r requirements-learn-python.txt\nthen restart the server.";
   }
   return text;
@@ -128,7 +128,7 @@ async function runPythonWithServerFirst(source) {
     // download that often fails with "Unexpected token '<'".
     if (
       usesScipy &&
-      /No module named ['\"]scipy['\"]/i.test(serverError?.message || "")
+      /No module named ['"]scipy['"]/i.test(serverError?.message || "")
     ) {
       throw new Error(serverMessage);
     }
