@@ -866,6 +866,16 @@ const LEARN_COURSE_ROUTES = [
         ),
     ),
   },
+  {
+    slug: "csharp-oop",
+    language: "C#",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/csharp-oop/pages/CsharpOopHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/csharp-oop/pages/CsharpOopLessonPage"),
+    ),
+  },
 ];
 
 const PageFallback = () => (

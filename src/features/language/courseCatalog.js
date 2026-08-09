@@ -496,6 +496,15 @@ export const languageCourses = {
       href: "/learn/c-sharp-fundamentals",
       accent: "#179c24",
     },
+    {
+      title: "C# OOP",
+      tag: "Interactive Course",
+      icon: Boxes,
+      description:
+        "Classes, instances, and initialize; encapsulation with properties; inheritance, polymorphism, and interfaces in C#.",
+      href: "/learn/csharp-oop",
+      accent: "#179c24",
+    },
   ],
   "c#": [
     {
@@ -505,6 +514,15 @@ export const languageCourses = {
       description:
         "Master Object-Oriented syntax, variables, switch patterns, collections, and class encapsulation templates locally.",
       href: "/learn/c-sharp-fundamentals",
+      accent: "#179c24",
+    },
+    {
+      title: "C# OOP",
+      tag: "Interactive Course",
+      icon: Boxes,
+      description:
+        "Classes, instances, and initialize; encapsulation with properties; inheritance, polymorphism, and interfaces in C#.",
+      href: "/learn/csharp-oop",
       accent: "#179c24",
     },
   ],
@@ -927,7 +945,10 @@ export const learnNavByLanguage = {
     { label: "Laravel Basics", to: "/learn/laravel-basics" },
     { label: "PHP Projects", to: "/learn/php-projects" },
   ],
-  csharp: [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
+  csharp: [
+    { label: "C# Basics", to: "/learn/c-sharp-fundamentals" },
+    { label: "C# OOP", to: "/learn/csharp-oop" },
+  ],
   "c#": [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
   ruby: [
     { label: "Ruby Basics", to: "/learn/ruby-fundamentals" },
@@ -1053,7 +1074,10 @@ export function inferLanguageFromLearnPath(pathname = "") {
   ) {
     return "ruby";
   }
-  if (pathname.startsWith("/learn/c-sharp-fundamentals")) {
+  if (
+    pathname.startsWith("/learn/c-sharp-fundamentals") ||
+    pathname.startsWith("/learn/csharp-oop")
+  ) {
     return "csharp";
   }
   if (pathname.startsWith("/learn/golang-fundamentals")) {
