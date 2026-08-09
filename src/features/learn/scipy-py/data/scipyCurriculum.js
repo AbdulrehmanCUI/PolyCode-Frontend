@@ -22,7 +22,7 @@ export const SCIPY_CHAPTERS = [
   {
     id: "intro",
     title: "Welcome to SciPy",
-    icon: "🔬",
+    icon: "microscope",
     color: "#0d9488",
     lessons: [
       {
@@ -348,7 +348,7 @@ print(integrate.quad(f, 0, 2)[0])`,
   {
     id: "special",
     title: "Special Functions",
-    icon: "✨",
+    icon: "sparkles",
     color: "#14b8a6",
     lessons: [
       {
@@ -528,7 +528,7 @@ print(special.erf(x))`,
   {
     id: "integrate",
     title: "Integration",
-    icon: "∫",
+    icon: "function-square",
     color: "#06b6d4",
     lessons: [
       {
@@ -751,7 +751,7 @@ print(err)`,
   {
     id: "optimize",
     title: "Optimization",
-    icon: "🎯",
+    icon: "target",
     color: "#8b5cf6",
     lessons: [
       {
@@ -937,7 +937,7 @@ print(sol.root)`,
   {
     id: "interpolate",
     title: "Interpolation",
-    icon: "📈",
+    icon: "trending-up",
     color: "#a855f7",
     lessons: [
       {
@@ -1143,7 +1143,7 @@ print(float(f(2.5)))`,
   {
     id: "stats",
     title: "Statistics",
-    icon: "📊",
+    icon: "bar-chart",
     color: "#6366f1",
     lessons: [
       {
@@ -1331,7 +1331,7 @@ print(p)`,
   {
     id: "linalg",
     title: "Linear Algebra",
-    icon: "🧮",
+    icon: "hash",
     color: "#4f46e5",
     lessons: [
       {
@@ -1499,7 +1499,7 @@ print(linalg.eigvals(A))`,
   {
     id: "signal",
     title: "Signal, FFT & Capstone",
-    icon: "📡",
+    icon: "radio",
     color: "#7c3aed",
     lessons: [
       {

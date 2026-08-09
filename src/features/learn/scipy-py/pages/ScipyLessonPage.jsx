@@ -181,7 +181,7 @@ export default function ScipyLessonPage() {
             active={tab === "challenge"}
             locked={challengeTabLocked}
             xp={lesson.xp}
-            onClick={goToChallenge}
+            onClick={() => goToChallenge()}
           />
         </div>
 
@@ -199,9 +199,9 @@ export default function ScipyLessonPage() {
               onConfidenceChange={handleConfidenceChange}
               markedAsRead={markedAsRead}
               onMarkAsRead={markAsRead}
-              onGoChallenge={goToChallenge}
+              onGoChallenge={() => goToChallenge()}
             />
-          ) : (
+          ) : lesson.challenge ? (
             <PythonCodeChallenge
               challenge={{
                 ...lesson.challenge,
@@ -213,6 +213,10 @@ export default function ScipyLessonPage() {
               initialCode={savedCodeMap[lessonId]}
               onCodeChange={handleCodeChange}
             />
+          ) : (
+            <div className="oops-not-found">
+              <p>This lesson does not have a coding challenge yet.</p>
+            </div>
           )}
         </LessonContentShell>
 
