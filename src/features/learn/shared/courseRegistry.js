@@ -30,6 +30,7 @@ export const COURSE_PROGRESS_REGISTRY = [
   { courseId: "js-web-dev", storagePrefix: "js_web_dev", scoped: false, notes: false },
   { courseId: "js-async", storagePrefix: "js_async", scoped: false, notes: false },
   { courseId: "js-oops", storagePrefix: "js_oops", scoped: false, notes: true },
+  { courseId: "js-apis", storagePrefix: "js_apis", scoped: false, notes: false },
   { courseId: "node-npm", storagePrefix: "node_npm", scoped: false, notes: false },
   { courseId: "html-css-foundation", storagePrefix: "html_css_foundation", scoped: false, notes: false },
   { courseId: "php-fundamentals", storagePrefix: "php_fundamentals", scoped: false, notes: false },
