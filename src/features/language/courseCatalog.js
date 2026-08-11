@@ -938,16 +938,16 @@ export const courseStackGroups = [
     languagePath: "/language/Quantum",
   },
   {
-    id: "rust",
-    label: "Rust",
-    accent: "#ce422b",
-    languagePath: "/language/Rust",
-  },
-  {
     id: "batchfile",
     label: "Batchfile",
     accent: "#c5c5c5",
     languagePath: "/language/Batchfile",
+  },
+  {
+    id: "rust",
+    label: "Rust",
+    accent: "#ce422b",
+    languagePath: "/language/Rust",
   },
 ];
 
@@ -1002,12 +1002,11 @@ export const learnNavByLanguage = {
   javascript: [
     { label: "Fundamentals", to: "/learn/js-fundamentals" },
     { label: "DOM", to: "/learn/js-dom" },
-    { label: "ES6+", to: "/learn/js-es6-plus" },
     { label: "Web Dev", to: "/learn/js-web-dev" },
     { label: "Asynchronous JS", to: "/learn/js-async" },
     { label: "Node & npm", to: "/learn/node-npm" },
   ],
-  htmlcss: [
+  htmlCss: [
     { label: "HTML & CSS", to: "/learn/html-css-foundation" },
     { label: "CSS Layouts", to: "/learn/css-layouts" },
     { label: "Responsive Design", to: "/learn/responsive-design" },
@@ -1138,8 +1137,6 @@ export function inferLanguageFromLearnPath(pathname = "") {
   if (
     pathname.startsWith("/learn/js-fundamentals") ||
     pathname.startsWith("/learn/js-dom") ||
-    pathname.startsWith("/learn/js-es6-plus") ||
-    pathname.startsWith("/learn/js-async") ||
     pathname.startsWith("/learn/js-web-dev") ||
     pathname.startsWith("/learn/node-npm")
   ) {
@@ -1153,13 +1150,6 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/forms-semantic-html")
   ) {
     return "htmlcss";
-  }
-  if (
-    pathname.startsWith("/learn/batchfile-fundamentals") ||
-    pathname.startsWith("/learn/batchfile-automation") ||
-    pathname.startsWith("/learn/windows-scripting")
-  ) {
-    return "batchfile";
   }
   if (
     pathname.startsWith("/learn/php-fundamentals") ||
@@ -1216,6 +1206,13 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/quantum-programming-projects")
   ) {
     return "quantum";
+  }
+  if (
+    pathname.startsWith("/learn/batchfile-fundamentals") ||
+    pathname.startsWith("/learn/batchfile-automation") ||
+    pathname.startsWith("/learn/windows-scripting")
+  ) {
+    return "batchfile";
   }
   if (
     pathname.startsWith("/learn/rust-fundamentals") ||

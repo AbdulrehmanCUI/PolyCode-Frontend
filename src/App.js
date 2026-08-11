@@ -639,6 +639,114 @@ const LEARN_COURSE_ROUTES = [
         ),
     ),
   },
+
+  {
+    slug: "css-layouts",
+    language: "HTML & CSS",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/css-layouts-course/pages/CssLayoutsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/css-layouts-course/pages/CssLayoutsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "responsive-design",
+    language: "HTML & CSS",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/responsive-design-course/pages/ResponsiveDesignHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/responsive-design-course/pages/ResponsiveDesignLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "css-animations",
+    language: "HTML & CSS",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/css-animations-course/pages/CssAnimationsHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/css-animations-course/pages/CssAnimationsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "forms-semantic-html",
+    language: "HTML & CSS",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/forms-semantic-html-course/pages/FormsSemanticHtmlHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/forms-semantic-html-course/pages/FormsSemanticHtmlLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "batchfile-fundamentals",
+    language: "Batchfile",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/batchfile-fundamentals/pages/BatchfileFundamentalsHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/batchfile-fundamentals/pages/BatchfileFundamentalsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "batchfile-automation",
+    language: "Batchfile",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/batchfile-automation/pages/BatchfileAutomationHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/batchfile-automation/pages/BatchfileAutomationLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "windows-scripting",
+    language: "Batchfile",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/windows-scripting/pages/WindowsScriptingHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/windows-scripting/pages/WindowsScriptingLessonPage"
+        ),
+    ),
+  },
   {
     slug: "php-projects",
     language: "PHP",
@@ -884,112 +992,6 @@ const LEARN_COURSE_ROUTES = [
     ),
     Lesson: lazyWithChunkRetry(
       () => import("./features/learn/csharp-oop/pages/CsharpOopLessonPage"),
-    ),
-  },
-  {
-    slug: "css-layouts",
-    language: "HTML & CSS",
-    Hub: lazyWithChunkRetry(
-      () => import("./features/learn/css-layouts-course/pages/CssLayoutsHub"),
-    ),
-    Lesson: lazyWithChunkRetry(
-      () =>
-        import(
-          "./features/learn/css-layouts-course/pages/CssLayoutsLessonPage"
-        ),
-    ),
-  },
-  {
-    slug: "responsive-design",
-    language: "HTML & CSS",
-    Hub: lazyWithChunkRetry(
-      () =>
-        import(
-          "./features/learn/responsive-design-course/pages/ResponsiveDesignHub"
-        ),
-    ),
-    Lesson: lazyWithChunkRetry(
-      () =>
-        import(
-          "./features/learn/responsive-design-course/pages/ResponsiveDesignLessonPage"
-        ),
-    ),
-  },
-  {
-    slug: "css-animations",
-    language: "HTML & CSS",
-    Hub: lazyWithChunkRetry(
-      () =>
-        import(
-          "./features/learn/css-animations-course/pages/CssAnimationsHub"
-        ),
-    ),
-    Lesson: lazyWithChunkRetry(
-      () =>
-        import(
-          "./features/learn/css-animations-course/pages/CssAnimationsLessonPage"
-        ),
-    ),
-  },
-  {
-    slug: "forms-semantic-html",
-    language: "HTML & CSS",
-    Hub: lazyWithChunkRetry(
-      () =>
-        import(
-          "./features/learn/forms-semantic-html-course/pages/FormsSemanticHtmlHub"
-        ),
-    ),
-    Lesson: lazyWithChunkRetry(
-      () =>
-        import(
-          "./features/learn/forms-semantic-html-course/pages/FormsSemanticHtmlLessonPage"
-        ),
-    ),
-  },
-  {
-    slug: "batchfile-fundamentals",
-    language: "Batchfile",
-    Hub: lazyWithChunkRetry(
-      () =>
-        import(
-          "./features/learn/batchfile-fundamentals/pages/BatchfileFundamentalsHub"
-        ),
-    ),
-    Lesson: lazyWithChunkRetry(
-      () =>
-        import(
-          "./features/learn/batchfile-fundamentals/pages/BatchfileFundamentalsLessonPage"
-        ),
-    ),
-  },
-  {
-    slug: "batchfile-automation",
-    language: "Batchfile",
-    Hub: lazyWithChunkRetry(
-      () =>
-        import(
-          "./features/learn/batchfile-automation/pages/BatchfileAutomationHub"
-        ),
-    ),
-    Lesson: lazyWithChunkRetry(
-      () =>
-        import(
-          "./features/learn/batchfile-automation/pages/BatchfileAutomationLessonPage"
-        ),
-    ),
-  },
-  {
-    slug: "windows-scripting",
-    language: "Batchfile",
-    Hub: lazyWithChunkRetry(
-      () => import("./features/learn/windows-scripting/pages/WindowsScriptingHub"),
-    ),
-    Lesson: lazyWithChunkRetry(
-      () =>
-        import(
-          "./features/learn/windows-scripting/pages/WindowsScriptingLessonPage"
-        ),
     ),
   },
 ];
