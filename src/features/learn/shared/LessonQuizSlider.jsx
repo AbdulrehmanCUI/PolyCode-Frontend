@@ -69,12 +69,12 @@ function QuizSlide({
         </div>
       )}
       <div className={optionsClass}>
-        {block.options.map((option, index) => {
+        {block.options?.map((option, index) => {
           const isSelected = selected === index;
           const isAnswer = block.answer === index;
           return (
             <button
-              key={option}
+              key={`${index}-${String(option).slice(0, 24)}`}
               type="button"
               className={`${optionClass} ${
                 answered && isAnswer ? "answer" : ""
@@ -123,6 +123,7 @@ export default function LessonQuizSlider({
   const total = quizzes.length;
 
   if (!total) return null;
+  if (!quizzes[activeIndex]?.block?.options) return null;
 
   const current = quizzes[activeIndex];
   const attemptedCount = quizzes.filter(

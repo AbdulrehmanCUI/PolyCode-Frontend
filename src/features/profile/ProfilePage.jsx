@@ -20,6 +20,8 @@ import { FASTAPI_LESSONS } from "../learn/fastapi-py/data/fastapiCurriculum";
 import useFastapiProgress from "../learn/fastapi-py/hooks/useFastapiProgress";
 import { PYTORCH_LESSONS } from "../learn/pytorch-py/data/pytorchCurriculum";
 import usePytorchProgress from "../learn/pytorch-py/hooks/usePytorchProgress";
+import { SCIPY_LESSONS } from "../learn/scipy-py/data/scipyCurriculum";
+import useScipyProgress from "../learn/scipy-py/hooks/useScipyProgress";
 import { OPENCV_LESSONS } from "../learn/opencv-py/data/opencvCurriculum";
 import useOpencvProgress from "../learn/opencv-py/hooks/useOpencvProgress";
 import CourseCertificate from "../learn/shared/CourseCertificate";
@@ -280,6 +282,7 @@ export default function ProfilePage() {
   const pandas = usePandasProgress();
   const fastapi = useFastapiProgress();
   const pytorch = usePytorchProgress();
+  const scipy = useScipyProgress();
   const opencv = useOpencvProgress();
   const remoteLearn = useProfileLearnProgress({
     enabled: Boolean(profileUser?.username || isOwnProfile),
@@ -308,6 +311,8 @@ export default function ProfilePage() {
       remoteLearn.byCourseId["fastapi-py"]?.completedMap || fastapi.completedMap,
     "pytorch-py":
       remoteLearn.byCourseId["pytorch-py"]?.completedMap || pytorch.completedMap,
+    "scipy-py":
+      remoteLearn.byCourseId["scipy-py"]?.completedMap || scipy.completedMap,
     "opencv-py":
       remoteLearn.byCourseId["opencv-py"]?.completedMap || opencv.completedMap,
   };
@@ -324,6 +329,8 @@ export default function ProfilePage() {
       remoteLearn.byCourseId["fastapi-py"]?.bookmarks || fastapi.bookmarks,
     "pytorch-py":
       remoteLearn.byCourseId["pytorch-py"]?.bookmarks || pytorch.bookmarks,
+    "scipy-py":
+      remoteLearn.byCourseId["scipy-py"]?.bookmarks || scipy.bookmarks,
     "opencv-py":
       remoteLearn.byCourseId["opencv-py"]?.bookmarks || opencv.bookmarks,
   };
@@ -339,6 +346,7 @@ export default function ProfilePage() {
     PANDAS_LESSONS.length +
     FASTAPI_LESSONS.length +
     PYTORCH_LESSONS.length +
+    SCIPY_LESSONS.length +
     OPENCV_LESSONS.length;
   const totalPct = Math.round((totalCompleted / totalLessons) * 100) || 0;
   const totalStreak = Math.max(

@@ -185,6 +185,12 @@ const PyTorchHub = lazyWithChunkRetry(
 const PyTorchLessonPage = lazyWithChunkRetry(
   () => import("./features/learn/pytorch-py/pages/PytorchLessonPage"),
 );
+const ScipyHub = lazyWithChunkRetry(
+  () => import("./features/learn/scipy-py/pages/ScipyHub"),
+);
+const ScipyLessonPage = lazyWithChunkRetry(
+  () => import("./features/learn/scipy-py/pages/ScipyLessonPage"),
+);
 const OpencvHub = lazyWithChunkRetry(
   () => import("./features/learn/opencv-py/pages/OpencvHub"),
 );
@@ -598,6 +604,16 @@ const LEARN_COURSE_ROUTES = [
     ),
   },
   {
+    slug: "js-async",
+    language: "JavaScript",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/js-async/pages/JsAsyncHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/js-async/pages/JsAsyncLessonPage"),
+    ),
+  },
+  {
     slug: "node-npm",
     language: "JavaScript",
     Hub: lazyWithChunkRetry(
@@ -857,6 +873,122 @@ const LEARN_COURSE_ROUTES = [
       () =>
         import(
           "./features/learn/quantum-programming-projects/pages/QuantumProgrammingProjectsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "csharp-oop",
+    language: "C#",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/csharp-oop/pages/CsharpOopHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/csharp-oop/pages/CsharpOopLessonPage"),
+    ),
+  },
+  {
+    slug: "css-layouts",
+    language: "HTML & CSS",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/css-layouts-course/pages/CssLayoutsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/css-layouts-course/pages/CssLayoutsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "responsive-design",
+    language: "HTML & CSS",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/responsive-design-course/pages/ResponsiveDesignHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/responsive-design-course/pages/ResponsiveDesignLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "css-animations",
+    language: "HTML & CSS",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/css-animations-course/pages/CssAnimationsHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/css-animations-course/pages/CssAnimationsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "forms-semantic-html",
+    language: "HTML & CSS",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/forms-semantic-html-course/pages/FormsSemanticHtmlHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/forms-semantic-html-course/pages/FormsSemanticHtmlLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "batchfile-fundamentals",
+    language: "Batchfile",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/batchfile-fundamentals/pages/BatchfileFundamentalsHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/batchfile-fundamentals/pages/BatchfileFundamentalsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "batchfile-automation",
+    language: "Batchfile",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/batchfile-automation/pages/BatchfileAutomationHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/batchfile-automation/pages/BatchfileAutomationLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "windows-scripting",
+    language: "Batchfile",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/windows-scripting/pages/WindowsScriptingHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/windows-scripting/pages/WindowsScriptingLessonPage"
         ),
     ),
   },
@@ -1252,6 +1384,7 @@ function AppRoutes() {
       path.startsWith("/learn/matplotlib-py") ||
       path.startsWith("/learn/ai_ml-py") ||
       path.startsWith("/learn/pytorch-py") ||
+      path.startsWith("/learn/scipy-py") ||
       path.startsWith("/learn/opencv-py")
     ) {
       handleLanguageSelect("Python", { stay: true });
@@ -1881,6 +2014,37 @@ function AppRoutes() {
                 selectedLanguage={selectedLanguage}
               >
                 <PyTorchLessonPage />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        {/* SciPy Course Routes */}
+        <Route
+          path="/learn/scipy-py"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <ScipyHub />
+              </LearnShell>
+            </ThemedShell>
+          }
+        />
+        <Route
+          path="/learn/scipy-py/lesson/:lessonId"
+          element={
+            <ThemedShell theme={theme}>
+              <LearnShell
+                theme={theme}
+                onThemeChange={handleThemeChange}
+                onGoToStackPicker={goToStackPicker}
+                selectedLanguage={selectedLanguage}
+              >
+                <ScipyLessonPage />
               </LearnShell>
             </ThemedShell>
           }

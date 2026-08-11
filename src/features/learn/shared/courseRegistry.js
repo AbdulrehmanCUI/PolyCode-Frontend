@@ -10,6 +10,7 @@ export const COURSE_PROGRESS_REGISTRY = [
   { courseId: "pandas-py", storagePrefix: "pandas_py", scoped: true, notes: false },
   { courseId: "fastapi-py", storagePrefix: "fastapi_py", scoped: true, notes: false },
   { courseId: "pytorch-py", storagePrefix: "pytorch_py", scoped: true, notes: false },
+  { courseId: "scipy-py", storagePrefix: "scipy_py", scoped: true, notes: false },
   { courseId: "opencv-py", storagePrefix: "opencv_py", scoped: true, notes: false },
   { courseId: "python-fundamentals", storagePrefix: "python_fundamentals", scoped: false, notes: false },
   { courseId: "python-oop-py", storagePrefix: "python_oop_py", scoped: false, notes: false },
@@ -28,6 +29,7 @@ export const COURSE_PROGRESS_REGISTRY = [
   { courseId: "js-fundamentals", storagePrefix: "js_fundamentals", scoped: false, notes: false },
   { courseId: "js-dom", storagePrefix: "js_dom", scoped: false, notes: false },
   { courseId: "js-web-dev", storagePrefix: "js_web_dev", scoped: false, notes: false },
+  { courseId: "js-async", storagePrefix: "js_async", scoped: false, notes: false },
   { courseId: "js-oops", storagePrefix: "js_oops", scoped: false, notes: true },
   { courseId: "node-npm", storagePrefix: "node_npm", scoped: false, notes: false },
   { courseId: "html-css-foundation", storagePrefix: "html_css_foundation", scoped: false, notes: false },
@@ -36,6 +38,7 @@ export const COURSE_PROGRESS_REGISTRY = [
   { courseId: "ruby-gems", storagePrefix: "ruby_gems", scoped: false, notes: false },
   { courseId: "ruby-file-handling", storagePrefix: "ruby_file_handling", scoped: false, notes: false },
   { courseId: "csharp-fundamentals", storagePrefix: "csharp", scoped: false, notes: false },
+  { courseId: "csharp-oop", storagePrefix: "csharp_oop", scoped: false, notes: false },
   { courseId: "sql-fundamentals", storagePrefix: "sqlfundamentals", scoped: false, notes: false },
   { courseId: "sql-queries", storagePrefix: "sqlqueries", scoped: false, notes: false },
   { courseId: "sql-joins", storagePrefix: "sqljoins", scoped: false, notes: false },
@@ -61,6 +64,13 @@ export const COURSE_PROGRESS_REGISTRY = [
   { courseId: "quantum-mechanics-for-programmers", storagePrefix: "quantum_mechanics_for_programmers", scoped: false, notes: false },
   { courseId: "quantum-algorithms", storagePrefix: "quantum_algorithms", scoped: false, notes: false },
   { courseId: "quantum-programming-projects", storagePrefix: "quantum_programming_projects", scoped: false, notes: false },
+  { courseId: "css-layouts", storagePrefix: "css-layouts", scoped: false, notes: false },
+  { courseId: "responsive-design", storagePrefix: "responsive-design", scoped: false, notes: false },
+  { courseId: "css-animations", storagePrefix: "css-animations", scoped: false, notes: false },
+  { courseId: "forms-semantic-html", storagePrefix: "forms-semantic-html", scoped: false, notes: false },
+  { courseId: "batchfile-fundamentals", storagePrefix: "batchfile-fundamentals", scoped: false, notes: false },
+  { courseId: "batchfile-automation", storagePrefix: "batchfile-automation", scoped: false, notes: false },
+  { courseId: "windows-scripting", storagePrefix: "windows-scripting", scoped: false, notes: false },
 ];
 
 export function getCourseRegistryEntry(courseId) {

@@ -640,3 +640,77 @@
     align-self: center;
   }
 }
+
+/* Light mode — readable tip / how-to-fix cards */
+.app.theme-light .pg-tips-card,
+:root[data-theme="light"] .pg-tips-card {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.app.theme-light .pg-tips-header,
+:root[data-theme="light"] .pg-tips-header {
+  color: #334155;
+}
+
+.app.theme-light .pg-tips-icon,
+:root[data-theme="light"] .pg-tips-icon {
+  border-color: #0284c7;
+}
+
+.app.theme-light .pg-tips-icon::after,
+:root[data-theme="light"] .pg-tips-icon::after {
+  border-right-color: #0284c7;
+  border-bottom-color: #0284c7;
+}
+
+.app.theme-light .pg-tips-count,
+:root[data-theme="light"] .pg-tips-count {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #7dd3fc;
+}
+
+.app.theme-light .pg-tips-chevron,
+:root[data-theme="light"] .pg-tips-chevron {
+  border-top-color: #64748b;
+}
+
+.app.theme-light .pg-tip-item,
+:root[data-theme="light"] .pg-tip-item {
+  border-color: #7dd3fc;
+  background: #e0f2fe;
+}
+
+.app.theme-light .pg-tip-item p,
+:root[data-theme="light"] .pg-tip-item p {
+  color: #0c4a6e;
+}
+
+.app.theme-light .pg-tip-arrow,
+:root[data-theme="light"] .pg-tip-arrow {
+  border-left-color: #0284c7;
+}
+
+.app.theme-light .pg-tip-item-pass,
+:root[data-theme="light"] .pg-tip-item-pass {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.app.theme-light .pg-tip-item-pass p,
+:root[data-theme="light"] .pg-tip-item-pass p {
+  color: #166534;
+}
+
+.app.theme-light .pg-panel-kicker,
+.app.theme-light .pg-panel-idle,
+:root[data-theme="light"] .pg-panel-kicker,
+:root[data-theme="light"] .pg-panel-idle {
+  color: #64748b;
+}
+
+.app.theme-light .pg-report,
+:root[data-theme="light"] .pg-report {
+  color: #0f172a;
+}

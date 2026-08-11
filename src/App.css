@@ -8742,6 +8742,344 @@ body {
   );
 }
 
+/* ── SciPy course (distinct lab look) ─────────────────────────────────────── */
+.scipy-hub .scipy-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(125deg, rgba(13, 148, 136, 0.28), transparent 42%),
+    linear-gradient(200deg, rgba(124, 58, 237, 0.18), transparent 55%),
+    linear-gradient(180deg, rgba(6, 182, 212, 0.1), transparent 70%),
+    var(--vscode-panel, #252526);
+  border: 1px solid rgba(13, 148, 136, 0.22);
+  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.08) inset;
+}
+
+.scipy-hub .oops-hero-accent {
+  color: #2dd4bf;
+  background: linear-gradient(90deg, #2dd4bf, #a78bfa);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.scipy-hero-orbit {
+  position: absolute;
+  right: 6%;
+  top: 18%;
+  width: 160px;
+  height: 160px;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.scipy-hero-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  animation: scipy-orbit-spin 18s linear infinite;
+}
+
+.scipy-hero-ring-b {
+  inset: 18px;
+  border-color: rgba(167, 139, 250, 0.4);
+  animation-duration: 12s;
+  animation-direction: reverse;
+}
+
+.scipy-hero-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #2dd4bf, #7c3aed);
+  box-shadow: 0 0 24px rgba(45, 212, 191, 0.55);
+}
+
+@keyframes scipy-orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.scipy-hero-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.65rem;
+}
+
+.scipy-hero-badge {
+  background: rgba(13, 148, 136, 0.2) !important;
+  color: #5eead4 !important;
+  border: 1px solid rgba(45, 212, 191, 0.35);
+}
+
+.scipy-level-chip {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  color: #c4b5fd;
+  background: rgba(124, 58, 237, 0.18);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+}
+
+.scipy-module-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.85rem 0 1.1rem;
+}
+
+.scipy-module-pill {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.72rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 0.45rem;
+  color: #99f6e4;
+  background: rgba(13, 148, 136, 0.14);
+  border: 1px solid rgba(45, 212, 191, 0.22);
+}
+
+.scipy-xp-fill {
+  background: linear-gradient(90deg, #0d9488, #7c3aed) !important;
+}
+
+.scipy-resume-panel button {
+  background: linear-gradient(135deg, #0d9488, #7c3aed) !important;
+  border: none !important;
+}
+
+.scipy-tool-panel {
+  border-color: rgba(13, 148, 136, 0.18) !important;
+}
+
+.scipy-dashboard-strip .oops-stat-tile strong {
+  color: #5eead4;
+}
+
+.scipy-learn-path {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0 0 2rem;
+}
+
+.scipy-path-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0 0.25rem 0.35rem;
+  border-bottom: 1px solid rgba(45, 212, 191, 0.18);
+}
+
+.scipy-path-label span {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #2dd4bf;
+}
+
+.scipy-path-label small {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.78rem;
+}
+
+.scipy-path-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.85rem;
+}
+
+.scipy-path-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1rem 1.05rem;
+  border-radius: 1rem;
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--stage-color) 18%, transparent),
+      rgba(255, 255, 255, 0.02)
+    );
+  border: 1px solid color-mix(in srgb, var(--stage-color) 35%, transparent);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.scipy-path-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(13, 148, 136, 0.18);
+}
+
+.scipy-path-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.scipy-path-level {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--stage-color);
+}
+
+.scipy-path-pct {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.scipy-path-summary {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.scipy-path-chapters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.scipy-path-chapters li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.scipy-path-cta {
+  margin-top: auto;
+  align-self: flex-start;
+  border: none;
+  cursor: pointer;
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.55rem;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #042f2e;
+  background: var(--stage-color);
+}
+
+.scipy-lab-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 0 0 1.1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  background:
+    linear-gradient(
+      120deg,
+      color-mix(in srgb, var(--scipy-accent, #0d9488) 22%, transparent),
+      rgba(124, 58, 237, 0.12)
+    );
+  border: 1px solid color-mix(in srgb, var(--scipy-accent, #0d9488) 40%, transparent);
+}
+
+.scipy-lab-banner-orbit {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.scipy-orbit-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px dashed color-mix(in srgb, var(--scipy-accent, #0d9488) 70%, white);
+  animation: scipy-orbit-spin 10s linear infinite;
+}
+
+.scipy-orbit-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--scipy-accent, #0d9488);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--scipy-accent, #0d9488) 70%, transparent);
+}
+
+.scipy-lab-banner-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.scipy-lab-pill {
+  align-self: flex-start;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #042f2e;
+  background: #5eead4;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+}
+
+.scipy-lab-banner-copy strong {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.scipy-lab-banner-copy p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.scipy-lesson-page {
+  --lesson-accent: var(--scipy-accent, #0d9488);
+}
+
+.scipy-chapter-tag {
+  background: color-mix(in srgb, var(--scipy-accent, #0d9488) 24%, transparent) !important;
+  color: #99f6e4 !important;
+}
+
+.scipy-tabs .oops-tab.active {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--scipy-accent, #0d9488) 45%, transparent);
+}
+
+.scipy-nav-next {
+  background: linear-gradient(135deg, #0d9488, #7c3aed) !important;
+  border: none !important;
+  color: #fff !important;
+}
+
+@media (max-width: 720px) {
+  .scipy-hero-orbit {
+    opacity: 0.28;
+    right: -8%;
+    top: 8%;
+  }
+}
+
 .matplotlib-learn-path {
   display: flex;
   flex-direction: column;
@@ -10928,7 +11266,8 @@ body {
 }
 
 .lesson-annotator-fab-tools button,
-.lesson-annotator-fab-clear {
+.lesson-annotator-fab-clear,
+.lesson-annotator-fab-whiteboard {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -10943,7 +11282,8 @@ body {
 }
 
 .lesson-annotator-fab-tools button:hover,
-.lesson-annotator-fab-clear:hover {
+.lesson-annotator-fab-clear:hover,
+.lesson-annotator-fab-whiteboard:hover {
   color: var(--txt-0, #f0f0ff);
   background: rgba(255, 255, 255, 0.06);
 }
@@ -10968,6 +11308,14 @@ body {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.lesson-annotator-fab-whiteboard {
+  width: 100%;
+  margin-top: 8px;
+  justify-content: center;
+  border-color: rgba(56, 189, 248, 0.28);
+  color: #7dd3fc;
 }
 
 .lesson-annotator-fab-clear {
@@ -11173,6 +11521,8 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 6px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .lesson-annotator-label--interactive {
@@ -11192,6 +11542,7 @@ body {
   flex-direction: column;
   align-items: stretch;
   gap: 8px;
+  overflow: visible;
 }
 
 .lesson-annotator-label-grip {
@@ -11204,6 +11555,8 @@ body {
   flex: 1;
   white-space: pre-wrap;
   word-break: break-word;
+  overflow: auto;
+  max-height: 100%;
 }
 
 .lesson-annotator-label-edit {
@@ -11216,11 +11569,39 @@ body {
   cursor: pointer;
 }
 
+.lesson-annotator-label-resize {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  background:
+    linear-gradient(
+      135deg,
+      transparent 46%,
+      rgba(255, 229, 102, 0.85) 46%,
+      rgba(255, 229, 102, 0.85) 54%,
+      transparent 54%
+    ),
+    linear-gradient(
+      135deg,
+      transparent 66%,
+      rgba(255, 229, 102, 0.55) 66%,
+      rgba(255, 229, 102, 0.55) 74%,
+      transparent 74%
+    );
+  cursor: nwse-resize;
+  z-index: 2;
+}
+
 .lesson-annotator-label textarea {
   width: 100%;
   min-width: 160px;
   min-height: 64px;
-  resize: vertical;
+  resize: none;
   border: 1px solid var(--border, #1e2433);
   border-radius: 6px;
   padding: 6px 8px;
@@ -11229,6 +11610,7 @@ body {
   font-size: 0.8rem;
   line-height: 1.4;
   font-family: inherit;
+  box-sizing: border-box;
 }
 
 .lesson-annotator-label-actions {
@@ -11261,7 +11643,7 @@ body {
 .lesson-annotator-text-input {
   position: absolute;
   z-index: 4;
-  min-width: 200px;
+  min-width: 160px;
   max-width: 280px;
   padding: 8px;
   border-radius: 10px;
@@ -11269,12 +11651,16 @@ body {
   background: var(--ink-2, #0d1117);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
   pointer-events: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .lesson-annotator-text-input textarea {
   width: 100%;
   min-height: 72px;
-  resize: vertical;
+  resize: none;
   border: 1px solid var(--border, #1e2433);
   border-radius: 6px;
   padding: 6px 8px;
@@ -11283,6 +11669,201 @@ body {
   font-size: 0.8rem;
   line-height: 1.4;
   font-family: inherit;
+  box-sizing: border-box;
+  flex: 1;
+}
+
+/* Floating Excalidraw whiteboard */
+.lesson-whiteboard {
+  position: fixed;
+  z-index: 3200;
+  display: flex;
+  flex-direction: column;
+  min-width: 360px;
+  min-height: 280px;
+  border-radius: 14px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: #f8f9fa;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.lesson-whiteboard--max {
+  border-radius: 10px;
+}
+
+.lesson-whiteboard-chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px 8px 14px;
+  background: linear-gradient(180deg, #1a2233 0%, #121826 100%);
+  color: #e8eefc;
+  cursor: grab;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.lesson-whiteboard-chrome:active {
+  cursor: grabbing;
+}
+
+.lesson-whiteboard-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  min-width: 0;
+}
+
+.lesson-whiteboard-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22);
+  flex-shrink: 0;
+}
+
+.lesson-whiteboard-sub {
+  color: rgba(232, 238, 252, 0.55);
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lesson-whiteboard-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.lesson-whiteboard-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #e8eefc;
+  cursor: pointer;
+}
+
+.lesson-whiteboard-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.lesson-whiteboard-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #fff;
+}
+
+.lesson-whiteboard-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+
+.lesson-whiteboard-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: #fff;
+  pointer-events: none;
+}
+
+.lesson-whiteboard-loading--error {
+  color: #b91c1c;
+  pointer-events: auto;
+  padding: 24px;
+  text-align: center;
+}
+
+.lesson-whiteboard-handle {
+  position: absolute;
+  z-index: 5;
+}
+
+.lesson-whiteboard-handle--n,
+.lesson-whiteboard-handle--s {
+  left: 12px;
+  right: 12px;
+  height: 8px;
+  cursor: ns-resize;
+}
+
+.lesson-whiteboard-handle--e,
+.lesson-whiteboard-handle--w {
+  top: 40px;
+  bottom: 12px;
+  width: 8px;
+  cursor: ew-resize;
+}
+
+.lesson-whiteboard-handle--n {
+  top: 0;
+}
+
+.lesson-whiteboard-handle--s {
+  bottom: 0;
+}
+
+.lesson-whiteboard-handle--e {
+  right: 0;
+}
+
+.lesson-whiteboard-handle--w {
+  left: 0;
+}
+
+.lesson-whiteboard-handle--ne,
+.lesson-whiteboard-handle--nw,
+.lesson-whiteboard-handle--se,
+.lesson-whiteboard-handle--sw {
+  width: 14px;
+  height: 14px;
+}
+
+.lesson-whiteboard-handle--ne {
+  top: 0;
+  right: 0;
+  cursor: nesw-resize;
+}
+
+.lesson-whiteboard-handle--nw {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize;
+}
+
+.lesson-whiteboard-handle--se {
+  right: 0;
+  bottom: 0;
+  cursor: nwse-resize;
+}
+
+.lesson-whiteboard-handle--sw {
+  left: 0;
+  bottom: 0;
+  cursor: nesw-resize;
 }
 
 @media (max-width: 640px) {
@@ -11301,6 +11882,10 @@ body {
 
   .lesson-annotator-color-picker {
     flex-wrap: wrap;
+  }
+
+  .lesson-whiteboard-sub {
+    display: none;
   }
 }
 /* ===========================

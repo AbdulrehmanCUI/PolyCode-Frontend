@@ -204,6 +204,7 @@ const LEGACY_ICON_ALIASES = {
   "⇄": "arrow-left-right",
   "◇": "square",
   "▦": "layout-grid",
+  "∫": "function-square",
   λ: "function-square",
   "✓": "shield-check",
 };

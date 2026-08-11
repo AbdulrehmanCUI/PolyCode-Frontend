@@ -19,6 +19,7 @@ import {
   Wrench,
   Atom,
   ScanEye,
+  Clock,
 } from "lucide-react";
 
 export function languageKey(value = "") {
@@ -336,6 +337,15 @@ export const languageCourses = {
       accent: "#EE4C2C",
     },
     {
+      title: "SciPy · py",
+      tag: "Science Lab",
+      icon: Atom,
+      description:
+        "Beginner → capstone scientific Python: integrate, optimize, interpolate, stats, linalg, FFT — 8 chapters, 25 lessons.",
+      href: "/learn/scipy-py",
+      accent: "#0d9488",
+    },
+    {
       title: "OpenCV · py",
       tag: "Computer Vision",
       icon: ScanEye,
@@ -392,6 +402,15 @@ export const languageCourses = {
       accent: "#f59e0b",
     },
     {
+      title: "Asynchronous JS",
+      tag: "Async Course",
+      icon: Clock,
+      description:
+        "Deep dive into async JavaScript: callbacks, promises, async/await, fetch, error handling, and concurrency patterns.",
+      href: "/learn/js-async",
+      accent: "#f59e0b",
+    },
+    {
       title: "Node.js & npm",
       tag: "Server Course",
       icon: Server,
@@ -410,6 +429,42 @@ export const languageCourses = {
         "Short foundation course for semantic HTML, CSS styling, responsive layout, and Bootstrap utilities with runnable examples.",
       href: "/learn/html-css-foundation",
       accent: "#0ea5e9",
+    },
+    {
+      title: "CSS Layouts",
+      tag: "Core Course",
+      icon: Layers3,
+      description:
+        "Flexbox, Grid, positioning, and the layout techniques that structure every modern web page.",
+      href: "/learn/css-layouts",
+      accent: "#264de4",
+    },
+    {
+      title: "Responsive Design",
+      tag: "Core Course",
+      icon: Grid3x3,
+      description:
+        "Media queries, mobile-first design, fluid typography, and building layouts that work on any screen size.",
+      href: "/learn/responsive-design",
+      accent: "#e34c26",
+    },
+    {
+      title: "CSS Animations",
+      tag: "Advanced Course",
+      icon: Play,
+      description:
+        "Transitions, keyframes, transforms, and bringing interfaces to life with smooth, performant CSS animation.",
+      href: "/learn/css-animations",
+      accent: "#9b59b6",
+    },
+    {
+      title: "Forms & Semantic HTML",
+      tag: "Advanced Course",
+      icon: FileText,
+      description:
+        "Semantic tags, accessible forms, validation attributes, and building markup that's meaningful, not just visual.",
+      href: "/learn/forms-semantic-html",
+      accent: "#22c55e",
     },
   ],
   php: [
@@ -487,6 +542,15 @@ export const languageCourses = {
       href: "/learn/c-sharp-fundamentals",
       accent: "#179c24",
     },
+    {
+      title: "C# OOP",
+      tag: "Interactive Course",
+      icon: Boxes,
+      description:
+        "Classes, instances, and initialize; encapsulation with properties; inheritance, polymorphism, and interfaces in C#.",
+      href: "/learn/csharp-oop",
+      accent: "#179c24",
+    },
   ],
   "c#": [
     {
@@ -496,6 +560,15 @@ export const languageCourses = {
       description:
         "Master Object-Oriented syntax, variables, switch patterns, collections, and class encapsulation templates locally.",
       href: "/learn/c-sharp-fundamentals",
+      accent: "#179c24",
+    },
+    {
+      title: "C# OOP",
+      tag: "Interactive Course",
+      icon: Boxes,
+      description:
+        "Classes, instances, and initialize; encapsulation with properties; inheritance, polymorphism, and interfaces in C#.",
+      href: "/learn/csharp-oop",
       accent: "#179c24",
     },
   ],
@@ -752,6 +825,35 @@ export const languageCourses = {
       accent: "#ce422b",
     },
   ],
+  batchfile: [
+    {
+      title: "Batchfile Fundamentals",
+      tag: "Core Course",
+      icon: Terminal,
+      description:
+        "Write, save, and run .bat scripts — variables, user input, if/else branching, labels, goto, and for loops.",
+      href: "/learn/batchfile-fundamentals",
+      accent: "#c5c5c5",
+    },
+    {
+      title: "Batchfile Automation",
+      tag: "Automation Course",
+      icon: FolderOpen,
+      description:
+        "Schedule tasks, manage them from the command line, and run scripts silently for real Windows automation workflows.",
+      href: "/learn/batchfile-automation",
+      accent: "#c5c5c5",
+    },
+    {
+      title: "Windows Scripting",
+      tag: "Systems Course",
+      icon: HardDrive,
+      description:
+        "System info, processes, the registry, networking, and Windows services and user accounts, from the command line.",
+      href: "/learn/windows-scripting",
+      accent: "#c5c5c5",
+    },
+  ],
 };
 
 /** Ordered stacks for navbar grouping (one row per language, sub-courses inside). */
@@ -841,6 +943,12 @@ export const courseStackGroups = [
     accent: "#ce422b",
     languagePath: "/language/Rust",
   },
+  {
+    id: "batchfile",
+    label: "Batchfile",
+    accent: "#c5c5c5",
+    languagePath: "/language/Batchfile",
+  },
 ];
 
 /** Navbar learn links per language (mirrors languageCourses). */
@@ -887,17 +995,24 @@ export const learnNavByLanguage = {
     { label: "FastAPI", to: "/learn/fastapi-py" },
     { label: "Matplotlib", to: "/learn/matplotlib-py" },
     { label: "PyTorch", to: "/learn/pytorch-py" },
+    { label: "SciPy", to: "/learn/scipy-py" },
     { label: "OpenCV", to: "/learn/opencv-py" },
     { label: "AI/ML", to: "/learn/ai_ml-py" },
   ],
   javascript: [
     { label: "Fundamentals", to: "/learn/js-fundamentals" },
     { label: "DOM", to: "/learn/js-dom" },
+    { label: "ES6+", to: "/learn/js-es6-plus" },
     { label: "Web Dev", to: "/learn/js-web-dev" },
+    { label: "Asynchronous JS", to: "/learn/js-async" },
     { label: "Node & npm", to: "/learn/node-npm" },
   ],
-  htmlCss: [
+  htmlcss: [
     { label: "HTML & CSS", to: "/learn/html-css-foundation" },
+    { label: "CSS Layouts", to: "/learn/css-layouts" },
+    { label: "Responsive Design", to: "/learn/responsive-design" },
+    { label: "CSS Animations", to: "/learn/css-animations" },
+    { label: "Forms & Semantic HTML", to: "/learn/forms-semantic-html" },
   ],
   java: [
     { label: "Java Fundamentals", to: "/learn/java-fundamentals" },
@@ -917,7 +1032,10 @@ export const learnNavByLanguage = {
     { label: "Laravel Basics", to: "/learn/laravel-basics" },
     { label: "PHP Projects", to: "/learn/php-projects" },
   ],
-  csharp: [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
+  csharp: [
+    { label: "C# Basics", to: "/learn/c-sharp-fundamentals" },
+    { label: "C# OOP", to: "/learn/csharp-oop" },
+  ],
   "c#": [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
   ruby: [
     { label: "Ruby Basics", to: "/learn/ruby-fundamentals" },
@@ -947,6 +1065,11 @@ export const learnNavByLanguage = {
     { label: "Collections", to: "/learn/rust-collections" },
     { label: "Memory", to: "/learn/rust-memory" },
     { label: "Projects", to: "/learn/rust-projects" },
+  ],
+  batchfile: [
+    { label: "Fundamentals", to: "/learn/batchfile-fundamentals" },
+    { label: "Automation", to: "/learn/batchfile-automation" },
+    { label: "Windows Scripting", to: "/learn/windows-scripting" },
   ],
 };
 
@@ -1006,6 +1129,7 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/fastapi-py") ||
     pathname.startsWith("/learn/matplotlib-py") ||
     pathname.startsWith("/learn/pytorch-py") ||
+    pathname.startsWith("/learn/scipy-py") ||
     pathname.startsWith("/learn/opencv-py") ||
     pathname.startsWith("/learn/ai_ml-py")
   ) {
@@ -1014,13 +1138,28 @@ export function inferLanguageFromLearnPath(pathname = "") {
   if (
     pathname.startsWith("/learn/js-fundamentals") ||
     pathname.startsWith("/learn/js-dom") ||
+    pathname.startsWith("/learn/js-es6-plus") ||
+    pathname.startsWith("/learn/js-async") ||
     pathname.startsWith("/learn/js-web-dev") ||
     pathname.startsWith("/learn/node-npm")
   ) {
     return "javascript";
   }
-  if (pathname.startsWith("/learn/html-css-foundation")) {
+  if (
+    pathname.startsWith("/learn/html-css-foundation") ||
+    pathname.startsWith("/learn/css-layouts") ||
+    pathname.startsWith("/learn/responsive-design") ||
+    pathname.startsWith("/learn/css-animations") ||
+    pathname.startsWith("/learn/forms-semantic-html")
+  ) {
     return "htmlcss";
+  }
+  if (
+    pathname.startsWith("/learn/batchfile-fundamentals") ||
+    pathname.startsWith("/learn/batchfile-automation") ||
+    pathname.startsWith("/learn/windows-scripting")
+  ) {
+    return "batchfile";
   }
   if (
     pathname.startsWith("/learn/php-fundamentals") ||
@@ -1042,7 +1181,10 @@ export function inferLanguageFromLearnPath(pathname = "") {
   ) {
     return "ruby";
   }
-  if (pathname.startsWith("/learn/c-sharp-fundamentals")) {
+  if (
+    pathname.startsWith("/learn/c-sharp-fundamentals") ||
+    pathname.startsWith("/learn/csharp-oop")
+  ) {
     return "csharp";
   }
   if (pathname.startsWith("/learn/golang-fundamentals")) {
