@@ -853,6 +853,15 @@ export const languageCourses = {
       href: "/learn/windows-scripting",
       accent: "#c5c5c5",
     },
+    {
+      title: "Batchfile Projects",
+      tag: "Projects Course",
+      icon: Boxes,
+      description:
+        "Apply everything to four real tools — a system info reporter, a file organizer, a backup utility, and a capstone menu toolkit.",
+      href: "/learn/batchfile-projects",
+      accent: "#c5c5c5",
+    },
   ],
 };
 
@@ -1068,6 +1077,7 @@ export const learnNavByLanguage = {
   batchfile: [
     { label: "Fundamentals", to: "/learn/batchfile-fundamentals" },
     { label: "Automation", to: "/learn/batchfile-automation" },
+    { label: "Projects", to: "/learn/batchfile-projects" },
     { label: "Windows Scripting", to: "/learn/windows-scripting" },
   ],
 };
@@ -1210,6 +1220,7 @@ export function inferLanguageFromLearnPath(pathname = "") {
   if (
     pathname.startsWith("/learn/batchfile-fundamentals") ||
     pathname.startsWith("/learn/batchfile-automation") ||
+    pathname.startsWith("/learn/batchfile-projects") ||
     pathname.startsWith("/learn/windows-scripting")
   ) {
     return "batchfile";
