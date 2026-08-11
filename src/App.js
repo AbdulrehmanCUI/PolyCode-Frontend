@@ -758,6 +758,20 @@ const LEARN_COURSE_ROUTES = [
     ),
   },
   {
+    slug: "batchfile-projects",
+    language: "Batchfile",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/batchfile-projects/pages/BatchfileProjectsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/batchfile-projects/pages/BatchfileProjectsLessonPage"
+        ),
+    ),
+  },
+  {
     slug: "php-projects",
     language: "PHP",
     Hub: lazyWithChunkRetry(
