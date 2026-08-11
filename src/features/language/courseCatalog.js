@@ -439,6 +439,42 @@ export const languageCourses = {
       href: "/learn/html-css-foundation",
       accent: "#0ea5e9",
     },
+    {
+      title: "CSS Layouts",
+      tag: "Core Course",
+      icon: Layers3,
+      description:
+        "Flexbox, Grid, positioning, and the layout techniques that structure every modern web page.",
+      href: "/learn/css-layouts",
+      accent: "#264de4",
+    },
+    {
+      title: "Responsive Design",
+      tag: "Core Course",
+      icon: Grid3x3,
+      description:
+        "Media queries, mobile-first design, fluid typography, and building layouts that work on any screen size.",
+      href: "/learn/responsive-design",
+      accent: "#e34c26",
+    },
+    {
+      title: "CSS Animations",
+      tag: "Advanced Course",
+      icon: Play,
+      description:
+        "Transitions, keyframes, transforms, and bringing interfaces to life with smooth, performant CSS animation.",
+      href: "/learn/css-animations",
+      accent: "#9b59b6",
+    },
+    {
+      title: "Forms & Semantic HTML",
+      tag: "Advanced Course",
+      icon: FileText,
+      description:
+        "Semantic tags, accessible forms, validation attributes, and building markup that's meaningful, not just visual.",
+      href: "/learn/forms-semantic-html",
+      accent: "#22c55e",
+    },
   ],
   php: [
     {
@@ -798,6 +834,35 @@ export const languageCourses = {
       accent: "#ce422b",
     },
   ],
+  batchfile: [
+    {
+      title: "Batchfile Fundamentals",
+      tag: "Core Course",
+      icon: Terminal,
+      description:
+        "Write, save, and run .bat scripts — variables, user input, if/else branching, labels, goto, and for loops.",
+      href: "/learn/batchfile-fundamentals",
+      accent: "#c5c5c5",
+    },
+    {
+      title: "Batchfile Automation",
+      tag: "Automation Course",
+      icon: FolderOpen,
+      description:
+        "Schedule tasks, manage them from the command line, and run scripts silently for real Windows automation workflows.",
+      href: "/learn/batchfile-automation",
+      accent: "#c5c5c5",
+    },
+    {
+      title: "Windows Scripting",
+      tag: "Systems Course",
+      icon: HardDrive,
+      description:
+        "System info, processes, the registry, networking, and Windows services and user accounts, from the command line.",
+      href: "/learn/windows-scripting",
+      accent: "#c5c5c5",
+    },
+  ],
 };
 
 /** Ordered stacks for navbar grouping (one row per language, sub-courses inside). */
@@ -882,6 +947,12 @@ export const courseStackGroups = [
     languagePath: "/language/Quantum",
   },
   {
+    id: "batchfile",
+    label: "Batchfile",
+    accent: "#c5c5c5",
+    languagePath: "/language/Batchfile",
+  },
+  {
     id: "rust",
     label: "Rust",
     accent: "#ce422b",
@@ -948,6 +1019,10 @@ export const learnNavByLanguage = {
   ],
   htmlCss: [
     { label: "HTML & CSS", to: "/learn/html-css-foundation" },
+    { label: "CSS Layouts", to: "/learn/css-layouts" },
+    { label: "Responsive Design", to: "/learn/responsive-design" },
+    { label: "CSS Animations", to: "/learn/css-animations" },
+    { label: "Forms & Semantic HTML", to: "/learn/forms-semantic-html" },
   ],
   java: [
     { label: "Java Fundamentals", to: "/learn/java-fundamentals" },
@@ -1000,6 +1075,11 @@ export const learnNavByLanguage = {
     { label: "Collections", to: "/learn/rust-collections" },
     { label: "Memory", to: "/learn/rust-memory" },
     { label: "Projects", to: "/learn/rust-projects" },
+  ],
+  batchfile: [
+    { label: "Fundamentals", to: "/learn/batchfile-fundamentals" },
+    { label: "Automation", to: "/learn/batchfile-automation" },
+    { label: "Windows Scripting", to: "/learn/windows-scripting" },
   ],
 };
 
@@ -1073,7 +1153,13 @@ export function inferLanguageFromLearnPath(pathname = "") {
   ) {
     return "javascript";
   }
-  if (pathname.startsWith("/learn/html-css-foundation")) {
+  if (
+    pathname.startsWith("/learn/html-css-foundation") ||
+    pathname.startsWith("/learn/css-layouts") ||
+    pathname.startsWith("/learn/responsive-design") ||
+    pathname.startsWith("/learn/css-animations") ||
+    pathname.startsWith("/learn/forms-semantic-html")
+  ) {
     return "htmlcss";
   }
   if (
@@ -1131,6 +1217,13 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/quantum-programming-projects")
   ) {
     return "quantum";
+  }
+  if (
+    pathname.startsWith("/learn/batchfile-fundamentals") ||
+    pathname.startsWith("/learn/batchfile-automation") ||
+    pathname.startsWith("/learn/windows-scripting")
+  ) {
+    return "batchfile";
   }
   if (
     pathname.startsWith("/learn/rust-fundamentals") ||

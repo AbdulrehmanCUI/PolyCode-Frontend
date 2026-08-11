@@ -1,6 +1,420 @@
 @import url("https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap");
 @import url("https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap");
 
+.certificate {
+  width: 1200px;
+  height: 794px; /* A4 Landscape Ratio */
+
+  background: #fff;
+
+  padding: 35px 60px;
+
+  border: 4px solid #c9a227;
+  position: relative;
+
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.certificate::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 2px solid #d4d4d4;
+  pointer-events: none;
+}
+
+/* =========================
+   WATERMARK
+========================= */
+.certificate-watermark {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+.certificate-watermark img {
+  width: 650px;
+}
+
+/* =========================
+   HEADER
+========================= */
+.certificate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.certificate-logo1 {
+  height: 70px;
+  object-fit: contain;
+}
+
+.certificate-logo2 {
+  height: 55px;
+  object-fit: contain;
+}
+
+.certificate-company {
+  text-align: center;
+
+  margin-top: 5px;
+
+  color: #10b981;
+  font-weight: 700;
+  font-size: 18px;
+
+  letter-spacing: 1px;
+}
+
+/* =========================
+   TITLE
+========================= */
+.certificate-title {
+  text-align: center;
+
+  margin-top: 8px;
+
+  font-size: 34px;
+  font-weight: 800;
+
+  letter-spacing: 3px;
+  color: #111827;
+}
+
+.cert-divider {
+  text-align: center;
+
+  font-size: 16px;
+  color: #c9a227;
+
+  margin: 8px 0 12px;
+
+  letter-spacing: 8px;
+}
+
+/* =========================
+   CONTENT
+========================= */
+.certificate-awarded {
+  text-align: center;
+
+  margin-top: 5px;
+
+  color: #6b7280;
+  font-size: 15px;
+}
+
+.certificate-name {
+  font-size: 48px;
+
+  font-family: "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 700;
+
+  color: #10b981;
+
+  text-align: center;
+
+  margin: 8px 0;
+}
+
+.certificate-text {
+  text-align: center;
+
+  color: #6b7280;
+  font-size: 18px;
+
+  margin-bottom: 10px;
+}
+
+.certificate-course {
+  font-size: 24px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  color: #111827;
+
+  text-align: center;
+
+  margin-bottom: 10px;
+}
+
+/* =========================
+   STATS
+========================= */
+.certificate-stats {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+
+  margin-top: 10px;
+}
+
+.certificate-stats div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.certificate-stats strong {
+  font-size: 24px;
+  color: #10b981;
+}
+
+.certificate-stats span {
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* =========================
+   INFO ROW
+========================= */
+.certificate-info {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 12px;
+
+  padding: 0 60px;
+
+  text-align: center;
+
+  color: #374151;
+}
+
+.certificate-info strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.verify-url {
+  color: #0f766e;
+  font-size: 14px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+.certificate-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.signature-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signature-image {
+  height: 70px;
+  margin-bottom: -15px;
+}
+
+.signature-line {
+  width: 180px;
+  border-bottom: 2px solid #111827;
+}
+
+.signature-name {
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.signature-role {
+  color: #6b7280;
+  text-align: center;
+}
+
+.certificate-footer-right {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex: 0 0 auto;
+}
+
+.official-stamp {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin-right: 0;
+}
+
+/* =========================
+   SEAL
+========================= */
+.certificate-seal {
+  width: 120px;
+  height: 120px;
+
+  border: 5px solid #10b981;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+  letter-spacing: 2px;
+
+  color: #10b981;
+}
+
+/* =========================
+   BUTTON
+========================= */
+.download-btn {
+  margin-top: 25px;
+
+  padding: 14px 28px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #10b981;
+  color: white;
+
+  cursor: pointer;
+
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.download-btn:hover {
+  opacity: 0.9;
+}
+.certificate-qr-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.6rem;
+  color: #64748b;
+  gap: 0.25rem;
+  margin-left: 0;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 1240px) {
+  .certificate-wrapper {
+    --cert-scale: min(1, calc((100vw - 48px) / 1200));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .certificate-wrapper .certificate {
+    transform: scale(var(--cert-scale));
+    transform-origin: top center;
+    margin-bottom: calc(794px * (var(--cert-scale) - 1));
+  }
+}
+
+@media (max-width: 900px) {
+  .certificate {
+    padding: 24px 20px;
+  }
+
+  .certificate-title {
+    font-size: clamp(1.25rem, 5vw, 34px);
+    letter-spacing: 0.08em;
+  }
+
+  .certificate-name {
+    font-size: clamp(1.5rem, 6vw, 2.5rem);
+  }
+
+  .certificate-course {
+    font-size: clamp(1rem, 4vw, 1.5rem);
+  }
+
+  .certificate-footer {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .certificate-footer-right {
+    gap: 12px;
+  }
+
+  .official-stamp {
+    margin-right: 0;
+    width: 72px;
+    height: 72px;
+  }
+
+  .certificate-logo1 {
+    height: clamp(40px, 10vw, 70px);
+  }
+
+  .certificate-logo2 {
+    height: clamp(32px, 8vw, 55px);
+  }
+
+  .certificate-watermark img {
+    width: min(650px, 70vw);
+  }
+
+  .profile-certificate-modal-content {
+    width: 100%;
+    max-height: 94vh;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .profile-certificate-modal-head {
+    flex-wrap: wrap;
+  }
+}
+
+
+/* ==========================================================================
+   POWERSHELL HUB STYLES
+   ========================================================================== */
+.powershell-hub .matplotlib-hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  border-bottom: 1px solid #1e40af;
+}
+
+.powershell-hub .oops-hero-accent {
+  color: #5391fe;
+}
+
+.powershell-hub .matplotlib-hero::before {
+  background: radial-gradient(circle at 80% 20%, rgba(83, 145, 254, 0.15), transparent 60%);
+}
+
+.powershell-hub .matplotlib-path-cta {
+  background-color: #1e3a8a;
+  border-color: #1e40af;
+}
+
+.powershell-hub .matplotlib-path-cta:hover {
+  background-color: #5391fe;
+  border-color: #5391fe;
+  color: #0f172a;
+}
+
 /* ── Tokens ── */
 :root {
   --nav-h: 70px;

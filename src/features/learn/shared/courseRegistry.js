@@ -65,6 +65,13 @@ export const COURSE_PROGRESS_REGISTRY = [
   { courseId: "quantum-mechanics-for-programmers", storagePrefix: "quantum_mechanics_for_programmers", scoped: false, notes: false },
   { courseId: "quantum-algorithms", storagePrefix: "quantum_algorithms", scoped: false, notes: false },
   { courseId: "quantum-programming-projects", storagePrefix: "quantum_programming_projects", scoped: false, notes: false },
+  { courseId: "css-layouts", storagePrefix: "css-layouts", scoped: false, notes: false },
+  { courseId: "responsive-design", storagePrefix: "responsive-design", scoped: false, notes: false },
+  { courseId: "css-animations", storagePrefix: "css-animations", scoped: false, notes: false },
+  { courseId: "forms-semantic-html", storagePrefix: "forms-semantic-html", scoped: false, notes: false },
+  { courseId: "batchfile-fundamentals", storagePrefix: "batchfile-fundamentals", scoped: false, notes: false },
+  { courseId: "batchfile-automation", storagePrefix: "batchfile-automation", scoped: false, notes: false },
+  { courseId: "windows-scripting", storagePrefix: "windows-scripting", scoped: false, notes: false },
 ];
 
 export function getCourseRegistryEntry(courseId) {
