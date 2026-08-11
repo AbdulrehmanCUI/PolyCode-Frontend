@@ -402,6 +402,15 @@ export const languageCourses = {
       accent: "#f59e0b",
     },
     {
+      title: "JS APIs",
+      tag: "API Course",
+      icon: Globe,
+      description:
+        "Browser APIs from beginner to advanced: fetch, storage, URL helpers, history, navigator, performance, and reusable API helpers.",
+      href: "/learn/js-apis",
+      accent: "#0ea5e9",
+    },
+    {
       title: "Asynchronous JS",
       tag: "Async Course",
       icon: Clock,
@@ -1003,6 +1012,8 @@ export const learnNavByLanguage = {
     { label: "Fundamentals", to: "/learn/js-fundamentals" },
     { label: "DOM", to: "/learn/js-dom" },
     { label: "Web Dev", to: "/learn/js-web-dev" },
+    { label: "JS ES6+", to: "/learn/js-es6-plus" },
+    { label: "JS APIs", to: "/learn/js-apis" },
     { label: "Asynchronous JS", to: "/learn/js-async" },
     { label: "Node & npm", to: "/learn/node-npm" },
   ],

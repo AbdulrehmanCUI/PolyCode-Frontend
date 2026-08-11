@@ -194,9 +194,102 @@ export function runJavaScriptInWorker(code, options = {}) {
 
     const workerSource = `
       const formatArgs = ${formatConsoleArgs.toString()};
+      
+      // Define mock browser APIs globally in the worker
+      const mockLocalStorage = {
+        _data: {},
+        setItem(key, value) { this._data[key] = String(value); },
+        getItem(key) { return this._data[key] || null; },
+        removeItem(key) { delete this._data[key]; },
+        clear() { this._data = {}; },
+        key(index) { return Object.keys(this._data)[index] || null; },
+        get length() { return Object.keys(this._data).length; }
+      };
+
+      const mockSessionStorage = {
+        _data: {},
+        setItem(key, value) { this._data[key] = String(value); },
+        getItem(key) { return this._data[key] || null; },
+        removeItem(key) { delete this._data[key]; },
+        clear() { this._data = {}; },
+        key(index) { return Object.keys(this._data)[index] || null; },
+        get length() { return Object.keys(this._data).length; }
+      };
+
+      const mockNavigator = {
+        language: 'en-US',
+        userAgent: 'Mozilla/5.0 (Educational Environment)',
+        platform: 'JavaScript',
+        onLine: true,
+      };
+
+      const mockLocation = {
+        href: 'https://localhost:3000/learn/js-apis',
+        origin: 'https://localhost:3000',
+        protocol: 'https:',
+        host: 'localhost:3000',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/learn/js-apis',
+        search: '',
+        hash: '',
+      };
+
+      const mockDocument = {
+        title: 'PolyCode - Learning Platform',
+        body: {},
+        head: {},
+        addEventListener() {},
+        removeEventListener() {},
+      };
+
+      // Mock fetch for educational examples
+      const mockFetch = (url) => {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          headers: {
+            get: (name) => name === 'content-type' ? 'application/json' : null,
+          },
+          json: async () => {
+            // Return mock data for common educational URLs
+            if (url.includes('jsonplaceholder.typicode.com/todos')) {
+              return {
+                userId: 1,
+                id: 1,
+                title: 'Learn JavaScript APIs',
+                completed: false,
+              };
+            }
+            if (url.includes('api.github.com')) {
+              return {
+                login: 'octocat',
+                id: 1,
+                public_repos: 2,
+              };
+            }
+            return { message: 'Mock API response', url: url };
+          },
+          text: async () => 'Mock response body',
+        });
+      };
+
+      // Create window with all the mocks
+      const window = {
+        location: mockLocation,
+        navigator: mockNavigator,
+        document: mockDocument,
+        localStorage: mockLocalStorage,
+        sessionStorage: mockSessionStorage,
+        fetch: mockFetch,
+      };
+
       self.onmessage = async (event) => {
         const logs = [];
         const errors = [];
+        
+        // Create a mock console
         const console = {
           log: (...args) => logs.push(formatArgs(args)),
           info: (...args) => logs.push(formatArgs(args)),
@@ -205,11 +298,27 @@ export function runJavaScriptInWorker(code, options = {}) {
           debug: (...args) => logs.push(formatArgs(args)),
           table: (...args) => logs.push(formatArgs(args)),
         };
+        
+        // Set console in window
+        window.console = console;
 
         try {
-          const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
-          const runner = new AsyncFunction("console", event.data);
-          const result = await runner(console);
+          const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+          // Pass all necessary globals as parameters
+          const userFn = new AsyncFunction(
+            'window', 'document', 'navigator', 'localStorage', 'sessionStorage', 'console', 'fetch',
+            event.data
+          );
+          const result = await userFn(
+            window, 
+            mockDocument, 
+            mockNavigator, 
+            mockLocalStorage, 
+            mockSessionStorage, 
+            console, 
+            mockFetch
+          );
+          
           if (result !== undefined) {
             logs.push(formatArgs([result]));
           }
