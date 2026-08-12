@@ -713,6 +713,15 @@ export const languageCourses = {
       href: "/learn/golang-fundamentals",
       accent: "#00add8",
     },
+    {
+      title: "Go Functions",
+      tag: "Interactive Course",
+      icon: Terminal,
+      description:
+        "Master Go functions, multiple return values, error handling, methods, interfaces, and concurrency patterns with applied examples.",
+      href: "/learn/go-functions",
+      accent: "#00add8",
+    },
   ],
   powershell: [
     {
@@ -1198,7 +1207,10 @@ export function inferLanguageFromLearnPath(pathname = "") {
   ) {
     return "csharp";
   }
-  if (pathname.startsWith("/learn/golang-fundamentals")) {
+  if (
+    pathname.startsWith("/learn/golang-fundamentals") ||
+    pathname.startsWith("/learn/go-functions")
+  ) {
     return "go";
   }
   if (
