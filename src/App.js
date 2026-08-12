@@ -883,6 +883,16 @@ const LEARN_COURSE_ROUTES = [
     ),
   },
   {
+    slug: "go-functions",
+    language: "Go",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/go-functions/pages/GoFunctionsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/go-functions/pages/GoFunctionsLessonPage"),
+    ),
+  },
+  {
     slug: "powershell-fundamentals",
     language: "PowerShell",
     Hub: lazyWithChunkRetry(
