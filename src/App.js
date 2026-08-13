@@ -1029,7 +1029,6 @@ const LEARN_COURSE_ROUTES = [
     ),
   },
   {
-<<<<<<< HEAD
     slug: "huggingface-py",
     language: "Python",
     Hub: lazyWithChunkRetry(
@@ -1038,7 +1037,9 @@ const LEARN_COURSE_ROUTES = [
     Lesson: lazyWithChunkRetry(
       () =>
         import("./features/learn/huggingface-py/pages/HuggingfaceLessonPage"),
-=======
+    ),
+  },
+  {
     slug: "csharp-collections",
     language: "C#",
     Hub: lazyWithChunkRetry(
@@ -1093,7 +1094,6 @@ const LEARN_COURSE_ROUTES = [
         import(
           "./features/learn/csharp-aspnet-basics/pages/CsharpAspnetBasicsLessonPage"
         ),
->>>>>>> 7252a7fedcca9ca23ef4e86ab3add3c37715ccd6
     ),
   },
 ];
