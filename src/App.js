@@ -1028,6 +1028,17 @@ const LEARN_COURSE_ROUTES = [
       () => import("./features/learn/csharp-oop/pages/CsharpOopLessonPage"),
     ),
   },
+  {
+    slug: "huggingface-py",
+    language: "Python",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/huggingface-py/pages/HuggingfaceHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/huggingface-py/pages/HuggingfaceLessonPage"),
+    ),
+  },
 ];
 
 const PageFallback = () => (

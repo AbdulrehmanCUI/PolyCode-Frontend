@@ -20,6 +20,7 @@ import {
   Atom,
   ScanEye,
   Clock,
+  Bot,
 } from "lucide-react";
 
 export function languageKey(value = "") {
@@ -335,6 +336,15 @@ export const languageCourses = {
         "Tensors, autograd, nn.Module, training loops, and a hands-on deep learning track — 8 chapters, 25 lessons.",
       href: "/learn/pytorch-py",
       accent: "#EE4C2C",
+    },
+    {
+      title: "Hugging Face · py",
+      tag: "NLP & Transformers",
+      icon: Bot,
+      description:
+        "Pipelines, tokenizers, datasets, the Model Hub, fine-tuning, PEFT/LoRA, and quantization — 9 chapters, 25 lessons.",
+      href: "/learn/huggingface-py",
+      accent: "#FF9D00",
     },
     {
       title: "SciPy · py",
@@ -1022,6 +1032,7 @@ export const learnNavByLanguage = {
     { label: "FastAPI", to: "/learn/fastapi-py" },
     { label: "Matplotlib", to: "/learn/matplotlib-py" },
     { label: "PyTorch", to: "/learn/pytorch-py" },
+    { label: "Hugging Face", to: "/learn/huggingface-py" },
     { label: "SciPy", to: "/learn/scipy-py" },
     { label: "OpenCV", to: "/learn/opencv-py" },
     { label: "AI/ML", to: "/learn/ai_ml-py" },
@@ -1158,6 +1169,7 @@ export function inferLanguageFromLearnPath(pathname = "") {
     pathname.startsWith("/learn/fastapi-py") ||
     pathname.startsWith("/learn/matplotlib-py") ||
     pathname.startsWith("/learn/pytorch-py") ||
+    pathname.startsWith("/learn/huggingface-py") ||
     pathname.startsWith("/learn/scipy-py") ||
     pathname.startsWith("/learn/opencv-py") ||
     pathname.startsWith("/learn/ai_ml-py")
