@@ -1029,6 +1029,7 @@ const LEARN_COURSE_ROUTES = [
     ),
   },
   {
+<<<<<<< HEAD
     slug: "huggingface-py",
     language: "Python",
     Hub: lazyWithChunkRetry(
@@ -1037,6 +1038,62 @@ const LEARN_COURSE_ROUTES = [
     Lesson: lazyWithChunkRetry(
       () =>
         import("./features/learn/huggingface-py/pages/HuggingfaceLessonPage"),
+=======
+    slug: "csharp-collections",
+    language: "C#",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/csharp-collections/pages/CsharpCollectionsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/csharp-collections/pages/CsharpCollectionsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "csharp-linq",
+    language: "C#",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/csharp-linq/pages/CsharpLinqHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/csharp-linq/pages/CsharpLinqLessonPage"),
+    ),
+  },
+  {
+    slug: "csharp-file-handling",
+    language: "C#",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/csharp-file-handling/pages/CsharpFileHandlingHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/csharp-file-handling/pages/CsharpFileHandlingLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "csharp-aspnet-basics",
+    language: "C#",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/csharp-aspnet-basics/pages/CsharpAspnetBasicsHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/csharp-aspnet-basics/pages/CsharpAspnetBasicsLessonPage"
+        ),
+>>>>>>> 7252a7fedcca9ca23ef4e86ab3add3c37715ccd6
     ),
   },
 ];

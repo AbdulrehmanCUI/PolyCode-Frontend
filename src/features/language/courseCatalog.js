@@ -570,6 +570,42 @@ export const languageCourses = {
       href: "/learn/csharp-oop",
       accent: "#179c24",
     },
+    {
+      title: "C# Collections",
+      tag: "Interactive Course",
+      icon: Layers3,
+      description:
+        "Arrays, List<T>, Dictionary<TKey, TValue>, HashSet<T>, Stack<T>, and Queue<T> — and how to choose the right one.",
+      href: "/learn/csharp-collections",
+      accent: "#179c24",
+    },
+    {
+      title: "C# LINQ",
+      tag: "Interactive Course",
+      icon: Table2,
+      description:
+        "Query collections with Where, Select, OrderBy, GroupBy, and aggregation methods — then chain them into readable pipelines.",
+      href: "/learn/csharp-linq",
+      accent: "#179c24",
+    },
+    {
+      title: "C# File Handling",
+      tag: "Interactive Course",
+      icon: FolderOpen,
+      description:
+        "Read and write files, manage directories, stream large files safely, and handle file errors with try/catch.",
+      href: "/learn/csharp-file-handling",
+      accent: "#179c24",
+    },
+    {
+      title: "C# ASP.NET Basics",
+      tag: "Interactive Course",
+      icon: Server,
+      description:
+        "Minimal APIs, routing, DTOs, dependency injection, and the middleware pipeline — the core patterns behind ASP.NET Core.",
+      href: "/learn/csharp-aspnet-basics",
+      accent: "#179c24",
+    },
   ],
   "c#": [
     {
@@ -588,6 +624,42 @@ export const languageCourses = {
       description:
         "Classes, instances, and initialize; encapsulation with properties; inheritance, polymorphism, and interfaces in C#.",
       href: "/learn/csharp-oop",
+      accent: "#179c24",
+    },
+    {
+      title: "C# Collections",
+      tag: "Interactive Course",
+      icon: Layers3,
+      description:
+        "Arrays, List<T>, Dictionary<TKey, TValue>, HashSet<T>, Stack<T>, and Queue<T> — and how to choose the right one.",
+      href: "/learn/csharp-collections",
+      accent: "#179c24",
+    },
+    {
+      title: "C# LINQ",
+      tag: "Interactive Course",
+      icon: Table2,
+      description:
+        "Query collections with Where, Select, OrderBy, GroupBy, and aggregation methods — then chain them into readable pipelines.",
+      href: "/learn/csharp-linq",
+      accent: "#179c24",
+    },
+    {
+      title: "C# File Handling",
+      tag: "Interactive Course",
+      icon: FolderOpen,
+      description:
+        "Read and write files, manage directories, stream large files safely, and handle file errors with try/catch.",
+      href: "/learn/csharp-file-handling",
+      accent: "#179c24",
+    },
+    {
+      title: "C# ASP.NET Basics",
+      tag: "Interactive Course",
+      icon: Server,
+      description:
+        "Minimal APIs, routing, DTOs, dependency injection, and the middleware pipeline — the core patterns behind ASP.NET Core.",
+      href: "/learn/csharp-aspnet-basics",
       accent: "#179c24",
     },
   ],
@@ -1074,8 +1146,19 @@ export const learnNavByLanguage = {
   csharp: [
     { label: "C# Basics", to: "/learn/c-sharp-fundamentals" },
     { label: "C# OOP", to: "/learn/csharp-oop" },
+    { label: "C# Collections", to: "/learn/csharp-collections" },
+    { label: "C# LINQ", to: "/learn/csharp-linq" },
+    { label: "C# File Handling", to: "/learn/csharp-file-handling" },
+    { label: "C# ASP.NET Basics", to: "/learn/csharp-aspnet-basics" },
   ],
-  "c#": [{ label: "C# Basics", to: "/learn/c-sharp-fundamentals" }],
+  "c#": [
+    { label: "C# Basics", to: "/learn/c-sharp-fundamentals" },
+    { label: "C# OOP", to: "/learn/csharp-oop" },
+    { label: "C# Collections", to: "/learn/csharp-collections" },
+    { label: "C# LINQ", to: "/learn/csharp-linq" },
+    { label: "C# File Handling", to: "/learn/csharp-file-handling" },
+    { label: "C# ASP.NET Basics", to: "/learn/csharp-aspnet-basics" },
+  ],
   ruby: [
     { label: "Ruby Basics", to: "/learn/ruby-fundamentals" },
     { label: "Ruby Gems", to: "/learn/ruby-gems" },
@@ -1215,7 +1298,11 @@ export function inferLanguageFromLearnPath(pathname = "") {
   }
   if (
     pathname.startsWith("/learn/c-sharp-fundamentals") ||
-    pathname.startsWith("/learn/csharp-oop")
+    pathname.startsWith("/learn/csharp-oop") ||
+    pathname.startsWith("/learn/csharp-collections") ||
+    pathname.startsWith("/learn/csharp-linq") ||
+    pathname.startsWith("/learn/csharp-file-handling") ||
+    pathname.startsWith("/learn/csharp-aspnet-basics")
   ) {
     return "csharp";
   }
