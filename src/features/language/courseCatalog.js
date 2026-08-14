@@ -722,6 +722,15 @@ export const languageCourses = {
       href: "/learn/go-functions",
       accent: "#00add8",
     },
+    {
+      title: "Go Concurrency",
+      tag: "Advanced Course",
+      icon: Terminal,
+      description:
+        "Master goroutines, channels, mutexes, context cancellation, worker pools, and production-ready concurrency patterns in Go.",
+      href: "/learn/go-concurrency",
+      accent: "#00add8",
+    },
   ],
   powershell: [
     {
