@@ -414,7 +414,7 @@ print(special.gamma(6))`,
           {
             type: "text",
             content:
-              "**Definition:** **`gamma`** extends factorial ideas to more numbers. **`erf`** (error function) shows up in probability and diffusion problems.\n\n**Real-life example:** A quality lab models measurement error with a bell-shaped curve. Values of `erf` help turn math into readable probabilities.",
+              "**Introduction:** SciPy gives you ready-made math helpers so you do not have to invent hard formulas yourself. Two useful ones are **`gamma`** and **`erf`**.\n\n**`gamma`** is connected to the **factorial** idea you may already know. For example, `gamma(5)` equals `4!`, which is **24**. So when a formula needs a factorial-style value, you can call `gamma` instead of writing the math by hand.\n\n**`erf`** (short for *error function*) shows up in everyday science work — probability, measurement error, heat, and diffusion. You do not need to understand every detail of the formula. SciPy already knows how to compute it.\n\n**Real-life example:** In a lab, the same measurement is rarely identical every time — small errors appear again and again. Tools like `erf` help scientists work with those small variations without building the complicated math from scratch.",
           },
           {
             type: "text",
