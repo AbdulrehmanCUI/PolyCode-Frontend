@@ -21,7 +21,7 @@ export const HUGGINGFACE_CHAPTERS = [
           {
             type: "text",
             content:
-              `**Hugging Face** is the open hub for machine learning — a website with 500,000+ pretrained **models**, ready-made **datasets**, and Python libraries that make using them almost as easy as calling a function.`,
+              `Before Hugging Face existed, using someone else's trained model meant reading a research paper, hunting down the author's GitHub repo, matching exact versions of NumPy and PyTorch, and hoping the weights file was still hosted somewhere. **Hugging Face** replaced that scavenger hunt with a shared standard: one Hub with 500,000+ pretrained **models**, ready-made **datasets**, and Python libraries (\`transformers\`, \`datasets\`, \`tokenizers\`, \`huggingface_hub\`) that all speak the same format. A model trained by a research lab, a startup, or you personally can be loaded the exact same way — \`from_pretrained(name)\` — because everyone commits to the same interface.`,
           },
           {
             type: "scenario",
@@ -122,7 +122,7 @@ print(classifier("I love this course!"))`,
           {
             type: "text",
             content:
-              `Install once with **\`pip install transformers\`**. The first time you run a pipeline for a task, it downloads a sensible **default model** for you — later calls reuse the cached copy.`,
+              `Install once with **\`pip install transformers\`**. When you call \`pipeline("sentiment-analysis")\` with no \`model=\` argument, transformers looks up that task in an internal table and picks a sensible **default model** — one that's small enough to download quickly and good enough for a first try. The library then reads that model's \`config.json\` to figure out which model class and tokenizer to instantiate automatically. All of this happens behind one function call, and the downloaded files are cached so every call after the first is instant and works offline.`,
           },
           {
             type: "scenario",
@@ -214,7 +214,7 @@ print(generator("Once upon a time", max_new_tokens=20))`,
           {
             type: "text",
             content:
-              `\`pipeline(task)\` wraps three steps into one call: **tokenize** the input, **run the model**, and **post-process** raw output into something readable. Pass a list of strings to process a batch at once.`,
+              `\`pipeline(task)\` wraps three steps into one call: **tokenize** the input into numbers, **run the model** to get raw output, and **post-process** that output into something readable — a label, an answer string, a shorter paragraph. Tokenization looks almost the same across every task, but post-processing is where tasks really differ: sentiment analysis applies softmax and picks a label, question-answering finds the best start/end token span in the context, summarization decodes generated tokens back into text word by word. The pipeline hides all of that task-specific logic so you can focus on the input and output. Pass a list of strings instead of one to process a whole batch in a single call.`,
           },
           {
             type: "scenario",
@@ -302,7 +302,7 @@ print(summarizer(text))`,
           {
             type: "text",
             content:
-              `**\`Auto*\`** classes figure out the right architecture from a model name automatically. \`AutoTokenizer\` loads the matching tokenizer; \`AutoModelForSequenceClassification\` loads a model with a classification head.`,
+              `Most transformer models share the same core body — the stack of attention layers that builds up a representation of the input. What changes between tasks is the small **head** on top: a classification head outputs class scores, a token-classification head outputs one label per token, a language-modeling head outputs a probability over the next word. **\`Auto*\`** classes read a model's \`config.json\` and automatically build the right body-plus-head combination for you — \`AutoModelForSequenceClassification\` loads a model with a classification head, \`AutoTokenizer\` loads whichever tokenizer class (WordPiece, BPE, SentencePiece...) that model was actually trained with. You never have to know or guess which exact classes those are.`,
           },
           {
             type: "scenario",
@@ -406,7 +406,7 @@ print(model.config.num_labels)`,
           {
             type: "text",
             content:
-              `A model call returns raw **logits** — unnormalized scores, one per class. Apply **softmax** to turn them into probabilities that sum to 1, then use \`argmax\` and \`id2label\` to read the winning class.`,
+              `A model call returns raw **logits** — one real number per class, which can be negative, huge, or tiny, and carry no direct "probability" meaning on their own. **Softmax** fixes that: it exponentiates every logit (so nothing is negative) and divides by the sum (so everything adds up to exactly 1), turning arbitrary scores into a genuine probability distribution. Once you have probabilities, \`argmax\` just finds the index of the biggest one, and \`id2label\` — a small dictionary baked into the model's config — translates that index back into a word like \`"POSITIVE"\`. This whole sequence — tokenize, run the model, softmax, argmax, id2label — is exactly what \`pipeline("sentiment-analysis")\` was doing for you automatically back in Lesson 2. Now you're doing it by hand, which means you can also change any step of it.`,
           },
           {
             type: "scenario",
@@ -524,7 +524,7 @@ print(model.config.id2label[label_id])`,
           {
             type: "text",
             content:
-              `Models cannot read raw text — they read numbers. **Tokenization** splits text into pieces (tokens) and maps each to an id. Modern tokenizers use **subwords**: common words stay whole, rare words split into smaller known pieces.`,
+              `Models cannot read raw text — they read numbers. **Tokenization** splits text into pieces (tokens) and maps each to an id from a fixed **vocabulary**. The size of that vocabulary is a real engineering tradeoff: a tiny vocabulary of whole words can't cover every word in the language, so it constantly hits words it has never seen ("out of vocabulary"); a vocabulary of every possible word would be enormous and mostly wasted on rare words the model barely ever sees. Modern tokenizers split the difference with **subwords** — common words like "the" or "run" stay whole as single tokens, while rare or unfamiliar words get broken into smaller, reusable pieces the model already knows. This keeps the vocabulary small (often 30,000–50,000 entries) while still being able to represent literally any string, even made-up words or typos.`,
           },
           {
             type: "scenario",
@@ -608,7 +608,7 @@ print(tokens)`,
           {
             type: "text",
             content:
-              `Calling a tokenizer directly — \`tokenizer(text)\` — returns a dict with **\`input_ids\`** (token numbers) and **\`attention_mask\`** (which tokens are real). Use **\`.decode()\`** to turn ids back into text.`,
+              `Lesson 5's \`.tokenize()\` stopped at readable strings like \`["hugging", "face"]\` — useful for inspecting what a tokenizer sees, but not something a model can consume. Calling the tokenizer directly — \`tokenizer(text)\` — goes all the way: it tokenizes, converts each piece to its integer id, and automatically inserts the special tokens the model was trained to expect (like \`[CLS]\` at the start and \`[SEP]\` at the end for BERT-style models). The result is a dict with **\`input_ids\`** (the token numbers, ready to feed a model) and **\`attention_mask\`** (which positions are real content). **\`.decode()\`** runs the whole thing in reverse, turning ids back into a readable string — handy for double-checking that encoding did what you expected.`,
           },
           {
             type: "scenario",
@@ -677,7 +677,7 @@ print(tokenizer.decode(encoded["input_ids"]))`,
           {
             type: "text",
             content:
-              `A model expects every sequence in a batch to be the **same length**. **\`padding=True\`** fills short sequences with a pad token; **\`truncation=True\`** cuts long ones. **\`attention_mask\`** tells the model which tokens are real vs. padding.`,
+              `Models process a batch as one big rectangular tensor of numbers, and a tensor can't have rows of different lengths — so every sequence in a batch must be the **same length**. **\`padding=True\`** fills the shorter sequences with a special pad token until every row matches the longest one; **\`truncation=True\`** cuts sequences that are longer than the model's maximum (often 512 tokens) so they don't error out. Padding solves the shape problem, but it also adds fake tokens that carry no real meaning — that's exactly what **\`attention_mask\`** is for: a 1/0 map the model uses internally to ignore padded positions completely, so they don't distort the result. This is also *why* batching is worth the trouble at all: a GPU can multiply one padded (batch, seq_len) tensor through the model far faster than it can run each sequence through one at a time.`,
           },
           {
             type: "scenario",
@@ -768,7 +768,7 @@ print(batch["input_ids"].shape)`,
           {
             type: "text",
             content:
-              `The **\`datasets\`** library loads ready-made datasets from the Hub with one call: **\`load_dataset(name)\`**. The result is a \`DatasetDict\` with **splits** like \`train\`, \`validation\`, and \`test\`.`,
+              `Loading data the old way usually means downloading a CSV or JSON file, writing a parser, handling encoding quirks, and manually splitting it into train/test sets. The **\`datasets\`** library skips all of that: **\`load_dataset(name)\`** downloads a dataset that's already been cleaned, validated, and split by its publisher, and returns it as a \`DatasetDict\` with named **splits** like \`train\`, \`validation\`, and \`test\` ready to use. Under the hood, datasets are stored in the Apache Arrow format and memory-mapped from disk rather than fully loaded into RAM — which is why you can work with datasets far larger than your computer's memory without it slowing to a crawl.`,
           },
           {
             type: "scenario",
@@ -845,7 +845,7 @@ print(dataset["train"][0])`,
           {
             type: "text",
             content:
-              `A \`Dataset\` behaves like a smart list. Check **\`.features\`** to see column names and types, index it like a list, and use **\`.shuffle()\`** + **\`.select()\`** to grab a small random sample for quick experiments.`,
+              `A \`Dataset\` behaves like a smart, read-only list: indexing it (\`dataset[0]\`) or slicing it (\`dataset[:5]\`) returns plain Python dicts, and every operation you call — \`.shuffle()\`, \`.select()\`, \`.filter()\` — returns a **new** \`Dataset\` rather than modifying the original in place, so you never have to worry about accidentally mutating your data mid-experiment. Check **\`.features\`** first to see the schema: column names, their types, and — for label columns — the actual class names behind numbers like \`0\` and \`1\` (a \`ClassLabel\` feature knows that \`0\` means "negative" and \`1\` means "positive"). Chaining **\`.shuffle(seed=...)\`** and **\`.select(range(n))\`** is the fastest way to grab a small, reproducible sample before committing to a slow full run.`,
           },
           {
             type: "scenario",
@@ -916,7 +916,7 @@ print(small["label"])`,
           {
             type: "text",
             content:
-              `**\`.map(fn, batched=True)\`** runs a function over the whole dataset — perfect for tokenizing every row in one pass. **\`.filter(fn)\`** keeps only rows where \`fn\` returns \`True\`.`,
+              `**\`.map(fn, batched=True)\`** runs a function over the whole dataset in one pass — the standard way to tokenize every row before training. With \`batched=True\`, your function receives a dict of *lists* (a chunk of rows at once) instead of one example at a time, which lets the tokenizer batch its own work internally and run dramatically faster. **\`.filter(fn)\`** keeps only the rows where \`fn\` returns \`True\`, useful for dropping malformed or overly long examples before they ever reach training. One detail worth knowing: \`.map()\` results are cached to disk automatically, so re-running the same preprocessing script a second time reuses the cached version instead of redoing the work.`,
           },
           {
             type: "scenario",
@@ -998,7 +998,7 @@ print(tokenized)`,
           {
             type: "text",
             content:
-              `The **Hub** (huggingface.co/models) lets you filter by task, library, and language. Every model has a **model card** — documentation covering intended use, limitations, training data, and license.`,
+              `The **Hub** (huggingface.co/models) lets you filter by task, library, language, and license, and sort by downloads or recent updates — useful signals for which models are actually maintained and trusted. Picking a model is rarely just "find one that does the task": it's a tradeoff between size (a smaller model is cheaper and faster to run but usually less accurate), how closely its training data matches your domain, and whether its license permits what you want to do with it. Every model ships with a **model card** — documentation covering intended use, known limitations, training data, and license — which is the fastest way to make that tradeoff without downloading and testing five different checkpoints yourself.`,
           },
           {
             type: "scenario",
@@ -1084,7 +1084,7 @@ for m in models:
           {
             type: "text",
             content:
-              `**Any** public repo id works with \`from_pretrained()\` — not just official models. Downloaded files are cached under \`~/.cache/huggingface\`. Pass **\`revision=\`** to pin an exact commit, tag, or branch for reproducibility.`,
+              `**Any** public repo id works with \`from_pretrained()\` — official organizations, universities, and individual users are all loaded the exact same way, because every Hub repo is really just a git repository with a standard set of files (\`config.json\`, tokenizer files, and weights, usually in the \`safetensors\` format). Downloaded files are cached under \`~/.cache/huggingface\`, keyed by repo name and commit hash, so loading the same model twice never re-downloads it. Because a repo can be updated after you first download it, pass **\`revision=\`** to pin an exact commit, tag, or branch — the same idea as pinning a dependency version — so an experiment you run today still loads the identical weights if you rerun it in six months.`,
           },
           {
             type: "scenario",
@@ -1161,7 +1161,7 @@ print(model.name_or_path)`,
           {
             type: "text",
             content:
-              `Log in once with **\`huggingface_hub.login(token=...)\`**, then call **\`model.push_to_hub(repo_id)\`** and **\`tokenizer.push_to_hub(repo_id)\`** to publish your own model — anyone can load it back with \`from_pretrained()\`.`,
+              `Log in once with **\`huggingface_hub.login(token=...)\`**, then call **\`model.push_to_hub(repo_id)\`** and **\`tokenizer.push_to_hub(repo_id)\`** to publish your own model. Under the hood this creates a git repository on the Hub (using Git LFS for the large weight files), uploads everything, and even generates a starter model card for you — the same kind of repo you explored in the last two lessons. From that point on, your model is a first-class citizen of the ecosystem: anyone with access can load it back with the exact same \`from_pretrained()\` call used for official models, whether that's a teammate, a CI pipeline, or you on a different machine.`,
           },
           {
             type: "scenario",
@@ -1249,7 +1249,7 @@ tokenizer.push_to_hub("your-username/my-sentiment-model")`,
           {
             type: "text",
             content:
-              `**\`TrainingArguments\`** configures a training run — output folder, epochs, batch size, learning rate. **\`Trainer\`** wires together the model, arguments, and datasets, and handles the training loop for you.`,
+              `**\`TrainingArguments\`** configures a training run — output folder, epochs, batch size, learning rate, how often to evaluate and save checkpoints, whether to use mixed precision, and dozens of other options you can leave at their defaults until you need them. **\`Trainer\`** wires together the model, those arguments, and your datasets, and then runs the entire training loop for you: forward pass, loss, backward pass, optimizer step, logging, checkpointing, evaluation. That's a meaningful amount of code it saves you from writing by hand — and it also transparently handles things like multi-GPU training and gradient accumulation that would otherwise require significant extra effort to get right.`,
           },
           {
             type: "scenario",
@@ -1369,7 +1369,7 @@ trainer.train()`,
           {
             type: "text",
             content:
-              `The **\`evaluate\`** library loads standard metrics with **\`evaluate.load(name)\`**. Write a **\`compute_metrics\`** function and pass it to \`Trainer\` so accuracy/F1 get logged automatically during evaluation.`,
+              `Loss going down tells you the model is fitting *something*, but not whether that something is useful — and on an imbalanced dataset (say, 95% negative reviews), a model that always predicts "negative" gets 95% accuracy while being completely useless. This is why real fine-tuning tracks task metrics, not just loss. The **\`evaluate\`** library loads standard metrics with **\`evaluate.load(name)\`** — accuracy, F1, precision/recall, and many task-specific metrics — with a consistent \`.compute(predictions=..., references=...)\` interface. Writing a **\`compute_metrics\`** function and passing it to \`Trainer\` means those numbers get computed and logged automatically every time the model is evaluated, so you can watch real task performance evolve across training instead of just a loss curve.`,
           },
           {
             type: "scenario",
@@ -1456,7 +1456,7 @@ def compute_metrics(eval_pred):
           {
             type: "text",
             content:
-              `Fine-tuning combines everything so far: a **tokenized dataset**, a **model**, **\`TrainingArguments\`**, and a **\`Trainer\`** with **\`compute_metrics\`**. Call \`.train()\`, then \`.save_pretrained()\` to keep the result.`,
+              `Fine-tuning combines everything so far: a **tokenized dataset**, a **model** already pretrained on huge amounts of general text, **\`TrainingArguments\`**, and a **\`Trainer\`** with **\`compute_metrics\`**. What actually happens during \`.train()\` is a *nudge*, not a rebuild — the model already knows grammar, vocabulary, and general language patterns from pretraining, and fine-tuning just adjusts those weights slightly toward your specific data and labels. That's why fine-tuning typically needs far less data and far fewer epochs than training from scratch, and why learning rates are kept small — a large learning rate risks "catastrophic forgetting," where the model overwrites its general knowledge instead of specializing it. Once training finishes, \`.save_pretrained()\` writes the adjusted weights to disk so the result outlives the Python process that created it.`,
           },
           {
             type: "scenario",
@@ -1552,7 +1552,7 @@ tokenizer.save_pretrained("./fine-tuned-model")`,
           {
             type: "text",
             content:
-              `Full fine-tuning updates **every** parameter in a model — for a model with hundreds of millions (or billions) of weights, that means huge memory use and storage per fine-tuned copy. **PEFT** (Parameter-Efficient Fine-Tuning) freezes the base model and trains only a small number of extra parameters.`,
+              `Full fine-tuning updates **every** parameter in a model, and training needs far more memory than just storing the weights: the Adam optimizer commonly used for training keeps two extra numbers *per parameter* to track momentum, and gradients need to be stored too — roughly 4x a model's raw weight memory just to train it, before activations are even counted. For a 7-billion-parameter model, that can mean well over 100GB of GPU memory for full fine-tuning — far beyond what a single consumer or even most single-server GPUs offer. **PEFT** (Parameter-Efficient Fine-Tuning) sidesteps this entirely: freeze the base model completely (no gradients, no optimizer state needed for it) and train only a small number of new parameters bolted on top. This isn't just cheaper — for many teams it's the difference between fine-tuning being possible at all or not.`,
           },
           {
             type: "scenario",
@@ -1635,7 +1635,7 @@ print(total)`,
           {
             type: "text",
             content:
-              `The **\`peft\`** library adds LoRA support. **\`LoraConfig\`** sets the adapter's **rank (\`r\`)**, scaling (**\`lora_alpha\`**), and which layers to target. **\`get_peft_model()\`** wraps your base model with trainable LoRA adapters.`,
+              `LoRA's actual trick: instead of directly updating a big weight matrix \`W\` during fine-tuning, freeze \`W\` entirely and learn a separate *update* \`ΔW\`, expressed as the product of two small matrices, \`ΔW = B × A\`. If \`W\` is 768×768 (roughly 590,000 numbers), a rank-8 LoRA update needs only two 768×8 matrices — about 12,000 numbers combined, less than 2% of the original. The model's output effectively becomes \`W·x + B·A·x\`, so the frozen pretrained knowledge in \`W\` stays fully intact while \`B\` and \`A\` learn the task-specific adjustment. The **\`peft\`** library implements this: **\`LoraConfig\`** sets the adapter's **rank (\`r\`)** — how "wide" that update is allowed to be — its scaling (**\`lora_alpha\`**), and \`target_modules\`, which layers get an adapter attached. **\`get_peft_model()\`** then freezes the base model and inserts trainable LoRA matrices at exactly those layers.`,
           },
           {
             type: "scenario",
@@ -1727,7 +1727,7 @@ peft_model.print_trainable_parameters()`,
           {
             type: "text",
             content:
-              `A LoRA-wrapped model trains with the **same \`Trainer\` workflow** as any other model. **\`save_pretrained()\`** on a PEFT model saves only the small adapter weights. Reload with **\`PeftModel.from_pretrained(base_model, adapter_path)\`**.`,
+              `Because \`get_peft_model()\` just adds trainable matrices to a frozen model, everything else about training stays the same — a LoRA-wrapped model trains with the **same \`Trainer\` workflow**, the same \`TrainingArguments\`, the same \`compute_metrics\` as a fully fine-tuned one. The payoff shows up at save time: since the base weights never changed, **\`save_pretrained()\`** on a PEFT model only needs to write out the small \`B\`/\`A\` adapter matrices, not the whole model. To use it later, reload the original frozen base model, then attach the adapter with **\`PeftModel.from_pretrained(base_model, adapter_path)\`** — and for deployment, \`merge_and_unload()\` can fold the adapter's math directly into the base weights, producing a single model with zero extra inference cost from having used LoRA at all.`,
           },
           {
             type: "scenario",
@@ -1814,7 +1814,7 @@ loaded = PeftModel.from_pretrained(base, "./lora-adapter")`,
           {
             type: "text",
             content:
-              `**Quantization** stores model weights in fewer bits — trading some numeric precision for a much smaller memory footprint and faster inference. Common formats: **float32** (default), **float16/bfloat16**, **int8**, and **int4**.`,
+              `**Quantization** stores model weights in fewer bits — trading some numeric precision for a much smaller memory footprint and faster inference. Common formats: **float32** (default, 4 bytes per weight), **float16/bfloat16** (2 bytes), **int8** (1 byte), and **int4** (half a byte). This matters at two very different moments: during **training**, where PEFT is usually the bigger lever, and during **deployment**, where quantization is often the deciding factor — if you're serving a model to thousands of users, halving or quartering its memory footprint can mean fitting on cheaper hardware, running more replicas per GPU, or enabling on-device use entirely. The precision lost is usually smaller than it sounds, because model weights tend to cluster in a narrow range where fewer bits still distinguish values well enough for the model to behave almost identically.`,
           },
           {
             type: "scenario",
@@ -1896,7 +1896,7 @@ print(next(model.parameters()).dtype)`,
           {
             type: "text",
             content:
-              `With the **\`bitsandbytes\`** library installed, pass **\`load_in_8bit=True\`** or **\`load_in_4bit=True\`** to \`from_pretrained()\` to load a model already quantized — no separate conversion step. Requires a CUDA GPU.`,
+              `Unlike PEFT, which changes how you *train*, this kind of quantization is usually applied for **inference** on an already-trained model — no retraining needed, which is why it's often called "post-training quantization." With the **\`bitsandbytes\`** library installed, pass **\`load_in_8bit=True\`** or **\`load_in_4bit=True\`** to \`from_pretrained()\` and the weights are converted to lower precision as they load, before a single token is ever processed. Internally, 8-bit loading uses a mixed-precision trick that keeps a small number of statistically important "outlier" weights in higher precision so accuracy barely moves, while everything else compresses down. This does require a CUDA GPU, since the speed benefit comes from specialized low-precision kernels that only exist for NVIDIA hardware.`,
           },
           {
             type: "scenario",
@@ -1973,7 +1973,7 @@ model_8bit = AutoModelForCausalLM.from_pretrained(
           {
             type: "text",
             content:
-              `**\`BitsAndBytesConfig\`** gives fine control over 4-bit loading — quant type (**\`nf4\`**), compute dtype, and double quantization. Combining 4-bit loading with a **LoRA adapter** is the popular **QLoRA** technique: fine-tune huge models on modest GPUs.`,
+              `**\`BitsAndBytesConfig\`** gives fine control over 4-bit loading — **\`nf4\`** ("NormalFloat4") is a quant type specifically designed around the fact that pretrained weights tend to follow a roughly bell-curve distribution, so it allocates its limited 16 possible values more precisely than a plain linear 4-bit scale would; **\`bnb_4bit_use_double_quant\`** squeezes out a little more memory by quantizing the quantization constants themselves. The real breakthrough is combining this with what you learned last chapter: keep the base model frozen in 4-bit, and train only a LoRA adapter in higher precision on top of it. Gradients still flow backward through the frozen 4-bit weights into the adapter during training, even though those base weights themselves never update — that's the trick that makes it work at all. This combination is called **QLoRA**, and it's the reason fine-tuning a 7B–70B parameter model on a single consumer or workstation GPU went from "impossible" to routine.`,
           },
           {
             type: "scenario",
@@ -2080,7 +2080,7 @@ model = AutoModelForCausalLM.from_pretrained(
           {
             type: "text",
             content:
-              `Bring it together: load a small dataset, tokenize it, fine-tune a classifier with \`Trainer\`, then publish it. This is the same recipe used for real production fine-tunes — just on a smaller scale.`,
+              `Bring it together: load a small dataset, tokenize it, fine-tune a classifier with \`Trainer\`, then publish it. This is the same recipe used for real production fine-tunes — just on a smaller scale. Swap the 200-example slice for the full dataset, add a GPU and a few more epochs, and this exact code structure is how teams ship internal classifiers, moderation models, and domain-specific NLP tools every day. If the base model or dataset were much bigger, the only things that would realistically change are the ones from the last two chapters: wrap the model in \`get_peft_model()\` before training, and load it with \`load_in_4bit=True\` if it doesn't fit in memory otherwise.`,
           },
           {
             type: "scenario",
@@ -2208,7 +2208,7 @@ tokenizer.push_to_hub("your-username/mini-imdb-classifier")`,
           {
             type: "text",
             content:
-              `You made it! Core Hugging Face flow: **pipeline → tokenizer → model → dataset → Trainer → Hub → PEFT/quantization for scale**. Keep this cheat sheet handy when starting new projects.`,
+              `You made it! Core Hugging Face flow: **pipeline → tokenizer → model → dataset → Trainer → Hub → PEFT/quantization for scale**. Notice the shape of what you learned: \`pipeline()\` gets you inference in one line, \`Auto*\` classes give you control when you need it, \`datasets\` and \`Trainer\` take you from raw data to a fine-tuned model, and PEFT/quantization are what let that whole pipeline scale from a laptop experiment to a model serving real traffic. That's the same path professional ML engineers follow — you've just walked it end to end in miniature. Keep this cheat sheet handy when starting new projects.`,
           },
           {
             type: "table",
