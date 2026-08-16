@@ -37,19 +37,19 @@ export const SCIPY_LESSON_OUTCOMES = {
     "Print a clear result and check that every value was updated",
   ],
   "scipy-7": [
-    "Explain numerical integration as area under a curve",
-    "Know why computers approximate integrals",
-    "Connect integration to real measurements",
+    "Explain numerical integration as finding area under a curve",
+    "Give a real-life example (like total water or energy)",
+    "Know that SciPy’s quad helps estimate that area",
   ],
   "scipy-8": [
-    "Call `scipy.integrate.quad` on a simple function",
-    "Read the integral result and error estimate",
-    "Compute area between two x limits",
+    "Write a simple f(x) and call integrate.quad",
+    "Read both the area and the error estimate",
+    "Print the area between two clear limits",
   ],
   "scipy-9": [
-    "Spot common integration mistakes",
-    "Keep limits and function units clear",
-    "Trust and double-check a quad result",
+    "Check limits and units before trusting an answer",
+    "Use the error estimate as a warning light",
+    "Compare SciPy’s result with a simple known case",
   ],
   "scipy-10": [
     "Define optimization as finding the best value",
