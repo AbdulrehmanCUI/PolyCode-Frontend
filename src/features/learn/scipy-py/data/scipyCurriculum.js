@@ -586,12 +586,18 @@ print(special.erf(x))`,
           {
             type: "text",
             content:
-              "**Definition:** **Numerical integration** means estimating the **area under a curve** using computer-friendly steps when a neat pencil-and-paper antiderivative is hard.\n\n**Real-life example:** A river sensor records flow every hour. Total water for the day is the area under that flow curve.",
+              "**Introduction:** Sometimes you need the **total** of something that changes over time — like how much water flowed past a sensor, or how much energy a house used.\n\nOn a graph, that total is the **area under the curve**. When the math on paper is hard, the computer can **estimate** that area for you. That estimate is called **numerical integration**.\n\nIn plain words:\n\n• You have a curve (a function) that goes up and down\n• You choose a start and an end (the limits)\n• SciPy adds up the area between those limits\n• You get a total, plus a small error estimate\n\n**Real-life example:** A river sensor records water flow every hour. The **total water for the day** is the area under that flow curve. SciPy can estimate it without you drawing the graph by hand.",
           },
           {
             type: "text",
             content:
-              "**In this topic you will learn:**\n\n• What “area under the curve” means\n• Why SciPy helps\n• The idea behind `quad`",
+              "**In this topic you will learn:**\n\n• What “area under the curve” means in everyday language\n• Why SciPy is useful for this job\n• The basic idea behind `integrate.quad`",
+          },
+          {
+            type: "scenario",
+            title: "Think of it like this",
+            content:
+              "Imagine stacking thin strips of paper under a curved line until they fill the space. Numerical integration is the computer stacking those strips for you — fast and carefully.",
           },
           {
             type: "diagram",
@@ -599,36 +605,44 @@ print(special.erf(x))`,
             nodes: [
               {
                 id: "curve",
-                label: "Curve y = f(x)",
+                label: "Your curve",
                 color: "#06b6d4",
-                items: ["Height at each x"],
+                items: ["A function f(x)", "Height at each x"],
               },
               {
                 id: "area",
-                label: "Area between limits",
+                label: "Area to find",
                 color: "#0d9488",
-                items: ["From a to b", "Total quantity"],
+                items: ["From start a to end b", "The total you want"],
               },
               {
                 id: "quad",
                 label: "SciPy quad",
                 color: "#14b8a6",
-                items: ["Estimate", "Error size"],
+                items: ["Estimates the area", "Also reports error"],
               },
             ],
           },
           {
             type: "code",
             lang: "python",
-            label: "Area of a constant",
+            label: "Try it: area of a flat line",
             content: `from scipy import integrate
 
+# A flat line at height 2
 def flat(x):
     return 2
 
+# Area from 0 to 3 should be 2 * 3 = 6
 area, err = integrate.quad(flat, 0, 3)
-print("Area:", area)  # 2 * 3 = 6
-print("Err:", err)`,
+print("Area:", area)
+print("Error estimate:", err)`,
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              "**Tip:** Start with an easy case you can check by hand (like a flat line). When that looks right, try harder curves.",
           },
           quiz(
             "Numerical integration estimates…",
@@ -639,13 +653,14 @@ print("Err:", err)`,
               "Website traffic only",
             ],
             1,
-            "It estimates area (or total) under a function between limits.",
+            "It estimates the area (or total) under a function between two limits.",
           ),
         ],
         challenge: challenge(
           "Flat area",
           "Define f(x)=5. Print integrate.quad(f, 0, 2)[0].",
           `from scipy import integrate
+# define f, then print the area with quad
 `,
           `from scipy import integrate
 
@@ -667,31 +682,69 @@ print(integrate.quad(f, 0, 2)[0])`,
           {
             type: "text",
             content:
-              "**Definition:** **`integrate.quad(f, a, b)`** estimates the integral of `f` from `a` to `b`. It returns `(result, error_estimate)`.\n\n**Real-life example:** Power usage over 8 hours — integrate the power curve to get energy.",
+              "**Introduction:** The main SciPy tool for this chapter is **`integrate.quad`**. You give it:\n\n• A Python function for your curve, like `f(x)`\n• A start limit `a`\n• An end limit `b`\n\nThen SciPy estimates the area from `a` to `b`.\n\n**Important:** `quad` returns **two values**:\n\n• The **area** (the answer you usually want)\n• An **error estimate** (how unsure the computer is)\n\nSo you often write: `area, err = integrate.quad(f, a, b)`\n\n**Real-life example:** Power use over 8 hours is a curve. Integrating that curve gives **total energy** used — like reading a smart meter for the whole morning.",
           },
           {
             type: "text",
             content:
-              "**In this topic you will learn:**\n\n• Write a Python function for f(x)\n• Call `quad` with limits\n• Print the area",
+              "**In this topic you will learn:**\n\n• How to write a simple `f(x)` in Python\n• How to call `integrate.quad(f, a, b)`\n• How to print the area (and optionally the error)",
+          },
+          {
+            type: "table",
+            title: "quad in three steps",
+            columns: ["Step", "What you write", "What it means"],
+            rows: [
+              {
+                label: "1",
+                values: [
+                  "Define f(x)",
+                  "`def f(x): return x ** 2`",
+                  "Your curve formula",
+                ],
+              },
+              {
+                label: "2",
+                values: [
+                  "Call quad",
+                  "`integrate.quad(f, 0, 1)`",
+                  "Area from 0 to 1",
+                ],
+              },
+              {
+                label: "3",
+                values: [
+                  "Read the result",
+                  "`area, err = ...`",
+                  "Answer + confidence check",
+                ],
+              },
+            ],
           },
           {
             type: "code",
             lang: "python",
-            label: "Integrate x squared",
+            label: "Try it: integrate x squared",
             content: `from scipy import integrate
 
 def f(x):
     return x ** 2
 
 area, err = integrate.quad(f, 0, 1)
-print("∫ x² dx from 0 to 1 ≈", area)
-print("True value is 1/3 ≈", 1 / 3)`,
+print("Area from 0 to 1 ≈", area)
+print("True value is 1/3 ≈", 1 / 3)
+print("Error estimate:", err)`,
           },
           {
             type: "callout",
             variant: "info",
             content:
-              "**Remember:** `quad` returns two values. Use `[0]` when you only need the area.",
+              "**Remember:** If you only need the area, you can use `integrate.quad(f, a, b)[0]`. Index `0` is the result; index `1` is the error.",
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              "**Tip:** Compare SciPy’s answer with a known true value when you can (like `1/3` above). That builds trust in your code.",
           },
           quiz(
             "integrate.quad(f, 0, 1) returns…",
@@ -702,13 +755,14 @@ print("True value is 1/3 ≈", 1 / 3)`,
               "A dictionary of colors",
             ],
             1,
-            "quad returns the estimated integral and an error estimate.",
+            "quad returns the estimated area and an error estimate.",
           ),
         ],
         challenge: challenge(
           "Quad x²",
           "Integrate x**2 from 0 to 2 with quad and print the result (index 0).",
           `from scipy import integrate
+# define f(x) = x**2, then print quad(...)[0]
 `,
           `from scipy import integrate
 
@@ -731,27 +785,54 @@ print(integrate.quad(f, 0, 2)[0])`,
           {
             type: "text",
             content:
-              "**Definition:** A **reliable integral** uses the right limits, a clear function, and a quick sanity check (rough mental estimate or known answer).\n\n**Real-life example:** If rainfall is about 2 mm/hour for 5 hours, the total near 10 mm should match your integral — if SciPy says 10,000, you swapped units or limits.",
+              "**Introduction:** Getting a number from `quad` is easy. Getting a **trustworthy** number takes a few careful habits.\n\nA reliable integral means:\n\n• You used the **correct start and end** limits\n• Your function matches the real situation (clear units)\n• You glanced at the **error estimate**\n• You did a quick **sanity check** (does the size look reasonable?)\n\n**Real-life example:** If rain is about 2 mm each hour for 5 hours, the total should be near **10 mm**. If SciPy prints `10000`, something is wrong — maybe limits or units got mixed up.",
           },
           {
             type: "text",
             content:
-              "**In this topic you will learn:**\n\n• Check limits a < b intentionally\n• Read the error estimate\n• Compare with a simple known case",
+              "**In this topic you will learn:**\n\n• How to check that limits make sense\n• How to read the error estimate from `quad`\n• How to compare with a simple known case",
+          },
+          {
+            type: "scenario",
+            title: "Think of it like this",
+            content:
+              "A kitchen scale can show a weight, but you still glance to see if it looks right. Same with `quad`: print the answer, then ask “Does this look sensible?”",
           },
           {
             type: "table",
             title: "Sanity checklist",
-            columns: ["Check", "Why"],
+            columns: ["Check", "Ask yourself", "Why it matters"],
             rows: [
-              { label: "1", values: ["Limits correct?", "Wrong window → wrong total"] },
-              { label: "2", values: ["Function units clear?", "Hours vs minutes mix-ups"] },
-              { label: "3", values: ["Error tiny?", "Huge error → investigate"] },
+              {
+                label: "1",
+                values: [
+                  "Limits",
+                  "Did I start and end in the right place?",
+                  "Wrong window → wrong total",
+                ],
+              },
+              {
+                label: "2",
+                values: [
+                  "Units",
+                  "Hours vs minutes? mm vs m?",
+                  "Unit mix-ups make huge errors",
+                ],
+              },
+              {
+                label: "3",
+                values: [
+                  "Error size",
+                  "Is the error estimate tiny?",
+                  "Huge error → investigate",
+                ],
+              },
             ],
           },
           {
             type: "code",
             lang: "python",
-            label: "Check error too",
+            label: "Try it: print area and error",
             content: `from scipy import integrate
 
 def f(x):
@@ -760,7 +841,19 @@ def f(x):
 area, err = integrate.quad(f, 0, 4)
 print("Area:", area)
 print("Error estimate:", err)
-print("Expected:", 8.0)`,
+print("Expected by hand:", 8.0)  # triangle area 0.5*4*4 = 8`,
+          },
+          {
+            type: "callout",
+            variant: "warning",
+            content:
+              "**Watch out:** A huge error estimate is a warning light. Do not ignore it — check your function and limits first.",
+          },
+          {
+            type: "callout",
+            variant: "tip",
+            content:
+              "**Tip:** Keep a known easy example nearby (like integrating `f(x)=x`). If that fails, fix your setup before trusting harder problems.",
           },
           quiz(
             "If the error estimate is huge, you should…",
@@ -771,13 +864,14 @@ print("Expected:", 8.0)`,
               "Only use strings",
             ],
             1,
-            "A large error estimate is a warning to double-check your setup.",
+            "A large error estimate means you should double-check your setup.",
           ),
         ],
         challenge: challenge(
           "Print area and err",
           "For f(x)=x from 1 to 3, unpack area, err = integrate.quad(...). Print both.",
           `from scipy import integrate
+# define f, call quad, print area and err
 `,
           `from scipy import integrate
 
