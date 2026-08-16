@@ -52,19 +52,19 @@ export const SCIPY_LESSON_OUTCOMES = {
     "Compare SciPy’s result with a simple known case",
   ],
   "scipy-10": [
-    "Define optimization as finding the best value",
-    "Give a real-life minimize example",
-    "Know that `scipy.optimize` is the toolbox",
+    "Explain optimization as searching for the best choice",
+    "Give a real-life minimize example (like lowest cost)",
+    "Know that scipy.optimize is the toolbox for this job",
   ],
   "scipy-11": [
-    "Use `minimize` to find a low point of a function",
-    "Read `.x` and `.fun` from the result",
-    "Start a search from a sensible guess",
+    "Call optimize.minimize with a cost function and starting guess",
+    "Read result.x (best input) and result.fun (best cost)",
+    "Start with a simple one-number example first",
   ],
   "scipy-12": [
-    "Find a root of a simple equation",
-    "Explain curve fitting in plain words",
-    "Use optimize tools for roots or fits",
+    "Explain a root as the place where f(x) = 0",
+    "Use root_scalar with a bracket and print sol.root",
+    "Describe curve fitting in plain beginner words",
   ],
   "scipy-13": [
     "Define interpolation as filling gaps between known points",
