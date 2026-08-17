@@ -893,6 +893,16 @@ const LEARN_COURSE_ROUTES = [
     ),
   },
   {
+    slug: "go-concurrency",
+    language: "Go",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/go-concurrency/pages/GoConcurrencyHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/go-concurrency/pages/GoConcurrencyLessonPage"),
+    ),
+  },
+  {
     slug: "powershell-fundamentals",
     language: "PowerShell",
     Hub: lazyWithChunkRetry(
