@@ -174,6 +174,7 @@ export const COURSE_DISPLAY_NAMES = {
   "go-fundamentals": "Go Fundamentals",
   "go-functions": "Go Functions",
   "go-concurrency": "Go Concurrency",
+  "go-modules": "Go Modules",
   "rust-fundamentals": "Rust Fundamentals",
   "java-fundamentals": "Java Fundamentals",
   "java-intermediate": "Java Intermediate",

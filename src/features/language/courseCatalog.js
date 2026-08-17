@@ -813,6 +813,15 @@ export const languageCourses = {
       href: "/learn/go-concurrency",
       accent: "#00add8",
     },
+    {
+      title: "Go Modules",
+      tag: "Advanced Course",
+      icon: Terminal,
+      description:
+        "Learn Go modules, dependency management, versioning, replacements, workspaces, and production-ready module practices.",
+      href: "/learn/go-modules",
+      accent: "#00add8",
+    },
   ],
   powershell: [
     {
