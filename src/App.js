@@ -903,6 +903,16 @@ const LEARN_COURSE_ROUTES = [
     ),
   },
   {
+    slug: "go-modules",
+    language: "Go",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/go-modules/pages/GoModulesHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () => import("./features/learn/go-modules/pages/GoModulesLessonPage"),
+    ),
+  },
+  {
     slug: "powershell-fundamentals",
     language: "PowerShell",
     Hub: lazyWithChunkRetry(
@@ -1036,6 +1046,74 @@ const LEARN_COURSE_ROUTES = [
     ),
     Lesson: lazyWithChunkRetry(
       () => import("./features/learn/csharp-oop/pages/CsharpOopLessonPage"),
+    ),
+  },
+  {
+    slug: "huggingface-py",
+    language: "Python",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/huggingface-py/pages/HuggingfaceHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/huggingface-py/pages/HuggingfaceLessonPage"),
+    ),
+  },
+  {
+    slug: "csharp-collections",
+    language: "C#",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/csharp-collections/pages/CsharpCollectionsHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/csharp-collections/pages/CsharpCollectionsLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "csharp-linq",
+    language: "C#",
+    Hub: lazyWithChunkRetry(
+      () => import("./features/learn/csharp-linq/pages/CsharpLinqHub"),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import("./features/learn/csharp-linq/pages/CsharpLinqLessonPage"),
+    ),
+  },
+  {
+    slug: "csharp-file-handling",
+    language: "C#",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/csharp-file-handling/pages/CsharpFileHandlingHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/csharp-file-handling/pages/CsharpFileHandlingLessonPage"
+        ),
+    ),
+  },
+  {
+    slug: "csharp-aspnet-basics",
+    language: "C#",
+    Hub: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/csharp-aspnet-basics/pages/CsharpAspnetBasicsHub"
+        ),
+    ),
+    Lesson: lazyWithChunkRetry(
+      () =>
+        import(
+          "./features/learn/csharp-aspnet-basics/pages/CsharpAspnetBasicsLessonPage"
+        ),
     ),
   },
 ];

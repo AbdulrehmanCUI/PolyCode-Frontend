@@ -32,9 +32,9 @@ export const SCIPY_LESSON_OUTCOMES = {
     "Pick a helper function for a simple task",
   ],
   "scipy-6": [
-    "Apply a special function to an array of numbers",
-    "Combine NumPy with scipy.special",
-    "Solve a tiny practice problem with special helpers",
+    "Use a special function on many numbers at once with a NumPy array",
+    "Combine `numpy` and `scipy.special` in a short script",
+    "Print a clear result and check that every value was updated",
   ],
   "scipy-7": [
     "Explain numerical integration as area under a curve",

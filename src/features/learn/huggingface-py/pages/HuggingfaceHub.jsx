@@ -1,54 +1,54 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  BATCHFILE_FUNDAMENTALS_CHAPTERS,
-  BATCHFILE_FUNDAMENTALS_LESSONS,
-  BATCHFILE_FUNDAMENTALS_TOTAL_XP,
-} from "../data/batchfileFundamentalsCurriculum";
-import useBatchfileFundamentalsProgress from "../hooks/useBatchfileFundamentalsProgress";
-import CourseCertificate from "../../shared/CourseCertificate";
+  HUGGINGFACE_CHAPTERS,
+  HUGGINGFACE_LESSONS,
+  HUGGINGFACE_TOTAL_XP,
+} from "../data/huggingfaceCurriculum";
+import useHuggingfaceProgress from "../hooks/useHuggingfaceProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
+import CourseCertificate from "../../shared/CourseCertificate";
 
-const BASE_PATH = "/learn/batchfile-fundamentals";
-const ACCENT = "#c5c5c5";
+const BASE_PATH = "/learn/huggingface-py";
+const ACCENT = "#FF9D00";
 
 const LEARNING_PATH = [
   {
     level: "Beginner",
-    chapters: ["bf-getting-started"],
-    color: "#c5c5c5",
-    summary: "Your first .bat script, comments, and how running/saving scripts actually works.",
-  },
-  {
-    level: "Core Skills",
-    chapters: ["bf-variables-input"],
-    color: "#5391fe",
-    summary: "Variables, user input with set /p, and Windows's built-in environment variables.",
+    chapters: ["intro", "transformers"],
+    color: "#27ae60",
+    summary: "What Hugging Face is, pipeline() basics, and Auto* model loading.",
   },
   {
     level: "Intermediate",
-    chapters: ["bf-control-flow"],
-    color: "#f59e0b",
-    summary: "if/else branching, labels and goto, and for loops over lists.",
+    chapters: ["tokenizers", "datasets"],
+    color: "#2ecc71",
+    summary: "Subword tokenization, padding & batches, and the datasets library.",
   },
   {
-    level: "Practical",
-    chapters: ["bf-files-processes"],
-    color: "#dc2626",
-    summary: "File and folder commands, calling other scripts, and exit codes.",
+    level: "Advanced",
+    chapters: ["hub", "finetuning"],
+    color: "#f39c12",
+    summary: "Finding Hub models, publishing your own, and fine-tuning with Trainer.",
+  },
+  {
+    level: "Pro",
+    chapters: ["peft", "quantization", "capstone"],
+    color: "#FF9D00",
+    summary: "LoRA adapters, 8-bit/4-bit quantization, and a hands-on capstone.",
   },
 ];
 
 function lessonPlainText(lesson) {
   return lesson.theory
     .filter((block) => block.type === "text" || block.type === "callout")
-    .map((block) => (block.content || "").replace(/\*\*/g, "").replace(/`/g, ""))
+    .map((block) => block.content.replace(/\*\*/g, "").replace(/`/g, ""))
     .join(" ");
 }
 
-export default function BatchfileFundamentalsHub() {
+export default function HuggingfaceHub() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -57,31 +57,28 @@ export default function BatchfileFundamentalsHub() {
     completedMap: progress,
     bookmarks,
     lastLessonId,
-  } = useBatchfileFundamentalsProgress();
+  } = useHuggingfaceProgress();
 
   const completedCount = Object.keys(progress).length;
-  const earnedXP = BATCHFILE_FUNDAMENTALS_LESSONS.filter(
-    (lesson) => progress[lesson.id],
-  ).reduce((sum, lesson) => sum + lesson.xp, 0);
-  const pct =
-    Math.round((completedCount / BATCHFILE_FUNDAMENTALS_LESSONS.length) * 100) || 0;
-
+  const earnedXP = HUGGINGFACE_LESSONS.filter((lesson) => progress[lesson.id]).reduce(
+    (sum, lesson) => sum + lesson.xp,
+    0,
+  );
+  const pct = Math.round((completedCount / HUGGINGFACE_LESSONS.length) * 100) || 0;
   const nextLesson =
-    BATCHFILE_FUNDAMENTALS_LESSONS.find((lesson) => !progress[lesson.id]) ||
-    BATCHFILE_FUNDAMENTALS_LESSONS[0];
+    HUGGINGFACE_LESSONS.find((lesson) => !progress[lesson.id]) || HUGGINGFACE_LESSONS[0];
   const resumeLesson =
-    BATCHFILE_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === lastLessonId) ||
-    nextLesson;
-  const completedChapters = BATCHFILE_FUNDAMENTALS_CHAPTERS.filter((chapter) =>
+    HUGGINGFACE_LESSONS.find((lesson) => lesson.id === lastLessonId) || nextLesson;
+  const completedChapters = HUGGINGFACE_CHAPTERS.filter((chapter) =>
     chapter.lessons.every((lesson) => progress[lesson.id]),
   ).length;
   const bookmarkedLessons = bookmarks
-    .map((id) => BATCHFILE_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === id))
+    .map((id) => HUGGINGFACE_LESSONS.find((lesson) => lesson.id === id))
     .filter(Boolean);
 
   const filteredLessons = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return BATCHFILE_FUNDAMENTALS_LESSONS.filter((lesson) => {
+    return HUGGINGFACE_LESSONS.filter((lesson) => {
       const matchesQuery =
         !query ||
         lesson.title.toLowerCase().includes(query) ||
@@ -97,29 +94,24 @@ export default function BatchfileFundamentalsHub() {
   }, [bookmarks, filter, progress, search]);
 
   return (
-    <div className="oops-hub matplotlib-hub">
-      <div className="oops-hero matplotlib-hero">
+    <div className="oops-hub huggingface-hub">
+      <div className="oops-hero huggingface-hero">
         <Link
-          to="/language/Batchfile"
+          to="/language/Python"
           className="oops-back-btn"
           style={{ marginBottom: "0.75rem", display: "inline-flex" }}
         >
-          ← Batchfile courses
+          ← Python courses
         </Link>
-        <div className="oops-hero-badge">BATCHFILE · FUNDAMENTALS COURSE</div>
+        <div className="oops-hero-badge">HUGGING FACE · PYTHON TRACK</div>
         <h1 className="oops-hero-title">
-          Batchfile
+          Hugging Face
           <br />
-          <span className="oops-hero-accent" style={{ color: "#5391fe" }}>
-            Fundamentals
-          </span>
+          <span className="oops-hero-accent">Beginner → Advanced</span>
         </h1>
         <p className="oops-hero-sub">
-          Learn Windows batch scripting from the ground up — running scripts,
-          variables and user input, control flow, and practical file and
-          process operations. {BATCHFILE_FUNDAMENTALS_CHAPTERS.length}{" "}
-          chapters, {BATCHFILE_FUNDAMENTALS_LESSONS.length} lessons, hands-on
-          challenges.
+          Learn the modern NLP toolkit — pipelines, tokenizers, datasets, the
+          Model Hub, fine-tuning, LoRA/PEFT, and quantization.
         </p>
 
         <div className="oops-hero-grid">
@@ -127,8 +119,8 @@ export default function BatchfileFundamentalsHub() {
             <div className="oops-xp-meta">
               <span>
                 {isAuthenticated
-                  ? `${completedCount}/${BATCHFILE_FUNDAMENTALS_LESSONS.length} lessons · ${earnedXP}/${BATCHFILE_FUNDAMENTALS_TOTAL_XP} XP`
-                  : `Sign in to track progress · ${BATCHFILE_FUNDAMENTALS_LESSONS.length} lessons`}
+                  ? `${completedCount}/${HUGGINGFACE_LESSONS.length} lessons · ${earnedXP}/${HUGGINGFACE_TOTAL_XP} XP`
+                  : `Sign in to track progress · ${HUGGINGFACE_LESSONS.length} lessons`}
               </span>
               <span>{isAuthenticated ? `${pct}%` : "—"}</span>
             </div>
@@ -146,8 +138,8 @@ export default function BatchfileFundamentalsHub() {
           {!isAuthenticated && (
             <div className="oops-auth-gate oops-auth-gate-hub">
               <p>
-                Create a free account to run challenges, earn XP, and save
-                your place in the course.
+                Create a free account to run challenges, earn XP, and save your
+                place in the course.
               </p>
               <div className="oops-auth-gate-actions">
                 <Link to="/login" className="oops-auth-gate-btn">
@@ -157,7 +149,7 @@ export default function BatchfileFundamentalsHub() {
                   to="/signup"
                   className="oops-auth-gate-btn oops-auth-gate-btn-primary"
                 >
-                  Sign up free
+                  Sign up
                 </Link>
               </div>
             </div>
@@ -175,11 +167,9 @@ export default function BatchfileFundamentalsHub() {
             </p>
             <button
               type="button"
-              onClick={() =>
-                navigate(`${BASE_PATH}/lesson/${resumeLesson.id}`)
-              }
+              onClick={() => navigate(`${BASE_PATH}/lesson/${resumeLesson.id}`)}
             >
-              {completedCount > 0 ? "Resume Batchfile" : "Start Batchfile"}
+              {completedCount > 0 ? "Resume Hugging Face" : "Start Hugging Face"}
             </button>
           </div>
         </div>
@@ -187,18 +177,18 @@ export default function BatchfileFundamentalsHub() {
 
       <div className="oops-guide-tools">
         <div className="oops-tool-panel oops-tool-panel-main">
-          <span className="oops-interactive-label">Find a Batchfile topic</span>
+          <span className="oops-interactive-label">Find a Hugging Face topic</span>
           <div className="oops-search-row">
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search variables, loops, files..."
-              aria-label="Search Batchfile Fundamentals lessons"
+              placeholder="Search pipelines, tokenizers, datasets, LoRA..."
+              aria-label="Search Hugging Face lessons"
             />
             <div
               className="oops-filter-tabs"
-              aria-label="Filter Batchfile Fundamentals lessons"
+              aria-label="Filter Hugging Face lessons"
             >
               {[
                 ["all", "All"],
@@ -275,19 +265,19 @@ export default function BatchfileFundamentalsHub() {
         <div className="oops-stat-tile">
           <span>Lessons</span>
           <strong>
-            {completedCount}/{BATCHFILE_FUNDAMENTALS_LESSONS.length}
+            {completedCount}/{HUGGINGFACE_LESSONS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>Chapters</span>
           <strong>
-            {completedChapters}/{BATCHFILE_FUNDAMENTALS_CHAPTERS.length}
+            {completedChapters}/{HUGGINGFACE_CHAPTERS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>XP</span>
           <strong>
-            {earnedXP}/{BATCHFILE_FUNDAMENTALS_TOTAL_XP}
+            {earnedXP}/{HUGGINGFACE_TOTAL_XP}
           </strong>
         </div>
         <div className="oops-stat-tile">
@@ -298,21 +288,19 @@ export default function BatchfileFundamentalsHub() {
 
       <section className="matplotlib-learn-path" aria-label="Learning path">
         <div className="matplotlib-path-label">
-          <span>Your path · Beginner to Practical</span>
+          <span>Your path · Beginner to Advanced</span>
           <small>
-            {BATCHFILE_FUNDAMENTALS_CHAPTERS.length} chapters ·{" "}
-            {BATCHFILE_FUNDAMENTALS_LESSONS.length} lessons
+            {HUGGINGFACE_CHAPTERS.length} chapters · {HUGGINGFACE_LESSONS.length}{" "}
+            lessons
           </small>
         </div>
         <div className="matplotlib-path-grid">
           {LEARNING_PATH.map((stage) => {
-            const stageChapters = BATCHFILE_FUNDAMENTALS_CHAPTERS.filter((ch) =>
+            const stageChapters = HUGGINGFACE_CHAPTERS.filter((ch) =>
               stage.chapters.includes(ch.id),
             );
             const stageLessons = stageChapters.flatMap((ch) => ch.lessons);
-            const stageDone = stageLessons.filter(
-              (l) => progress[l.id],
-            ).length;
+            const stageDone = stageLessons.filter((l) => progress[l.id]).length;
             const stagePct =
               stageLessons.length > 0
                 ? Math.round((stageDone / stageLessons.length) * 100)
@@ -364,7 +352,7 @@ export default function BatchfileFundamentalsHub() {
       </section>
 
       <LearnChapterPathOverview
-        chapters={BATCHFILE_FUNDAMENTALS_CHAPTERS}
+        chapters={HUGGINGFACE_CHAPTERS}
         progress={progress}
         onChapterSelect={(chapter) =>
           navigate(`${BASE_PATH}/lesson/${chapter.lessons[0].id}`)
@@ -372,18 +360,17 @@ export default function BatchfileFundamentalsHub() {
       />
 
       <LearnChapterGrid
-        chapters={BATCHFILE_FUNDAMENTALS_CHAPTERS}
+        chapters={HUGGINGFACE_CHAPTERS}
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
       />
-
       <CourseCertificate
-        courseName="Batchfile Fundamentals"
-        totalLessons={BATCHFILE_FUNDAMENTALS_LESSONS.length}
+        courseName="Hugging Face"
+        totalLessons={HUGGINGFACE_LESSONS.length}
         completedCount={completedCount}
         earnedXP={earnedXP}
-        totalXP={BATCHFILE_FUNDAMENTALS_TOTAL_XP}
+        totalXP={HUGGINGFACE_TOTAL_XP}
       />
     </div>
   );

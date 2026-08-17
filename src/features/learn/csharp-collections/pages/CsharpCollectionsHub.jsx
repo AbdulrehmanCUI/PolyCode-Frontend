@@ -1,54 +1,25 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  BATCHFILE_FUNDAMENTALS_CHAPTERS,
-  BATCHFILE_FUNDAMENTALS_LESSONS,
-  BATCHFILE_FUNDAMENTALS_TOTAL_XP,
-} from "../data/batchfileFundamentalsCurriculum";
-import useBatchfileFundamentalsProgress from "../hooks/useBatchfileFundamentalsProgress";
-import CourseCertificate from "../../shared/CourseCertificate";
+  CSHARP_COLLECTIONS_CHAPTERS,
+  CSHARP_COLLECTIONS_LESSONS,
+  CSHARP_COLLECTIONS_TOTAL_XP,
+} from "../data/csharpCollectionsCurriculum";
+import useCsharpCollectionsProgress from "../hooks/useCsharpCollectionsProgress";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
-import LearnChapterIcon from "../../shared/LearnChapterIcon";
+import CourseCertificate from "../../shared/CourseCertificate";
 
-const BASE_PATH = "/learn/batchfile-fundamentals";
-const ACCENT = "#c5c5c5";
-
-const LEARNING_PATH = [
-  {
-    level: "Beginner",
-    chapters: ["bf-getting-started"],
-    color: "#c5c5c5",
-    summary: "Your first .bat script, comments, and how running/saving scripts actually works.",
-  },
-  {
-    level: "Core Skills",
-    chapters: ["bf-variables-input"],
-    color: "#5391fe",
-    summary: "Variables, user input with set /p, and Windows's built-in environment variables.",
-  },
-  {
-    level: "Intermediate",
-    chapters: ["bf-control-flow"],
-    color: "#f59e0b",
-    summary: "if/else branching, labels and goto, and for loops over lists.",
-  },
-  {
-    level: "Practical",
-    chapters: ["bf-files-processes"],
-    color: "#dc2626",
-    summary: "File and folder commands, calling other scripts, and exit codes.",
-  },
-];
+const BASE_PATH = "/learn/csharp-collections";
 
 function lessonPlainText(lesson) {
   return lesson.theory
     .filter((block) => block.type === "text" || block.type === "callout")
-    .map((block) => (block.content || "").replace(/\*\*/g, "").replace(/`/g, ""))
+    .map((block) => block.content.replace(/\*\*/g, "").replace(/`/g, ""))
     .join(" ");
 }
 
-export default function BatchfileFundamentalsHub() {
+export default function CsharpCollectionsHub() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -57,31 +28,30 @@ export default function BatchfileFundamentalsHub() {
     completedMap: progress,
     bookmarks,
     lastLessonId,
-  } = useBatchfileFundamentalsProgress();
+  } = useCsharpCollectionsProgress();
 
   const completedCount = Object.keys(progress).length;
-  const earnedXP = BATCHFILE_FUNDAMENTALS_LESSONS.filter(
+  const earnedXP = CSHARP_COLLECTIONS_LESSONS.filter(
     (lesson) => progress[lesson.id],
   ).reduce((sum, lesson) => sum + lesson.xp, 0);
   const pct =
-    Math.round((completedCount / BATCHFILE_FUNDAMENTALS_LESSONS.length) * 100) || 0;
-
+    Math.round((completedCount / CSHARP_COLLECTIONS_LESSONS.length) * 100) || 0;
   const nextLesson =
-    BATCHFILE_FUNDAMENTALS_LESSONS.find((lesson) => !progress[lesson.id]) ||
-    BATCHFILE_FUNDAMENTALS_LESSONS[0];
+    CSHARP_COLLECTIONS_LESSONS.find((lesson) => !progress[lesson.id]) ||
+    CSHARP_COLLECTIONS_LESSONS[0];
   const resumeLesson =
-    BATCHFILE_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === lastLessonId) ||
+    CSHARP_COLLECTIONS_LESSONS.find((lesson) => lesson.id === lastLessonId) ||
     nextLesson;
-  const completedChapters = BATCHFILE_FUNDAMENTALS_CHAPTERS.filter((chapter) =>
+  const completedChapters = CSHARP_COLLECTIONS_CHAPTERS.filter((chapter) =>
     chapter.lessons.every((lesson) => progress[lesson.id]),
   ).length;
   const bookmarkedLessons = bookmarks
-    .map((id) => BATCHFILE_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === id))
+    .map((id) => CSHARP_COLLECTIONS_LESSONS.find((lesson) => lesson.id === id))
     .filter(Boolean);
 
   const filteredLessons = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return BATCHFILE_FUNDAMENTALS_LESSONS.filter((lesson) => {
+    return CSHARP_COLLECTIONS_LESSONS.filter((lesson) => {
       const matchesQuery =
         !query ||
         lesson.title.toLowerCase().includes(query) ||
@@ -97,29 +67,24 @@ export default function BatchfileFundamentalsHub() {
   }, [bookmarks, filter, progress, search]);
 
   return (
-    <div className="oops-hub matplotlib-hub">
-      <div className="oops-hero matplotlib-hero">
+    <div className="oops-hub csharp-collections-hub">
+      <div className="oops-hero csharp-collections-hero">
         <Link
-          to="/language/Batchfile"
+          to="/select-language"
           className="oops-back-btn"
           style={{ marginBottom: "0.75rem", display: "inline-flex" }}
         >
-          ← Batchfile courses
+          ← Alternate Tracks
         </Link>
-        <div className="oops-hero-badge">BATCHFILE · FUNDAMENTALS COURSE</div>
+        <div className="oops-hero-badge">C# · COLLECTIONS TRACK</div>
         <h1 className="oops-hero-title">
-          Batchfile
+          C#
           <br />
-          <span className="oops-hero-accent" style={{ color: "#5391fe" }}>
-            Fundamentals
-          </span>
+          <span className="oops-hero-accent">Collections</span>
         </h1>
         <p className="oops-hero-sub">
-          Learn Windows batch scripting from the ground up — running scripts,
-          variables and user input, control flow, and practical file and
-          process operations. {BATCHFILE_FUNDAMENTALS_CHAPTERS.length}{" "}
-          chapters, {BATCHFILE_FUNDAMENTALS_LESSONS.length} lessons, hands-on
-          challenges.
+          Arrays, List&lt;T&gt;, Dictionary&lt;TKey, TValue&gt;, HashSet&lt;T&gt;,
+          Stack&lt;T&gt;, and Queue&lt;T&gt; — and how to choose the right one.
         </p>
 
         <div className="oops-hero-grid">
@@ -127,18 +92,15 @@ export default function BatchfileFundamentalsHub() {
             <div className="oops-xp-meta">
               <span>
                 {isAuthenticated
-                  ? `${completedCount}/${BATCHFILE_FUNDAMENTALS_LESSONS.length} lessons · ${earnedXP}/${BATCHFILE_FUNDAMENTALS_TOTAL_XP} XP`
-                  : `Sign in to track progress · ${BATCHFILE_FUNDAMENTALS_LESSONS.length} lessons`}
+                  ? `${completedCount}/${CSHARP_COLLECTIONS_LESSONS.length} lessons · ${earnedXP}/${CSHARP_COLLECTIONS_TOTAL_XP} XP`
+                  : `Sign in to track progress · ${CSHARP_COLLECTIONS_LESSONS.length} lessons`}
               </span>
               <span>{isAuthenticated ? `${pct}%` : "—"}</span>
             </div>
             <div className="oops-xp-track">
               <div
                 className="oops-xp-fill"
-                style={{
-                  width: isAuthenticated ? `${pct}%` : "0%",
-                  background: ACCENT,
-                }}
+                style={{ width: isAuthenticated ? `${pct}%` : "0%" }}
               />
             </div>
           </div>
@@ -157,7 +119,7 @@ export default function BatchfileFundamentalsHub() {
                   to="/signup"
                   className="oops-auth-gate-btn oops-auth-gate-btn-primary"
                 >
-                  Sign up free
+                  Sign up
                 </Link>
               </div>
             </div>
@@ -175,11 +137,9 @@ export default function BatchfileFundamentalsHub() {
             </p>
             <button
               type="button"
-              onClick={() =>
-                navigate(`${BASE_PATH}/lesson/${resumeLesson.id}`)
-              }
+              onClick={() => navigate(`${BASE_PATH}/lesson/${resumeLesson.id}`)}
             >
-              {completedCount > 0 ? "Resume Batchfile" : "Start Batchfile"}
+              {completedCount > 0 ? "Resume C# Collections" : "Start C# Collections"}
             </button>
           </div>
         </div>
@@ -187,19 +147,16 @@ export default function BatchfileFundamentalsHub() {
 
       <div className="oops-guide-tools">
         <div className="oops-tool-panel oops-tool-panel-main">
-          <span className="oops-interactive-label">Find a Batchfile topic</span>
+          <span className="oops-interactive-label">Find a C# Collections topic</span>
           <div className="oops-search-row">
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search variables, loops, files..."
-              aria-label="Search Batchfile Fundamentals lessons"
+              placeholder="Search arrays, lists, dictionaries, sets..."
+              aria-label="Search C# Collections lessons"
             />
-            <div
-              className="oops-filter-tabs"
-              aria-label="Filter Batchfile Fundamentals lessons"
-            >
+            <div className="oops-filter-tabs" aria-label="Filter C# Collections lessons">
               {[
                 ["all", "All"],
                 ["todo", "To do"],
@@ -275,19 +232,19 @@ export default function BatchfileFundamentalsHub() {
         <div className="oops-stat-tile">
           <span>Lessons</span>
           <strong>
-            {completedCount}/{BATCHFILE_FUNDAMENTALS_LESSONS.length}
+            {completedCount}/{CSHARP_COLLECTIONS_LESSONS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>Chapters</span>
           <strong>
-            {completedChapters}/{BATCHFILE_FUNDAMENTALS_CHAPTERS.length}
+            {completedChapters}/{CSHARP_COLLECTIONS_CHAPTERS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>XP</span>
           <strong>
-            {earnedXP}/{BATCHFILE_FUNDAMENTALS_TOTAL_XP}
+            {earnedXP}/{CSHARP_COLLECTIONS_TOTAL_XP}
           </strong>
         </div>
         <div className="oops-stat-tile">
@@ -296,75 +253,8 @@ export default function BatchfileFundamentalsHub() {
         </div>
       </div>
 
-      <section className="matplotlib-learn-path" aria-label="Learning path">
-        <div className="matplotlib-path-label">
-          <span>Your path · Beginner to Practical</span>
-          <small>
-            {BATCHFILE_FUNDAMENTALS_CHAPTERS.length} chapters ·{" "}
-            {BATCHFILE_FUNDAMENTALS_LESSONS.length} lessons
-          </small>
-        </div>
-        <div className="matplotlib-path-grid">
-          {LEARNING_PATH.map((stage) => {
-            const stageChapters = BATCHFILE_FUNDAMENTALS_CHAPTERS.filter((ch) =>
-              stage.chapters.includes(ch.id),
-            );
-            const stageLessons = stageChapters.flatMap((ch) => ch.lessons);
-            const stageDone = stageLessons.filter(
-              (l) => progress[l.id],
-            ).length;
-            const stagePct =
-              stageLessons.length > 0
-                ? Math.round((stageDone / stageLessons.length) * 100)
-                : 0;
-
-            return (
-              <article
-                key={stage.level}
-                className="matplotlib-path-card"
-                style={{ "--stage-color": stage.color }}
-              >
-                <header className="matplotlib-path-card-head">
-                  <span className="matplotlib-path-level">{stage.level}</span>
-                  <span className="matplotlib-path-pct">{stagePct}%</span>
-                </header>
-                <p className="matplotlib-path-summary">{stage.summary}</p>
-                <ul className="matplotlib-path-chapters">
-                  {stageChapters.map((ch) => (
-                    <li key={ch.id}>
-                      <span className="oops-chapter-icon-wrap" aria-hidden>
-                        <LearnChapterIcon icon={ch.icon} size={14} />
-                      </span>
-                      {ch.title}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  type="button"
-                  className="matplotlib-path-cta"
-                  onClick={() => {
-                    const firstOpen =
-                      stageLessons.find((l) => !progress[l.id]) ||
-                      stageLessons[0];
-                    if (firstOpen) {
-                      navigate(`${BASE_PATH}/lesson/${firstOpen.id}`);
-                    }
-                  }}
-                >
-                  {stageDone === stageLessons.length && stageLessons.length > 0
-                    ? "Review stage →"
-                    : stageDone > 0
-                      ? "Continue stage →"
-                      : "Start stage →"}
-                </button>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
       <LearnChapterPathOverview
-        chapters={BATCHFILE_FUNDAMENTALS_CHAPTERS}
+        chapters={CSHARP_COLLECTIONS_CHAPTERS}
         progress={progress}
         onChapterSelect={(chapter) =>
           navigate(`${BASE_PATH}/lesson/${chapter.lessons[0].id}`)
@@ -372,18 +262,17 @@ export default function BatchfileFundamentalsHub() {
       />
 
       <LearnChapterGrid
-        chapters={BATCHFILE_FUNDAMENTALS_CHAPTERS}
+        chapters={CSHARP_COLLECTIONS_CHAPTERS}
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
       />
-
       <CourseCertificate
-        courseName="Batchfile Fundamentals"
-        totalLessons={BATCHFILE_FUNDAMENTALS_LESSONS.length}
+        courseName="C# Collections"
+        totalLessons={CSHARP_COLLECTIONS_LESSONS.length}
         completedCount={completedCount}
         earnedXP={earnedXP}
-        totalXP={BATCHFILE_FUNDAMENTALS_TOTAL_XP}
+        totalXP={CSHARP_COLLECTIONS_TOTAL_XP}
       />
     </div>
   );

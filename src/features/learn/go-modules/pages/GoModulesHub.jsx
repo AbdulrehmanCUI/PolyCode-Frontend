@@ -1,43 +1,41 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  BATCHFILE_FUNDAMENTALS_CHAPTERS,
-  BATCHFILE_FUNDAMENTALS_LESSONS,
-  BATCHFILE_FUNDAMENTALS_TOTAL_XP,
-} from "../data/batchfileFundamentalsCurriculum";
-import useBatchfileFundamentalsProgress from "../hooks/useBatchfileFundamentalsProgress";
-import CourseCertificate from "../../shared/CourseCertificate";
 import LearnChapterPathOverview from "../../shared/LearnChapterPathOverview";
 import LearnChapterGrid from "../../shared/LearnChapterGrid";
 import LearnChapterIcon from "../../shared/LearnChapterIcon";
+import CourseCertificate from "../../shared/CourseCertificate";
+import {
+  GO_MODULES_CHAPTERS,
+  GO_MODULES_LESSONS,
+  GO_MODULES_TOTAL_XP,
+} from "../data/GoModulesCurriculum";
+import useGoModulesProgress from "../hooks/useGoModulesProgress";
 
-const BASE_PATH = "/learn/batchfile-fundamentals";
-const ACCENT = "#c5c5c5";
-
+const BASE_PATH = "/learn/go-modules";
 const LEARNING_PATH = [
   {
     level: "Beginner",
-    chapters: ["bf-getting-started"],
-    color: "#c5c5c5",
-    summary: "Your first .bat script, comments, and how running/saving scripts actually works.",
-  },
-  {
-    level: "Core Skills",
-    chapters: ["bf-variables-input"],
-    color: "#5391fe",
-    summary: "Variables, user input with set /p, and Windows's built-in environment variables.",
+    chapters: GO_MODULES_CHAPTERS.filter((ch) => ch.stage === "beginner").map((ch) => ch.id),
+    color: "#22c55e",
+    summary: "Start with module roots, dependency resolution, and project setup.",
   },
   {
     level: "Intermediate",
-    chapters: ["bf-control-flow"],
-    color: "#f59e0b",
-    summary: "if/else branching, labels and goto, and for loops over lists.",
+    chapters: GO_MODULES_CHAPTERS.filter((ch) => ch.stage === "intermediate").map((ch) => ch.id),
+    color: "#3b82f6",
+    summary: "Understand version constraints, replacements, and dependency hygiene.",
   },
   {
-    level: "Practical",
-    chapters: ["bf-files-processes"],
-    color: "#dc2626",
-    summary: "File and folder commands, calling other scripts, and exit codes.",
+    level: "Pro",
+    chapters: GO_MODULES_CHAPTERS.filter((ch) => ch.stage === "pro").map((ch) => ch.id),
+    color: "#f59e0b",
+    summary: "Work with workspaces, internal modules, and release discipline.",
+  },
+  {
+    level: "Advanced",
+    chapters: GO_MODULES_CHAPTERS.filter((ch) => ch.stage === "advanced").map((ch) => ch.id),
+    color: "#8b5cf6",
+    summary: "Ship maintainable module layouts, upgrades, and production-ready practices.",
   },
 ];
 
@@ -48,40 +46,40 @@ function lessonPlainText(lesson) {
     .join(" ");
 }
 
-export default function BatchfileFundamentalsHub() {
+export default function GoModulesHub() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const [stage, setStage] = useState("beginner");
   const [filter, setFilter] = useState("all");
-  const {
-    isAuthenticated,
-    completedMap: progress,
-    bookmarks,
-    lastLessonId,
-  } = useBatchfileFundamentalsProgress();
+  const { isAuthenticated, completedMap: progress, bookmarks, lastLessonId } =
+    useGoModulesProgress();
 
   const completedCount = Object.keys(progress).length;
-  const earnedXP = BATCHFILE_FUNDAMENTALS_LESSONS.filter(
-    (lesson) => progress[lesson.id],
-  ).reduce((sum, lesson) => sum + lesson.xp, 0);
-  const pct =
-    Math.round((completedCount / BATCHFILE_FUNDAMENTALS_LESSONS.length) * 100) || 0;
-
+  const earnedXP = GO_MODULES_LESSONS.filter((lesson) => progress[lesson.id]).reduce(
+    (sum, lesson) => sum + lesson.xp,
+    0,
+  );
+  const pct = Math.round((completedCount / GO_MODULES_LESSONS.length) * 100) || 0;
   const nextLesson =
-    BATCHFILE_FUNDAMENTALS_LESSONS.find((lesson) => !progress[lesson.id]) ||
-    BATCHFILE_FUNDAMENTALS_LESSONS[0];
+    GO_MODULES_LESSONS.find((lesson) => !progress[lesson.id]) || GO_MODULES_LESSONS[0];
   const resumeLesson =
-    BATCHFILE_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === lastLessonId) ||
-    nextLesson;
-  const completedChapters = BATCHFILE_FUNDAMENTALS_CHAPTERS.filter((chapter) =>
+    GO_MODULES_LESSONS.find((lesson) => lesson.id === lastLessonId) || nextLesson;
+  const chaptersForStage = GO_MODULES_CHAPTERS.filter(
+    (chapter) => (chapter.stage || "beginner") === stage,
+  );
+  const completedChapters = chaptersForStage.filter((chapter) =>
     chapter.lessons.every((lesson) => progress[lesson.id]),
   ).length;
   const bookmarkedLessons = bookmarks
-    .map((id) => BATCHFILE_FUNDAMENTALS_LESSONS.find((lesson) => lesson.id === id))
+    .map((id) => GO_MODULES_LESSONS.find((lesson) => lesson.id === id))
     .filter(Boolean);
 
   const filteredLessons = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return BATCHFILE_FUNDAMENTALS_LESSONS.filter((lesson) => {
+    return GO_MODULES_LESSONS.filter((lesson) => {
+      const chapter = GO_MODULES_CHAPTERS.find((item) => item.id === lesson.chapterId);
+      if (((chapter && chapter.stage) || "beginner") !== stage) return false;
+
       const matchesQuery =
         !query ||
         lesson.title.toLowerCase().includes(query) ||
@@ -94,32 +92,27 @@ export default function BatchfileFundamentalsHub() {
         (filter === "bookmarked" && bookmarks.includes(lesson.id));
       return matchesQuery && matchesFilter;
     });
-  }, [bookmarks, filter, progress, search]);
+  }, [bookmarks, filter, progress, search, stage]);
 
   return (
-    <div className="oops-hub matplotlib-hub">
-      <div className="oops-hero matplotlib-hero">
+    <div className="oops-hub go-hub">
+      <div className="oops-hero go-hero" style={{ borderColor: "#00add8" }}>
         <Link
-          to="/language/Batchfile"
+          to="/language/Go"
           className="oops-back-btn"
           style={{ marginBottom: "0.75rem", display: "inline-flex" }}
         >
-          ← Batchfile courses
+          ← Go courses
         </Link>
-        <div className="oops-hero-badge">BATCHFILE · FUNDAMENTALS COURSE</div>
+        <div className="oops-hero-badge">Go · Modules Track</div>
         <h1 className="oops-hero-title">
-          Batchfile
+          Go
           <br />
-          <span className="oops-hero-accent" style={{ color: "#5391fe" }}>
-            Fundamentals
-          </span>
+          <span className="oops-hero-accent">Modules</span>
         </h1>
         <p className="oops-hero-sub">
-          Learn Windows batch scripting from the ground up — running scripts,
-          variables and user input, control flow, and practical file and
-          process operations. {BATCHFILE_FUNDAMENTALS_CHAPTERS.length}{" "}
-          chapters, {BATCHFILE_FUNDAMENTALS_LESSONS.length} lessons, hands-on
-          challenges.
+          Learn how Go modules manage versions, dependencies, replacements,
+          workspaces, and real-world project structure with working examples.
         </p>
 
         <div className="oops-hero-grid">
@@ -127,8 +120,8 @@ export default function BatchfileFundamentalsHub() {
             <div className="oops-xp-meta">
               <span>
                 {isAuthenticated
-                  ? `${completedCount}/${BATCHFILE_FUNDAMENTALS_LESSONS.length} lessons · ${earnedXP}/${BATCHFILE_FUNDAMENTALS_TOTAL_XP} XP`
-                  : `Sign in to track progress · ${BATCHFILE_FUNDAMENTALS_LESSONS.length} lessons`}
+                  ? `${completedCount}/${GO_MODULES_LESSONS.length} lessons · ${earnedXP}/${GO_MODULES_TOTAL_XP} XP`
+                  : `Sign in to track progress · ${GO_MODULES_LESSONS.length} lessons`}
               </span>
               <span>{isAuthenticated ? `${pct}%` : "—"}</span>
             </div>
@@ -137,7 +130,7 @@ export default function BatchfileFundamentalsHub() {
                 className="oops-xp-fill"
                 style={{
                   width: isAuthenticated ? `${pct}%` : "0%",
-                  background: ACCENT,
+                  backgroundColor: "#00add8",
                 }}
               />
             </div>
@@ -146,8 +139,8 @@ export default function BatchfileFundamentalsHub() {
           {!isAuthenticated && (
             <div className="oops-auth-gate oops-auth-gate-hub">
               <p>
-                Create a free account to run challenges, earn XP, and save
-                your place in the course.
+                Create a free account to run Go module challenges, earn XP, and
+                save your place in the course.
               </p>
               <div className="oops-auth-gate-actions">
                 <Link to="/login" className="oops-auth-gate-btn">
@@ -157,7 +150,7 @@ export default function BatchfileFundamentalsHub() {
                   to="/signup"
                   className="oops-auth-gate-btn oops-auth-gate-btn-primary"
                 >
-                  Sign up free
+                  Sign up
                 </Link>
               </div>
             </div>
@@ -175,31 +168,45 @@ export default function BatchfileFundamentalsHub() {
             </p>
             <button
               type="button"
-              onClick={() =>
-                navigate(`${BASE_PATH}/lesson/${resumeLesson.id}`)
-              }
+              onClick={() => navigate(`${BASE_PATH}/lesson/${resumeLesson.id}`)}
             >
-              {completedCount > 0 ? "Resume Batchfile" : "Start Batchfile"}
+              {completedCount > 0 ? "Resume Go Modules" : "Start Go Modules"}
             </button>
           </div>
         </div>
       </div>
 
+      <div className="oops-stage-tabs" style={{ padding: "0 1.5rem", marginTop: "0.5rem" }}>
+        {[
+          ["beginner", "Beginner"],
+          ["intermediate", "Intermediate"],
+          ["pro", "Pro"],
+          ["advanced", "Advanced"],
+        ].map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            className={stage === id ? "active stage-tab" : "stage-tab"}
+            onClick={() => setStage(id)}
+            style={{ marginRight: 8 }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       <div className="oops-guide-tools">
         <div className="oops-tool-panel oops-tool-panel-main">
-          <span className="oops-interactive-label">Find a Batchfile topic</span>
+          <span className="oops-interactive-label">Find a Go topic</span>
           <div className="oops-search-row">
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search variables, loops, files..."
-              aria-label="Search Batchfile Fundamentals lessons"
+              placeholder="Search modules, versions, workspaces..."
+              aria-label="Search Go Modules lessons"
             />
-            <div
-              className="oops-filter-tabs"
-              aria-label="Filter Batchfile Fundamentals lessons"
-            >
+            <div className="oops-filter-tabs" aria-label="Filter Go lessons">
               {[
                 ["all", "All"],
                 ["todo", "To do"],
@@ -275,19 +282,19 @@ export default function BatchfileFundamentalsHub() {
         <div className="oops-stat-tile">
           <span>Lessons</span>
           <strong>
-            {completedCount}/{BATCHFILE_FUNDAMENTALS_LESSONS.length}
+            {completedCount}/{GO_MODULES_LESSONS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>Chapters</span>
           <strong>
-            {completedChapters}/{BATCHFILE_FUNDAMENTALS_CHAPTERS.length}
+            {completedChapters}/{GO_MODULES_CHAPTERS.length}
           </strong>
         </div>
         <div className="oops-stat-tile">
           <span>XP</span>
           <strong>
-            {earnedXP}/{BATCHFILE_FUNDAMENTALS_TOTAL_XP}
+            {earnedXP}/{GO_MODULES_TOTAL_XP}
           </strong>
         </div>
         <div className="oops-stat-tile">
@@ -298,44 +305,40 @@ export default function BatchfileFundamentalsHub() {
 
       <section className="matplotlib-learn-path" aria-label="Learning path">
         <div className="matplotlib-path-label">
-          <span>Your path · Beginner to Practical</span>
+          <span>Your path · Beginner to Advanced</span>
           <small>
-            {BATCHFILE_FUNDAMENTALS_CHAPTERS.length} chapters ·{" "}
-            {BATCHFILE_FUNDAMENTALS_LESSONS.length} lessons
+            {GO_MODULES_CHAPTERS.length} chapters · {GO_MODULES_LESSONS.length} lessons
           </small>
         </div>
         <div className="matplotlib-path-grid">
-          {LEARNING_PATH.map((stage) => {
-            const stageChapters = BATCHFILE_FUNDAMENTALS_CHAPTERS.filter((ch) =>
-              stage.chapters.includes(ch.id),
+          {LEARNING_PATH.map((stageDef) => {
+            const stageChapters = GO_MODULES_CHAPTERS.filter((chapter) =>
+              stageDef.chapters.includes(chapter.id),
             );
-            const stageLessons = stageChapters.flatMap((ch) => ch.lessons);
-            const stageDone = stageLessons.filter(
-              (l) => progress[l.id],
-            ).length;
+            const stageLessons = stageChapters.flatMap((chapter) => chapter.lessons);
+            const stageDone = stageLessons.filter((lesson) => progress[lesson.id]).length;
             const stagePct =
               stageLessons.length > 0
                 ? Math.round((stageDone / stageLessons.length) * 100)
                 : 0;
-
             return (
               <article
-                key={stage.level}
+                key={stageDef.level}
                 className="matplotlib-path-card"
-                style={{ "--stage-color": stage.color }}
+                style={{ "--stage-color": stageDef.color }}
               >
                 <header className="matplotlib-path-card-head">
-                  <span className="matplotlib-path-level">{stage.level}</span>
+                  <span className="matplotlib-path-level">{stageDef.level}</span>
                   <span className="matplotlib-path-pct">{stagePct}%</span>
                 </header>
-                <p className="matplotlib-path-summary">{stage.summary}</p>
+                <p className="matplotlib-path-summary">{stageDef.summary}</p>
                 <ul className="matplotlib-path-chapters">
-                  {stageChapters.map((ch) => (
-                    <li key={ch.id}>
+                  {stageChapters.map((chapter) => (
+                    <li key={chapter.id}>
                       <span className="oops-chapter-icon-wrap" aria-hidden>
-                        <LearnChapterIcon icon={ch.icon} size={14} />
+                        <LearnChapterIcon icon={chapter.icon} size={14} />
                       </span>
-                      {ch.title}
+                      {chapter.title}
                     </li>
                   ))}
                 </ul>
@@ -344,8 +347,7 @@ export default function BatchfileFundamentalsHub() {
                   className="matplotlib-path-cta"
                   onClick={() => {
                     const firstOpen =
-                      stageLessons.find((l) => !progress[l.id]) ||
-                      stageLessons[0];
+                      stageLessons.find((lesson) => !progress[lesson.id]) || stageLessons[0];
                     if (firstOpen) {
                       navigate(`${BASE_PATH}/lesson/${firstOpen.id}`);
                     }
@@ -354,8 +356,8 @@ export default function BatchfileFundamentalsHub() {
                   {stageDone === stageLessons.length && stageLessons.length > 0
                     ? "Review stage →"
                     : stageDone > 0
-                      ? "Continue stage →"
-                      : "Start stage →"}
+                    ? "Continue stage →"
+                    : "Start stage →"}
                 </button>
               </article>
             );
@@ -364,7 +366,7 @@ export default function BatchfileFundamentalsHub() {
       </section>
 
       <LearnChapterPathOverview
-        chapters={BATCHFILE_FUNDAMENTALS_CHAPTERS}
+        chapters={GO_MODULES_CHAPTERS}
         progress={progress}
         onChapterSelect={(chapter) =>
           navigate(`${BASE_PATH}/lesson/${chapter.lessons[0].id}`)
@@ -372,18 +374,17 @@ export default function BatchfileFundamentalsHub() {
       />
 
       <LearnChapterGrid
-        chapters={BATCHFILE_FUNDAMENTALS_CHAPTERS}
+        chapters={GO_MODULES_CHAPTERS}
         progress={progress}
         basePath={BASE_PATH}
         navigate={navigate}
       />
-
       <CourseCertificate
-        courseName="Batchfile Fundamentals"
-        totalLessons={BATCHFILE_FUNDAMENTALS_LESSONS.length}
+        courseName="Go Modules"
+        totalLessons={GO_MODULES_LESSONS.length}
         completedCount={completedCount}
         earnedXP={earnedXP}
-        totalXP={BATCHFILE_FUNDAMENTALS_TOTAL_XP}
+        totalXP={GO_MODULES_TOTAL_XP}
       />
     </div>
   );
